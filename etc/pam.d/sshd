@@ -1,4 +1,7 @@
-# PAM configuration for the Secure Shell service
+#
+# vi "/etc/pam.d/sshd" 
+#		--> PAM configuration for the Secure Shell service
+#
 
 # Standard Un*x authentication.
 #@include common-auth
@@ -7,7 +10,7 @@ auth requisite /lib/x86_64-linux-gnu/security/pam_deny.so
 auth required /lib/x86_64-linux-gnu/security/pam_permit.so
 
 # Disallow non-root logins when /etc/nologin exists.
-account    required     pam_nologin.so
+account required /lib/x86_64-linux-gnu/security/pam_nologin.so
 
 # Uncomment and edit /etc/security/access.conf if you need to set complex
 # access limits that are hard to express in sshd_config.
@@ -19,7 +22,7 @@ account    required     pam_nologin.so
 # SELinux needs to be the first session rule.  This ensures that any
 # lingering context has been cleared.  Without this it is possible that a
 # module could execute code in the wrong domain.
-session [success=ok ignore=ignore module_unknown=ignore default=bad]        pam_selinux.so close
+session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so close
 
 # Set the loginuid process attribute.
 session    required     pam_loginuid.so

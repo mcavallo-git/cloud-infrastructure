@@ -1,27 +1,29 @@
 #!/bin/bash
-
-# ------------------------------------------------------------
-### This script updates a Linux instance's hostname & domain
-
-### To run in 'dry-run' mode:
-# >   DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source "./set_hostname.sh";
-
-### To run in 'live' mode:
-# >   DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source "./set_hostname.sh";
-
 # ------------------------------------------------------------
 
-echo "";
+# This script modifies a Linux instance's host & domain name(s)
+
+#	Instantiate this command-line utility:
+#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
+
+### Run using "DRY-RUN" mode:
+#	>		DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+
+### Run using "LIVE" mode:
+#	>		DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+
+# ------------------------------------------------------------
+#
+# Require that this script be run with root access
+#
 if [ "$(whoami)" != "root" ]; then
-
-	# Require elevated privileges (e.g. require "root" user)
-	echo "Must run \"${0}\" as user 'root'.";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
 	exit 1;
 
 elif [ ! -n "${SET_HOSTNAME}" ]; then
 
 	# Required variable empty: SET_HOSTNAME
-	echo "Variable \${SET_HOSTNAME} is empty";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_HOSTNAME} is empty";
 	echo "Please set variable to your desired value and re-run this script.";
 	echo "  ( e.g. SET_HOSTNAME=[your_value]; )";
 	exit 1;
@@ -29,7 +31,7 @@ elif [ ! -n "${SET_HOSTNAME}" ]; then
 elif [ ! -n "${SET_DOMAIN}" ]; then
 
 	# Required variable empty: SET_HOSTNAME
-	echo "Variable \${SET_DOMAIN} is empty";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_DOMAIN} is empty";
 	echo "Please set variable to your desired value and re-run this script.";
 	echo "  ( e.g. SET_DOMAIN=[your_value]; )";
 	exit 1;
@@ -42,7 +44,7 @@ else
 
 	if [ -n "${DRY_RUN}" ]; then
 		if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
-			echo "Invalid value set for \$DRY_RUN";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$DRY_RUN";
 			echo "Please set to \"1\" for dry-run, \"0\" for live-run";
 			echo "";
 			echo "RESETTING \$DRY_RUN to \"1\"";
@@ -52,7 +54,7 @@ else
 		if [ "$1" == "0" ]; then
 			DRY_RUN=0;
 		else
-			echo "Invalid value set for \$1";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$1";
 			echo "Please set to \"1\" for dry-run, \"0\" for live-run";
 			echo "";
 			echo "RESETTING \$DRY_RUN to \"1\"";
@@ -90,7 +92,7 @@ else
 	if [ -n "${THIS_IPv4_WAN}" ]; then
 		echo "Resolved WAN IPv4 to: \"${THIS_IPv4_WAN}\"";
 	else 
-		echo "Unable to resolve WAN IPv4.";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN IPv4.";
 		echo "If you wish to manually set it, please set \${THIS_IPv4_WAN} to your desired value and re-run this script.";
 		exit 1;
 	fi;
@@ -103,7 +105,7 @@ else
 	if [ -n "${THIS_IPv4_LAN}" ]; then
 		echo "Resolved LAN IPv4 to: \"${THIS_IPv4_LAN}\"";
 	else 
-		echo "Unable to resolve LAN IPv4.";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve LAN IPv4.";
 		echo "If you wish to manually set it, please set \${THIS_IPv4_LAN} to your desired value and re-run this script.";
 		exit 1;
 	fi;
@@ -216,8 +218,8 @@ else
 	#
 	if [[ -f "/etc/init.d/network" ]]; then # centos distros
 		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			echo "RESTART REQUIRED FOR [ /etc/init.d/network ]";
-			read -p "RESTART NOW? ( Y/N )" -n 1 -r
+			echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
+			read -p "REBOOT NOW? ( Y/N )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "";
@@ -234,15 +236,15 @@ else
 		fi;
 	else # [other] distros
 		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			read -p "SHUTDOWN REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
+			read -p "REBOOT REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "";
-				echo "SHUTTING DOWN";
+				echo "REBOOTING...";
 				shutdown -r now;
 			else
 				echo "";
-				echo "POST-PONING SHUTDOWN";
+				echo "POST-PONING REBOOT";
 				exit 1;
 			fi;
 		else # dry-run

@@ -70,6 +70,7 @@ X11Forwarding yes
 Subsystem sftp internal-sftp -l INFO
 
 Match Group sftp_jailed_users
+	AuthenticationMethods publickey
 	ForceCommand internal-sftp
 	ChrootDirectory %h
 	X11Forwarding no

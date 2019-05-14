@@ -220,8 +220,8 @@ else
 	#
 	if [[ -f "/etc/init.d/network" ]]; then # centos distros
 		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			echo "RESTART REQUIRED FOR [ /etc/init.d/network ]";
-			read -p "RESTART NOW? ( Y/N )" -n 1 -r
+			echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
+			read -p "REBOOT NOW? ( Y/N )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "";
@@ -238,15 +238,15 @@ else
 		fi;
 	else # [other] distros
 		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			read -p "SHUTDOWN REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
+			read -p "REBOOT REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "";
-				echo "SHUTTING DOWN";
+				echo "REBOOTING...";
 				shutdown -r now;
 			else
 				echo "";
-				echo "POST-PONING SHUTDOWN";
+				echo "POST-PONING REBOOT";
 				exit 1;
 			fi;
 		else # dry-run

@@ -43,6 +43,7 @@ PermitUserEnvironment no
 PermitTunnel no
 
 Port 22
+Port 24
 
 PrintLastLog yes
 
@@ -72,11 +73,16 @@ Subsystem sftp internal-sftp -l INFO
 
 Match Group sftp_jailed_users
 	AuthenticationMethods publickey
-	ForceCommand internal-sftp
 	ChrootDirectory %h
-	X11Forwarding no
 	AllowAgentForwarding no
-	AllowTcpForwarding no
+	X11Forwarding no
+	ForceCommand internal-sftp
+
+Match User mcavallo,phanna,rgodithi LocalPort 24
+	AuthenticationMethods publickey
+	AllowAgentForwarding no
+	X11Forwarding no
+	ForceCommand internal-sftp
 
 Match User jenkins_ssh Address 13.58.94.67
 	AuthenticationMethods publickey
@@ -87,6 +93,7 @@ Match User jenkins_ssh Address 13.58.94.67
 # Documentation
 #		--> https://linux.die.net/man/5/sshd_config
 #		--> https://freebsd.org/cgi/man.cgi?sshd_config(5)
+#		--> https://debian-administration.org/article/87/Keeping_SSH_access_secure
 #
 #
 #	Discussion

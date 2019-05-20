@@ -159,3 +159,5 @@ bash_prompt() {
 
 # init it by setting PROMPT_COMMAND
 PROMPT_COMMAND=bash_prompt_command; bash_prompt; unset bash_prompt;
+
+if [ -n "${HOME}" ]; then cd "${HOME}"; fi;

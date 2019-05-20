@@ -30,7 +30,7 @@ MaxAuthTries 1
 
 MaxSessions 5
 
-MaxStartups 5:30:10
+MaxStartups 10:30:60
 
 PasswordAuthentication no
 
@@ -80,6 +80,7 @@ Match Group sftp_jailed_users
 
 Match User mcavallo,phanna,rgodithi LocalPort 24
 	AuthenticationMethods publickey
+	ChrootDirectory /home/boneal
 	AllowAgentForwarding no
 	X11Forwarding no
 	ForceCommand internal-sftp

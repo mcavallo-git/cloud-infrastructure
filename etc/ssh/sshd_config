@@ -71,7 +71,10 @@ X11Forwarding yes
 #
 Subsystem sftp internal-sftp -l INFO
 
-Match Group sftp_jailed_users
+Match User jenkins_ssh Address 13.58.94.67 LocalPort 22
+	AuthenticationMethods publickey
+
+Match Group sftp_jailed_users LocalPort 22
 	AuthenticationMethods publickey
 	ChrootDirectory %h
 	AllowAgentForwarding no
@@ -83,9 +86,6 @@ Match User mcavallo,phanna,rgodithi LocalPort 24
 	AllowAgentForwarding no
 	X11Forwarding no
 	ForceCommand internal-sftp
-
-Match User jenkins_ssh Address 13.58.94.67
-	AuthenticationMethods publickey
 	
 #
 #	Citation(s)

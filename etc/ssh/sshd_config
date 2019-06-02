@@ -1,3 +1,4 @@
+# ------------------------------------------------------------
 #
 # SSHD_CONF="/etc/ssh/sshd_config";
 #
@@ -57,9 +58,11 @@ PubkeyAuthentication yes
 
 StrictModes yes
 
-TCPKeepAlive no
+Subsystem sftp internal-sftp -l INFO
 
 SyslogFacility AUTH
+
+TCPKeepAlive no
 
 UseDNS no
 
@@ -69,15 +72,11 @@ X11DisplayOffset 10
 
 X11Forwarding yes
 
-#####   SFTP-ONLY USERS (NO SSH)
-#
-Subsystem sftp internal-sftp -l INFO
-
 # ------------------------------------------------------------
 #
 #		SFTP Jailed Users
 #
-Match Group sftp_jailed_users
+Match Group sftp_jailed_users LocalPort 22
 	AuthenticationMethods publickey
 	ChrootDirectory %h
 	AllowAgentForwarding no
@@ -92,7 +91,7 @@ Match Group sftp_jailed_users
 #
 #		SFTP over Port-24
 #
-Match LocalPort 24 LocalAddress 52.15.93.108, 18.220.12.125, 13.58.94.67, 18.220.169.43, 13.59.148.38, 54.236.236.117, 54.210.52.140, 104.211.5.215
+Match User mcavallo,phanna,rgodithi LocalPort 24
 	AuthenticationMethods publickey
 	AllowAgentForwarding no
 	X11Forwarding no
@@ -103,11 +102,12 @@ Match LocalPort 24 LocalAddress 52.15.93.108, 18.220.12.125, 13.58.94.67, 18.220
 #	usermod -G "sftp_port24_users" "USERNAME"; # Allow Port-24 SFTP (to user)
 #
 # ------------------------------------------------------------
+#
 
-
-Match User jenkins_ssh Address 13.58.94.67 LocalPort 22 LocalAddress 52.15.93.108, 18.220.12.125, 13.58.94.67, 18.220.169.43, 13.59.148.38, 54.236.236.117, 54.210.52.140, 104.211.5.215
+Match User jenkins_ssh Address 13.58.94.67 LocalPort 22
 	AuthenticationMethods publickey
 
+# ------------------------------------------------------------
 #
 #	Citation(s)
 #
@@ -121,3 +121,4 @@ Match User jenkins_ssh Address 13.58.94.67 LocalPort 22 LocalAddress 52.15.93.10
 #	Discussion
 #		--> https://askubuntu.com/questions/2271/how-to-harden-an-ssh-server
 #
+# ------------------------------------------------------------

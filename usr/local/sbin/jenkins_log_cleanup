@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# JENK_LOG_CLEAN="/usr/local/sbin/jenkins_log_cleanup" && vi "${JENK_LOG_CLEAN}" && chmod 0755 "${JENK_LOG_CLEAN}";
+#
+
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" == "root" ]; then
+
+	# Log all shell output & error output to logfile
+	LOGDIR="/var/log/jenkins_log_cleanup"; mkdir -p "${LOGDIR}";
+	LOGFILE="${LOGDIR}/$(date +'ddns_ufw_update_%Ywk%U')";
+	exec > >(tee -a "${LOGFILE}" );
+	exec 2>&1;
+
+	DIRECTORY_TO_CLEAN="/var/lib/jenkins/jobs";
+	
+	KEEP_NEWER_THAN_DAYS=90;
+
+	find ${DIRECTORY_TO_CLEAN} -type f -mtime +${KEEP_NEWER_THAN_DAYS} -exec rm -v -- '{}' \;
+
+fi;

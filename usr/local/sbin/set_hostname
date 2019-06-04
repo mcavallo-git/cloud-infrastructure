@@ -1,22 +1,26 @@
 #!/bin/bash
+#
+# SET_HOSTNM="/usr/local/sbin/set_hostname" && vi "${SET_HOSTNM}" && chmod 0755 "${SET_HOSTNM}";
+#
+
 # ------------------------------------------------------------
-
+#
 # This script modifies a Linux instance's host & domain name(s)
-
+#
 #	Instantiate this command-line utility:
 #	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
-
+#
 ### Run using "DRY-RUN" mode:
 #	>		DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
-
+#
 ### Run using "LIVE" mode:
 #	>		DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
-
+#
 # ------------------------------------------------------------
 #
 # Require that this script be run with root access
 #
-if [ "$(whoami)" != "root" ]; then
+if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
 	exit 1;
 

@@ -11,7 +11,7 @@ if [ "$(id -un)" == "root" ]; then
 
 	# Log all shell output & error output to logfile
 	LOGDIR="/var/log/jenkins_log_cleanup"; mkdir -p "${LOGDIR}";
-	LOGFILE="${LOGDIR}/$(date +'ddns_ufw_update_%Ywk%U')";
+	LOGFILE="${LOGDIR}/$(date +'jenkins_log_cleanup_%Ywk%U')";
 	exec > >(tee -a "${LOGFILE}" );
 	exec 2>&1;
 

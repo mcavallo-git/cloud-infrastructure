@@ -1,21 +1,18 @@
 #!/bin/bash
 #
-# ------------------------------------------------------------
+# DDNS_UFW="/usr/local/sbin/ddns_ufw_update" && vi "${DDNS_UFW}" && chmod 0755 "${DDNS_UFW}";
 #
-#	Place this file at:
-#
-#		/usr/local/sbin/ddns_ufw_update
-#
+
 # ------------------------------------------------------------
 #
 # Require that this script be run with root access
 #
-if [ "$(whoami)" != "root" ]; then
+
+if [ "$(id -un)" != "root" ]; then
+
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
 	exit 1;
-#
-# ------------------------------------------------------------
-#
+	
 else
 
 	# Log all shell output & error output to logfile

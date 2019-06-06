@@ -7,30 +7,36 @@
 #
 # Script must run as root or via sudo
 #
-if [ "$(id -un)" == "root" ]; then
 
-# Log all shell output & error output to logfile
-LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
-exec > >(tee -a "${LOGFILE}" );
-exec 2>&1;
+if [ "$(id -un)" != "root" ]; then
 
-JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "jenkins.war" | awk {'print $1'});
-JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+	exit 1;
 
-echo "JENKINS_UNAME=\"${JENKINS_UNAME}\"";
-echo "JENKINS_UHOME=\"${JENKINS_UHOME}\"";
+else
 
-OLDER_THAN_DAYS=90 && \
-find "${JENKINS_UHOME}/jobs/" \
--maxdepth 3 \
--type d \
--regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
--mtime +${OLDER_THAN_DAYS} \
--exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
--exec rm -v -- '{}' \; \
-;
+	# Log all shell output & error output to logfile
+	LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
+	exec > >(tee -a "${LOGFILE}" );
+	exec 2>&1;
 
-# -exec echo "MOCK DELETE: {}" \; \
+	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "jenkins.war" | awk {'print $1'});
+	JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
+
+	# echo "JENKINS_UNAME=\"${JENKINS_UNAME}\"";
+	# echo "JENKINS_UHOME=\"${JENKINS_UHOME}\"";
+
+	OLDER_THAN_DAYS=90 && \
+	find "${JENKINS_UHOME}/jobs/" \
+	-maxdepth 3 \
+	-type d \
+	-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
+	-mtime +${OLDER_THAN_DAYS} \
+	-exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
+	-exec rm -v -- '{}' \; \
+	;
+
+	# -exec echo "MOCK DELETE: {}" \; \
 
 
 fi;

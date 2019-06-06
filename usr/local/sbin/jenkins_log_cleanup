@@ -10,33 +10,58 @@
 
 if [ "$(id -un)" != "root" ]; then
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command";
 	exit 1;
 
 else
 
 	# Log all shell output & error output to logfile
-	LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
+	LOGDIR="/var/log/jenkins_log_cleanup" && mkdir -p "${LOGDIR}";
+	LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')";
 	exec > >(tee -a "${LOGFILE}" );
 	exec 2>&1;
 
-	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "jenkins.war" | awk {'print $1'});
-	JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
+	# Determine jenkins runtime user
 
-	# echo "JENKINS_UNAME=\"${JENKINS_UNAME}\"";
-	# echo "JENKINS_UHOME=\"${JENKINS_UHOME}\"";
+	# ------------------------------------------------------------
 
-	OLDER_THAN_DAYS=90 && \
-	find "${JENKINS_UHOME}/jobs/" \
-	-maxdepth 3 \
-	-type d \
-	-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
-	-mtime +${OLDER_THAN_DAYS} \
-	-exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
-	-exec rm -v -- '{}' \; \
-	;
+	PS_AUX_CONTAINS="jenkins.war";
 
-	# -exec echo "MOCK DELETE: {}" \; \
+	DELETE_ITEMS_OLDER_THAN_DAYS=90;
+
+	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
+
+	# ------------------------------------------------------------
+
+	if [ -z "${JENKINS_UNAME}" ]; then # jenkins process not found
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No processes found which match text \"${PS_AUX_CONTAINS}\"";
+		exit 1;
+		
+	if [ -n "$(id -u ${JENKINS_UNAME} | grep 'no such user')" ]; then # jenkins user not found
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No users found with name \"${JENKINS_UNAME}\"";
+		exit 1;
+
+	else
+		
+		JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
+
+		if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
+			exit 1;
+
+		else # good to go - begin deleting dirs
+
+find "${JENKINS_UHOME}/jobs/" \
+-maxdepth 3 \
+-type d \
+-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
+-mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
+-exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
+-exec rm -v -- '{}' \; \
+;
+
+		fi;
+	fi;
 
 
 fi;

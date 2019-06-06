@@ -10,15 +10,28 @@
 if [ "$(id -un)" == "root" ]; then
 
 	# Log all shell output & error output to logfile
-	LOGDIR="/var/log/jenkins_log_cleanup"; mkdir -p "${LOGDIR}";
-	LOGFILE="${LOGDIR}/$(date +'jenkins_log_cleanup_%Ywk%U')";
+	LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
 	exec > >(tee -a "${LOGFILE}" );
 	exec 2>&1;
 
-	DIRECTORY_TO_CLEAN="/var/lib/jenkins/jobs";
-	
-	KEEP_NEWER_THAN_DAYS=90;
 
-	find ${DIRECTORY_TO_CLEAN} -type f -mtime +${KEEP_NEWER_THAN_DAYS} -exec rm -v -- '{}' \;
+/var/lib/jenkins/jobs/mdev.boneal.net/builds
+
+/var/lib/jenkins/jobs/BNET_cron_process_email_queue.php/builds
+
+
+PARENT_DIRNAME="/var/lib/jenkins/jobs" && \
+FILENAME_PATTERN="" && \
+KEEP_NEWER_THAN_DAYS=90 && \
+find ${PARENT_DIRNAME} \
+-type f \
+-name ${FILENAME_PATTERN} \
+-mtime +${KEEP_NEWER_THAN_DAYS} \
+-exec printf "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
+-exec ls -al '{}' \; \
+;
+
+
+# -exec rm -v -- '{}' \; \
 
 fi;

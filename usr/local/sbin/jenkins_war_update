@@ -31,7 +31,8 @@ else
 
 	# Backup the current Jenkins main-executable (jenkins.war)
 	JENKINS_SYSTEM_RUNTIME="${WAR_DIR}/jenkins.war";
-	JENKINS_BACKUP_RUNTIME="${WAR_DIR}/jenkins_backup_$(date +'%a').war";
+	JENKINS_BACKUP_RUNTIME="${JENKINS_SYSTEM_RUNTIME}.$(date +'%Y%m%d_%H%M%S').bak";
+
 	rm -f "${JENKINS_BACKUP_RUNTIME}";
 	cp -f "${JENKINS_SYSTEM_RUNTIME}" "${JENKINS_BACKUP_RUNTIME}";
 
@@ -41,9 +42,12 @@ else
 
 	# Download an updated version of the Jenkins main-executable (jenkins.war)
 	echo "$(date +'%D  %r')   Downloading Most-Recent Version of Jenkins...";
-	tmp_log="${WAR_DIR}/tmp_log_update_jenkins.txt" && rm -f "${tmp_log}";
+	
+	WGET_LOGFILE="${LOGDIR}/wget_updated_warfile.$(date +'%Y%m%d_%H%M%S').log";
+	if [ -f "${WGET_LOGFILE}" ]; then rm -f "${WGET_LOGFILE}"; fi;
+
 	DOWNLOAD_URL="https://updates.jenkins-ci.org/latest/jenkins.war";
-	wget --quiet --server-response --output-document="${JENKINS_SYSTEM_RUNTIME}" --output-file="${tmp_log}" "${DOWNLOAD_URL}";
+	wget --quiet --server-response --output-document="${JENKINS_SYSTEM_RUNTIME}" --output-file="${WGET_LOGFILE}" "${DOWNLOAD_URL}";
 
 	# Verify that download actually downloaded more than 0 bytes
 	NEW_WAR_FILESIZE=$(du -sh "${JENKINS_SYSTEM_RUNTIME}" | awk '{print $1}');
@@ -59,9 +63,9 @@ else
 	fi;
 
 	# Log the relevant info from the version which was just downloaded
-	printf "$(date +'%D  %r')   " && cat "${tmp_log}" | grep "Location: ${DOWNLOAD_URL}";
-	printf "$(date +'%D  %r')   " && cat "${tmp_log}" | grep "Last-Modified: ";
-	rm -f "${tmp_log}";
+	printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Location: ${DOWNLOAD_URL}";
+	printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Last-Modified: ";
+	rm -f "${WGET_LOGFILE}";
 
 	# Start the Jenkins-Service now that we're finished updating
 	echo "$(date +'%D  %r')   Starting Jenkins...";

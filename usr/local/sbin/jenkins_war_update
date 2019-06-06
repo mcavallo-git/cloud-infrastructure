@@ -1,15 +1,12 @@
 #!/bin/bash
 #
-# Update the Jenkins War-file (main executable)
+# JENK_WAR_UPD="/usr/local/sbin/jenkins_war_update" && vi "${JENK_WAR_UPD}" && chmod 0755 "${JENK_WAR_UPD}";
 #
 
-# NOTE 1: MUST RUN AS [root]
-# NOTE 2: CRON-JOB RUNS THIS AS root @ 03:10 AM EVERY MORNING ON AWS-3 (JENKINS SERVER)
-# NOTE 3: FILEPATH ON SERVER:     /usr/share/jenkins/update_jenkins.sh
-# NOTE 4: FAVICON FOR JENKINS:    /var/cache/jenkins/war/favicon.ico
-
-# Log all shell output & error output to Logfile
-
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
 if [ "$(id -un)" != "root" ]; then
 
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";

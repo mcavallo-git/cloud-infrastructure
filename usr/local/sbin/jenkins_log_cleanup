@@ -18,20 +18,33 @@ if [ "$(id -un)" == "root" ]; then
 /var/lib/jenkins/jobs/mdev.boneal.net/builds
 
 /var/lib/jenkins/jobs/BNET_cron_process_email_queue.php/builds
+/var/lib/jenkins/jobs/BNET_cron_process_email_queue.php/builds/792000/
 
+/var/lib/jenkins/jobs/UTILITY_git_pull__aws-2-mdev/builds/1
+/var/lib/jenkins/jobs/UTILITY_git_pull__aws-2-mdev/builds/1/build.xml
+/var/lib/jenkins/jobs/UTILITY_git_pull__aws-2-mdev/builds/1/log      # HUGE
+/var/lib/jenkins/jobs/UTILITY_git_pull__aws-2-mdev/builds/1/18.log   # Small to Medium
+/var/lib/jenkins/jobs/UTILITY_git_pull__aws-2-mdev/builds/1/workflow/28.xml # Small to Medium
 
-PARENT_DIRNAME="/var/lib/jenkins/jobs" && \
-FILENAME_PATTERN="" && \
-KEEP_NEWER_THAN_DAYS=90 && \
+# -type d \
+# -type f \
+
+PARENT_DIRNAME="/var/lib/jenkins/jobs/" && \
+OLDER_THAN_DAYS=90 && \
 find ${PARENT_DIRNAME} \
--type f \
--name ${FILENAME_PATTERN} \
--mtime +${KEEP_NEWER_THAN_DAYS} \
--exec printf "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
--exec ls -al '{}' \; \
+-maxdepth 1 \
+-regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+' \
+-mtime +${OLDER_THAN_DAYS} \
+-exec echo "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | {}" \; \
 ;
 
-
+#
+# -exec printf "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
+#
+# -regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+' \
+# -regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+/builds/\d+/$' \
+#
 # -exec rm -v -- '{}' \; \
+#
 
 fi;

@@ -24,7 +24,7 @@ else
 	exec 2>&1;
 
 	echo "===== ------------------------------------------------------------ =====";
-	echo "$(date +'%D  %r')   Starting ${THIS_SCRIPT}...";
+	echo "$(date +'%D  %r')   Starting ${0}...";
 
 	# Base-directory for Jenkins ".war" file
 	WAR_DIR="/usr/share/jenkins"
@@ -78,7 +78,7 @@ else
 	sudo systemctl reload nginx;
 
 	# Exit Gracefully
-	echo "$(date +'%D  %r')   Finished ${THIS_SCRIPT}";
+	echo "$(date +'%D  %r')   Finished ${0}";
 	exit 0;
 
 fi;

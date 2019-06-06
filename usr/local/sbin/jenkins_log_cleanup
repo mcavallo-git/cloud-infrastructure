@@ -9,38 +9,28 @@
 #
 if [ "$(id -un)" == "root" ]; then
 
-	# Log all shell output & error output to logfile
-	LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
-	exec > >(tee -a "${LOGFILE}" );
-	exec 2>&1;
+# Log all shell output & error output to logfile
+LOGFILE="/var/log/jenkins_log_cleanup_$(date +'%Y%m%d_%H%M%S')";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
 
+JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "jenkins.war" | awk {'print $1'});
+JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
 
+echo "JENKINS_UNAME=\"${JENKINS_UNAME}\"";
+echo "JENKINS_UHOME=\"${JENKINS_UHOME}\"";
 
-#   /var/lib/jenkins/jobs/JOB_NAME_HERE/builds/1
-#   /var/lib/jenkins/jobs/JOB_NAME_HERE/builds/1/build.xml
-#   /var/lib/jenkins/jobs/JOB_NAME_HERE/builds/1/log      # HUGE
-#   /var/lib/jenkins/jobs/JOB_NAME_HERE/builds/1/18.log   # Small to Medium
-#   /var/lib/jenkins/jobs/JOB_NAME_HERE/builds/1/workflow/28.xml # Small to Medium
-
-# -type d \
-# -type f \
-
-PARENT_DIRNAME="/var/lib/jenkins/jobs/" && \
 OLDER_THAN_DAYS=90 && \
-find ${PARENT_DIRNAME} \
--maxdepth 1 \
--regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+' \
+find "${JENKINS_UHOME}/jobs/" \
+-maxdepth 3 \
+-type d \
+-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
 -mtime +${OLDER_THAN_DAYS} \
--exec echo "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | {}" \; \
+-exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
+-exec rm -v -- '{}' \; \
 ;
 
-#
-# -exec printf "$(date +'%Y-%m-%d %H:%M:%S') $(whoami)@$(hostname) | " \; \
-#
-# -regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+' \
-# -regex '^/var/lib/jenkins/jobs/[A-Za-z\_\-\.]+/builds/\d+/$' \
-#
-# -exec rm -v -- '{}' \; \
-#
+# -exec echo "MOCK DELETE: {}" \; \
+
 
 fi;

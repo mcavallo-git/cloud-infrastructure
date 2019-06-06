@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# NOTE 1: MUST RUN AS [root]
+# NOTE 2: CRON-JOB RUNS THIS AS root @ 03:10 AM EVERY MORNING ON AWS-3 (JENKINS SERVER)
+# NOTE 3: FILEPATH ON SERVER:     /usr/share/jenkins/update_jenkins.sh
+# NOTE 4: FAVICON FOR JENKINS:    /var/cache/jenkins/war/favicon.ico
+
+# Log all shell output & error output to Logfile
+
+if [ "$(id -un)" != "root" ]; then
+
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+	exit 1;
+
+else
+
+	THIS_SCRIPT=$(basename "${0}");
+	THIS_DIR=$(dirname "${0}");
+	LOGFILE="${THIS_DIR}/logfile__${THIS_SCRIPT}" && touch "${LOGFILE}" && chmod 600 "${LOGFILE}";
+	
+	# Log all shell output & error output to logfile
+	LOGDIR="/var/log/update_jenkins_war" && mkdir -p "${LOGDIR}";
+	LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')";
+	exec > >(tee -a "${LOGFILE}" );
+	exec 2>&1;
+
+	echo "===== ------------------------------------------------------------ =====";
+	echo "$(date +'%D  %r')   Starting ${THIS_SCRIPT}...";
+
+	# Base-directory for Jenkins ".war" file
+	WAR_DIR="/usr/share/jenkins"
+
+	# Backup the current Jenkins main-executable (jenkins.war)
+	JENKINS_SYSTEM_RUNTIME="${WAR_DIR}/jenkins.war";
+	JENKINS_BACKUP_RUNTIME="${WAR_DIR}/jenkins_backup_$(date +'%a').war";
+	rm -f "${JENKINS_BACKUP_RUNTIME}";
+	cp -f "${JENKINS_SYSTEM_RUNTIME}" "${JENKINS_BACKUP_RUNTIME}";
+
+	# Stop the Jenkins-Service while we update
+	echo "$(date +'%D  %r')   Stopping Jenkins Service...";
+	systemctl stop jenkins
+
+	# Download an updated version of the Jenkins main-executable (jenkins.war)
+	echo "$(date +'%D  %r')   Downloading Most-Recent Version of Jenkins...";
+	tmp_log="${WAR_DIR}/tmp_log_update_jenkins.txt" && rm -f "${tmp_log}";
+	DOWNLOAD_URL="https://updates.jenkins-ci.org/latest/jenkins.war";
+	wget --quiet --server-response --output-document="${JENKINS_SYSTEM_RUNTIME}" --output-file="${tmp_log}" "${DOWNLOAD_URL}";
+
+	# Verify that download actually downloaded more than 0 bytes
+	NEW_WAR_FILESIZE=$(du -sh "${JENKINS_SYSTEM_RUNTIME}" | awk '{print $1}');
+	echo "NEW_WAR_FILESIZE = \"${NEW_WAR_FILESIZE}\"";
+	if [[ ! -n "${NEW_WAR_FILESIZE}" ]] || [[ "${NEW_WAR_FILESIZE}" == "" ]] || [[ "${NEW_WAR_FILESIZE}" == "0" ]]; then
+		echo "";
+		echo "Empty runtime detected: \"${JENKINS_SYSTEM_RUNTIME}\"";
+		echo "Reverting to previous runtime: \"${JENKINS_BACKUP_RUNTIME}\"";
+		rm -f "${JENKINS_SYSTEM_RUNTIME}";
+		cp -f "${JENKINS_BACKUP_RUNTIME}" "${JENKINS_SYSTEM_RUNTIME}";
+	else
+		echo "Non-empty Jenkins.war runtime found - Proceeding...";
+	fi;
+
+	# Log the relevant info from the version which was just downloaded
+	printf "$(date +'%D  %r')   " && cat "${tmp_log}" | grep "Location: ${DOWNLOAD_URL}";
+	printf "$(date +'%D  %r')   " && cat "${tmp_log}" | grep "Last-Modified: ";
+	rm -f "${tmp_log}";
+
+	# Start the Jenkins-Service now that we're finished updating
+	echo "$(date +'%D  %r')   Starting Jenkins...";
+	systemctl start jenkins;
+
+	# Reload NGINX
+	echo "$(date +'%D  %r')   Reloading NGINX...";
+	sudo nginx -t;
+	sleep 3;
+	sudo systemctl reload nginx;
+
+	# Exit Gracefully
+	echo "$(date +'%D  %r')   Finished ${THIS_SCRIPT}";
+	exit 0;
+
+fi;

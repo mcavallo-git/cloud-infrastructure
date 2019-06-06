@@ -21,6 +21,7 @@
 # Require that this script be run with root access
 #
 if [ "$(id -un)" != "root" ]; then
+
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
 	exit 1;
 

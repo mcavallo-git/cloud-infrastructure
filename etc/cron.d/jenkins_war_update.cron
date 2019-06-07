@@ -1,5 +1,10 @@
 #
-# Update the Jenkins War-file (main executable)
+# DAT_CRON="/etc/cron.d/jenkins_war_update.cron" && \
+# vi "${DAT_CRON}" && \
+# chown "root:root" "${DAT_CRON}" && \
+# chmod 0644 "${DAT_CRON}" && 
+# touch "$(dirname ${DAT_CRON})" && \
+# service cron restart;
 #
 
-10 3 * * * root jenkins_war_update;
+10 3 * * * root /usr/local/sbin/jenkins_war_update;

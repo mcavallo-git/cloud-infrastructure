@@ -1,58 +1,109 @@
 #!/bin/bash
 #
-# LOCAL_BIN="/usr/local/bin/get_permissons" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+# LB="/usr/local/bin/get_permissions" && echo "" > "${LB}" && vi "${LB}" && chmod 0755 "${LB}";
 #
 
-if [ -z "${1}" ]; then
+STAT_PATH=$(eval echo ${1});
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | ${0} | Error: empty path \${1} (filepath to stat)";
+STAT_EXISTS="0";
+STAT_SYMLINK="0";
+STAT_READABLE="0";
+STAT_WRITABLE="0";
 
-elif [ ! -e "${1}" ]; then
+if [ -z "${STAT_PATH}" ]; then
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | ${0} | Error: path \${1} not found: \"${1}\"";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: empty path \${1} (filepath to stat)";
 
 else
 
-	INFO=($(stat --dereference --format="%n %a %u %U %g %G" "${1}"));
+	if [[ -r "${STAT_PATH}" ]]; then # canonicalize symbolic links
+		STAT_SYMLINK="1";
+		STAT_ENDPOINT=$(readlink -f "${STAT_PATH}");
+	else
+		STAT_ENDPOINT="${STAT_PATH}";
+	fi;
 
-	if [ "$?" == "0" ]; then
+	if [ ! -e "${STAT_ENDPOINT}" ]; then
 
-		STAT_NAME=${INFO[0]};
-		STAT_CHMOD=$(printf "%04d" ${INFO[1]});
-		STAT_UID=${INFO[2]};
-		STAT_UNAME=${INFO[3]};
-		STAT_GID=${INFO[4]};
-		STAT_GNAME=${INFO[5]};
-		STAT_TYPE=$(stat --dereference --format="%F" "${1}");
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: path not found: \"${STAT_ENDPOINT}\"";
 
-		echo "STAT_NAME=${STAT_NAME}";
-		echo "STAT_TYPE=${STAT_TYPE}";
-		echo "STAT_CHMOD=${STAT_CHMOD}";
-		echo "STAT_UID=${STAT_UID}";
-		echo "STAT_UNAME=${STAT_UNAME}";
-		echo "STAT_GID=${STAT_GID}";
-		echo "STAT_GNAME=${STAT_GNAME}";
+	else
 
-		if (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
-			STAT_ACCESS="1";
-		elif (( (${STAT_CHMOD} & 0020) != 0 )); then # A Group has write access
-				MY_GROUPS=( $(groups ${USER}) );
-				for EACH_GNAME in "${MY_GROUPS[@]}"; do
-					if [[ ${STAT_GNAME} == ${EACH_GNAME} ]]; then # User is a member of the group which has write-access
-						STAT_ACCESS="1";
-						break;
-					fi;
-				done
-		elif (( (${STAT_CHMOD} & 0200) != 0 )); then # The owner has write access
-			if [[ ${USER} == ${OWNER} ]]; then # The user IS the file-owner
-				STAT_ACCESS="1";
+		STAT_EXISTS="1";
+
+		if [[ -r "${STAT_ENDPOINT}" ]]; then
+			STAT_READABLE="1";
+			if [[ -w "${STAT_ENDPOINT}" ]]; then
+				STAT_WRITABLE="1";
 			fi;
 		fi;
-	fi;
-fi;
 
-if [ -z "${STAT_ACCESS}" ]; then
-	STAT_ACCESS="0";
+		INFO=($(stat --dereference --format="%h %a %u %U %g %G %h" "${STAT_ENDPOINT}"));
+
+		if [ "$?" != "0" ]; then
+
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error thrown while attempting to stat: \"${STAT_ENDPOINT}\"";
+
+		else
+
+			STAT_TYPES=$(stat --dereference --format="%F" "${STAT_ENDPOINT}");
+			STAT_CANONICALIZE=$(readlink -f "${STAT_ENDPOINT}");
+
+			STAT_CHMOD=$(printf "%04d" ${INFO[0]});
+			STAT_UID=${INFO[2]};
+			STAT_UNAME=${INFO[3]};
+			STAT_GID=${INFO[4]};
+			STAT_GNAME=${INFO[5]};
+
+			if (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
+
+				STAT_WRITABLE="1";
+
+			elif (( (${STAT_CHMOD} & 0020) != 0 )); then # A Group has write access
+
+					MY_GROUPS=( $(groups ${USER}) );
+					for EACH_GNAME in "${MY_GROUPS[@]}"; do
+						if [[ ${STAT_GNAME} == ${EACH_GNAME} ]]; then # User is a member of the group which has write-access
+							STAT_WRITABLE="1";
+							break;
+						fi;
+					done;
+
+			elif (( (${STAT_CHMOD} & 0200) != 0 )); then # The owner has write access
+
+				if [[ ${USER} == ${OWNER} ]]; then # The user IS the file-owner
+					STAT_WRITABLE="1";
+				fi;
+
+			fi;
+
+			echo "";
+
+			echo "STAT_PATH=${STAT_PATH}";
+			echo "STAT_ENDPOINT=${STAT_ENDPOINT}";
+
+			echo "STAT_TYPES=${STAT_TYPES}";
+
+			echo "STAT_LINKS=${STAT_LINKS}";
+			echo "STAT_CANONICALIZE=${STAT_CANONICALIZE}";
+
+			echo "STAT_CHMOD=${STAT_CHMOD}";
+			echo "STAT_UID=${STAT_UID}";
+			echo "STAT_UNAME=${STAT_UNAME}";
+			echo "STAT_GID=${STAT_GID}";
+			echo "STAT_GNAME=${STAT_GNAME}";
+
+			echo "STAT_SYMLINK=${STAT_SYMLINK}";
+			echo "STAT_EXISTS=${STAT_EXISTS}";
+			echo "STAT_READABLE=${STAT_READABLE}";
+			echo "STAT_WRITABLE=${STAT_WRITABLE}";
+
+			echo "";
+
+		fi;
+
+	fi;
+
 fi;
 
 #

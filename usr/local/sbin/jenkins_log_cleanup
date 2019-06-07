@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bash
 
 #
 # JENK_LOG_CLEAN="/usr/local/sbin/jenkins_log_cleanup" && vi "${JENK_LOG_CLEAN}" && chmod 0755 "${JENK_LOG_CLEAN}";
@@ -10,18 +10,14 @@
 #
 
 # Log all shell output & error output to logfile
-LOGDIR="/var/log/jenkins_log_cleanup";
-/bin/mkdir -p "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(/usr/bin/basename ${LOGDIR})_$(/bin/date +'%Y%m%d_%H%M%S')";
-/usr/bin/touch "${LOGFILE}";
-/bin/chmod 600 "${LOGFILE}";
-
-exec > >(/usr/bin/tee -a "${LOGFILE}" );
+LOGDIR="/var/log/jenkins_log_cleanup" && mkdir -p "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')" &&   echo "" > "${LOGFILE}" && chmod 600 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 
-if [ "$(/usr/bin/id -un)" != "root" ]; then
+if [ "$(id -un)" != "root" ]; then
 
-	/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 
 else
@@ -34,38 +30,39 @@ else
 
 	DELETE_ITEMS_OLDER_THAN_DAYS=90;
 
-	JENKINS_UNAME=$(/bin/ps aux | /bin/grep '/usr/bin/daemon' | /bin/grep "${PS_AUX_CONTAINS}" | /usr/bin/awk {'print $1'});
+	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
 
 	# ------------------------------------------------------------
 
 	if [ -z "${JENKINS_UNAME}" ]; then # jenkins process not found
-		/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - No processes found which match text \"${PS_AUX_CONTAINS}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No processes found which match text \"${PS_AUX_CONTAINS}\"";
 		exit 1;
 		
-	elif [ -n "$(/usr/bin/id -u ${JENKINS_UNAME} | /bin/grep 'no such user')" ]; then # jenkins user not found
-		/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - No users found with name \"${JENKINS_UNAME}\"";
+	elif [ -n "$(id -u ${JENKINS_UNAME} | grep 'no such user')" ]; then # jenkins user not found
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No users found with name \"${JENKINS_UNAME}\"";
 		exit 1;
 
 	else
 		
-		JENKINS_UHOME=$(/usr/bin/getent passwd ${JENKINS_UNAME} | /usr/bin/cut --delimiter=: --fields=6);
+		JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
 
 		if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
-			/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
 			exit 1;
 
 		else # good to go - begin deleting dirs
 
-			/usr/bin/find "${JENKINS_UHOME}/jobs/" \
-			-maxdepth 3 \
-			-type d \
-			-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
-			-mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
-			-exec /bin/echo -n "$(/bin/date +'%Y-%m-%d %H:%M:%S') $(/usr/bin/id -un)@$(/bin/hostname) | " \; \
-			-exec /bin/rm -rfv -- '{}' \; \
+			find "${JENKINS_UHOME}/jobs/" \
+				-maxdepth 3 \
+				-type d \
+				-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
+				-mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
+				-exec echo -n "$(date +'%Y-%m-%d %H:%M:%S') $(id -un)@$(hostname) | " \; \
+				-exec rm -rfv -- '{}' \; \
 			;
 
 		fi;
+
 	fi;
 
 

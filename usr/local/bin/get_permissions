@@ -55,6 +55,7 @@ else
 			STAT_GID=${INFO[4]};
 			STAT_GNAME=${INFO[5]};
 
+			# if [ $(echo "${STAT_CHMOD} <= 0007" | bc) -eq 1 ] && (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
 			if (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
 
 				STAT_WRITABLE="1";

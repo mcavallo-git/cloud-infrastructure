@@ -1,13 +1,27 @@
 #!/bin/bash
 #
-# NO_IPV6="/usr/local/sbin/disable_ipv6" && vi "${NO_IPV6}" && chmod 0755 "${NO_IPV6}";
+# LOCAL_SBIN="/usr/local/sbin/disable_ipv6" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
-
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="/var/log/${0}" && mkdir -p "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')" && echo "" > "${LOGFILE}" && chmod 600 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
 # ------------------------------------------------------------
 #
 # Script must run as root or via sudo
 #
-if [ "$(id -un)" == "root" ]; then
+if [ "$(id -un)" != "root" ]; then
+
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+
+else
+
 	CONF_DISABLE_IPV6="/etc/sysctl.d/99-zero-ipv6-traffic.conf";
 	RELOAD_SYSCTL="";
 	if [ ! -f "${CONF_DISABLE_IPV6}" ]; then
@@ -40,4 +54,5 @@ if [ "$(id -un)" == "root" ]; then
 		chown root:root "${CONF_DISABLE_IPV6}";
 		sysctl --system;
 	fi;
+	
 fi;

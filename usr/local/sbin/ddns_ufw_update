@@ -1,26 +1,26 @@
 #!/bin/bash
 #
-# DDNS_UFW="/usr/local/sbin/ddns_ufw_update" && vi "${DDNS_UFW}" && chmod 0755 "${DDNS_UFW}";
+# LOCAL_SBIN="/usr/local/sbin/ddns_ufw_update" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
-
 # ------------------------------------------------------------
 #
-# Require that this script be run with root access
+# Log all shell output & error output to logfile
 #
-
+LOGDIR="/var/log/${0}" && mkdir -p "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')" && echo "" > "${LOGFILE}" && chmod 600 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
 if [ "$(id -un)" != "root" ]; then
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-	
-else
 
-	# Log all shell output & error output to logfile
-	LOGDIR="/var/log/ddns_ufw_update"; mkdir -p "${LOGDIR}";
-	LOGFILE="${LOGDIR}/$(date +'ddns_ufw_update_%Ywk%U')";
-	# LOGFILE="${LOGDIR}/$(date +'ddns_ufw_update_%Y-%m-%d')";
-	exec > >(tee -a "${LOGFILE}" );
-	exec 2>&1;
+else
 
 	# "Verbose-ness", e.g. Log Output-Level
 	if [ -n "${VERBOSITY}" ] && (("${VERBOSITY}" >= "1")); then

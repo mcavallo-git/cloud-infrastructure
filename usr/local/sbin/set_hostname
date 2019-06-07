@@ -1,31 +1,42 @@
 #!/bin/bash
 #
-# SET_HOSTNM="/usr/local/sbin/set_hostname" && vi "${SET_HOSTNM}" && chmod 0755 "${SET_HOSTNM}";
-#
-
-# ------------------------------------------------------------
-#
-# This script modifies a Linux instance's host & domain name(s)
-#
-#	Instantiate this command-line utility:
-#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
-#
-### Run using "DRY-RUN" mode:
-#	>		DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
-#
-### Run using "LIVE" mode:
-#	>		DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+# LOCAL_SBIN="/usr/local/sbin/set_hostname" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #
-# Require that this script be run with root access
+# Log all shell output & error output to logfile
+#
+LOGDIR="/var/log/${0}" && mkdir -p "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')" && echo "" > "${LOGFILE}" && chmod 600 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 
-elif [ ! -n "${SET_HOSTNAME}" ]; then
+else
+
+	# ------------------------------------------------------------
+	#
+	# This script modifies a Linux instance's host & domain name(s)
+	#
+	#	Instantiate this command-line utility:
+	#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
+	#
+	### Run using "DRY-RUN" mode:
+	#	>		DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+	#
+	### Run using "LIVE" mode:
+	#	>		DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+	#
+
+	if [ ! -n "${SET_HOSTNAME}" ]; then
 
 	# Required variable empty: SET_HOSTNAME
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_HOSTNAME} is empty";
@@ -33,232 +44,236 @@ elif [ ! -n "${SET_HOSTNAME}" ]; then
 	echo "  ( e.g. SET_HOSTNAME=[your_value]; )";
 	exit 1;
 
-elif [ ! -n "${SET_DOMAIN}" ]; then
+	if [ ! -n "${SET_DOMAIN}" ]; then
 
-	# Required variable empty: SET_HOSTNAME
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_DOMAIN} is empty";
-	echo "Please set variable to your desired value and re-run this script.";
-	echo "  ( e.g. SET_DOMAIN=[your_value]; )";
-	exit 1;
+		# Required variable empty: SET_HOSTNAME
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_DOMAIN} is empty";
+		echo "Please set variable to your desired value and re-run this script.";
+		echo "  ( e.g. SET_DOMAIN=[your_value]; )";
+		exit 1;
 
-else
-
-	# ------------------------------------------------------------
-	# Determine Dry-Run mode
-	#
-
-	if [ -n "${DRY_RUN}" ]; then
-		if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$DRY_RUN";
-			echo "Please set to \"1\" for dry-run, \"0\" for live-run";
-			echo "";
-			echo "RESETTING \$DRY_RUN to \"1\"";
-			DRY_RUN=1;
-		fi;
-	elif [ -n "$1" ]; then
-		if [ "$1" == "0" ]; then
-			DRY_RUN=0;
-		else
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$1";
-			echo "Please set to \"1\" for dry-run, \"0\" for live-run";
-			echo "";
-			echo "RESETTING \$DRY_RUN to \"1\"";
-			DRY_RUN=1;
-		fi;
 	else
-		DRY_RUN=1;
-	fi;
 
-	# ------------------------------------------------------------
-	# Determine Linux distro
-	#
+		# ------------------------------------------------------------
+		# Determine Dry-Run mode
+		#
 
-	IS_CENTOS=$(if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	IS_UBUNTU=$(if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	IS_ALPINE=$(if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	IS_DEBIAN=$(if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	THIS_LINUX_DISTRO="$(if [[ ${IS_CENTOS} -gt 0 ]]; then echo CENTOS; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo UBUNTU; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo ALPINE; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo DEBIAN; else echo UNKNOWN; fi; )";
-
-	# ------------------------------------------------------------
-
-	# External server(s) to resolve WAN-IP through
-	RESOLVER_1="https://icanhazip.com";
-	RESOLVER_2="https://ipecho.net/plain";
-	RESOLVER_3="https://ident.me";
-	RESOLVER_4="https://bot.whatismyipaddress.com";
-
-	# Attempt to resolve WAN IPv4
-	if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
-	if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
-	if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
-	if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
-
-	# Verify WAN IPv4
-	if [ -n "${THIS_IPv4_WAN}" ]; then
-		echo "Resolved WAN IPv4 to: \"${THIS_IPv4_WAN}\"";
-	else 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN IPv4.";
-		echo "If you wish to manually set it, please set \${THIS_IPv4_WAN} to your desired value and re-run this script.";
-		exit 1;
-	fi;
-
-	# ------------------------------------------------------------
-	# Determine LAN IPv4
-	THIS_IPv4_LAN=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
-
-	# Verify LAN IPv4
-	if [ -n "${THIS_IPv4_LAN}" ]; then
-		echo "Resolved LAN IPv4 to: \"${THIS_IPv4_LAN}\"";
-	else 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve LAN IPv4.";
-		echo "If you wish to manually set it, please set \${THIS_IPv4_LAN} to your desired value and re-run this script.";
-		exit 1;
-	fi;
-	
-	SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
-	
-	echo "Set Hostname: \"${SET_HOSTNAME}\"";
-	echo "Set Domain: \"${SET_DOMAIN}\"";
-	echo "Combined (FQDN): \"${SET_FQDN}\"";
-
-	# ------------------------------------------------------------
-	#	If Dry-Run mode is off, require user to confirm changes
-	#
-
-	echo "";
-	if [[ "${DRY_RUN}" == "0" ]]; then
-		echo "NOT RUNNING IN DRY-RUN MODE";
-		echo "HOSTNAME / DOMAIN-NAME CHANGES WILL BE SET TO VALUES SHOWN ABOVE";
-		read -p "CONFIRM CHANGES TO HOST-NAME / DOMAIN-NAME ( y/n )" -n 1 -r
-		echo "";
-		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo "CONFIRMED - PROCEEDING WITH CHANGES TO HOST-NAME / DOMAIN-NAME";
+		if [ -n "${DRY_RUN}" ]; then
+			if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$DRY_RUN";
+				echo "Please set to \"1\" for dry-run, \"0\" for live-run";
+				echo "";
+				echo "RESETTING \$DRY_RUN to \"1\"";
+				DRY_RUN=1;
+			fi;
+		elif [ -n "$1" ]; then
+			if [ "$1" == "0" ]; then
+				DRY_RUN=0;
+			else
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$1";
+				echo "Please set to \"1\" for dry-run, \"0\" for live-run";
+				echo "";
+				echo "RESETTING \$DRY_RUN to \"1\"";
+				DRY_RUN=1;
+			fi;
 		else
-			echo "CANCELLED - EXITING";
+			DRY_RUN=1;
+		fi;
+
+		# ------------------------------------------------------------
+		# Determine Linux distro
+		#
+
+		IS_CENTOS=$(if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+		IS_UBUNTU=$(if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+		IS_ALPINE=$(if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+		IS_DEBIAN=$(if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+		THIS_LINUX_DISTRO="$(if [[ ${IS_CENTOS} -gt 0 ]]; then echo CENTOS; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo UBUNTU; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo ALPINE; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo DEBIAN; else echo UNKNOWN; fi; )";
+
+		# ------------------------------------------------------------
+
+		# External server(s) to resolve WAN-IP through
+		RESOLVER_1="https://icanhazip.com";
+		RESOLVER_2="https://ipecho.net/plain";
+		RESOLVER_3="https://ident.me";
+		RESOLVER_4="https://bot.whatismyipaddress.com";
+
+		# Attempt to resolve WAN IPv4
+		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
+		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
+		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
+		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
+
+		# Verify WAN IPv4
+		if [ -n "${THIS_IPv4_WAN}" ]; then
+			echo "Resolved WAN IPv4 to: \"${THIS_IPv4_WAN}\"";
+		else 
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN IPv4.";
+			echo "If you wish to manually set it, please set \${THIS_IPv4_WAN} to your desired value and re-run this script.";
 			exit 1;
 		fi;
-	else
-		echo "DRY-RUN MODE ACTIVE";
-	fi;
-	echo "";
 
-	# ------------------------------------------------------------
-	# /etc/hostname
-	#
-	HOSTNAME_FILE="/etc/hostname";
-	if [[ -f "${HOSTNAME_FILE}" ]]; then
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
-		else # dry-run
-			echo "";
-			echo "APPLY HOSTNAME VIA [ ${HOSTNAME_FILE} ]";
+		# ------------------------------------------------------------
+		# Determine LAN IPv4
+		THIS_IPv4_LAN=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
+
+		# Verify LAN IPv4
+		if [ -n "${THIS_IPv4_LAN}" ]; then
+			echo "Resolved LAN IPv4 to: \"${THIS_IPv4_LAN}\"";
+		else 
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve LAN IPv4.";
+			echo "If you wish to manually set it, please set \${THIS_IPv4_LAN} to your desired value and re-run this script.";
+			exit 1;
 		fi;
-	fi;
+		
+		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
+		
+		echo "Set Hostname: \"${SET_HOSTNAME}\"";
+		echo "Set Domain: \"${SET_DOMAIN}\"";
+		echo "Combined (FQDN): \"${SET_FQDN}\"";
 
-	# ------------------------------------------------------------
-	# /etc/hosts
-	#
-	HOSTS_FILE="/etc/hosts";
-	if [[ -f "${HOSTS_FILE}" ]]; then
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			echo "";
-			echo "HOSTS FILE (BEFORE-EDITS)" && cat "${HOSTS_FILE}";
-			TEMP_HOSTS="${HOSTS_FILE}_TEMP";
-			cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
-			sed_1="/^${THIS_IPv4_WAN}/c\ ";
-			sed_2="/^${THIS_IPv4_LAN}/c\ ";
-			sed --in-place --expression="${sed_1}" --expression="${sed_2}" "${TEMP_HOSTS}";
-			sed_3="/^127.0.0.1/c\127.0.0.1 localhost localhost.localdomain\n${THIS_IPv4_WAN} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
-			sed --in-place --expression="${sed_3}" "${TEMP_HOSTS}";
-			sed_whitespace_only='/^\s*$/d';
-			sed --in-place --expression="${sed_whitespace_only}" "${TEMP_HOSTS}"; # Remove whitespace-only lines
-			cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
-			echo "";
-			echo "HOSTS FILE (AFTER-EDITS)" && cat "${HOSTS_FILE}";
-		else # dry-run
-			echo "";
-			echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE}]";
-		fi;
-	fi;
+		# ------------------------------------------------------------
+		#	If Dry-Run mode is off, require user to confirm changes
+		#
 
-	# ------------------------------------------------------------
-	# centos 6
-	#
-	if [[ -f "/etc/sysconfig/network" ]]; then
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			sed --in-place --expression="/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
-		else # dry-run
-			echo "";
-			echo "APPLY HOSTNAME VIA [ /etc/sysconfig/network ]";
-		fi;
-	fi;
-
-	# ------------------------------------------------------------
-	# debian 7 / slackware / ubuntu 14.04
-	#
-	if [[ -f "/etc/init.d/hostname.sh" ]]; then
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			/etc/init.d/hostname.sh;
-		else # dry-run
-			echo "";
-			echo "APPLY HOSTNAME VIA [ /etc/init.d/hostname.sh ]";
-		fi;
-	fi;
-
-	# ------------------------------------------------------------
-	# arch / centos 7 / debian 8 / fedora / ubuntu 16.04 and above
-	#
-	if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			hostnamectl set-hostname "${SET_HOSTNAME}";
-		else # dry-run
-			echo "";
-			echo "APPLY HOSTNAME VIA [ hostnamectl ]";
-		fi;
-	fi;
-
-
-	# ------------------------------------------------------------
-	# Apply Changes
-	#
-	if [[ -f "/etc/init.d/network" ]]; then # centos distros
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
-			read -p "REBOOT NOW? ( Y/N )" -n 1 -r
+		echo "";
+		if [[ "${DRY_RUN}" == "0" ]]; then
+			echo "NOT RUNNING IN DRY-RUN MODE";
+			echo "HOSTNAME / DOMAIN-NAME CHANGES WILL BE SET TO VALUES SHOWN ABOVE";
+			read -p "CONFIRM CHANGES TO HOST-NAME / DOMAIN-NAME ( y/n )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "";
-				echo "RESTARTING [ /etc/init.d/network ]";
-				/etc/init.d/network restart;
+				echo "CONFIRMED - PROCEEDING WITH CHANGES TO HOST-NAME / DOMAIN-NAME";
 			else
-				echo "";
-				echo "POST-PONING RESTART OF [ /etc/init.d/network ]";
+				echo "CANCELLED - EXITING";
 				exit 1;
 			fi;
-		else # dry-run
-			echo "";
-			echo "APPLY CHANGES VIA [ /etc/init.d/network restart ]";
+		else
+			echo "DRY-RUN MODE ACTIVE";
 		fi;
-	else # [other] distros
-		if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-			read -p "REBOOT REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
-			echo "";
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+		echo "";
+
+		# ------------------------------------------------------------
+		# /etc/hostname
+		#
+		HOSTNAME_FILE="/etc/hostname";
+		if [[ -f "${HOSTNAME_FILE}" ]]; then
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
+			else # dry-run
 				echo "";
-				echo "REBOOTING...";
-				shutdown -r now;
-			else
-				echo "";
-				echo "POST-PONING REBOOT";
-				exit 1;
+				echo "APPLY HOSTNAME VIA [ ${HOSTNAME_FILE} ]";
 			fi;
-		else # dry-run
-			echo "";
-			echo "APPLY CHANGES VIA [ shutdown -r now ]";
 		fi;
+
+		# ------------------------------------------------------------
+		# /etc/hosts
+		#
+		HOSTS_FILE="/etc/hosts";
+		if [[ -f "${HOSTS_FILE}" ]]; then
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				echo "";
+				echo "HOSTS FILE (BEFORE-EDITS)" && cat "${HOSTS_FILE}";
+				TEMP_HOSTS="${HOSTS_FILE}_TEMP";
+				cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
+				sed_1="/^${THIS_IPv4_WAN}/c\ ";
+				sed_2="/^${THIS_IPv4_LAN}/c\ ";
+				sed --in-place --expression="${sed_1}" --expression="${sed_2}" "${TEMP_HOSTS}";
+				sed_3="/^127.0.0.1/c\127.0.0.1 localhost localhost.localdomain\n${THIS_IPv4_WAN} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
+				sed --in-place --expression="${sed_3}" "${TEMP_HOSTS}";
+				sed_whitespace_only='/^\s*$/d';
+				sed --in-place --expression="${sed_whitespace_only}" "${TEMP_HOSTS}"; # Remove whitespace-only lines
+				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
+				echo "";
+				echo "HOSTS FILE (AFTER-EDITS)" && cat "${HOSTS_FILE}";
+			else # dry-run
+				echo "";
+				echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE}]";
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# centos 6
+		#
+		if [[ -f "/etc/sysconfig/network" ]]; then
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				sed --in-place --expression="/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
+			else # dry-run
+				echo "";
+				echo "APPLY HOSTNAME VIA [ /etc/sysconfig/network ]";
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# debian 7 / slackware / ubuntu 14.04
+		#
+		if [[ -f "/etc/init.d/hostname.sh" ]]; then
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				/etc/init.d/hostname.sh;
+			else # dry-run
+				echo "";
+				echo "APPLY HOSTNAME VIA [ /etc/init.d/hostname.sh ]";
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# arch / centos 7 / debian 8 / fedora / ubuntu 16.04 and above
+		#
+		if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				hostnamectl set-hostname "${SET_HOSTNAME}";
+			else # dry-run
+				echo "";
+				echo "APPLY HOSTNAME VIA [ hostnamectl ]";
+			fi;
+		fi;
+
+
+		# ------------------------------------------------------------
+		# Apply Changes
+		#
+		if [[ -f "/etc/init.d/network" ]]; then # centos distros
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
+				read -p "REBOOT NOW? ( Y/N )" -n 1 -r
+				echo "";
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					echo "";
+					echo "RESTARTING [ /etc/init.d/network ]";
+					/etc/init.d/network restart;
+				else
+					echo "";
+					echo "POST-PONING RESTART OF [ /etc/init.d/network ]";
+					exit 1;
+				fi;
+			else # dry-run
+				echo "";
+				echo "APPLY CHANGES VIA [ /etc/init.d/network restart ]";
+			fi;
+		else # [other] distros
+			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+				read -p "REBOOT REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
+				echo "";
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					echo "";
+					echo "REBOOTING...";
+					shutdown -r now;
+				else
+					echo "";
+					echo "POST-PONING REBOOT";
+					exit 1;
+				fi;
+			else # dry-run
+				echo "";
+				echo "APPLY CHANGES VIA [ shutdown -r now ]";
+			fi;
+		fi;
+		echo "";
+
 	fi;
+
 fi;
-echo "";
+
 
 # ------------------------------------------------------------
 #

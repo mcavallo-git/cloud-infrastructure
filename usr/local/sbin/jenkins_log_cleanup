@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #
 # JENK_LOG_CLEAN="/usr/local/sbin/jenkins_log_cleanup" && vi "${JENK_LOG_CLEAN}" && chmod 0755 "${JENK_LOG_CLEAN}";
 #
@@ -9,11 +10,10 @@
 #
 
 # Log all shell output & error output to logfile
-LOGDIR="/var/log/jenkins_log_cleanup" && \
+LOGDIR="/var/log/jenkins_log_cleanup";
 /bin/mkdir -p "${LOGDIR}";
-
-LOGFILE="${LOGDIR}/$(/usr/bin/basename ${LOGDIR})_$(/bin/date +'%Y%m%d_%H%M%S')" && \
-/usr/bin/touch "${LOGFILE}" && \
+LOGFILE="${LOGDIR}/$(/usr/bin/basename ${LOGDIR})_$(/bin/date +'%Y%m%d_%H%M%S')";
+/usr/bin/touch "${LOGFILE}";
 /bin/chmod 600 "${LOGFILE}";
 
 exec > >(/usr/bin/tee -a "${LOGFILE}" );
@@ -21,7 +21,7 @@ exec 2>&1;
 
 if [ "$(/usr/bin/id -un)" != "root" ]; then
 
-	/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command";
+	/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 
 else
@@ -42,7 +42,7 @@ else
 		/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - No processes found which match text \"${PS_AUX_CONTAINS}\"";
 		exit 1;
 		
-	if [ -n "$(/usr/bin/id -u ${JENKINS_UNAME} | /bin/grep 'no such user')" ]; then # jenkins user not found
+	elif [ -n "$(/usr/bin/id -u ${JENKINS_UNAME} | /bin/grep 'no such user')" ]; then # jenkins user not found
 		/bin/echo "$(/bin/date +'%Y-%m-%d %H:%M:%S') | Error - No users found with name \"${JENKINS_UNAME}\"";
 		exit 1;
 
@@ -56,14 +56,14 @@ else
 
 		else # good to go - begin deleting dirs
 
-/usr/bin/find "${JENKINS_UHOME}/jobs/" \
--maxdepth 3 \
--type d \
--regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
--mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
--exec /bin/echo -n "$(/bin/date +'%Y-%m-%d %H:%M:%S') $(/usr/bin/id -un)@$(/bin/hostname) | " \; \
--exec rm -v -- '{}' \; \
-;
+			/usr/bin/find "${JENKINS_UHOME}/jobs/" \
+			-maxdepth 3 \
+			-type d \
+			-regex "^${JENKINS_UHOME}/jobs/.+/builds/[0-9]+$" \
+			-mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
+			-exec /bin/echo -n "$(/bin/date +'%Y-%m-%d %H:%M:%S') $(/usr/bin/id -un)@$(/bin/hostname) | " \; \
+			-exec /bin/rm -rfv -- '{}' \; \
+			;
 
 		fi;
 	fi;

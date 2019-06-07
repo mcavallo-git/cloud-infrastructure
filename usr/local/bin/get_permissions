@@ -1,0 +1,10 @@
+#!/bin/bash
+
+INFO=($(stat -L -c "%a %G %U" $DIR))
+PERM=${INFO[0]}
+GROUP=${INFO[1]}
+OWNER=${INFO[2]}
+
+echo "PERM=${PERM}"
+echo "GROUP=${GROUP}"
+echo "OWNER=${OWNER}"

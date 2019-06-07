@@ -1,10 +1,46 @@
 #!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_permissions" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
 
-INFO=($(stat -L -c "%a %G %U" $DIR))
-PERM=${INFO[0]}
-GROUP=${INFO[1]}
-OWNER=${INFO[2]}
+if [ -z "${1}" ]; then
 
-echo "PERM=${PERM}"
-echo "GROUP=${GROUP}"
-echo "OWNER=${OWNER}"
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | ${0} | Error: empty path \${1} (filepath to stat)";
+	exit 1;
+
+elif [ -e "${1}" ]; then
+
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | ${0} | Error: path \${1} not found: \"${1}\"";
+	exit 1;
+
+else
+
+	INFO=($(stat --dereference --format="%n %F %a %u %U %g %G" "${1}"));
+
+	if [ "$?" == "0" ]; then
+
+		STAT_NAME=${INFO[0]};
+		STAT_TYPE=${INFO[1]};
+		STAT_CHMOD=${INFO[2]};
+		STAT_UID=${INFO[3]};
+		STAT_UNAME=${INFO[4]};
+		STAT_GID=${INFO[5]};
+		STAT_GNAME=${INFO[6]};
+
+		echo "STAT_NAME=${STAT_NAME}";
+		echo "STAT_TYPE=${STAT_TYPE}";
+		echo "STAT_CHMOD=${STAT_CHMOD}";
+		echo "STAT_UID=${STAT_UID}";
+		echo "STAT_UNAME=${STAT_UNAME}";
+		echo "STAT_GID=${STAT_GID}";
+		echo "STAT_GNAME=${STAT_GNAME}";
+
+	fi;
+
+fi;
+
+#
+# Citation(s)
+#
+#		Thanks to StackOverflow user [ chepner ] on forum [ https://stackoverflow.com/a/14104522 ]
+#

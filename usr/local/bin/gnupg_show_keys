@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# Check GPG Key(s) saved locally
+#
+
+GnuPG_PrimaryKeyID=$(gpg --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^sec\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
+GnuPG_SecondaryKeyID=$(gpg --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^ssb\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
+GnuPG_PrimaryPrivateKey=$(gpg --armor --export-secret-keys "${GnuPG_PrimaryKeyID}");
+GnuPG_PrimaryPublicKey=$(gpg --armor --export "${GnuPG_PrimaryKeyID}");
+GnuPG_SecondaryPrivateKey=$(gpg --armor --export-secret-keys "${GnuPG_SecondaryKeyID}");
+GnuPG_SecondaryPublicKey=$(gpg --armor --export "${GnuPG_SecondaryKeyID}");
+
+OutputDirname="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d%H%M%S')";
+
+mkdir -p "${OutputDirname}";
+chmod -R 0700 "${OutputDirname}";
+
+echo "${GnuPG_PrimaryKeyID}" > "${OutputDirname}/GnuPG_PrimaryKeyID.txt";
+echo "${GnuPG_PrimaryPrivateKey}" > "${OutputDirname}/GnuPG_PrimaryKey.pem";
+echo "${GnuPG_PrimaryPublicKey}" > "${OutputDirname}/GnuPG_PrimaryKey.pub";
+echo "${GnuPG_SecondaryKeyID}" > "${OutputDirname}/GnuPG_SecondaryKeyID.txt";
+echo "${GnuPG_SecondaryPrivateKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pem";
+echo "${GnuPG_SecondaryPublicKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pub";
+
+chmod -R 0700 "${OutputDirname}";
+
+# ------------------------------------------------------------
+#
+#	Citation(s)
+#
+#		wiki.archlinux.org
+#			"GnuPG"
+#			 https://wiki.archlinux.org/index.php/GnuPG
+#
+#		www.gnuprg.org
+#			"Using the GNU Privacy Guard"
+#			 https://www.gnupg.org/documentation/manuals/gnupg.pdf
+#
+#		www.gnuprg.org
+#			"Making and verifying signatures"
+#			 https://www.gnupg.org/gph/en/manual/x135.html
+#
+#		git.gnupg.org
+#			"GnuPG Details"
+#		 	https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=blob_plain;f=doc/DETAILS
+#
+#		wiki.debian.org
+#			"Using OpenPGP subkeys in Debian development"
+#			 https://wiki.debian.org/Subkeys
+#
+#		help.github.com
+#			"Generating a new GPG key"
+#			 https://help.github.com/en/articles/generating-a-new-gpg-key
+#
+# ------------------------------------------------------------

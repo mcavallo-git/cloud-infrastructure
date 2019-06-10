@@ -6,7 +6,7 @@
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="/var/log/${0}" && mkdir -p "${LOGDIR}";
+[ -w "/var/log/" ] && LOGFILE="/var/log/${0}" || LOGFILE="~/log/${0}"; mkdir -p "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')" && echo "" > "${LOGFILE}" && chmod 600 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;

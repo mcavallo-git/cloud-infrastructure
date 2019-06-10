@@ -62,7 +62,7 @@ USER_HOME="$(eval echo ~${USER_NAME})";
 KEY_UID="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
 
 KEY_OUTPUT_DIR="${USER_HOME}/ssh_created_keys/${START_TIMESTAMP}";
-	KEY_ABSPATH_NOEXT="${KEY_OUTPUT_DIR}/${KEY_UID}";
+KEY_ABSPATH_NOEXT="${KEY_OUTPUT_DIR}/${KEY_UID}";
 
 PRIVATE_KEY_PATH="${KEY_ABSPATH_NOEXT}_private.pem";
 PUBLIC_KEY_PATH="${KEY_ABSPATH_NOEXT}_public.pub";
@@ -105,7 +105,8 @@ fi;
 # Name the keys as-intended
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 mv "${KEY_ABSPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
-cat "${KEY_ABSPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_ABSPATH_NOEXT}.pub";
+mv "${KEY_ABSPATH_NOEXT}.pub" "${PUBLIC_KEY_PATH}";
+# cat "${KEY_ABSPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_ABSPATH_NOEXT}.pub";
 
 
 # ADD TO:  /etc/ssh/authorized_keys/${USER_NAME}  ??
@@ -132,7 +133,7 @@ if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHK
 	echo "";
 	echo "    Appending public-key onto \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
 	mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
-	cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 600 "${ETC_SSH_AUTHKEYS_USERNAME}";
+	cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 400 "${ETC_SSH_AUTHKEYS_USERNAME}";
 	
 else
 	
@@ -156,7 +157,7 @@ else
 		echo "";
 		echo "    Appending public-key onto \"${USERHOME_SSH_AUTHKEY}\" ...";
 		mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
-		cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 600 "${USERHOME_SSH_AUTHKEY}";
+		cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
 
 	else
 		echo "";
@@ -168,8 +169,8 @@ fi;
 
 # Exported Keys - [chmod] and [chown] as-intended
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-chmod 600 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_KEY_PATH}";
-chmod 600 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
+chmod 400 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_KEY_PATH}";
+chmod 400 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
 
 echo ""
 echo "  SSH-Keypair created!";
@@ -224,21 +225,21 @@ exit;
 # AuthorizedKeysFile %h/.ssh/authorized_keys      ## UPDATED (2 of 2)
 
 
-#/\/===--    SSH CONFIG    --===\/\#
-SSH_CONF_FILEPATH="/etc/ssh/sshd_config";
-echo "";
-echo "Updating SSH Config-File \"${SSH_CONF_FILEPATH}\" ...";
-sed_SSH_001="/^Subsystem sftp /c\Subsystem sftp internal\-sftp";
-sed_SSH_002="/^AuthorizedKeysFile /c\AuthorizedKeysFile \%h\/\.ssh\/authorized_keys \/etc\/ssh\/authorized_keys\/\%u";
-sed --in-place \
---expression="${sed_SSH_002}" \
---expression="${sed_SSH_002}" \
-"${SSH_CONF_FILEPATH}";
-echo "";
-echo "Updated SSH Config-File \"${SSH_CONF_FILEPATH}\"";
+#### /\/===--    SSH CONFIG    --===\/\#
+#		SSH_CONF_FILEPATH="/etc/ssh/sshd_config";
+#		echo "";
+#		echo "Updating SSH Config-File \"${SSH_CONF_FILEPATH}\" ...";
+#		sed_SSH_001="/^Subsystem sftp /c\Subsystem sftp internal\-sftp";
+#		sed_SSH_002="/^AuthorizedKeysFile /c\AuthorizedKeysFile \%h\/\.ssh\/authorized_keys \/etc\/ssh\/authorized_keys\/\%u";
+#		sed --in-place \
+#		--expression="${sed_SSH_002}" \
+#		--expression="${sed_SSH_002}" \
+#		"${SSH_CONF_FILEPATH}";
+#		echo "";
+#		echo "Updated SSH Config-File \"${SSH_CONF_FILEPATH}\"";
 
-# Apply changes to the SSH service
-service ssh restart
+#### Apply changes to the SSH service
+#		service ssh restart;
 
 
 # ------------------------------------------------------------

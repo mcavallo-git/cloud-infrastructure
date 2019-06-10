@@ -57,6 +57,9 @@ fi;
 if [ -n "${EXACT_MATCH}" ]; then
 	echo -e "\n";
 	echo "Current Linux-Instance hosted by Windows-User \"${EXACT_MATCH}\"";
+	export WSL_HOST_USERNAME="${EXACT_MATCH}";
+else
+	export WSL_HOST_USERNAME="";
 fi;
 
 

@@ -13,7 +13,7 @@ GnuPG_SecondaryPublicKey=$(gpg --armor --export "${GnuPG_SecondaryKeyID}");
 OutputDirname="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d%H%M%S')";
 
 mkdir -p "${OutputDirname}";
-chmod -R 0700 "${OutputDirname}";
+chmod -R 0400 "${OutputDirname}";
 
 echo "${GnuPG_PrimaryKeyID}" > "${OutputDirname}/GnuPG_PrimaryKeyID.txt";
 echo "${GnuPG_PrimaryPrivateKey}" > "${OutputDirname}/GnuPG_PrimaryKey.pem";
@@ -22,7 +22,7 @@ echo "${GnuPG_SecondaryKeyID}" > "${OutputDirname}/GnuPG_SecondaryKeyID.txt";
 echo "${GnuPG_SecondaryPrivateKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pem";
 echo "${GnuPG_SecondaryPublicKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pub";
 
-chmod -R 0700 "${OutputDirname}";
+chmod -R 0400 "${OutputDirname}";
 
 # ------------------------------------------------------------
 #

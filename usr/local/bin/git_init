@@ -68,7 +68,7 @@ if [ -n "${REMOTE_PRIVATE_KEY}" ] && [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then FAIL
 # fail-out if any startup errors were found
 #
 if [ -n "${FAIL_MSG}" ]; then
-	echo "${FAIL_MSG}";
+	echo -e "${FAIL_MSG}";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Exiting...";
 	exit 1;
 fi;

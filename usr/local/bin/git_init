@@ -59,16 +59,16 @@ fi;
 # fail-out if git is not installed & could not be installed
 #
 which git > /dev/null 2>&1; ERROR_CODE=$?;
-if [ ${ERROR_CODE} -ne 0 ]; then FAIL_MSG="${FAIL_MSG} Git runtime not installed."; fi;
-if [ -z "${REMOTE_HOST}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_HOST is empty."; fi;
-if [ -z "${REMOTE_OWNER}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_OWNER is empty."; fi;
-if [ -z "${REMOTE_REPOSITORY}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_REPOSITORY is empty."; fi;
-if [ -n "${REMOTE_PRIVATE_KEY}" ] && [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then FAIL_MSG="${FAIL_MSG} File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\"."; fi;
+if [ ${ERROR_CODE} -ne 0 ]; then FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Git runtime not installed.\n"; fi;
+if [ -z "${REMOTE_HOST}" ]; then FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_HOST is empty.\n"; fi;
+if [ -z "${REMOTE_OWNER}" ]; then FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_OWNER is empty.\n"; fi;
+if [ -z "${REMOTE_REPOSITORY}" ]; then FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_REPOSITORY is empty.\n"; fi;
+if [ -n "${REMOTE_PRIVATE_KEY}" ] && [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n"; fi;
 #
 # fail-out if any startup errors were found
 #
 if [ -n "${FAIL_MSG}" ]; then
-	echo "$(date '+%Y-%m-%d %H:%M:%S') | Error(s) Found: ${FAIL_MSG}";
+	echo "${FAIL_MSG}";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Exiting...";
 	exit 1;
 fi;

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# External servers to resolve WAN-IP through
+SERVER_1="https://icanhazip.com";
+SERVER_2="https://ipecho.net/plain";
+SERVER_3="https://ident.me";
+SERVER_4="https://bot.whatismyipaddress.com";
+
+THIS_WAN_IP="";
+THIS_HOST="";
+
+# Get current WAN-IP via PHP running on BNet Servers
+RESPONSE_SRVR="";
+LENGTH_WAN_IP="";
+declare -a IP_RESOLVERS=("SERVER_1" "SERVER_2" "SERVER_3" "SERVER_4");
+RESOLVERS_NO_DUPES=($(echo "${IP_RESOLVERS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+for EACH_SRVR in "${RESOLVERS_NO_DUPES[@]}"; do
+	if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
+		RESPONSE_SRVR="${!EACH_SRVR}";
+		THIS_WAN_IP=$(curl -L -s "${RESPONSE_SRVR}");
+		LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IP}" | wc -c);
+	fi;
+done;
+
+# Output Status: PASS or FAIL
+if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
+	# Error - Clear Variables
+	RESPONSE_SRVR="";
+	THIS_WAN_IP="";
+	LENGTH_WAN_IP="";
+	THIS_HOST="$(hostname)";
+	# Error - Show Message
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN-IP";
+	echo "";
+	# Error - Throw 'bad' return-code
+	exit 1;
+else
+	# Success - Show Message
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IP}\" via \"${RESPONSE_SRVR}\" ";
+	echo "";
+	# Success - Throw 'good' return-code
+	exit 0;
+fi;

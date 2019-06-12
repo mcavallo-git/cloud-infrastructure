@@ -1,0 +1,354 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/git_init" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+if [ -n "${1}" ] && [ -f "${1}" ]; then
+	source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
+fi;
+#
+# ------------------------------------------------------------
+#
+# Ensure that runtime variables are set
+#
+FAIL_MSG="";
+#
+# if acting as the "root" user and the "git" module is not installed, then attempt to install it
+#
+if [ "$(which git)" == "" ] && [ "$(id -un)" == "root" ]; then
+	if [ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]; then
+		# Ubuntu
+		echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Ubuntu Linux) - Attempting to install via:";
+		echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
+		apt -qq -y update && apt -qq -y install --ignore-missing git;
+	else
+		if [ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]; then
+			# Debian
+			echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Debian Linux) - Attempting to install via:";
+			echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
+			apt -qq -y update && apt -qq -y install --ignore-missing git;
+		else
+			if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
+				# CentOS
+				echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (CentOS Linux) - Attempting to install via:";
+				echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> yum -y update && yum -y install --skip-broken git;";
+				yum -y update && yum -y install --skip-broken git;
+			else
+				if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
+					# Alpine
+					echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Alpine Linux) - Attempting to install via:";
+					echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apk update && apk add git;";
+					apk update && apk add git;
+				fi;
+			fi;
+		fi;
+	fi;
+fi;
+#
+# fail-out if git is not installed & could not be installed
+#
+which git > /dev/null 2>&1; ERROR_CODE=$?;
+if [ ${ERROR_CODE} -ne 0 ]; then FAIL_MSG="${FAIL_MSG} Git runtime not installed."; fi;
+if [ -z "${REMOTE_HOST}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_HOST is empty."; fi;
+if [ -z "${REMOTE_OWNER}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_OWNER is empty."; fi;
+if [ -z "${REMOTE_REPOSITORY}" ]; then FAIL_MSG="${FAIL_MSG} Required variable \$REMOTE_REPOSITORY is empty."; fi;
+if [ -n "${REMOTE_PRIVATE_KEY}" ] && [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then FAIL_MSG="${FAIL_MSG} File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\"."; fi;
+#
+# fail-out if any startup errors were found
+#
+if [ -n "${FAIL_MSG}" ]; then
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | Error(s) Found: ${FAIL_MSG}";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | Exiting...";
+	exit 1;
+fi;
+#
+# ------------------------------------------------------------
+#
+# Welcome the User
+LINE_BREAK="------------------------------------------------------------";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Git Setup/Config";
+#
+# set default git-repo dir
+if [ "$(id -un)" != "root" ]; then
+	GIT_PARENT_DIR="${HOME}/git";
+else
+	GIT_PARENT_DIR="/var/lib/git";
+fi;
+
+
+# ensure that the git repos-dir exists
+if [ ! -d "${GIT_PARENT_DIR}" ]; then
+ 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${GIT_PARENT_DIR}\"";
+	mkdir -p "${GIT_PARENT_DIR}";
+fi;
+
+# ------------------------------------------------------------
+# set default privileges (user:group) for git-repo dirs
+MATCH_CHOWN="$(dirname ${GIT_PARENT_DIR})";
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Obtaining user & group info (to apply to Git directory & subdirectories)";
+
+GIT_CHOWN_UID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $3}');
+echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
+
+GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
+echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
+
+GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
+echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
+
+GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
+echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
+
+# ------------------------------------------------------------
+# set repository branch
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Checking for branch-to-use...";
+if [ -n "${CHECKOUT_BRANCH}" ]; then 
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${CHECKOUT_BRANCH}\" as checkout branch (from var \"CHECKOUT_BRANCH\")";
+fi;
+if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${REPO_BRANCH}" ]; then 
+	CHECKOUT_BRANCH="${REPO_BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${REPO_BRANCH}\" (var \"REPO_BRANCH\")";
+fi;
+if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${REMOTE_BRANCH}" ]; then 
+	CHECKOUT_BRANCH="${REMOTE_BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${REMOTE_BRANCH}\" (var \"REMOTE_BRANCH\")";
+fi;
+if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${BRANCH}" ]; then
+	CHECKOUT_BRANCH="${BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${BRANCH}\" (var \"BRANCH\")";
+fi;
+if [ ! -n "${CHECKOUT_BRANCH}" ]; then
+	CHECKOUT_BRANCH="master"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${CHECKOUT_BRANCH}\" as checkout branch (fallback method)";
+fi;
+
+# ------------------------------------------------------------
+# set 'git' as default username (if none is set)
+if [ ! -n "${REMOTE_USER_NAME}" ]; then REMOTE_USER_NAME="git"; fi;
+#
+# verify that the git repos-dir has correct ownership & access-privileges set
+if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${GIT_PARENT_DIR}" ]; then
+ 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git directory file permissions to \"0700\"";
+	chmod 0700 "${GIT_PARENT_DIR}";
+ 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git directory file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
+	chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_PARENT_DIR}";
+fi;
+#
+# Remove undesired variables from the environment
+if [ -n "$(git config --global http.sslCAInfo)" ]; then git config --global --unset http.sslCAInfo; fi; # [global-config]  http.sslCAInfo  (UNSET)
+if [ -n "$(git config --global http.sslKey)" ]; then git config --global --unset http.sslKey; fi; # [global-config]  http.sslKey  (UNSET)
+if [ -n "$(git config --global http.sslVerify)" ]; then git config --global --unset http.sslVerify; fi; # [global-config]  http.sslVerify  (UNSET)
+if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1";
+if [ -n "${GIT_CURL_VERBOSE}" ]; then unset GIT_CURL_VERBOSE; fi; # export GIT_CURL_VERBOSE="1";
+if [ -n "${GIT_TERMINAL_PROMPT}" ]; then unset GIT_TERMINAL_PROMPT; fi; # export GIT_TERMINAL_PROMPT="0";
+if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; # export GIT_CEILING_DIRECTORIES="${GIT_LOCAL_CEILING}";
+if [ -n "${GIT_WORK_TREE}" ]; then unset GIT_WORK_TREE; fi; # export GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
+if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git";
+if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config";
+#
+# ------------------------------------------------------------
+# Runtime git command
+GIT_HOST_DIR="${GIT_PARENT_DIR}/${REMOTE_HOST}";
+if [ ! -d "${GIT_HOST_DIR}" ]; then
+	mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
+fi;
+#
+GIT_LOCAL_CEILING="${GIT_HOST_DIR}/${REMOTE_OWNER}";
+if [ ! -d "${GIT_LOCAL_CEILING}" ]; then
+	mkdir -p "${GIT_LOCAL_CEILING}" && chmod 700 "${GIT_LOCAL_CEILING}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_LOCAL_CEILING}";
+fi;
+#
+GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
+GIT_WORK_TREE_REL=".";
+if [ ! -d "${GIT_WORK_TREE}" ]; then
+	mkdir -p "${GIT_WORK_TREE}" && chmod 700 "${GIT_WORK_TREE}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
+fi;
+#
+GIT_GITDIR="${GIT_WORK_TREE}/.git";
+	GIT_GITDIR_REL="${GIT_WORK_TREE_REL}/.git";
+#
+GIT_CLI_NOCONF="git";
+GIT_CLI_NOCONF="${GIT_CLI_NOCONF} -C ${GIT_LOCAL_CEILING}";
+#
+GIT_CLI="git";
+GIT_CLI="${GIT_CLI} -C ${GIT_WORK_TREE}";
+GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL}";
+GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL}";
+#
+# ------------------------------------------------------------
+# TARGET REPOSITORY
+ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # TARGET REPOSITORY
+#
+# ORIGIN_HTTPS="https://${REMOTE_USER_NAME}@${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
+# ORIGIN_HTTPS="https://${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
+#
+# ------------------------------------------------------------
+#
+# Pull repository host's IPs
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling Host's Keys:";
+# ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}";
+#
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Git Working Tree:";
+echo "${GIT_WORK_TREE}";
+echo "";
+# create default ssh-confs dir
+if [ ! -d "~/.ssh" ]; then
+	USER_HOMEDIR="$(getent passwd $(whoami) | cut -d: -f6)";
+	mkdir -p "${USER_HOMEDIR}/.ssh"; chmod 700 "${USER_HOMEDIR}/.ssh";
+fi;
+#
+# Clone repo (if non existent)
+FIRST_CLONE_OF_REPO="0";
+if [ ! -d "${GIT_GITDIR}" ]; then
+	FIRST_CLONE_OF_REPO="1";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
+	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
+	unset GIT_SSH_COMMAND;
+fi;
+#
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git init";
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} init";
+${GIT_CLI} init;
+
+# [config] remote.origin.url
+# LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote | awk '{print $2}');
+LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
+if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} remote set-url origin \"${ORIGIN_GIT}\"";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git remote set-url origin \"${ORIGIN_GIT}\"";
+	${GIT_CLI} remote set-url origin "${ORIGIN_GIT}";
+else
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} remote add origin \"${ORIGIN_GIT}\"";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git remote add origin \"${ORIGIN_GIT}\"";
+	${GIT_CLI} remote add origin "${ORIGIN_GIT}";
+fi;
+#
+# [config]  core.sshCommand
+${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+#
+# [config]  core.compression  (UNSET)
+if [ -n "$(${GIT_CLI} config core.compression)" ]; then
+	${GIT_CLI} config --unset core.compression;
+fi;
+#
+# [config]  user.name
+if [ -n "${REMOTE_USER_NAME}" ]; then
+	LOCAL_CURRENT_USER_NAME=$(${GIT_CLI} config user.name);
+	if [ "${REMOTE_USER_NAME}" != "${LOCAL_CURRENT_USER_NAME}" ]; then
+		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} config user.name ${REMOTE_USER_NAME}";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.name ${REMOTE_USER_NAME}";
+		${GIT_CLI} config user.name "${REMOTE_USER_NAME}";
+	fi;
+fi;
+#
+# [config]  user.email
+if [ -n "${REMOTE_USER_EMAIL}" ]; then
+	LOCAL_CURRENT_USER_EMAIL=$(${GIT_CLI} config user.email);
+	if [ "${LOCAL_CURRENT_USER_EMAIL}" != "${REMOTE_USER_EMAIL}" ]; then
+		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} config user.email ${REMOTE_USER_EMAIL}";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.email ${REMOTE_USER_EMAIL}";
+		${GIT_CLI} config user.email "${REMOTE_USER_EMAIL}";
+	fi;
+fi;
+#
+# [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
+REPO_PRUNE_ACTIVE=$(${GIT_CLI} config remote.origin.prune);
+if [ "${REPO_PRUNE_ACTIVE}" != "true" ]; then
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} config remote.origin.prune true";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config remote.origin.prune true";
+	${GIT_CLI} config remote.origin.prune true;
+fi;
+#
+# fetch all
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} fetch --all";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git fetch --all";
+${GIT_CLI} fetch --all;
+#
+# new clones - automatically checkout master first
+if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> FIRST_CLONE_OF_REPO == 1, PULLING MASTER FIRST";
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f master";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f master";
+	${GIT_CLI} checkout -f master;
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
+	${GIT_CLI} pull -v;
+fi;
+#
+# get current branch
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} branch | grep '*' | awk '{print \$2}'  # (get current branch)";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git branch | grep '*' | awk '{print \$2}'  # (get current branch)";
+LOCAL_CURRENT_BRANCH=$(${GIT_CLI} branch | grep '*' | awk '{print $2}');
+echo "${LOCAL_CURRENT_BRANCH}";
+if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
+	REMOTE_BRANCH_EXISTS=$(${GIT_CLI} branch -a | awk '{print $1}' | grep -w remotes/origin/${CHECKOUT_BRANCH});
+	if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
+		# checkout specific branch if not already on it
+		if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
+			# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
+			${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
+		else
+			echo "SKIPPING CHECKOUT: Already on branch \"${CHECKOUT_BRANCH}\"";
+		fi;
+		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+		${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
+	else
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error - Branch \"${CHECKOUT_BRANCH}\" not found on remote, exiting...";
+		exit 1;
+	fi;
+else
+	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
+	${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
+fi;
+#
+# pull the desired branch
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
+${GIT_CLI} pull -v;
+#
+# show final config
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list --show-origin";
+${GIT_CLI} config --list --show-origin;
+#
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} status";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git status";
+${GIT_CLI} status;
+#
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
+#
+# GIT_CHOWN_UID=$(ls -ld $(realpath "${GIT_PARENT_DIR}") | awk '{print $3}');
+# GIT_CHOWN_GID=$(ls -ld $(realpath "${GIT_PARENT_DIR}") | awk '{print $4}');
+# chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_PARENT_DIR}";
+#
+# ------------------------------------------------------------
+#
+# Remove undesired variables from the environment
+if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1"; fi;
+if [ -n "${GIT_CURL_VERBOSE}" ]; then unset GIT_CURL_VERBOSE; fi; # export GIT_CURL_VERBOSE="1"; fi;
+if [ -n "${GIT_TERMINAL_PROMPT}" ]; then unset GIT_TERMINAL_PROMPT; fi; # export GIT_TERMINAL_PROMPT="0"; fi;
+if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; # export GIT_CEILING_DIRECTORIES="${GIT_LOCAL_CEILING}"; fi;
+if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
+if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
+if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config"; fi;
+#
+# ------------------------------------------------------------
+#
+# Exit Gracefully
+
+exit 0;
+
+#
+# ------------------------------------------------------------

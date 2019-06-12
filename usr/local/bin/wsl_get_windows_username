@@ -23,7 +23,7 @@ find "/mnt/c/Users" \
 	fi;
 done;
 #
-if [ -f "${PotentialUsersFile}" ] then
+if [ -f "${PotentialUsersFile}" ]; then
 	CountMatchedUsers="$(cat ${PotentialUsersFile} | wc -l)";
 else
 	CountMatchedUsers="0";

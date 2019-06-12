@@ -30,16 +30,17 @@ if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
 	LENGTH_WAN_IP="";
 	THIS_HOST="$(hostname)";
 	# Error - Show Message
-	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN-IP";
-	echo "";
 	# Error - Throw 'bad' return-code
 	exit 1;
 else
 	# Success - Show Message
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IP}\" via \"${RESPONSE_SRVR}\" ";
-	echo "";
+	if [ "${1}" == "verbose" ]; then
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IP}\" via \"${RESPONSE_SRVR}\" ";
+		echo "";
+	fi;
+	echo "${THIS_WAN_IP}";
 	# Success - Throw 'good' return-code
 	exit 0;
 fi;

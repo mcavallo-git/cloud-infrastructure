@@ -243,7 +243,11 @@ else
 fi;
 #
 # [config]  core.sshCommand
-${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+if [ -n "${REMOTE_PRIVATE_KEY}" ]; then
+	${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+else
+	${GIT_CLI} config core.sshcommand "ssh -o StrictHostKeyChecking=no -F /dev/null";
+fi;
 #
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then

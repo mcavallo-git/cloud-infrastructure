@@ -4,7 +4,7 @@
 #
 # ------------------------------------------------------------
 #
-#	REMOTE_HOST="github.com" && REMOTE_OWNER="mcavallo-git" && REMOTE_REPOSITORY="cloud-infrastructure" && source git_init;
+#	echo "REMOTE_HOST=\"github.com\"; REMOTE_OWNER=\"mcavallo-git\"; REMOTE_REPOSITORY=\"cloud-infrastructure\"" > "$HOME/git_cloud_infra.sh" && git_init "$HOME/git_cloud_infra.sh";
 #
 # ------------------------------------------------------------
 #
@@ -216,7 +216,11 @@ FIRST_CLONE_OF_REPO="0";
 if [ ! -d "${GIT_GITDIR}" ]; then
 	FIRST_CLONE_OF_REPO="1";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
-	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+	if [ -n "${REMOTE_PRIVATE_KEY}" ]; then
+		export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+	else
+		export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -F /dev/null";
+	fi;
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;

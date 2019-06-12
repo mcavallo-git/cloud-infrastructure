@@ -102,21 +102,21 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | Git Setup/Config";
 #
 # set default git-repo dir
 if [ "$(id -un)" != "root" ]; then
-	GIT_PARENT_DIR="${HOME}/git";
+	ALL_REPOS_DIR="${HOME}/git";
 else
-	GIT_PARENT_DIR="/var/lib/git";
+	ALL_REPOS_DIR="/var/lib/git";
 fi;
 
 
 # ensure that the git repos-dir exists
-if [ ! -d "${GIT_PARENT_DIR}" ]; then
- 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${GIT_PARENT_DIR}\"";
-	mkdir -p "${GIT_PARENT_DIR}";
+if [ ! -d "${ALL_REPOS_DIR}" ]; then
+ 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${ALL_REPOS_DIR}\"";
+	mkdir -p "${ALL_REPOS_DIR}";
 fi;
 
 # ------------------------------------------------------------
 # set default privileges (user:group) for git-repo dirs
-MATCH_CHOWN="$(dirname ${GIT_PARENT_DIR})";
+MATCH_CHOWN="$(dirname ${ALL_REPOS_DIR})";
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Obtaining user & group info (to apply to Git directory & subdirectories)";
 
@@ -156,11 +156,11 @@ fi;
 if [ ! -n "${REMOTE_USER_NAME}" ]; then REMOTE_USER_NAME="git"; fi;
 #
 # verify that the git repos-dir has correct ownership & access-privileges set
-if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${GIT_PARENT_DIR}" ]; then
+if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file permissions to \"0700\"";
-	chmod 0700 "${GIT_PARENT_DIR}";
+	chmod 0700 "${ALL_REPOS_DIR}";
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
-	chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_PARENT_DIR}";
+	chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 fi;
 #
 # Remove undesired variables from the environment
@@ -177,7 +177,7 @@ if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT
 #
 # ------------------------------------------------------------
 # Runtime git command
-GIT_HOST_DIR="${GIT_PARENT_DIR}/${REMOTE_HOST}";
+GIT_HOST_DIR="${ALL_REPOS_DIR}/${REMOTE_HOST}";
 if [ ! -d "${GIT_HOST_DIR}" ]; then
 	mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
 fi;
@@ -351,9 +351,11 @@ ${GIT_CLI} status;
 #
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 #
-# GIT_CHOWN_UID=$(ls -ld $(realpath "${GIT_PARENT_DIR}") | awk '{print $3}');
-# GIT_CHOWN_GID=$(ls -ld $(realpath "${GIT_PARENT_DIR}") | awk '{print $4}');
-# chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_PARENT_DIR}";
+
+chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
+chmod -R 0700 "${GIT_WORK_TREE}";
+# chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
+# chmod -R 0700 "${ALL_REPOS_DIR}";
 #
 # ------------------------------------------------------------
 #

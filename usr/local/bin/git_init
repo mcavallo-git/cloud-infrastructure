@@ -4,7 +4,7 @@
 #
 # ------------------------------------------------------------
 #
-#	REMOTE_HOST="github.com" && REMOTE_OWNER="mcavallo-git" && REMOTE_REPOSITORY="cloud-infrastructure" && git_init;
+#	REMOTE_HOST="github.com" && REMOTE_OWNER="mcavallo-git" && REMOTE_REPOSITORY="cloud-infrastructure" && source git_init;
 #
 # ------------------------------------------------------------
 #
@@ -72,8 +72,9 @@ if [ -n "${REMOTE_PRIVATE_KEY}" ] && [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then FAIL
 # fail-out if any startup errors were found
 #
 if [ -n "${FAIL_MSG}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Exiting...";
+	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Exiting after 20s...";
 	echo -e "${FAIL_MSG}";
+	sleep 20;
 	exit 1;
 fi;
 #
@@ -309,7 +310,9 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
 		${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
 	else
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error - Branch \"${CHECKOUT_BRANCH}\" not found on remote, exiting...";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error - Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | Exiting after 20s...";
+		sleep 20;
 		exit 1;
 	fi;
 else
@@ -351,8 +354,8 @@ if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT
 # ------------------------------------------------------------
 #
 # Exit Gracefully
-
-exit 0;
-
+#
+# exit 0;
+#
 #
 # ------------------------------------------------------------

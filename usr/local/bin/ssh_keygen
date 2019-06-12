@@ -116,7 +116,7 @@ ETC_SSH_AUTHKEYS_USERNAME="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
 
 if [ "$(id -un)" == "root" ]; then
 	echo "";
-	read -p "  ADD KEY TO  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( Y/N ) " -n 1 -r;
+	read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( Y/N ) " -n 1 -r;
 	APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
 
 else # Non-root users --> block etc-authkey editing
@@ -131,7 +131,7 @@ if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHK
 	# 	Note 1: The public-key matches with client-passed private-key at time of ssh-connection
 	#   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
 	echo "";
-	echo "    Appending public-key onto \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
+	echo "    Appending Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
 	mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
 	cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 400 "${ETC_SSH_AUTHKEYS_USERNAME}";
 	
@@ -150,14 +150,14 @@ else
 	# Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
 	#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 	echo "";
-	read -p "  ADD KEY TO  \"${USERHOME_SSH_AUTHKEY}\"  ? ( Y/N ) " -n 1 -r;
+	read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( Y/N ) " -n 1 -r;
 	APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
 	
 	if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then
 		echo "";
-		echo "    Appending public-key onto \"${USERHOME_SSH_AUTHKEY}\" ...";
+		echo "    Appending Private Key onto  \"${USERHOME_SSH_AUTHKEY}\" ...";
 		mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
-		cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
+		cat "${PRIVATE_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
 
 	else
 		echo "";

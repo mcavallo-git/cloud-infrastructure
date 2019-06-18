@@ -31,29 +31,29 @@ else
 	#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
 	#
 	### Run using "DRY-RUN" mode:
-	#	>		DRY_RUN="1" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+	#	>		set_hostname "localhost.localdomain" "1";
 	#
 	### Run using "LIVE" mode:
-	#	>		DRY_RUN="0" && SET_HOSTNAME="HOSTNAME" && SET_DOMAIN="DOMAIN" && source set_hostname;
+	#	>		set_hostname "localhost.localdomain" "0";
 	#
 
-	if [ ! -n "${SET_HOSTNAME}" ]; then
-
-	# Required variable empty: SET_HOSTNAME
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_HOSTNAME} is empty";
-	echo "Please set variable to your desired value and re-run this script.";
-	echo "  ( e.g. SET_HOSTNAME=[your_value]; )";
-	exit 1;
-
-	elif [ ! -n "${SET_DOMAIN}" ]; then
+	if [ -z "${1}" ]; then
 
 		# Required variable empty: SET_HOSTNAME
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_DOMAIN} is empty";
-		echo "Please set variable to your desired value and re-run this script.";
-		echo "  ( e.g. SET_DOMAIN=[your_value]; )";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No value given for \$SET_HOSTNAME (\$1)";
+		echo "Please set \$1 to [ desired-hostname ]\" & re-run this script";
+		echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
+		echo "";
 		exit 1;
 
 	else
+
+		SET_FQDN="${1}";
+		SET_HOSTNAME=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --only-delimited);
+		SET_DOMAIN=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --complement --only-delimited);
+		if [ -z "${SET_DOMAIN}" ]; then 
+			SET_DOMAIN="localdomain";
+		fi;
 
 		# ------------------------------------------------------------
 		# Determine Dry-Run mode
@@ -61,23 +61,33 @@ else
 
 		if [ -n "${DRY_RUN}" ]; then
 			if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$DRY_RUN";
-				echo "Please set to \"1\" for dry-run, \"0\" for live-run";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value given for \$DRY_RUN (\$2)";
+				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
+				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
 				echo "";
-				echo "RESETTING \$DRY_RUN to \"1\"";
+				echo "Resetting \$DRY_RUN to \"1\"";
 				DRY_RUN=1;
 			fi;
-		elif [ -n "$1" ]; then
-			if [ "$1" == "0" ]; then
+		elif [ -n "${2}" ]; then
+			if [ "${2}" == "0" ]; then
 				DRY_RUN=0;
 			else
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value set for \$1";
-				echo "Please set to \"1\" for dry-run, \"0\" for live-run";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Invalid value given for \$DRY_RUN (\$2)";
+				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
+				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
 				echo "";
-				echo "RESETTING \$DRY_RUN to \"1\"";
+				echo "Resetting \$DRY_RUN to \"1\"";
+				echo "";
 				DRY_RUN=1;
 			fi;
 		else
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - No value given for \$DRY_RUN (\$2)";
+			echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
+			echo "  ( e.g. set_hostname \"localhost.localdomain\" \"0\"; )";
+			echo "";
+			echo "";
+			echo "Resetting \$DRY_RUN to \"1\"";
+			echo "";
 			DRY_RUN=1;
 		fi;
 

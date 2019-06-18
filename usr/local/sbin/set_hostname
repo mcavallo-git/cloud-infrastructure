@@ -45,7 +45,7 @@ else
 	echo "  ( e.g. SET_HOSTNAME=[your_value]; )";
 	exit 1;
 
-	if [ ! -n "${SET_DOMAIN}" ]; then
+	elif [ ! -n "${SET_DOMAIN}" ]; then
 
 		# Required variable empty: SET_HOSTNAME
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Variable \${SET_DOMAIN} is empty";

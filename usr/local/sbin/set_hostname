@@ -61,7 +61,7 @@ else
 
 		if [ -n "${DRY_RUN}" ]; then
 			if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value given for \$DRY_RUN (\$2)";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value given for \$DRY_RUN (\$2==\"${2}\")";
 				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
 				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
 				echo "";
@@ -69,16 +69,16 @@ else
 				DRY_RUN=1;
 			fi;
 		elif [ -n "${2}" ]; then
-			if [ "${2}" == "0" ]; then
-				DRY_RUN=0;
-			else
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Invalid value given for \$DRY_RUN (\$2)";
+			if [ "${2}" != "1" ] && [ "${2}" != "0" ]; then
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Invalid value given for \$DRY_RUN (\$2==\"${2}\")";
 				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
 				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
 				echo "";
 				echo "Resetting \$DRY_RUN to \"1\"";
 				echo "";
 				DRY_RUN=1;
+			else
+				DRY_RUN=${2};
 			fi;
 		else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - No value given for \$DRY_RUN (\$2)";
@@ -199,7 +199,7 @@ else
 				echo "HOSTS FILE (AFTER-EDITS)" && cat "${HOSTS_FILE}";
 			else # dry-run
 				echo "";
-				echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE}]";
+				echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE} ]";
 			fi;
 		fi;
 
@@ -285,6 +285,7 @@ else
 
 fi;
 
+sleep 1;
 
 # ------------------------------------------------------------
 #

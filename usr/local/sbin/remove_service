@@ -1,0 +1,84 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/remove_service" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+
+else
+
+	# ------------------------------------------------------------
+	#
+	#	Remove service(s)
+	#
+	#
+
+	if [ -z "${1}" ]; then
+
+		# Required variable empty
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No value given for first parameter (\$1)";
+		echo "Please set \$1 to [ service-name-to-remove ]\" & re-run this script";
+		echo "  ( e.g. ${0} \"wget\"; )";
+		echo "";
+		exit 1;
+
+	else
+
+		SERVICE_NAME="$1";
+
+		echo "";
+		read -p "$(date +'%Y-%m-%d %H:%M:%S') Confirm removal of service \"${SERVICE_NAME}\" ( y/n )" -n 1 -r
+		echo "";
+
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+
+			echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing service \"${SERVICE_NAME}\"...";
+
+			# Stop the service
+			systemctl stop "${SERVICE_NAME}";
+
+			# Disable the service from attempting to start
+			systemctl disable "${SERVICE_NAME}";
+
+			# Remove any files which auto-start the service
+			if [ -f "/etc/systemd/system/${SERVICE_NAME}" ]; then
+				rm "/etc/systemd/system/${SERVICE_NAME}";
+			fi;
+
+			# Reload systemd manager configurations
+			systemctl daemon-reload;
+
+			# Reset the 'failed' state of all services
+			systemctl reset-failed;
+
+		else
+
+			echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
+
+		fi;
+
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Finished - Exiting...";
+		echo "";
+		exit;
+
+	fi;
+
+	# ------------------------------------------------------------
+
+fi;

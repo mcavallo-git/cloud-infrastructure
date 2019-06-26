@@ -23,7 +23,7 @@ if [ "$(id -un)" != "root" ]; then
 
 else
 
-	# Determine jenkins runtime user
+	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)"; # Sudo-User's Home dir
 
 	PS_AUX_CONTAINS="jenkins.war";
 

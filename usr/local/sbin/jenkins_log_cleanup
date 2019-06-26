@@ -56,7 +56,6 @@ else
 				-mtime +${DELETE_ITEMS_OLDER_THAN_DAYS} \
 				-exec echo -ne "$(date +'%Y-%m-%d %H:%M:%S') $(id -un)@$(hostname) \n " \; \
 				-exec rm -rfv -- '{}' \;
-			;
 
 		fi;
 

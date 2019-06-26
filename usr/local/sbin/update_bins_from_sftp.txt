@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/update_bins_from_sftp" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	#
+	#  Linux - Update Bin-commands from SFTP-dropped files
+	#
+
+	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)"; # Sudo-User's Home dir
+
+	# ------------------------------------------------------------
+
+	if [ -e ${SUDO_USER_HOMEDIR}/local/sbin/* ]; then
+		sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
+	fi;
+
+	sudo chown "root:root" /usr/local/bin/*;
+
+	sudo chmod 0755 /usr/local/bin/*;
+
+	sudo dos2unix /usr/local/bin/*;
+
+	# ------------------------------------------------------------
+
+	if [ -e ${SUDO_USER_HOMEDIR}/local/sbin/* ]; then
+		sudo mv ${SUDO_USER_HOMEDIR}/local/sbin/* /usr/local/sbin/.;
+	fi;
+
+	sudo chown "root:root" /usr/local/sbin/*;
+
+	sudo chmod 0755 /usr/local/sbin/*;
+
+	sudo dos2unix /usr/local/sbin/*;
+
+	# ------------------------------------------------------------
+
+fi;

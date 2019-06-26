@@ -27,7 +27,8 @@ else
 
 	PS_AUX_CONTAINS="jenkins.war";
 
-	DELETE_ITEMS_OLDER_THAN_DAYS=90;
+	DELETE_ITEMS_OLDER_THAN_DAYS=14;
+	# DELETE_ITEMS_OLDER_THAN_DAYS=90;
 
 	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
 

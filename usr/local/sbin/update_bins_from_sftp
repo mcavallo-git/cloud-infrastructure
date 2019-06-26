@@ -25,31 +25,22 @@ else
 	#
 	#  Linux - Update Bin-commands from SFTP-dropped files
 	#
-
-	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)"; # Sudo-User's Home dir
-
-	# ------------------------------------------------------------
-
-	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
-		sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
+	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+	if [ -z "$(which dos2unix)" ]; then
+		apt-get-update -y; apt-get install -y dos2unix;
 	fi;
 
+	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
+	sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
+	fi;
 	sudo chown "root:root" /usr/local/bin/*;
-
 	sudo chmod 0755 /usr/local/bin/*;
-
 	sudo dos2unix /usr/local/bin/*;
-
-	# ------------------------------------------------------------
-
 	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
-		sudo mv ${SUDO_USER_HOMEDIR}/local/sbin/* /usr/local/sbin/.;
+	sudo mv ${SUDO_USER_HOMEDIR}/local/sbin/* /usr/local/sbin/.;
 	fi;
-
 	sudo chown "root:root" /usr/local/sbin/*;
-
 	sudo chmod 0755 /usr/local/sbin/*;
-
 	sudo dos2unix /usr/local/sbin/*;
 
 	# ------------------------------------------------------------

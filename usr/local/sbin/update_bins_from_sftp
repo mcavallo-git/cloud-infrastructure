@@ -30,7 +30,7 @@ else
 
 	# ------------------------------------------------------------
 
-	if [ -e ${SUDO_USER_HOMEDIR}/local/sbin/* ]; then
+	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
 		sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
 	fi;
 
@@ -42,7 +42,7 @@ else
 
 	# ------------------------------------------------------------
 
-	if [ -e ${SUDO_USER_HOMEDIR}/local/sbin/* ]; then
+	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
 		sudo mv ${SUDO_USER_HOMEDIR}/local/sbin/* /usr/local/sbin/.;
 	fi;
 

@@ -63,4 +63,18 @@ else
 	fi;
 
 
+	# NGINX - Reload
+	echo -e "\n\n$(date +'%D  %r') Calling [ systemctl reload nginx; ]...";
+	systemctl reload nginx;
+
+	# Jenkins - Reload
+	RESTART_JENKINS_SERVICE="Yes";
+	if [ -n "${RESTART_JENKINS_SERVICE}" ]; then
+		if [ "${RESTART_JENKINS_SERVICE}" == "Yes" ]; then
+			DELAY_SECONDS=30;
+			(sleep ${DELAY_SECONDS}; service jenkins force-reload; ) & \
+			echo -e "\n\n$(date +'%D  %r') Creating parallel/background task: [ sleep ${DELAY_SECONDS}; service jenkins force-reload; ]...";
+		fi;
+	fi;
+
 fi;

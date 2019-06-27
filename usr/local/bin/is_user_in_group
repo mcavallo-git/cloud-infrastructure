@@ -88,50 +88,58 @@ for USER_ROW in $(cat "/etc/passwd"); do
 
 # ------------------------------------------------------------
 
-# Display the final results to end-user
+EXIT_VAL=0;
 
+# Display the final results to end-user
+echo -e "\n";
 if [ -z "${TARGET_UID}" ] && [ -z "${TARGET_GID}" ]; then
 	# Found NEITHER the Target-User NOR the Target-Group
-	echo "Target-User not found ($1)";
-	echo "Target-Group not found ($2)";
-	exit 5;
+	echo "    User \"${TARGET_UNAME}\" not found (\$1)";
+	echo "";
+	echo "  Group \"${TARGET_GNAME}\" not found (\$2)";
+	EXIT_VAL=5;
 
 elif [ -z "${TARGET_UID}" ]; then
 	# Target-User was NOT found, but Target-Group WAS found
-	echo "Target-User not found ($1)";
+	echo "    User \"${TARGET_UNAME}\" not found (\$1)";
+	echo "";
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
-		echo "Target-Groupname \"${TARGET_GNAME}\" exists, but has no members";
+		echo "  Group \"${TARGET_GNAME}\" exists, but has no members";
 	else
-		echo "Target-Groupname found to have ${#GROUP_LIST_UNAMES[@]} members: ( ${GROUP_LIST_UNAMES[@]} )";
+		echo "  Group \"${TARGET_GNAME}\" found to have ${#GROUP_LIST_UNAMES[@]} members: ${GROUP_LIST_UNAMES[@]}";
 	fi;
-	exit 4;
+	EXIT_VAL=4;
 
 elif [ -z "${TARGET_UID}" ]; then
 	# Target-User WAS found, but Target-Group was NOT
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
-		echo "Target-Username \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
+		echo "    User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "Target-Username was found in ${#USER_LIST_GNAMES[@]} groups: ( ${USER_LIST_GNAMES[@]} )";
+		echo "    User \"${TARGET_UNAME}\" was found in ${#USER_LIST_GNAMES[@]} groups: ${USER_LIST_GNAMES[@]}";
 	fi;
-	echo "Target-Group not found ($2)";
-	exit 3;
+	echo "";
+	echo "  Group \"${TARGET_GNAME}\" not found (\$2)";
+	EXIT_VAL=3;
 
 else
 	# Show info pertaining to Target-User
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
-		echo "Username \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
+		echo "    User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "Username \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ( ${USER_LIST_GNAMES[@]} )";
+		echo "    User \"${TARGET_UNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ${USER_LIST_GNAMES[@]}";
 	fi;
+	echo "";
 	# Show info pertaining to Target-Group
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
-		echo "Group \"${TARGET_GNAME}\" exists, but has no members";
+		echo "  Group \"${TARGET_GNAME}\" exists, but has no members";
 	else
-		echo "Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s): ( ${GROUP_LIST_UNAMES[@]} )";
+		echo "  Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s): ${GROUP_LIST_UNAMES[@]}";
 	fi;
-	exit 0
+	EXIT_VAL=0;
 
 fi;
+echo -e "\n";
+exit ${EXIT_VAL};
 
 
 # ------------------------------------------------------------

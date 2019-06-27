@@ -106,7 +106,7 @@ elif [ -z "${TARGET_UID}" ]; then
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
 		echo "  Group \"${TARGET_GNAME}\" exists, but has no members";
 	else
-		echo "  Group \"${TARGET_GNAME}\" found to have ${#GROUP_LIST_UNAMES[@]} members: ${GROUP_LIST_UNAMES[@]}";
+		echo "  Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s):   ${GROUP_LIST_UNAMES[@]}";
 	fi;
 	EXIT_VAL=4;
 
@@ -115,7 +115,7 @@ elif [ -z "${TARGET_UID}" ]; then
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
 		echo "  User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "  User \"${TARGET_UNAME}\" was found in ${#USER_LIST_GNAMES[@]} groups: ${USER_LIST_GNAMES[@]}";
+		echo "  User \"${TARGET_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
 	fi;
 	echo "";
 	echo "  Group \"${TARGET_GNAME}\" not found (\$2)";
@@ -126,14 +126,14 @@ else
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
 		echo "  User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "  User \"${TARGET_UNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ${USER_LIST_GNAMES[@]}";
+		echo "  User \"${TARGET_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
 	fi;
 	echo "";
 	# Show info pertaining to Target-Group
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
 		echo "  Group \"${TARGET_GNAME}\" exists, but has no members";
 	else
-		echo "  Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s): ${GROUP_LIST_UNAMES[@]}";
+		echo "  Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s):   ${GROUP_LIST_UNAMES[@]}";
 	fi;
 	EXIT_VAL=0;
 

@@ -144,7 +144,7 @@ elif [ -z "${TARGET_USER_UID}" ]; then
 	fi;
 	EXIT_VAL=4;
 
-elif [ -z "${TARGET_USER_UID}" ]; then
+elif [ -z "${TARGET_GROUP_GID}" ]; then
 	# Target-User WAS found, but Target-Group was NOT
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
 		echo "  User \"${TARGET_USER_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";

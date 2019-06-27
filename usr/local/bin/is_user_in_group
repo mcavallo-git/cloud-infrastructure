@@ -116,6 +116,11 @@ for GROUP_ROW in $(cat "/etc/group"); do
 
 # ------------------------------------------------------------
 
+USER_LIST_GNAMES=($(echo "${USER_LIST_GNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+GROUP_LIST_UNAMES=($(echo "${GROUP_LIST_UNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+
+# ------------------------------------------------------------
+
 EXIT_VAL=0;
 
 # Display the final results to end-user

@@ -1,6 +1,10 @@
 #!/bin/bash
 #
-# Check whether a user $1 is a member within group $2
+# LOCAL_BIN="/usr/local/bin/is_user_in_group" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+# 
+# Checks whether-or-not     [ ($1) username ]     exists in     [ ($2) groupname ]
 #
 # ------------------------------------------------------------
 
@@ -34,11 +38,9 @@ for GROUP_ROW in $(cat "/etc/group"); do
 			# echo "${THIS_GID}";
 
 	# Identifies a list of one or more users. # Separate group member names with commas. # Each user must already be defined in the local database configuration files.
-	THIS_USERLIST=$( echo "${GROUP_ROW}" | awk -F":" "{print \$4}" | tr "," "\n" );
+	THIS_USERLIST=$( echo "${GROUP_ROW}" | awk -F":" "{print \$4}" | tr "," " " );
 			# echo "${THIS_USERLIST}";
-
-	echo "${THIS_GID}	${THIS_GNAME}";
-
+	
 	# Save the converted group-id fresh from "/etc/group"
 	if [ "${THIS_GNAME}" == "${TARGET_GNAME}" ]; then
 		TARGET_GID="${THIS_GID}";
@@ -117,15 +119,15 @@ elif [ -z "${TARGET_UID}" ]; then
 else
 	# Show info pertaining to Target-User
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
-		echo "Target-Username \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
+		echo "Username \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "Target-Username was found in ${#USER_LIST_GNAMES[@]} groups: ( ${USER_LIST_GNAMES[@]} )";
+		echo "Username \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ( ${USER_LIST_GNAMES[@]} )";
 	fi;
 	# Show info pertaining to Target-Group
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
-		echo "Target-Groupname \"${TARGET_GNAME}\" exists, but has no members";
+		echo "Group \"${TARGET_GNAME}\" exists, but has no members";
 	else
-		echo "Target-Groupname found to have ${#GROUP_LIST_UNAMES[@]} members: ( ${GROUP_LIST_UNAMES[@]} )";
+		echo "Group \"${TARGET_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s): ( ${GROUP_LIST_UNAMES[@]} )";
 	fi;
 	exit 0
 

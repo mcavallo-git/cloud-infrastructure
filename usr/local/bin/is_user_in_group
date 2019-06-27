@@ -94,14 +94,14 @@ EXIT_VAL=0;
 echo -e "\n";
 if [ -z "${TARGET_UID}" ] && [ -z "${TARGET_GID}" ]; then
 	# Found NEITHER the Target-User NOR the Target-Group
-	echo "    User \"${TARGET_UNAME}\" not found (\$1)";
+	echo "  User \"${TARGET_UNAME}\" not found (\$1)";
 	echo "";
 	echo "  Group \"${TARGET_GNAME}\" not found (\$2)";
 	EXIT_VAL=5;
 
 elif [ -z "${TARGET_UID}" ]; then
 	# Target-User was NOT found, but Target-Group WAS found
-	echo "    User \"${TARGET_UNAME}\" not found (\$1)";
+	echo "  User \"${TARGET_UNAME}\" not found (\$1)";
 	echo "";
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
 		echo "  Group \"${TARGET_GNAME}\" exists, but has no members";
@@ -113,9 +113,9 @@ elif [ -z "${TARGET_UID}" ]; then
 elif [ -z "${TARGET_UID}" ]; then
 	# Target-User WAS found, but Target-Group was NOT
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
-		echo "    User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
+		echo "  User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "    User \"${TARGET_UNAME}\" was found in ${#USER_LIST_GNAMES[@]} groups: ${USER_LIST_GNAMES[@]}";
+		echo "  User \"${TARGET_UNAME}\" was found in ${#USER_LIST_GNAMES[@]} groups: ${USER_LIST_GNAMES[@]}";
 	fi;
 	echo "";
 	echo "  Group \"${TARGET_GNAME}\" not found (\$2)";
@@ -124,9 +124,9 @@ elif [ -z "${TARGET_UID}" ]; then
 else
 	# Show info pertaining to Target-User
 	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
-		echo "    User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
+		echo "  User \"${TARGET_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
 	else
-		echo "    User \"${TARGET_UNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ${USER_LIST_GNAMES[@]}";
+		echo "  User \"${TARGET_UNAME}\" found with ${#GROUP_LIST_UNAMES[@]} group(s): ${USER_LIST_GNAMES[@]}";
 	fi;
 	echo "";
 	# Show info pertaining to Target-Group

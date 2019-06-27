@@ -120,19 +120,17 @@ EXIT_VAL=0;
 
 # Display the final results to end-user
 echo -e "\n";
-echo "  Is User \"${TARGET_USER_UNAME}\" in Group \"${TARGET_GROUP_GNAME}\"?";
+echo "Is User \"${TARGET_USER_UNAME}\" in Group \"${TARGET_GROUP_GNAME}\"?";
 echo "";
 if [ -z "${TARGET_USER_UID}" ] && [ -z "${TARGET_GROUP_GID}" ]; then
 	# Found NEITHER the Target-User NOR the Target-Group
 	echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
-	echo "";
 	echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
 	EXIT_VAL=5;
 
 elif [ -z "${TARGET_USER_UID}" ]; then
 	# Target-User was NOT found, but Target-Group WAS found
 	echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
-	echo "";
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
 		echo "  Group \"${TARGET_GROUP_GNAME}\" exists, but has no members";
 	else
@@ -147,7 +145,6 @@ elif [ -z "${TARGET_USER_UID}" ]; then
 	else
 		echo "  User \"${TARGET_USER_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
 	fi;
-	echo "";
 	echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
 	EXIT_VAL=3;
 
@@ -158,7 +155,6 @@ else
 	else
 		echo "  User \"${TARGET_USER_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
 	fi;
-	echo "";
 	# Show info pertaining to Target-Group
 	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
 		echo "  Group \"${TARGET_GROUP_GNAME}\" exists, but has no members";
@@ -168,10 +164,10 @@ else
 	
 	# ANWER THE FINAL QUESTION --> Is user in group?
 	if [ "${IS_USER_IN_GROUP}" == "YES" ]; then
-		echo -e "\n  ${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is in group \"${TARGET_GROUP_GNAME}\"";
+		echo -e "\n${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is in group \"${TARGET_GROUP_GNAME}\"";
 		EXIT_VAL=0;
 	else
-		echo -e "\n  ${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is NOT in group \"${TARGET_GROUP_GNAME}\"";
+		echo -e "\n${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is NOT in group \"${TARGET_GROUP_GNAME}\"";
 		EXIT_VAL=1;
 	fi;
 

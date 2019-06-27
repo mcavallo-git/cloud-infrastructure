@@ -120,6 +120,8 @@ EXIT_VAL=0;
 
 # Display the final results to end-user
 echo -e "\n";
+echo "Is User \"${TARGET_USER_UNAME}\" in Group \"${TARGET_GROUP_GNAME}\"?";
+echo -e "\n";
 if [ -z "${TARGET_USER_UID}" ] && [ -z "${TARGET_GROUP_GID}" ]; then
 	# Found NEITHER the Target-User NOR the Target-Group
 	echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";

@@ -237,18 +237,14 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 fi;
 #
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git init";
-# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} init";
 ${GIT_CLI} init;
 
 # [config] remote.origin.url
-# LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote | awk '{print $2}');
 LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
 if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
-	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} remote set-url origin \"${ORIGIN_GIT}\"";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git remote set-url origin \"${ORIGIN_GIT}\"";
 	${GIT_CLI} remote set-url origin "${ORIGIN_GIT}";
 else
-	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} remote add origin \"${ORIGIN_GIT}\"";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git remote add origin \"${ORIGIN_GIT}\"";
 	${GIT_CLI} remote add origin "${ORIGIN_GIT}";
 fi;

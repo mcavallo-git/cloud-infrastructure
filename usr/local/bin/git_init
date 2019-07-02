@@ -78,6 +78,9 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_REPOSITORY is empty.\n";
 fi;
 
+if [ -z "${REMOTE_PRIVATE_KEY}" ] && [ -n "${REMOTE_SSH_KEY}"]; then
+	REMOTE_PRIVATE_KEY="${REMOTE_SSH_KEY}";
+fi;
 if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
 elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then

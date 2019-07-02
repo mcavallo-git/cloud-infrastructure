@@ -44,7 +44,7 @@ else
 	SET_USER_PASSWORD="0";
 
 	# Options - Sudo
-	ADD_USER_TO_SUDOERS="1";
+	ADD_USER_TO_SUDOERS="0";
 	SUDO_REQUIRES_PASS="0";
 
 	#	------------------------------------------------------------
@@ -92,8 +92,8 @@ else
 
 			SUDOER_FILEPATH="/etc/sudoers.d/${USER_NAME}";
 
-			# Add user to 'sudo' group (sudoers)
-			usermod -aG sudo "${USER_NAME}";
+			# Add user to the 'sudo' usergroup (sudoers)
+			usermod --append --groups "sudo" "${USER_NAME}";
 
 			if [ "${SUDO_REQUIRES_PASS}" == "0" ]; then
 

@@ -55,6 +55,12 @@ else
 			SET_DOMAIN="localdomain";
 		fi;
 
+		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
+		
+		echo "Set Hostname: \"${SET_HOSTNAME}\"";
+		echo "Set Domain: \"${SET_DOMAIN}\"";
+		echo "Combined (FQDN): \"${SET_FQDN}\"";
+
 		# ------------------------------------------------------------
 		# Determine Dry-Run mode
 		#
@@ -143,27 +149,28 @@ else
 		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
 		THIS_LAN_IPV6=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\:');
 
+		### Show Resolved Gateway IPv4
+		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
+			echo "Resolved IPv4 Default Gateway (LAN) to: \"${GATEWAY_LAN_IPV4}\"";
+		else 
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Unable to resolve IPv4 Default Gateway (LAN).";
+		fi;
+
 		### Show Resolved LAN IPv4
 		if [ -n "${THIS_LAN_IPV4}" ]; then
-			echo "Resolved LAN IPv4 to: \"${THIS_LAN_IPV4}\"";
+			echo "Resolved IPv4 Address (LAN) to: \"${THIS_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve LAN IPv4.";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve IPv4 Address (LAN).";
 			echo "If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
 		fi;
 
-		### Show Resolved LAN IPv4
+		### Show Resolved LAN IPv6
 		if [ -n "${THIS_LAN_IPV6}" ]; then
-			echo "Resolved LAN IPv6 to: \"${THIS_LAN_IPV6}\"";
+			echo "Resolved IPv6 Address (LAN) to: \"${THIS_LAN_IPV6}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Warning - Unable to resolve LAN IPv6.";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Unable to resolve IPv6 Address (LAN).";
 		fi;
-		
-		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
-		
-		echo "Set Hostname: \"${SET_HOSTNAME}\"";
-		echo "Set Domain: \"${SET_DOMAIN}\"";
-		echo "Combined (FQDN): \"${SET_FQDN}\"";
 
 		# ------------------------------------------------------------
 		#	If Dry-Run mode is off, require user to confirm changes

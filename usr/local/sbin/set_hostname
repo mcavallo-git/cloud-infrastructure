@@ -234,8 +234,7 @@ else
 				sed_3_LOCALHOST="127.0.0.1 localhost localhost.localdomain";
 				sed_3_LAN="${THIS_LAN_IPV4} ${SET_HOSTNAME} ${SET_HOSTNAME}.${SET_DOMAIN}";
 				sed_3_WAN="${THIS_WAN_IPV4} ${SET_HOSTNAME} ${SET_HOSTNAME}.${SET_DOMAIN}";
-				sed --in-place --expression="/^127.0.0.1/
-				{
+				sed --in-place --expression="/^127.0.0.1/ {
 					a\ ${sed_3_LAN}
 					a\ ${sed_3_WAN}
 					c\ ${sed_3_LOCALHOST}

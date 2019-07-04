@@ -29,7 +29,7 @@ else
 	if [ -z "$(which dos2unix)" ]; then
 		apt-get-update -y; apt-get install -y dos2unix;
 	fi;
-
+	echo "Updating from \"${SUDO_USER_HOMEDIR}/local\"";
 	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
 	sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
 	fi;

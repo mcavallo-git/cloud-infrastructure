@@ -102,8 +102,15 @@ else
 		THIS_LINUX_DISTRO="$(if [[ ${IS_CENTOS} -gt 0 ]]; then echo CENTOS; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo UBUNTU; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo ALPINE; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo DEBIAN; else echo UNKNOWN; fi; )";
 
 		# ------------------------------------------------------------
+		# 
+		#
 
+		AZURE_LAN_IPV4="$(hostname -i | awk '{print $1}')";
+		
+
+		# ------------------------------------------------------------
 		# External server(s) to resolve WAN-IP through
+		#
 		RESOLVER_1="https://icanhazip.com";
 		RESOLVER_2="https://ipecho.net/plain";
 		RESOLVER_3="https://ident.me";

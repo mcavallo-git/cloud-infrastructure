@@ -178,18 +178,20 @@ else
 
 		echo "";
 		if [[ "${DRY_RUN}" == "0" ]]; then
-			echo "NOT RUNNING IN DRY-RUN MODE";
-			echo "HOSTNAME / DOMAIN-NAME CHANGES WILL BE SET TO VALUES SHOWN ABOVE";
-			read -p "CONFIRM CHANGES TO HOST-NAME / DOMAIN-NAME ( y/n )" -n 1 -r
+			echo "";
+			echo "Dry-Run Mode:  OFF";
+			echo "";
+			read -p "  --> Press 'y' to confirm that the above value(s) match the intended values for this device's hostname & domain-name ( y / n )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "CONFIRMED - PROCEEDING WITH CHANGES TO HOST-NAME / DOMAIN-NAME";
+				echo "Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
-				echo "CANCELLED - EXITING";
+				echo "Cancelled by user - Exiting after 60s...";
+				sleep 60;
 				exit 1;
 			fi;
 		else
-			echo "DRY-RUN MODE ACTIVE";
+			echo "Dry-Run Mode:  ON";
 		fi;
 		echo "";
 

@@ -224,7 +224,7 @@ else
 				sed_3_LOCALHOST="127.0.0.1 localhost localhost.localdomain";
 				sed_3_LAN="${THIS_LAN_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
 				sed_3_WAN="${THIS_WAN_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}|g";
-				sed_3="s/^127.0.0.1.+$/${sed_3_LOCALHOST}\n${sed_3_LAN}\n${sed_3_WAN}/g";
+				sed_3="s/^127.0.0.1.+$/${sed_3_LOCALHOST}\\n${sed_3_LAN}\\n${sed_3_WAN}/g";
 				sed --in-place --expression="${sed_3}" "${TEMP_HOSTS}";
 				#
 				sed_4_remove_whitespace='/^\s*$/d';

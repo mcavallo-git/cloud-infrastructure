@@ -241,10 +241,10 @@ else
 				}" "${TEMP_HOSTS}";
 				#
 				sed_4_remove_whitespace_lines='/^\s*$/d';
-				sed --in-place --expression="${sed_4_remove_whitespace_lines}" "FILEPATH";
+				sed --in-place --expression="${sed_4_remove_whitespace_lines}" "${TEMP_HOSTS}";
 				#
 				sed_5_remove_starting_whitespace='s/^\s*//g';
-				sed --in-place --expression="${sed_5_remove_starting_whitespace}" "FILEPATH";
+				sed --in-place --expression="${sed_5_remove_starting_whitespace}" "${TEMP_HOSTS}";
 				#
 				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
 				echo "";

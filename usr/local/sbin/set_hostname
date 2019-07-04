@@ -117,23 +117,21 @@ else
 		RESOLVER_4="https://bot.whatismyipaddress.com";
 
 		# Attempt to resolve WAN IPv4
-		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
-		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
-		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
-		if [ -z "${THIS_IPv4_WAN}" ]; then THIS_IPv4_WAN=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
+		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
+		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
+		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
+		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
 
 		# Verify WAN IPv4
-		if [ -n "${THIS_IPv4_WAN}" ]; then
-			echo "Resolved WAN IPv4 to: \"${THIS_IPv4_WAN}\"";
+		if [ -n "${THIS_WAN_IPV4}" ]; then
+			echo "Resolved WAN IPv4 to: \"${THIS_WAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN IPv4.";
-			echo "If you wish to manually set it, please set \${THIS_IPv4_WAN} to your desired value and re-run this script.";
+			echo "If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
 		fi;
 
 		# ------------------------------------------------------------
-		# Determine LAN IPv4
-		THIS_IPv4_LAN=$(ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
 
 		### Get LAN Gateway IPv4
 		GATEWAY_LAN_IPV4=$(ip route|grep 'default via '|sed --quiet --regexp-extended --expression="s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
@@ -143,10 +141,12 @@ else
 
 		### Get LAN IPv4 (obtained through trial and error using cloud-providers: AWS, Azure, & Linode as well as local WSL)
 		THIS_LAN_IPV4=$(ip -o -4 address | grep ": ${THIS_LAN_NIC}"|sed --quiet --regexp-extended --expression="s/^[0-9]+:\s+([a-zA-Z0-9\-]+)\s+inet\s+([0-9a-fA-F\:\.]+)\/([0-9]+)\s+.+$/\2/p");
+		
+		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep inet | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
 
 
-		echo "GATEWAY_LAN_IPV4=${GATEWAY_LAN_IPV4}"; \
-		echo "THIS_LAN_NIC=${THIS_LAN_NIC}"; \
+		echo "GATEWAY_LAN_IPV4=${GATEWAY_LAN_IPV4}";
+		echo "THIS_LAN_NIC=${THIS_LAN_NIC}";
 		echo "THIS_LAN_IPV4=${THIS_LAN_IPV4}";
 
 		# Verify LAN IPv4
@@ -209,19 +209,18 @@ else
 				TEMP_HOSTS="${HOSTS_FILE}_TEMP";
 				cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
 				#
-				sed_1="/^${THIS_IPv4_WAN}/c\ ";
+				sed_1="/^${THIS_WAN_IPV4}/c\ ";
 				sed_2="/^${THIS_LAN_IPV4}/c\ ";
 				sed --in-place --expression="${sed_1}" --expression="${sed_2}" "${TEMP_HOSTS}";
 				#
-				IPV4_LOCALHOST_ENTRY="127.0.0.1 localhost localhost.localdomain";
-				IPV4_LAN_ENTRY="${THIS_LAN_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
-				IPV4_WAN_ENTRY="${THIS_IPv4_WAN} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
-				#
-				sed_3="s|^127.0.0.1.+$|${IPV4_LOCALHOST_ENTRY}\n${IPV4_LAN_ENTRY}\n${IPV4_WAN_ENTRY}";
+				sed_3_LOCALHOST="127.0.0.1 localhost localhost.localdomain";
+				sed_3_LAN="${THIS_LAN_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}";
+				sed_3_WAN="${THIS_WAN_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}|g";
+				sed_3="s/^127.0.0.1.+$/${sed_3_LOCALHOST}\n${sed_3_LAN}\n${sed_3_WAN}/g";
 				sed --in-place --expression="${sed_3}" "${TEMP_HOSTS}";
 				#
-				sed_whitespace_only='/^\s*$/d';
-				sed --in-place --expression="${sed_whitespace_only}" "${TEMP_HOSTS}"; # Remove whitespace-only lines
+				sed_4_remove_whitespace='/^\s*$/d';
+				sed --in-place --expression="${sed_4_remove_whitespace}" "${TEMP_HOSTS}"; # Remove whitespace-only lines
 				#
 				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
 				echo "";

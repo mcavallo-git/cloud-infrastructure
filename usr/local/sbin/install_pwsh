@@ -22,8 +22,6 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 
 else
-	
-	OS_HANDLER_AVAILABLE=0;
 
 	if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
 		#
@@ -38,7 +36,6 @@ else
 
 		elif [[ ${OS_VERSION_MAJOR} -ge 18 ]]; then
 			# UBUNTU 18.x
-			OS_HANDLER_AVAILABLE=1;
 			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb";
 			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}"); # Download the Microsoft repository GPG keys
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}"); # Register the Microsoft repository GPG keys
@@ -48,7 +45,6 @@ else
 
 		elif [[ ${OS_VERSION_MAJOR} -lt 18 ]] && [[ ${OS_VERSION_MAJOR} -ge 16 ]]; then
 			# UBUNTU 16.x
-			OS_HANDLER_AVAILABLE=1;
 			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb";
 			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}"); # Download the Microsoft repository GPG keys
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}"); # Register the Microsoft repository GPG keys
@@ -58,7 +54,6 @@ else
 
 		elif [[ ${OS_VERSION_MAJOR} -lt 16 ]] && [[ ${OS_VERSION_MAJOR} -ge 14 ]]; then
 			# UBUNTU 14.x
-			OS_HANDLER_AVAILABLE=1;
 			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/14.04/packages-microsoft-prod.deb";
 			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}"); # Download the Microsoft repository GPG keys
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}"); # Register the Microsoft repository GPG keys
@@ -69,7 +64,8 @@ else
 
 	fi;
 
-	if [[ ${OS_HANDLER_AVAILABLE} -eq 0 ]]; then
+
+	if [ "$(which pwsh)" == "" ]; then
 		# UNKNOWN/UNHANDLED OPERATING SYSTEM
 		echo "";
 		echo "Unhandled version of Linux:";

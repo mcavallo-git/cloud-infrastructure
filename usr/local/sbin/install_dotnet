@@ -34,15 +34,18 @@ else
 
 		if [[ ${OS_VERSION_MAJOR} -ge 19 ]]; then
 			# UBUNTU 19.x
-			OS_HANDLER_AVAILABLE=1;
 			sudo snap install powershell --classic; # "PowerShell Core, for Linux, is published to the Snap store for easy installation (and updates). This is the preferred method."
-			if [ "$?" == "1" ]; then # if snapd method is unsuccessful, attempt the install w/ apt
+			if [ "$?" == "0" ]; then
 				OS_HANDLER_AVAILABLE=1;
+			else # snapd method is unsuccessful, attempt the install w/ apt
 				DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb";
 				wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
 				sudo dpkg -i $(basename "${DOWNLOAD_URL}");
 				sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
 				sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
+				if [ "$(which dotnet)" != "" ]; then
+					OS_HANDLER_AVAILABLE=1;
+				fi;
 			fi;
 
 		elif [[ ${OS_VERSION_MAJOR} -ge 18 ]]; then
@@ -80,8 +83,6 @@ else
 		echo " |    ";
 		echo " |--> https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux";
 	fi;
-
-	# pwsh; # Start PowerShell
 
 fi;
 

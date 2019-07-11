@@ -23,8 +23,6 @@ if [ "$(id -un)" != "root" ]; then
 
 else
 	
-	OS_HANDLER_AVAILABLE=0;
-
 	if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
 		#
 		# UBUNTU Environment
@@ -34,23 +32,14 @@ else
 
 		if [[ ${OS_VERSION_MAJOR} -ge 19 ]]; then
 			# UBUNTU 19.x
-			sudo snap install powershell --classic; # "PowerShell Core, for Linux, is published to the Snap store for easy installation (and updates). This is the preferred method."
-			if [ "$?" == "0" ]; then
-				OS_HANDLER_AVAILABLE=1;
-			else # snapd method is unsuccessful, attempt the install w/ apt
-				DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb";
-				wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
-				sudo dpkg -i $(basename "${DOWNLOAD_URL}");
-				sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
-				sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
-				if [ "$(which dotnet)" != "" ]; then
-					OS_HANDLER_AVAILABLE=1;
-				fi;
-			fi;
+			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb";
+			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
+			sudo dpkg -i $(basename "${DOWNLOAD_URL}");
+			sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
+			sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
 
 		elif [[ ${OS_VERSION_MAJOR} -ge 18 ]]; then
 			# UBUNTU 18.x
-			OS_HANDLER_AVAILABLE=1;
 			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb";
 			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}");
@@ -60,7 +49,6 @@ else
 
 		elif [[ ${OS_VERSION_MAJOR} -ge 16 ]]; then
 			# UBUNTU 16.x
-			OS_HANDLER_AVAILABLE=1;
 			DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb";
 			wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}");
@@ -71,7 +59,7 @@ else
 
 	fi;
 
-	if [[ ${OS_HANDLER_AVAILABLE} -eq 0 ]]; then
+	if [ "$(which dotnet)" == "" ]; then
 		# UNKNOWN/UNHANDLED OPERATING SYSTEM
 		echo "";
 		echo "Unhandled version of Linux:";

@@ -23,16 +23,15 @@ if [ "$(id -un)" != "root" ]; then
 
 else
 
-
 	# Backup the current Jenkins main-executable (jenkins.war)
-	WAR_DIR="/usr/share/jenkins"; # Base-directory for Jenkins ".war" file
-	JENKINS_RUNTIME_SYSTEM="${WAR_DIR}/jenkins.war";
+	JENKINS_RUNTIME_DIRNAME="/usr/share/jenkins"; # Base-directory for Jenkins ".war" file
+	JENKINS_RUNTIME_SYSTEM="${JENKINS_RUNTIME_DIRNAME}/jenkins.war";
 	JENKINS_RUNTIME_BACKUP="${JENKINS_RUNTIME_SYSTEM}.$(date +'%Y%m%d_%H%M%S').bak";
 	JENKINS_RUNTIME_DOWNLOADED="${JENKINS_RUNTIME_SYSTEM}.$(date +'%Y%m%d_%H%M%S').wget";
 
 	# Download an updated version of the Jenkins main-executable (jenkins.war)
 	echo "";
-	echo "$(date +'%D  %r')   Downloading Most-Recent Version of Jenkins...";
+	echo "$(date +'%D  %r')   Downloading Latest version of Jenkins...";
 	WGET_LOGFILE="${LOGFILE}.wget";
 	if [ -f "${WGET_LOGFILE}" ]; then
 		rm -f "${WGET_LOGFILE}";
@@ -41,14 +40,21 @@ else
 	wget --quiet --server-response --output-document="${JENKINS_RUNTIME_DOWNLOADED}" --output-file="${WGET_LOGFILE}" "${DOWNLOAD_URL}";
 
 	# Log the relevant info from the version which was just downloaded
-	printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Location: ${DOWNLOAD_URL}";
-	printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Last-Modified: ";
+	cat "${WGET_LOGFILE}";
+	# printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Location: ${DOWNLOAD_URL}";
+	# printf "$(date +'%D  %r')   " && cat "${WGET_LOGFILE}" | grep "Last-Modified: ";
 	rm -f "${WGET_LOGFILE}";
 
 	# Verify that download actually downloaded more than 0 bytes
 	DOWNLOAD_FILESIZE=$(du -sh "${JENKINS_RUNTIME_DOWNLOADED}" | awk '{print $1}');
+
+	# Compare Jenkins Versions
+	JENKINS_VERSION_SYSTEM=$(java -jar "${JENKINS_RUNTIME_SYSTEM}" --version | sed -rn --expression='s/^([0-9]{1,10}\.?)+[0-9]{1,10}$/\0/p');
+	JENKINS_VERSION_DOWNLOADED=$(java -jar "${JENKINS_RUNTIME_DOWNLOADED}" --version | sed -rn --expression='s/^([0-9]{1,10}\.?)+[0-9]{1,10}$/\0/p'); 
+
+	echo "";
 	echo "$(date +'%D  %r')   DOWNLOAD_FILESIZE = \"${DOWNLOAD_FILESIZE}\"";
-	if [[ ! -n "${DOWNLOAD_FILESIZE}" ]] || [[ "${DOWNLOAD_FILESIZE}" == "" ]] || [[ "${DOWNLOAD_FILESIZE}" == "0" ]]; then
+	if [ ! -n "${JENKINS_VERSION_DOWNLOADED}" ] || [ "${JENKINS_VERSION_DOWNLOADED}" == "" ]; then
 		echo "";
 		echo "$(date +'%D  %r')   Empty runtime detected: \"${JENKINS_RUNTIME_SYSTEM}\"";
 		echo "$(date +'%D  %r')   Reverting to previous runtime: \"${JENKINS_RUNTIME_BACKUP}\"";
@@ -63,41 +69,57 @@ else
 		echo "$(date +'%D  %r')   JENKINS_VERSION_DOWNLOADED = \"${JENKINS_VERSION_DOWNLOADED}\"";
 
 		if [ "${JENKINS_VERSION_DOWNLOADED}" == "2.185" ]; then
-
+			# Skip buggy Jenkins runtime(s)
 			echo "";
-			echo "$(date +'%D  %r')   Skipping downloaded Jenkins v2.185 (has a bug in its java ssh-clients which breaks connections to nodes)";
+			echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
+			echo "$(date +'%D  %r')     |-->  Version: 2.185";
+			echo "$(date +'%D  %r')     |-->  Reason: Has a bug (error) in its Java's SSH runtime which breaks ability to SSH into nodes as-intended (all nodes go offline)";
 
 		elif [ "${JENKINS_VERSION_SYSTEM}" == "${JENKINS_VERSION_DOWNLOADED}" ]; then
-
+			# No update to version #
 			echo "";
 			echo "$(date +'%D  %r')   No update to jenkins version number detected (remained constant @ v${JENKINS_VERSION_SYSTEM})";
 
 		else
+			# Install the downloaded runtime
 
-			# Stop the Jenkins-Service while we update
+			# Backup [ a Version-stamped copy ] of [ the current jenkins runtime ]
+			if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}" ]; then
+				cp --verbose --force "${JENKINS_RUNTIME_SYSTEM}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}";
+			fi;
+
+			# Backup [ a Version-stamped copy ] of [ the downloaded runtime ]
+			if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}" ]; then
+				cp --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}";
+			fi;
+
+			# Stop the Jenkins service (before updating its runtime warfile)
 			echo "";
 			echo "$(date +'%D  %r')   Calling [ systemctl stop jenkins; ]...";
 			systemctl stop jenkins;
+			
+			# Replace Jenkins' runtime warfile with the newly downloaded runtime warfile
+			mv --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
 
-			# Backup the current Jenkins runtime - Move the newly downloaded Jenkins runtime into its place
-			mv --verbose "${JENKINS_RUNTIME_SYSTEM}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}";
-			mv --verbose "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
-
-			# Start the Jenkins-Service now that we're finished updating
+			# Start the Jenkins service (after updating its runtime warfile)
 			echo "";
 			echo "$(date +'%D  %r')   Calling [ systemctl start jenkins; ]...";
 			systemctl start jenkins;
 
-			# Reload NGINX
-			if [ -f "$(which reload_nginx)" ]; then
-				sudo reload_nginx;
-			elif [ -n "$(which nginx)" ]; then
-				echo "";
-				echo "$(date +'%D  %r')   Reloading NGINX Service...";
-				sudo nginx -t && sudo sleep 1 && sudo service nginx reload;
+			# Reload NGINX (if found locally)
+			if [ -n "$(which nginx)" ]; then
+				if [ -f "$(which reload_nginx)" ]; then
+					echo "";
+					echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
+					reload_nginx;
+				else
+					echo "";
+					echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && service nginx reload; ]...";
+					nginx -t && sleep 1 && service nginx reload;
+				fi;
 			else
 				echo "";
-				echo "$(date +'%D  %r')   Skipping NGINX service-restart (which nginx returned nothing)";
+				echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
 			fi;
 
 		fi;

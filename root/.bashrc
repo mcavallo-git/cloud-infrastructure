@@ -157,11 +157,3 @@ bash_prompt() {
 
 # init it by setting PROMPT_COMMAND
 PROMPT_COMMAND=bash_prompt_command; bash_prompt; unset bash_prompt;
-
-# set ${HOME} as default directory upon logging-in
-if [ -n "${HOME}" ]; then
-	cd "${HOME}";
-fi;
-
-export EDITOR=vim; # Set vim as default text-editor (1/2)
-export VISUAL=vim; # Set vim as default text-editor (2/2)

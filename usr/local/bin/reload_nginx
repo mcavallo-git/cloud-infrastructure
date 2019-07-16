@@ -1,25 +1,48 @@
 #!/bin/bash
-
-# fail-out if any startup errors were found
-if [ "$(whoami)" != "root" ]; then
-	echo "Error - ${0} requires root access. Run as user \"root\" or with the \"sudo\" command.";
+#
+# LOCAL_SBIN="/usr/local/sbin/reload_nginx" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
+
 else
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Checking NGINX Service Status (before reload)...";
+	service nginx status;
 	if [ -f "/run/nginx.pid" ]; then
-		echo "Reloading NGINX Service...";
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Reloading NGINX Service...";
 		sudo nginx -t && sudo sleep 1 && sudo service nginx reload;
 	else
 		# PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx.conf | awk '{print $7}' | cut -d/ -f 1);
 		PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
 		if [ -n "${PID_ROGUE_NGINX_INSTANCE}" ]; then
-			echo "Killing Rogue NGINX Instance...";
+			echo "";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Killing Rogue NGINX Instance...";
 			sudo kill "${PID_ROGUE_NGINX_INSTANCE}";
 		fi;
-		echo "Starting NGINX Service...";
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Starting NGINX Service...";
 		sudo nginx -t && sudo sleep 1 && sudo service nginx start;
 	fi;
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Checking NGINX Service Status (after reload)...";
 	service nginx status;
-	### Create symbolic link to this script for on-the-fly nginx reloads:
-	# RELOAD_NGINX="/usr/bin/reload_nginx"; vi "${RELOAD_NGINX}"; chmod 0755 "${RELOAD_NGINX}";
-	# 
+
 fi;

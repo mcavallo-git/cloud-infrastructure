@@ -9,7 +9,8 @@ else
 		echo "Reloading NGINX Service...";
 		sudo nginx -t && sudo sleep 1 && sudo service nginx reload;
 	else
-		PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx.conf | awk '{print $7}' | cut -d/ -f 1);
+		# PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx.conf | awk '{print $7}' | cut -d/ -f 1);
+		PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
 		if [ -n "${PID_ROGUE_NGINX_INSTANCE}" ]; then
 			echo "Killing Rogue NGINX Instance...";
 			sudo kill "${PID_ROGUE_NGINX_INSTANCE}";

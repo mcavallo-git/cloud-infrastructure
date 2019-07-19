@@ -1,7 +1,11 @@
 #!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/wsl_get_windows_username" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
 
-DIR_ALL_USERS="/mnt/c/Users";
-if [ -d "${DIR_ALL_USERS}" ] && [ $(echo "$(ls ${DIR_ALL_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
+DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d);
+
+if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
 	# Assumed to be a Windows based OS
 
 	PotentialUsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
@@ -14,13 +18,13 @@ if [ -d "${DIR_ALL_USERS}" ] && [ $(echo "$(ls ${DIR_ALL_USERS} | wc -l) > 0" | 
 		rm -f "${InvalidUsersFile}";
 	fi;
 
-	find "${DIR_ALL_USERS}" \
+	find "${DIR_WIN32_USERS}" \
 	-mindepth 1 \
 	-maxdepth 1 \
 	-name '*' \
 	-type 'd' \
-	-not -path "${DIR_ALL_USERS}/Default" \
-	-not -path "${DIR_ALL_USERS}/Public" \
+	-not -path "${DIR_WIN32_USERS}/Default" \
+	-not -path "${DIR_WIN32_USERS}/Public" \
 	-print0 \
 	| while IFS= read -r -d $'\0' EachUserDir; do
 		LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
@@ -59,7 +63,8 @@ if [ -d "${DIR_ALL_USERS}" ] && [ $(echo "$(ls ${DIR_ALL_USERS} | wc -l) > 0" | 
 		exit 0;
 	else
 		echo "";
-		echo "Error - No directories found matching [ ${DIR_ALL_USERS}/*/Documents ]";
+		echo "Error - No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]";
+		exit 1;
 	fi;
 	if [ "${1}" == "verbose" ]; then
 		echo "";
@@ -67,9 +72,9 @@ if [ -d "${DIR_ALL_USERS}" ] && [ $(echo "$(ls ${DIR_ALL_USERS} | wc -l) > 0" | 
 
 else
 	# Assumed to be a NON-Windows based OS
-	echo "";
-	echo "Info - Directory not-found/empty: \"${DIR_ALL_USERS}\"";
+	echo "Info - Directory not-found/empty: \"${DIR_WIN32_USERS}\"";
 	echo "Info - Assuming that this is a Non-Windows based OS";
+	exit 1;
 
 fi;
 

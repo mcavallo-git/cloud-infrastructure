@@ -22,27 +22,73 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	#
-	#  Linux - Update Bin-commands from SFTP-dropped files
-	#
-	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+	
+	# Make sure required runtime(s) are installed
 	if [ -z "$(which dos2unix)" ]; then
 		apt-get-update -y; apt-get install -y dos2unix;
 	fi;
-	echo "Updating from \"${SUDO_USER_HOMEDIR}/local\"";
-	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
-	sudo mv ${SUDO_USER_HOMEDIR}/local/bin/* /usr/local/bin/.;
-	fi;
-	sudo chown "root:root" /usr/local/bin/*;
-	sudo chmod 0755 /usr/local/bin/*;
-	sudo dos2unix /usr/local/bin/*;
-	if [ -d "${SUDO_USER_HOMEDIR}/local/sbin/" ]; then
-	sudo mv ${SUDO_USER_HOMEDIR}/local/sbin/* /usr/local/sbin/.;
-	fi;
-	sudo chown "root:root" /usr/local/sbin/*;
-	sudo chmod 0755 /usr/local/sbin/*;
-	sudo dos2unix /usr/local/sbin/*;
+	
+	UPDATE_FROM_DIR="";
 
-	# ------------------------------------------------------------
+	# Detect & handle WSL instance(s)
+
+	WIN32_USERNAME=$(wsl_get_windows_username);
+	if [ -n "${WIN32_USERNAME}" ]; then
+		#  Windows Subsystem for Linux - Update from files in Host-User's files
+		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
+		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+
+		echo "";
+		echo "WIN32_USERNAME = [${WIN32_USERNAME}]";
+
+		echo "";
+		echo "WIN32_HOMEDIR = [${WIN32_HOMEDIR}]";
+
+		echo "";
+		echo "WIN32_USR_LOCAL = [${WIN32_USR_LOCAL}]";
+
+		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+			echo "";
+			echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+			exit 1;
+		else
+			UPDATE_FROM_DIR="$(dirname ${WIN32_USR_LOCAL})";
+		fi;
+	else
+		#  Linux OS - Update Bin-commands from SFTP-dropped files
+		UPDATE_FROM_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+	fi;
+
+	if [ ! -d "${UPDATE_FROM_DIR}/local/bin/" ] || [ ! -d "${UPDATE_FROM_DIR}/local/sbin/" ]; then
+		# Error-out (before copying-files) if any required copy-from directories are missing
+		if [ ! -d "${UPDATE_FROM_DIR}/local/bin/" ]; then
+			echo "";
+			echo "Error - Directory not-found: [ ${UPDATE_FROM_DIR}/local/bin/ ]";
+		fi;
+		if [ ! -d "${UPDATE_FROM_DIR}/local/sbin/" ]; then
+			echo "";
+			echo "Error - Directory not-found: [ ${UPDATE_FROM_DIR}/local/sbin/ ]";
+		fi;
+		exit 1;
+
+	else
+
+		echo "";
+		echo "Copying files from '${UPDATE_FROM_DIR}/local/bin/*' to '/usr/local/bin/.'";
+		sudo cp --verbose --force ${UPDATE_FROM_DIR}/local/bin/* /usr/local/bin/.;
+		sudo chown "root:root" /usr/local/bin/*;
+		sudo chmod 0755 /usr/local/bin/*;
+		sudo dos2unix /usr/local/bin/*;
+
+		echo "";
+		echo "Copying files from '${UPDATE_FROM_DIR}/local/sbin/*' to '/usr/local/sbin/.'";
+		sudo cp --verbose --force ${UPDATE_FROM_DIR}/local/sbin/* /usr/local/sbin/.;
+		sudo chown "root:root" /usr/local/sbin/*;
+		sudo chmod 0755 /usr/local/sbin/*;
+		sudo dos2unix /usr/local/sbin/*;
+
+		exit 0;
+
+	fi;
 
 fi;

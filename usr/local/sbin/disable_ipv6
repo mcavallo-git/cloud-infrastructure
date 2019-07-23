@@ -73,6 +73,8 @@ else
 		chmod 0644 "${CONF_DISABLE_IPV6}";
 		chown root:root "${CONF_DISABLE_IPV6}";
 		sysctl --system;
+	else
+		echo "$(date +'%Y-%m-%d %H:%M:%S') No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
 	fi;
 	
 fi;

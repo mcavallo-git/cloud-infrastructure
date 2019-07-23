@@ -38,11 +38,11 @@ else
 
 	if [ ! -f "${CONF_DISABLE_IPV6}" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Creating sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo "" > "${CONF_DISABLE_IPV6}";
+		echo -n "" > "${CONF_DISABLE_IPV6}";
 		RELOAD_SYSCTL="1";
 	elif [ "${FORCE_RECREATE_CONFIG}" == "1" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Overwriting sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo "" > "${CONF_DISABLE_IPV6}";
+		echo -n "" > "${CONF_DISABLE_IPV6}";
 		RELOAD_SYSCTL="1";
 	fi;
 

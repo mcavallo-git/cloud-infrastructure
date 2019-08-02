@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+#  get_server_ssl_cert.sh
+#    pulls the details of the certificate (if any) attached to a given hostname
+
+HOST_NAME="github.com";
+
+HOST_PORT=443;
+
+METHOD_ONE=$(echo | openssl s_client -servername ${HOST_NAME} -connect ${HOST_NAME}:${HOST_PORT} 2>/dev/null | openssl x509 -text | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/p');
+
+echo "";
+echo "SSL Certiifcate for ${HOST_NAME}:${HOST_PORT}";
+echo "";
+echo "${METHOD_ONE}";
+echo "";
+
+
+#
+#	Citation(s)
+#
+#		stackoverflow.com  |  "Using openssl to get the certificate from a server"  |  https://stackoverflow.com/a/7886248
+#

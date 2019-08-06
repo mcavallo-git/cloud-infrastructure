@@ -147,11 +147,11 @@ bash_prompt() {
 	local UC=$B                 # user's color
 	[ $UID -eq "0" ] && UC=$R   # root's color
 
-	PS1="${UC}\u${EMW}@${C}\h ${EMW}[${EMB}\${NEW_PWD}${EMW}]${UC}\\$ ${NONE}"
+	PS1="${UC}\u${EMW}@${C}\h ${EMW}[${EMB}\${NEW_PWD}${EMW}]${UC}► ${NONE}"
 
 	# PS1='\e[0;36m\u\e[m@\e[0;34m\h \w >\e[m '
 
-	# without colors: PS1="[\u@\h \${NEW_PWD}]\\$ "
+	# without colors: PS1="[\u@\h \${NEW_PWD}]► "
 	# extra backslash in front of \$ to make bash colorize the prompt
 }
 

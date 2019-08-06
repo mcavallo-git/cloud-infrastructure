@@ -155,5 +155,19 @@ bash_prompt() {
 	# extra backslash in front of \$ to make bash colorize the prompt
 }
 
-# init it by setting PROMPT_COMMAND
-PROMPT_COMMAND=bash_prompt_command; bash_prompt; unset bash_prompt;
+
+#	PROMPT_COMMAND (environment-variable)
+#	 |--> Holds one or more commands which run prior-to every command-line command
+#	 |--> Check if it already contains a value before attempting to set it
+APPEND_CMD="bash_prompt_command;";
+if [ -n "${PROMPT_COMMAND}" ]; then
+	# PROMPT_COMMAND is set, already
+	PERSISTENT_CMD="${PROMPT_COMMAND}; "; # Add a command-delimiter (;) to end the previous command
+	PERSISTENT_CMD="${PERSISTENT_CMD//;;/;}"; # Remove and double command-delimiters (;;)
+else
+	PERSISTENT_CMD=""; # PROMPT_COMMAND not set, already
+fi;
+export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
+
+bash_prompt;
+unset bash_prompt;

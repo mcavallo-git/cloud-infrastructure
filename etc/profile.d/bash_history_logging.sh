@@ -26,7 +26,7 @@ if [ -n "${USER_HOMEDIR}" ]; then
 
 	# Define the fullpath for the log-file
 	BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date +'%Y-%m-%d').log";
-	
+
 	# Ensure the log-directory exists (create it if it doesn't)
 	if [ ! -d "${BASH_LOGDIR}" ] && [ -w "${USER_HOMEDIR}/" ]; then
 		mkdir -p "${BASH_LOGDIR}";
@@ -55,23 +55,32 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		fi;
 
 		# Log the current bash-command to the user's logs-directory as-intended
+		GET_LAST_COMMAND="history 1";
 		if [ -n "$(which sed)" ]; then
-			HISTORY_FORMAT_PIPE=" | sed 's/^ *[0-9]* *//'";
+			GET_LAST_COMMAND="${GET_LAST_COMMAND} | sed 's/^ *[0-9]* *//'";
 		elif [ -n "$(which cut)" ]; then
-			HISTORY_FORMAT_PIPE=" | cut -c 8-";
-		else
-			HISTORY_FORMAT_PIPE="";
+			GET_LAST_COMMAND="${GET_LAST_COMMAND} | cut -c 8-";
 		fi;
 
 		# Log any sudoers acting as root
+		DAT_USER="$(id -un)";
 		if [ -n "${SUDO_USER}" ]; then
-			SHOW_SUDOERS="(${SUDO_USER}) ";
-		else
-			SHOW_SUDOERS="";
+			DAT_USER="${DAT_USER}(${SUDO_USER})";
 		fi;
 
-		# Set the prepend'ed command as an environment variable (via export)
-		export PROMPT_COMMAND="echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\") \$(pwd) ${SHOW_SUDOERS}\$(history 1${HISTORY_FORMAT_PIPE})\" >> \"${BASH_LOGFILE}\";";
+		#	PROMPT_COMMAND (environment-variable)
+		#	 |--> Holds one or more commands which run prior-to every command-line command
+		#	 |--> Check if it already contains a value before attempting to set it
+		APPEND_CMD="echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\")  ${DAT_USER}@$(hostname) [\$(pwd)]\$ \$(${GET_LAST_COMMAND})\" >> \"${BASH_LOGFILE}\";";
+		if [ -n "${PROMPT_COMMAND}" ]; then
+			# PROMPT_COMMAND is set, already
+			PERSISTENT_CMD="${PROMPT_COMMAND}; "; # Add a command-delimiter (;) to end the previous command
+			PERSISTENT_CMD="${PERSISTENT_CMD//;;/;}"; # Remove and double command-delimiters (;;)
+		else
+			PERSISTENT_CMD=""; # PROMPT_COMMAND not set, already
+		fi;
+		export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
+
 
 	fi;
 

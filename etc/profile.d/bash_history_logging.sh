@@ -39,7 +39,7 @@ if [ -n "${USER_HOMEDIR}" ]; then
 			chown -R "$(id -u):$(id -g)" "${BASH_LOGDIR}";
 		fi;
 
-		# Limit access to bash-logs on a per-user basis (block read-access from users who aren't the owner)
+		# Limit access to bash-log-dirs (block read-access from users who aren't the owner)
 		if [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${BASH_LOGDIR})" != "700" ]; then
 			chmod -R 700 "${BASH_LOGDIR}";
 		fi;
@@ -47,6 +47,10 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		# Create the logfile for this session (skip this step if it exists, already)
 		if [ ! -f "${BASH_LOGFILE}" ]; then
 			echo -n "" > "${BASH_LOGFILE}";
+		fi;
+
+		# Limit access to bash-log-files (block read-access from users who aren't the owner)
+		if [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
 			chmod 600 "${BASH_LOGFILE}";
 		fi;
 
@@ -58,13 +62,16 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		else
 			HISTORY_FORMAT_PIPE="";
 		fi;
-		export PROMPT_COMMAND="echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\") \$(pwd) \$(history 1${HISTORY_FORMAT_PIPE})\" >> \"${BASH_LOGFILE}\";";
 
-
-		# Limit access to bash-logs on a per-user basis (block read-access from users who aren't the owner)
-		if [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
-			chmod 600 "${BASH_LOGFILE}";
+		# Log any sudoers acting as root
+		if [ -n "${SUDO_USER}" ]; then
+			SHOW_SUDOERS="(${SUDO_USER}) ";
+		else
+			SHOW_SUDOERS="";
 		fi;
+
+		# Set the prepend'ed command as an environment variable (via export)
+		export PROMPT_COMMAND="echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\") \$(pwd) ${SHOW_SUDOERS}\$(history 1${HISTORY_FORMAT_PIPE})\" >> \"${BASH_LOGFILE}\";";
 
 	fi;
 

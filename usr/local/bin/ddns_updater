@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/ddns_updater" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+# ------------------------------------------------------------
+
+# DDNS - Update Namecheap Hostname(s)
+DDNS_SECRET="${HOME}/.namecheap/secret";
+if [ -f ${DDNS_SECRET} ]; then
+	curl --max-time 10 --connect-timeout 10 "$(cat ${DDNS_SECRET} | base64 --decode)" && echo "";
+fi;
+
+# DDNS - Update Duck-DNS Hostname(s)
+DDNS_SECRET="${HOME}/.duck-dns/secret";
+if [ -f ${DDNS_SECRET} ]; then
+	curl --max-time 10 --connect-timeout 10 "$(cat ${DDNS_SECRET} | base64 --decode)" && echo "";
+fi;
+
+# ------------------------------------------------------------
+# Remove old naming convention
+
+OLD_SCRIPT_NAME="/usr/local/bin/ddns_push_ipv4_to_authority";
+if [ -f "${OLD_SCRIPT_NAME}" ]; then
+	rm "${OLD_SCRIPT_NAME}";
+fi;
+
+# ------------------------------------------------------------

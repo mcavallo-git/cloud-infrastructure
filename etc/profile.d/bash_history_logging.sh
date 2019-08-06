@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# SH_PATH="/etc/profile.d/bash_history_logging.sh" && echo "" > "${SH_PATH}" && vi "${SH_PATH}" && chmod 0755 "${SH_PATH}" && chown root:root "${SH_PATH}";
+# SH_PATH="/etc/profile.d/bash_history_logging.sh" && echo "" > "${SH_PATH}" && vi "${SH_PATH}" && chmod 0644 "${SH_PATH}" && chown root:root "${SH_PATH}";
 #
 # ------------------------------------------------------------
 

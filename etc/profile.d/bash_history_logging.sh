@@ -23,7 +23,6 @@ if [ -n "${USER_HOMEDIR}" ]; then
 
 	# Define the fullpath for the log-directory
 	BASH_LOGDIR="${USER_HOMEDIR}/.bash-logs";
-	echo "BASH_LOGDIR=${BASH_LOGDIR}";
 
 	# Define the fullpath for the log-file
 	BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date +'%Y-%m-%d').log";

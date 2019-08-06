@@ -71,7 +71,9 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		#	PROMPT_COMMAND (environment-variable)
 		#	 |--> Holds one or more commands which run prior-to every command-line command
 		#	 |--> Check if it already contains a value before attempting to set it
-		APPEND_CMD="echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\")  ${DAT_USER}@$(hostname) [\$(pwd)]\$ \$(${GET_LAST_COMMAND})\" >> \"${BASH_LOGFILE}\";";
+		APPEND_CMD="echo \"\" >> \"${BASH_LOGFILE}\";";
+		APPEND_CMD="${APPEND_CMD} echo \"\$(date \"+%Y-%m-%d.%H:%M:%S\")\" >> \"${BASH_LOGFILE}\";";
+		APPEND_CMD="${APPEND_CMD} echo \"${DAT_USER}@$(hostname) [\$(pwd)]► \$(${GET_LAST_COMMAND})\" >> \"${BASH_LOGFILE}\";";
 		if [ -n "${PROMPT_COMMAND}" ]; then
 			# PROMPT_COMMAND is set, already
 			PERSISTENT_CMD="${PROMPT_COMMAND}; "; # Add a command-delimiter (;) to end the previous command

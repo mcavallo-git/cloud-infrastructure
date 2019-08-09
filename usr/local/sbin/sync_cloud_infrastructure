@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	
+		
+	#!/bin/bash
+
+	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
+
+	# Ensure the (GitHub) Repos directory exists
+	DOCS_GITHUB="${HOME}/Documents/GitHub/";
+	if [ ! -d "${DOCS_GITHUB}" ]; then
+		mkdir "${DOCS_GITHUB}";
+	fi;
+
+	# Clone the repo if it hasn't been synced, yet
+	GIT_WORKTREE="${DOCS_GITHUB}/cloud-infrastructure/";
+	if [ ! -d "${GIT_WORKTREE}" ]; then
+		cd "${DOCS_GITHUB}" && \
+		git clone "${GIT_SOURCE_REPO_URL}";
+	fi;
+
+	# Sync local workstation's commands with the repo's commands
+	cd "${GIT_WORKTREE}" && \
+	git fetch && \
+	git reset --hard "origin/master" && \
+	git pull && \
+	DO_UPD="${GIT_WORKTREE}/usr/local/sbin/update_bins_from_sftp" && \
+	sudo chmod 755 "${DO_UPD}" && \
+	sudo "${DO_UPD}";
+
+fi;

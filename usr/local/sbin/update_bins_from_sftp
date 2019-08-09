@@ -31,7 +31,10 @@ else
 	SOURCE_DIR="";
 
 	# Detect & handle WSL instance(s)
-	WIN32_USERNAME=$(wsl_get_windows_username);
+	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
+	if [ -n "${WSL_CHECK_EXISTS}" ]; then
+		WIN32_USERNAME=$(wsl_get_windows_username);
+	fi;
 	if [ -n "${WIN32_USERNAME}" ]; then
 		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);

@@ -49,12 +49,16 @@ else
 	else
 
 		SET_FQDN="${1}";
-		SET_HOSTNAME=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --only-delimited);
-		SET_DOMAIN=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --complement --only-delimited);
-		if [ -z "${SET_DOMAIN}" ]; then 
-			SET_DOMAIN="localdomain";
-		fi;
 
+		SUBSTRING_ONLY_PERIODS="${SET_FQDN//[^.]}";
+		FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
+		if [ "${FQDN_COUNT_PERIODS}" == "0" ]; then
+			SET_HOSTNAME="${SET_FQDN}";
+			SET_DOMAIN="localdomain";
+		else
+			SET_HOSTNAME=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --only-delimited);
+			SET_DOMAIN=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --complement --only-delimited);
+		fi;
 		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
 		
 		echo "";
@@ -343,9 +347,12 @@ sleep 1;
 #
 #	Citation(s)
 #
-#			https://jblevins.org/log/hostname
+#		https://jblevins.org/log/hostname
 #
-#			https://support.rackspace.com/how-to/centos-hostname-change/
+#		https://support.rackspace.com/how-to/centos-hostname-change/
 #
-#			https://www.linode.com/docs/getting-started/#setting-the-hostname
+#		https://www.linode.com/docs/getting-started/#setting-the-hostname
 #
+#		stackoverflow.com  |  "Count occurrences of a char in a string using Bash"  |  https://stackoverflow.com/a/16679640
+#
+# ------------------------------------------------------------

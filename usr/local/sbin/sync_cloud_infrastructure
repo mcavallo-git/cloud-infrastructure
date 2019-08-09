@@ -25,7 +25,7 @@ else
 	
 	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 
-	# Ensure the (GitHub) Repos directory exists
+	# Ensure the (GitHub) Repos directory exists, locally
 	LOCAL_PARENT_PATH="${HOME}/Documents/GitHub/";
 	if [ ! -d "${LOCAL_PARENT_PATH}" ]; then
 		mkdir -p "${LOCAL_PARENT_PATH}";
@@ -44,7 +44,10 @@ else
 	git reset --hard "origin/master" && \
 	git pull && \
 	DO_UPD="${LOCAL_REPO_PATH}/usr/local/sbin/update_bins_from_sftp" && \
-	sudo chmod 755 "${DO_UPD}" && \
+	sudo chmod 700 "${DO_UPD}" && \
 	sudo "${DO_UPD}";
+
+	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 '{}' \; # directories
+	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 '{}' \; # files
 
 fi;

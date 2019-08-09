@@ -49,7 +49,7 @@ else
 
 	else
 
-		WHOAMI_HOME_DIR="$(getent passwd $(WHOAMI) | cut --delimiter=: --fields=6)";
+		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		SOURCE_DIR="$(dirname ${WHOAMI_USR_LOCAL})";
 		SOURCE_DIR_ERRS=$?;

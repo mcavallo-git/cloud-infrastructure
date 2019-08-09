@@ -26,24 +26,24 @@ else
 	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 
 	# Ensure the (GitHub) Repos directory exists
-	DOCS_GITHUB="${HOME}/Documents/GitHub/";
-	if [ ! -d "${DOCS_GITHUB}" ]; then
-		mkdir -p "${DOCS_GITHUB}";
+	LOCAL_PARENT_PATH="${HOME}/Documents/GitHub/";
+	if [ ! -d "${LOCAL_PARENT_PATH}" ]; then
+		mkdir -p "${LOCAL_PARENT_PATH}";
 	fi;
 
 	# Clone the repo if it hasn't been synced, yet
-	GIT_WORKTREE="${DOCS_GITHUB}/cloud-infrastructure/";
-	if [ ! -d "${GIT_WORKTREE}" ]; then
-		cd "${DOCS_GITHUB}" && \
+	LOCAL_REPO_PATH="${LOCAL_PARENT_PATH}/cloud-infrastructure/";
+	if [ ! -d "${LOCAL_REPO_PATH}" ]; then
+		cd "${LOCAL_PARENT_PATH}" && \
 		git clone "${GIT_SOURCE_REPO_URL}";
 	fi;
 
 	# Sync local workstation's commands with the repo's commands
-	cd "${GIT_WORKTREE}" && \
+	cd "${LOCAL_REPO_PATH}" && \
 	git fetch && \
 	git reset --hard "origin/master" && \
 	git pull && \
-	DO_UPD="${GIT_WORKTREE}/usr/local/sbin/update_bins_from_sftp" && \
+	DO_UPD="${LOCAL_REPO_PATH}/usr/local/sbin/update_bins_from_sftp" && \
 	sudo chmod 755 "${DO_UPD}" && \
 	sudo "${DO_UPD}";
 

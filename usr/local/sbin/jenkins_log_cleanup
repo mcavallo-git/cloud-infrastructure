@@ -17,12 +17,12 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-
-	echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError: Script must run as user \"root\" or via \"sudo\" command";
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-
 else
-
+	# ------------------------------------------------------------
+	
 	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)"; # Sudo-User's Home dir
 
 	PS_AUX_CONTAINS="jenkins.war";

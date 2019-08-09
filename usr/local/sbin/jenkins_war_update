@@ -17,12 +17,12 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-
+	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-
 else
-
+	# ------------------------------------------------------------
+	
 	# Backup the current Jenkins main-executable (jenkins.war)
 	JENKINS_RUNTIME_DIRNAME="/usr/share/jenkins"; # Base-directory for Jenkins ".war" file
 	JENKINS_RUNTIME_SYSTEM="${JENKINS_RUNTIME_DIRNAME}/jenkins.war";

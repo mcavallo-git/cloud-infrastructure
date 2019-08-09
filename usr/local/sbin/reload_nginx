@@ -21,8 +21,12 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
+	# ------------------------------------------------------------
+
 	SERVICE_NAME="nginx";
+
 	SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+	
 	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then
 		# Service found to exist as a local service
 		echo "";

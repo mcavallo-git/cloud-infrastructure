@@ -17,16 +17,20 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-
+	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-
 else
+	# ------------------------------------------------------------
 
 	CONF_DISABLE_IPV6="/etc/sysctl.d/99-zero-ipv6-traffic.conf";
+
 	RELOAD_SYSCTL="";
+
 	FORCE_RECREATE_CONFIG="0";
+
 	APPLY_DISABLE="1";
+	
 	if [ -n "${1}" ]; then
 		if [ "${1}" == "revert" ]; then
 			APPLY_DISABLE="0";

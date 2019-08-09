@@ -17,16 +17,13 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-
+	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-
 else
-
 	# ------------------------------------------------------------
 	#
 	#	Remove service(s)
-	#
 	#
 
 	if [ -z "${1}" ]; then

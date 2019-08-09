@@ -20,8 +20,8 @@ if [ "$(id -un)" != "root" ]; then
 	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
-
 else
+	# ------------------------------------------------------------
 
 	SYSTEM_EDITOR_1_PATH="/usr/bin/editor";
 	SYSTEM_EDITOR_2_PATH="/etc/alternatives/editor";

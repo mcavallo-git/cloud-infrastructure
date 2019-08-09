@@ -45,8 +45,19 @@ else
 		fi;
 
 	else
-		#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-		SOURCE_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+
+		WHOAMI_HOME_DIR="$(getent passwd $(WHOAMI) | cut --delimiter=: --fields=6)";
+		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		SOURCE_DIR="$(dirname ${WHOAMI_USR_LOCAL})";
+		SOURCE_DIR_ERRS=$?;
+
+		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
+			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
+			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+			SOURCE_DIR="$(dirname ${SUDOER_USR_LOCAL})";
+			SOURCE_DIR_ERRS=$?;
+		fi;
 
 	fi;
 

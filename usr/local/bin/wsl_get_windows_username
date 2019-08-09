@@ -17,6 +17,12 @@ if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls 
 	if [ -f "${InvalidUsersFile}" ]; then
 		rm -f "${InvalidUsersFile}";
 	fi;
+	
+	# Make sure required runtime(s) are installed
+	if [ -z "$(which bc)" ]; then
+		apt-get-update -y; apt-get install -y bc;
+	fi;
+
 
 	find "${DIR_WIN32_USERS}" \
 	-mindepth 1 \

@@ -123,13 +123,23 @@ else
 		done;
 
 		if [ -n "$2" ]; then
-			echo "  [GLOBAL] - Setting git configuration value:";
-			for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
-				echo "    |";
-				echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
-				echo "          |-->  $2";
-				git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
-			done;
+			if [ "$2" == "--unset" ]; then
+				echo "  [GLOBAL] - Unsetting git configuration value:";
+				for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
+					echo "    |";
+					echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
+					echo "          |-->  $2";
+					git config --file "${EACH_CONFIG}" --unset "$1";
+				done;
+			else
+				echo "  [GLOBAL] - Setting git configuration value:";
+				for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
+					echo "    |";
+					echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
+					echo "          |-->  $2";
+					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
+				done;
+			fi;
 		fi;
 
 		echo "";

@@ -130,10 +130,9 @@ else
 				USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
 			fi;
 		done;
-
+		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
-			# Don't copy blank/empty-string filenames
-			if [[ ! -z "${EACH_FILE// }" ]]; then
+			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
 				echo "        ↪ \"${EACH_FILE}\" (Home-Directory File)"
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";

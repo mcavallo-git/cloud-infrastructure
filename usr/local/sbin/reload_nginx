@@ -30,7 +30,7 @@ else
 	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then
 		# Service found to exist as a local service
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Checking NGINX Service Status (before reload)...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service nginx status; ] (before reload)...";
 		service nginx status;
 		if [ -f "/run/nginx.pid" ]; then
 			echo "";
@@ -51,7 +51,7 @@ else
 			sudo nginx -t && sudo sleep 1 && sudo service nginx start;
 		fi;
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Checking NGINX Service Status (after reload)...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service nginx status; ] (after reload)...";
 		service nginx status;
 	else
 		# Service NOT found to exist as a local service

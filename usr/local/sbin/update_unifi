@@ -30,30 +30,30 @@ else
 	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then # Service found to exist as a local service
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service unifi status; ] (before potential update)...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service unifi status; ] (before potential update)...";
 		service unifi status;
 
 		# Update UniFi
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ apt-get update -y; ]...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ apt-get update -y; ]...";
 		apt-get update -y;
-		
+
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
 		echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
 
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart; ]...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart; ]...";
 		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart;
 
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service unifi status; ] (after potential update)...";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service unifi status; ] (after potential update)...";
 		service unifi status;
 
 	else # Service NOT found to exist as a local service
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | | Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
 	fi;
 
 fi;

@@ -94,6 +94,9 @@ else
 		# Required source directories exist - Update local runtimes from them
 		EXIT_CODE=0;
 
+		# ------------------------------------------------------------
+		# Sync [ /usr/local/bin ] files (e.g. non-admin commands)
+		# ------------------------------------------------------------
 		echo "";
 		echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
 		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
@@ -101,6 +104,9 @@ else
 		sudo chmod 0755 /usr/local/bin/*;
 		sudo dos2unix /usr/local/bin/*;
 
+		# ------------------------------------------------------------
+		# Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
+		# ------------------------------------------------------------
 		echo "";
 		echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
 		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
@@ -112,6 +118,8 @@ else
 		echo "Local bin & sbin are now synced with 'origin/master'";
 		echo "";
 
+		# ------------------------------------------------------------
+		# Sync [ /home/USER/* ] files (e.g. bash-config & terminal-formatting files)
 		# ------------------------------------------------------------
 
 		# Get list of files to Copy into Home-Dirs

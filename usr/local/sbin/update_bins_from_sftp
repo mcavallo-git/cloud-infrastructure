@@ -99,20 +99,20 @@ else
 		# ------------------------------------------------------------
 		echo "";
 		echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
-		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
-		sudo chown "root:root" /usr/local/bin/*;
-		sudo chmod 0755 /usr/local/bin/*;
-		sudo dos2unix /usr/local/bin/*;
+		cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
+		chown "root:root" /usr/local/bin/*;
+		chmod 0755 /usr/local/bin/*;
+		dos2unix /usr/local/bin/*;
 
 		# ------------------------------------------------------------
 		# Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
 		# ------------------------------------------------------------
 		echo "";
 		echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
-		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
-		sudo chown "root:root" /usr/local/sbin/*;
-		sudo chmod 0755 /usr/local/sbin/*;
-		sudo dos2unix /usr/local/sbin/*;
+		cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
+		chown "root:root" /usr/local/sbin/*;
+		chmod 0755 /usr/local/sbin/*;
+		dos2unix /usr/local/sbin/*;
 
 		echo "";
 		echo "Local bin & sbin are now synced with 'origin/master'";
@@ -142,22 +142,24 @@ else
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
 				echo "        ↪ \"${EACH_FILE}\" (Home-Directory File)"
+				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
 					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
 					USERNAME_RPAD="            "$(printf '%-'${USERNAMES_MOSTCHARS}'s' ↪ ${EACH_SSH_USER});
 					# Only copy files to SSH-Enabled user home-directories (plus root)
 					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
-						SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
-						if [ -d "${EACH_FILE}" ]; then
-							# Config Directories
+						if [ -d "${SRC_FULLPATH}" ] && [ -f "${SRC_FULLPATH}/"* ]; then
+							# Directories containing at least one file
+							dos2unix "${SRC_FULLPATH}/"*;
 							cp -rf "${SRC_FULLPATH}" "${DIR_USER_HOME}";
 							chown -R "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
 							chmod -R 600 "${DEST_FULLPATH}";
 							chmod 700 "${DEST_FULLPATH}";
 						else
-							# Config Files
+							# Files
+							dos2unix "${SRC_FULLPATH}";
 							cp -f "${SRC_FULLPATH}" "${DEST_FULLPATH}";
 							chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
 							chmod 600 "${DEST_FULLPATH}";

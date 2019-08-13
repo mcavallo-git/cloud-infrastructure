@@ -114,55 +114,55 @@ else
 
 		# ------------------------------------------------------------
 
-		# # Get list of files to Copy into Home-Dirs
-		# DIR_COPY_CONTENTS_INTO_USER_DIRS="${DIR_REPO_BASE}/root/";
-		# FILES_TO_COPY=$(ls -hAl "${DIR_COPY_CONTENTS_INTO_USER_DIRS}" | awk '{print $9}');
+		# Get list of files to Copy into Home-Dirs
+		COPY_FROM_SOURCE="${DIR_REPO_BASE}/root";
+		FILES_TO_COPY=$(ls -hAl "${COPY_FROM_SOURCE}/" | awk '{print $9}');
 
-		# # User-List whose Home-Dirs will be updated
-		# LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
+		# User-List whose Home-Dirs will be updated
+		LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
 
-		# # Determine longest Username to enhance log-readability by left-padding output text, below
-		# #   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
-		# USERNAMES_MOSTCHARS=0;
-		# for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
-		# 	EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
-		# 	if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
-		# 		USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
-		# 	fi;
-		# done;
+		# Determine longest Username to enhance log-readability by left-padding output text, below
+		#   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
+		USERNAMES_MOSTCHARS=0;
+		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+			EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
+			if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
+				USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
+			fi;
+		done;
 
-		# for EACH_FILE in ${FILES_TO_COPY}; do
-		# 	# Don't copy blank/empty-string filenames
-		# 	if [[ ! -z "${EACH_FILE// }" ]]; then
-		# 		echo "        ↪ \"${EACH_FILE}\" (Home-Directory File)"
-		# 		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
-		# 			EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
-		# 			DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
-		# 			# Left-pad usernames to enhance log readability
-		# 			USERNAME_RPAD="            "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "↪ ${EACH_SSH_USER}");
-		# 			# Only apply Home-Directory items to SSH-Enabled users
-		# 			if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]; then
-		# 				SRC_FULLPATH="${COPY_SOURCE}/${EACH_FILE}";
-		# 				DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
-		# 				if [ -d "${EACH_FILE}" ]; then
-		# 					# Config Directories
-		# 					cp -rf "${SRC_FULLPATH}" "${DIR_USER_HOME}";
-		# 					chown -R "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
-		# 					chmod -R 600 "${DEST_FULLPATH}";
-		# 					chmod 700 "${DEST_FULLPATH}";
-		# 				else
-		# 					# Config Files
-		# 					cp -f "${SRC_FULLPATH}" "${DEST_FULLPATH}";
-		# 					chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
-		# 					chmod 600 "${DEST_FULLPATH}";
-		# 				fi;
-		# 				echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
-		# 			fi;
-		# 		done;
-		# 	fi;
-		# done;
+		for EACH_FILE in ${FILES_TO_COPY}; do
+			# Don't copy blank/empty-string filenames
+			if [[ ! -z "${EACH_FILE// }" ]]; then
+				echo "        ↪ \"${EACH_FILE}\" (Home-Directory File)"
+				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
+					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
+					# Left-pad usernames to enhance log readability
+					USERNAME_RPAD="            "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "↪ ${EACH_SSH_USER}");
+					# Only apply Home-Directory items to SSH-Enabled users
+					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]; then
+						SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
+						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
+						if [ -d "${EACH_FILE}" ]; then
+							# Config Directories
+							cp -rf "${SRC_FULLPATH}" "${DIR_USER_HOME}";
+							chown -R "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
+							chmod -R 600 "${DEST_FULLPATH}";
+							chmod 700 "${DEST_FULLPATH}";
+						else
+							# Config Files
+							cp -f "${SRC_FULLPATH}" "${DEST_FULLPATH}";
+							chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
+							chmod 600 "${DEST_FULLPATH}";
+						fi;
+						echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
+					fi;
+				done;
+			fi;
+		done;
 
-
+		
 	fi;
 
 	exit ${EXIT_CODE};

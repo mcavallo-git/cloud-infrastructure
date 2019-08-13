@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/update_unifi" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+
+	SERVICE_NAME="unifi";
+
+	SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+	
+	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then # Service found to exist as a local service
+		# Show service status
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service unifi status; ] (before potential update)...";
+		service unifi status;
+
+		# Update UniFi
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ apt-get update -y; ]...";
+		apt-get update -y;
+		
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
+		echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
+
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart; ]...";
+		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart;
+
+		# Show service status
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') Calling [ service unifi status; ] (after potential update)...";
+		service unifi status;
+
+	else # Service NOT found to exist as a local service
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+	fi;
+
+fi;

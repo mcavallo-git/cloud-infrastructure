@@ -44,13 +44,17 @@ else
 		else
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(which apt)";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(which apt-get)";
 			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt list --upgradable";
-			sudo apt list --upgradable;
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(which apt-get)";
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
 			sudo apt-get -y update;
+			if [ -n "$(which update_unifi)" ]; then
+				sudo update_unifi;
+			fi;
+			echo "";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt list --upgradable";
+			sudo apt list --upgradable;
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y dist-upgrade";
 			sudo apt-get -y dist-upgrade;

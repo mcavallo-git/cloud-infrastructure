@@ -23,12 +23,14 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	
+	EXIT_CODE=1;
+
 	# Make sure required runtime(s) are installed
 	if [ -z "$(which dos2unix)" ]; then
 		apt-get-update -y; apt-get install -y dos2unix;
 	fi;
 	
-	SOURCE_DIR="";
+	DIR_REPO_BASE="";
 
 	# Detect & handle WSL instance(s)
 	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
@@ -45,54 +47,63 @@ else
 			echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
 			exit 1;
 		else
-			SOURCE_DIR="$(dirname ${WIN32_USR_LOCAL})";
+			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
+			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		fi;
 
 	else
 
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-		SOURCE_DIR="$(dirname ${WHOAMI_USR_LOCAL})";
+		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
+		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
 
 		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
 			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
 			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
 			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-			SOURCE_DIR="$(dirname ${SUDOER_USR_LOCAL})";
+			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
+			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 			SOURCE_DIR_ERRS=$?;
 		fi;
-
+	
 	fi;
 
-	if [ ! -d "${SOURCE_DIR}/local/bin/" ] || [ ! -d "${SOURCE_DIR}/local/sbin/" ]; then
-
-		# Error-out if any required source directories are missing
-
-		if [ ! -d "${SOURCE_DIR}/local/bin/" ]; then
-			echo "";
-			echo "Error - Directory not-found: [ ${SOURCE_DIR}/local/bin/ ]";
-		fi;
-		if [ ! -d "${SOURCE_DIR}/local/sbin/" ]; then
-			echo "";
-			echo "Error - Directory not-found: [ ${SOURCE_DIR}/local/sbin/ ]";
-		fi;
-		exit 1;
-
-	else
-
-		# Required source directories exist - Update local runtimes from them
+	if [ -z "${DIR_REPO_BASE}" ]; then
+		# Error-out if any required variable(s) are empty/unset
+		EXIT_CODE=1;
 
 		echo "";
-		echo "Copying files from '${SOURCE_DIR}/local/bin/*' to '/usr/local/bin/.' ...";
-		sudo cp --verbose --force ${SOURCE_DIR}/local/bin/* /usr/local/bin/.;
+		echo "Error - Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+
+	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
+		# Error-out if any required source directories are missing
+		EXIT_CODE=1;
+
+		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
+			echo "";
+			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+		fi;
+		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
+			echo "";
+			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+		fi;
+
+	else
+		# Required source directories exist - Update local runtimes from them
+		EXIT_CODE=0;
+
+		echo "";
+		echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
+		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
 		sudo chown "root:root" /usr/local/bin/*;
 		sudo chmod 0755 /usr/local/bin/*;
 		sudo dos2unix /usr/local/bin/*;
 
 		echo "";
-		echo "Copying files from '${SOURCE_DIR}/local/sbin/*' to '/usr/local/sbin/.' ...";
-		sudo cp --verbose --force ${SOURCE_DIR}/local/sbin/* /usr/local/sbin/.;
+		echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
+		sudo cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
 		sudo chown "root:root" /usr/local/sbin/*;
 		sudo chmod 0755 /usr/local/sbin/*;
 		sudo dos2unix /usr/local/sbin/*;
@@ -100,8 +111,58 @@ else
 		echo "";
 		echo "Local bin & sbin are now synced with 'origin/master'";
 		echo "";
-		exit 0;
 
+		# ------------------------------------------------------------
+
+		# Get list of files to Copy into Home-Dirs
+		DIR_COPY_CONTENTS_INTO_USER_DIRS="${DIR_REPO_BASE}/root/";
+		FILES_TO_COPY=$(ls -hAl "${DIR_COPY_CONTENTS_INTO_USER_DIRS}" | awk '{print $9}');
+
+		# User-List whose Home-Dirs will be updated
+		LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
+
+		# Determine longest Username to enhance log-readability by left-padding output text, below
+		#   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
+		USERNAMES_MOSTCHARS=0;
+		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+			EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
+			if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
+				USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
+			fi;
+		done;
+
+		for EACH_FILE in ${FILES_TO_COPY}; do
+			# Don't copy blank/empty-string filenames
+			if [[ ! -z "${EACH_FILE// }" ]]; then
+				echo "        ↪ \"${EACH_FILE}\" (Home-Directory File)"
+				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
+					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
+					# Left-pad usernames to enhance log readability
+					USERNAME_RPAD="            "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "↪ ${EACH_SSH_USER}");
+					# Only apply Home-Directory items to SSH-Enabled users
+					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]; then
+						SRC_FULLPATH="${COPY_SOURCE}/${EACH_FILE}";
+						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
+						if [ -d "${EACH_FILE}" ]; then
+							# Config Directories
+							cp -rf "${SRC_FULLPATH}" "${DIR_USER_HOME}";
+							chown -R "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
+							chmod -R 600 "${DEST_FULLPATH}";
+							chmod 700 "${DEST_FULLPATH}";
+						else
+							# Config Files
+							cp -f "${SRC_FULLPATH}" "${DEST_FULLPATH}";
+							chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
+							chmod 600 "${DEST_FULLPATH}";
+						fi;
+						echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
+					fi;
+				done;
+			fi;
+		done;
 	fi;
+
+	exit ${EXIT_CODE};
 
 fi;

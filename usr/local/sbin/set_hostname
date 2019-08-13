@@ -212,9 +212,9 @@ else
 		if [[ -f "${HOSTNAME_FILE}" ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
-			else # dry-run
-				echo "";
-				echo "APPLY HOSTNAME VIA [ ${HOSTNAME_FILE} ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY HOSTNAME VIA [ ${HOSTNAME_FILE} ]";
 			fi;
 		fi;
 
@@ -251,9 +251,9 @@ else
 				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
 				echo "";
 				echo "HOSTS FILE (AFTER-EDITS)" && cat "${HOSTS_FILE}";
-			else # dry-run
-				echo "";
-				echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE} ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE} ]";
 			fi;
 		fi;
 
@@ -263,9 +263,9 @@ else
 		if [[ -f "/etc/sysconfig/network" ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				sed --in-place --expression="/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
-			else # dry-run
-				echo "";
-				echo "APPLY HOSTNAME VIA [ /etc/sysconfig/network ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY HOSTNAME VIA [ /etc/sysconfig/network ]";
 			fi;
 		fi;
 
@@ -287,9 +287,9 @@ else
 		if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				hostnamectl set-hostname "${SET_HOSTNAME}";
-			else # dry-run
-				echo "";
-				echo "APPLY HOSTNAME VIA [ hostnamectl ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY HOSTNAME VIA [ hostnamectl ]";
 			fi;
 		fi;
 
@@ -311,9 +311,9 @@ else
 					echo "POST-PONING RESTART OF [ /etc/init.d/network ]";
 					exit 1;
 				fi;
-			else # dry-run
-				echo "";
-				echo "APPLY CHANGES VIA [ /etc/init.d/network restart ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY CHANGES VIA [ /etc/init.d/network restart ]";
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
@@ -328,9 +328,9 @@ else
 					echo "POST-PONING REBOOT";
 					exit 1;
 				fi;
-			else # dry-run
-				echo "";
-				echo "APPLY CHANGES VIA [ shutdown -r now ]";
+			# else # dry-run
+			# 	echo "";
+			# 	echo "APPLY CHANGES VIA [ shutdown -r now ]";
 			fi;
 		fi;
 		echo "";

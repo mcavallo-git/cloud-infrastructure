@@ -141,7 +141,7 @@ else
 					# Left-pad usernames to enhance log readability
 					USERNAME_RPAD="            "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "↪ ${EACH_SSH_USER}");
 					# Only apply Home-Directory items to SSH-Enabled users
-					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]; then
+					if [ "${EACH_SSH_USER}" == "root" ] || [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]; then
 						SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
 						if [ -d "${EACH_FILE}" ]; then

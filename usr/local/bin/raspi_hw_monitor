@@ -16,7 +16,6 @@ if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 while [ 1 -eq 1 ]; do
 
 # ------------------------------------------------------------
-vcgencmd get_throttled
 
 Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
 Throttle_Val="0x${Throttle_Val_After_X}";

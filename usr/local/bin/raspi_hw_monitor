@@ -4,13 +4,102 @@ RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --qu
 
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 
-watch -n 0.75 "\
-sudo echo cpu-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000))MHz \
-&& sudo echo max-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000))MHz \
-&& sudo echo cpu-voltage = $(sudo vcgencmd measure_volts 'core')olts \
-&& sudo vcgencmd measure_temp \
-&& sudo vcgencmd get_mem arm \
-&& sudo vcgencmd get_mem gpu \
-";
+# watch -n 0.75 "\
+# sudo echo cpu-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000))MHz \
+# && sudo echo max-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000))MHz \
+# && sudo echo cpu-voltage = $(sudo vcgencmd measure_volts 'core')olts \
+# && sudo vcgencmd measure_temp \
+# && sudo vcgencmd get_mem arm \
+# && sudo vcgencmd get_mem gpu \
+# ";
+
+while [ 1 -eq 1 ]; do
+
+# ------------------------------------------------------------
+vcgencmd get_throttled
+
+Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
+Throttle_Val="0x${Throttle_Val_After_X}";
+list_throttled="Throttle-Val\t=  ${Throttle_Val}";
+#
+# 0   |  00000  |  0x00    under-voltage
+# 1   |  00001  |  0x01    arm frequency capped
+# 2   |  00010  |  0x02    currently throttled (turbo disabled due to low voltage / over-temperature)
+# 16  |  10000  |  0x10    under-voltage has occurred
+# 17  |  10001  |  0x11    arm frequency capped has occurred
+# 18  |  10010  |  0x12    throttling has occurred
+#
+# ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
+#
+
+
+# ------------------------------------------------------------
+
+declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
+list_clock_freq="";
+for EachComponent in "${Components_ClockFreq[@]}"; do
+if [ -n "${list_clock_freq}" ]; then
+list_clock_freq="${list_clock_freq}\n";
+fi;
+Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
+list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l) MHz";
+done;
+# list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
+# echo -e "${list_clock_freq}";
+
+# ------------------------------------------------------------
+
+declare -a Components_Voltage=("core   " "sdram_c" "sdram_i" "sdram_p");
+list_voltages="";
+for EachComponent in "${Components_Voltage[@]}"; do
+if [ -n "${list_voltages}" ]; then
+list_voltages="${list_voltages}\n";
+fi;
+Each_Voltage=$(vcgencmd measure_volts $EachComponent | sed --regexp-extended --quiet --expression='s/^volt=([0-9]+\.[0-9]+)V$/\1/p';);
+list_voltages="${list_voltages}Volt, ${EachComponent}\t=  ${Each_Voltage} V";
+done;
+# echo -e "${list_voltages}";
+
+# ------------------------------------------------------------
+
+declare -a Components_Memory=("arm" "gpu");
+list_memory_info="";
+for EachComponent in "${Components_Memory[@]}"; do
+if [ -n "${list_memory_info}" ]; then
+list_memory_info="${list_memory_info}\n";
+fi;
+Each_RAM_Alloc=$(vcgencmd get_mem $EachComponent | sed --regexp-extended --quiet --expression='s/^[a-z]+=([0-9]+)M$/\1/p';);
+list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
+done;
+# list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
+# echo -e "${list_memory_info}";
+
+# ------------------------------------------------------------
+
+CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+list_temperature="Temp, SoC\t=  ${CurrentTemp_Celsuis}°C";
+
+# ------------------------------------------------------------
+
+list_all="";
+list_all="${list_all}------------------------------------------------------------\n\n";
+list_all="${list_all}${list_clock_freq}\n\n";
+list_all="${list_all}------------------------------------------------------------\n\n";
+list_all="${list_all}${list_voltages}\n\n";
+list_all="${list_all}------------------------------------------------------------\n\n";
+list_all="${list_all}${list_memory_info}\n\n";
+list_all="${list_all}------------------------------------------------------------\n\n";
+list_all="${list_all}${list_temperature}\n\n";
+list_all="${list_all}------------------------------------------------------------\n\n";
+list_all="${list_all}${list_throttled}\n\n";
+list_all="${list_all}------------------------------------------------------------\n\n";
+
+clear && \
+echo -e "${list_all}" && \
+sleep 1;
+
+# ------------------------------------------------------------
+
+done;
 
 fi;

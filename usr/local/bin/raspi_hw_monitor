@@ -31,20 +31,21 @@ list_throttled="Throttle Val\t=  ${Throttle_Val}";
 # ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
 #
 
-
 # ------------------------------------------------------------
 
 declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
 list_clock_freq="";
-for EachComponent in "${Components_ClockFreq[@]}"; do
-if [ -n "${list_clock_freq}" ]; then
+list_clock_freq="${list_clock_freq}Freq, CPU, Min\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq)/1000)) MHz";
 list_clock_freq="${list_clock_freq}\n";
-fi;
+list_clock_freq="${list_clock_freq}Freq, CPU, Max\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000)) MHz";
+list_clock_freq="${list_clock_freq}\n";
+list_clock_freq="${list_clock_freq}Freq, CPU, Cur\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000)) MHz";
+for EachComponent in "${Components_ClockFreq[@]}"; do
 Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
+list_clock_freq="${list_clock_freq}\n";
 list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l) MHz";
 done;
 # list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
-# echo -e "${list_clock_freq}";
 
 # ------------------------------------------------------------
 
@@ -57,7 +58,6 @@ fi;
 Each_Voltage=$(vcgencmd measure_volts $EachComponent | sed --regexp-extended --quiet --expression='s/^volt=([0-9]+\.[0-9]+)V$/\1/p';);
 list_voltages="${list_voltages}Volt, ${EachComponent}\t=  ${Each_Voltage} V";
 done;
-# echo -e "${list_voltages}";
 
 # ------------------------------------------------------------
 
@@ -71,7 +71,6 @@ Each_RAM_Alloc=$(vcgencmd get_mem $EachComponent | sed --regexp-extended --quiet
 list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
 done;
 # list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
-# echo -e "${list_memory_info}";
 
 # ------------------------------------------------------------
 
@@ -91,7 +90,7 @@ list_all="${list_all}${list_memory_info}\n\n------------------------------------
 
 clear;
 echo -e "${list_all}";
-sleep 1 > /dev/null;
+sleep 1;
 
 # ------------------------------------------------------------
 

@@ -4,16 +4,7 @@ RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --qu
 
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 
-# watch -n 0.75 "\
-# sudo echo cpu-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000))MHz \
-# && sudo echo max-frequency = $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000))MHz \
-# && sudo echo cpu-voltage = $(sudo vcgencmd measure_volts 'core')olts \
-# && sudo vcgencmd measure_temp \
-# && sudo vcgencmd get_mem arm \
-# && sudo vcgencmd get_mem gpu \
-# ";
-
-while [ 1 -eq 1 ]; do
+while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
 
 # ------------------------------------------------------------
 
@@ -82,6 +73,7 @@ list_temperature="Temp, SoC\t=  ${CurrentTemp_Celsuis}°C";
 
 list_all="";
 list_all="${list_all}$(date +'%c')\n";
+
 list_all="${list_all}------------------------------------------------------------\n\n";
 
 list_all="${list_all}${list_temperature}\n\n------------------------------------------------------------\n\n";

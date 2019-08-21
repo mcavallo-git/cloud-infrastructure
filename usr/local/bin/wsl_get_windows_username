@@ -9,18 +9,24 @@ if [ -z "$(uname -r | grep 'Microsoft')" ]; then
 	
 else
 
-	DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d);
+	DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
 
 	if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
 		# Assumed to be a Windows based OS
 
-		PotentialUsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
-		if [ -f "${PotentialUsersFile}" ]; then
-			rm -f "${PotentialUsersFile}";
+		Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
+		if [ -f "${Invalid_UsersFile}" ]; then
+			rm -f "${Invalid_UsersFile}";
 		fi;
-		InvalidUsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
-		if [ -f "${InvalidUsersFile}" ]; then
-			rm -f "${InvalidUsersFile}";
+
+		Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
+		if [ -f "${Potential_UsersFile}" ]; then
+			rm -f "${Potential_UsersFile}";
+		fi;
+
+		WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
+		if [ -f "${Valid_UsersFile}" ]; then
+			rm -f "${Valid_UsersFile}";
 		fi;
 		
 		# Make sure required runtime(s) are installed
@@ -30,8 +36,9 @@ else
 
 		if [ "${1}" == "verbose" ]; then
 			echo "";
-			echo "PotentialUsersFile=\"${PotentialUsersFile}\"";
-			echo "InvalidUsersFile=\"${InvalidUsersFile}\"";
+			echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
+			echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
+			echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
 		fi;
 
 		find "${DIR_WIN32_USERS}" \
@@ -46,15 +53,15 @@ else
 			LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
 			if [ "${LastExitCode}" == "0" ]; then
 				if [ "${1}" == "verbose" ]; then echo ""; echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
-				echo $(basename "${EachUserDir}") >> "${PotentialUsersFile}";
+				echo $(basename "${EachUserDir}") >> "${Potential_UsersFile}";
 			else
 				if [ "${1}" == "verbose" ]; then echo ""; echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
-				echo $(basename "${EachUserDir}") >> "${InvalidUsersFile}";
+				echo $(basename "${EachUserDir}") >> "${Invalid_UsersFile}";
 			fi;
 		done;
 		
-		if [ -f "${PotentialUsersFile}" ]; then
-			CountMatchedUsers="$(cat ${PotentialUsersFile} | wc -l)";
+		if [ -f "${Potential_UsersFile}" ]; then
+			CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
 		else
 			CountMatchedUsers="0";
 		fi;
@@ -64,37 +71,38 @@ else
 				echo "";
 				echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s):";
 			fi;
-			cat "${PotentialUsersFile}";
+			cat "${Potential_UsersFile}";
 			exit 0;
 		elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
 
 			if [ "${1}" == "verbose" ]; then
 				echo "";
-				echo -n "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s): ";
+				echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s): ";
+				cat "${Potential_UsersFile}";
 			fi;
-				cat "${PotentialUsersFile}" | while read -r EachMatchedUser; do
+
+			First_WSL_User="";
+			cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
+				DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
+				if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
 					if [ "${1}" == "verbose" ]; then
-						echo -n "${EachMatchedUser} ";
+						echo "";
+						echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
+						echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
 					fi;
-					DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d);
-					# DIR_WSL_UBUNTU_ROOTFS=$(find /mnt/*/Users/datadmin/AppData/Local/Packages/*Ubuntu*/LocalState/rootfs: -mindepth 0 -maxdepth 0 -type d);
-					if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
-						if [ "${1}" == "verbose" ]; then
-							echo "";
-							echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
-							echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
-						fi;
-						if [ -z "${First_Host_User_with_WSL_Enabled}" ]; then
-							First_Host_User_with_WSL_Enabled="${EachMatchedUser}"; # output the first-found
-						fi;
+					if [ ! -f "${WSL_HostUser_File}" ]; then
+						echo -n "${EachMatchedUser}" > "${WSL_HostUser_File}"; # output the first WSL user to-be-identified
 					fi;
-				done;
+				fi;
+			done;
+
+			if [ -f "${WSL_HostUser_File}" ]; then
+				cat "${WSL_HostUser_File}";
+			fi;
 			if [ "${1}" == "verbose" ]; then
 				echo "";
 			fi;
-			if [ -n "${First_Host_User_with_WSL_Enabled}" ]; then
-				echo "${First_Host_User_with_WSL_Enabled}";
-			fi;
+
 			exit 0;
 
 		else

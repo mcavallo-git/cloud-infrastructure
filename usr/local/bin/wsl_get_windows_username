@@ -41,11 +41,11 @@ else
 		| while IFS= read -r -d $'\0' EachUserDir; do
 			LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
 			if [ "${LastExitCode}" == "0" ]; then
-				if [ "${1}" == "verbose" ]; then echo "PASS - Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
-				echo "$(basename ${EachUserDir})" >> "${PotentialUsersFile}";
+				if [ "${1}" == "verbose" ]; then echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
+				echo $(basename "${EachUserDir}") >> "${PotentialUsersFile}";
 			else
-				if [ "${1}" == "verbose" ]; then echo "FAIL - Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
-				echo "$(basename ${EachUserDir})" >> "${InvalidUsersFile}";
+				if [ "${1}" == "verbose" ]; then echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
+				echo $(basename "${EachUserDir}") >> "${InvalidUsersFile}";
 			fi;
 		done;
 		

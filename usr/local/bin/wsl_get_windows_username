@@ -18,7 +18,6 @@ else
 		if [ -f "${PotentialUsersFile}" ]; then
 			rm -f "${PotentialUsersFile}";
 		fi;
-
 		InvalidUsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
 		if [ -f "${InvalidUsersFile}" ]; then
 			rm -f "${InvalidUsersFile}";
@@ -29,6 +28,11 @@ else
 			apt-get-update -y; apt-get install -y bc;
 		fi;
 
+		if [ "${1}" == "verbose" ]; then
+			echo "";
+			echo "PotentialUsersFile=\"${PotentialUsersFile}\"";
+			echo "InvalidUsersFile=\"${InvalidUsersFile}\"";
+		fi;
 
 		find "${DIR_WIN32_USERS}" \
 		-mindepth 1 \
@@ -41,10 +45,10 @@ else
 		| while IFS= read -r -d $'\0' EachUserDir; do
 			LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
 			if [ "${LastExitCode}" == "0" ]; then
-				if [ "${1}" == "verbose" ]; then echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
+				if [ "${1}" == "verbose" ]; then echo ""; echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
 				echo $(basename "${EachUserDir}") >> "${PotentialUsersFile}";
 			else
-				if [ "${1}" == "verbose" ]; then echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
+				if [ "${1}" == "verbose" ]; then echo ""; echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
 				echo $(basename "${EachUserDir}") >> "${InvalidUsersFile}";
 			fi;
 		done;
@@ -73,8 +77,10 @@ else
 						echo -n "${EachMatchedUser} ";
 					fi;
 					DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d);
+					# DIR_WSL_UBUNTU_ROOTFS=$(find /mnt/*/Users/datadmin/AppData/Local/Packages/*Ubuntu*/LocalState/rootfs: -mindepth 0 -maxdepth 0 -type d);
 					if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
 						if [ "${1}" == "verbose" ]; then
+							echo "";
 							echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
 							echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
 						fi;
@@ -86,8 +92,9 @@ else
 			if [ "${1}" == "verbose" ]; then
 				echo "";
 			fi;
-			read -r FirstPotentialUser < "${PotentialUsersFile}";
-			echo "${FirstPotentialUser}";
+			if [ -n "${First_Host_User_with_WSL_Enabled}" ]; then
+				echo "${First_Host_User_with_WSL_Enabled}";
+			fi;
 			exit 0;
 
 		else

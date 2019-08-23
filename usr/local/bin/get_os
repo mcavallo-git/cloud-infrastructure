@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/ddns_updater" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Verbosity setting as an argument
+#
+VERBOSE="0";
+if [ -n "$1" ]; then
+	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
+		VERBOSE="1";
+	fi;
+fi;
+
+# ------------------------------------------------------------
+#
+# Kernel Info
+#
+THIS_KERNEL="$(uname -a;)";
+THIS_KERNEL_NAME="$(uname -s;)";
+
+# ------------------------------------------------------------
+#
+# Type of OS (Operating System)
+#
+IS_LINUX=$(if [[ $(uname -s | grep -i Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+
+# Verify if Linux environment is actually an instance of WSL (Windows Subsystem for Linux)
+IS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi;);
+IS_CYGWIN=$(if [[ $(uname -s | grep -i Cygwin | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_MINGW=$(if [[ $(uname -s | grep -i Mingw | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+
+# IS_RASPI_CPU=$(if [ "$(uname -s)" == "Linux" ] && [[ $(uname -m | grep arm | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+
+IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+
+THIS_DISTRO="$(if [[ ${IS_RASPBIAN} -gt 0 ]]; then echo '"LINUX, RASPBIAN'; elif [[ ${IS_CENTOS} -gt 0 ]]; then echo "LINUX, CENTOS"; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo "LINUX, UBUNTU"; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo "LINUX, ALPINE"; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo "LINUX, DEBIAN"; elif [[ ${IS_CYGWIN} -gt 0 ]]; then echo "WINDOWS, CYGWIN"; elif [[ ${IS_MINGW} -gt 0 ]]; then echo "WINDOWS, MINGW-W64"; else echo UNKNOWN; fi; )";
+
+IS_WINDOWS="$(if [[ ${IS_WSL} -gt 0 ]] || [[ ${IS_CYGWIN} -gt 0 ]] || [[ ${IS_MINGW} -gt 0 ]]; then echo 1; else echo 0; fi; )";
+
+if [ "${VERBOSE}" == "1" ]; then
+	echo "IS_WINDOWS=${IS_WINDOWS}";
+	echo "IS_LINUX=${IS_LINUX}"; \
+	echo "IS_WSL=${IS_WSL}"; \
+	echo "THIS_DISTRO=${THIS_DISTRO}"; \
+	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
+	echo "IS_CENTOS=${IS_CENTOS}"; \
+	echo "IS_UBUNTU=${IS_UBUNTU}"; \
+	echo "IS_ALPINE=${IS_ALPINE}"; \
+	echo "IS_DEBIAN=${IS_DEBIAN}"; \
+	echo "IS_CYGWIN=${IS_CYGWIN}"; \
+	echo "IS_MINGW=${IS_MINGW}"; \
+fi;
+
+# ------------------------------------------------------------

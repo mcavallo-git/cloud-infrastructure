@@ -58,10 +58,11 @@ THIS_DISTRO="$(if [[ ${IS_RASPBIAN} -gt 0 ]]; then echo 'LINUX, RASPBIAN'; elif 
 IS_WINDOWS="$(if [[ ${IS_WSL} -gt 0 ]] || [[ ${IS_CYGWIN} -gt 0 ]] || [[ ${IS_MINGW} -gt 0 ]]; then echo 1; else echo 0; fi; )";
 
 if [ "${VERBOSE}" == "1" ]; then
+	echo "";
 	echo "IS_WINDOWS=${IS_WINDOWS}";
 	echo "IS_LINUX=${IS_LINUX}"; \
 	echo "IS_WSL=${IS_WSL}"; \
-	echo "THIS_DISTRO=${THIS_DISTRO}"; \
+	echo "";
 	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
 	echo "IS_CENTOS=${IS_CENTOS}"; \
 	echo "IS_UBUNTU=${IS_UBUNTU}"; \
@@ -69,8 +70,9 @@ if [ "${VERBOSE}" == "1" ]; then
 	echo "IS_DEBIAN=${IS_DEBIAN}"; \
 	echo "IS_CYGWIN=${IS_CYGWIN}"; \
 	echo "IS_MINGW=${IS_MINGW}";
-else
-	echo "${THIS_DISTRO}";
+	echo "";
 fi;
+
+echo "${THIS_DISTRO}";
 
 # ------------------------------------------------------------

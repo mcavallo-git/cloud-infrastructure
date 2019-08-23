@@ -57,7 +57,7 @@ IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat 
 
 IS_WINDOWS="$(if [[ ${IS_WSL} -gt 0 ]] || [[ ${IS_CYGWIN} -gt 0 ]] || [[ ${IS_MINGW} -gt 0 ]]; then echo 1; else echo 0; fi; )";
 
-THIS_OS="$(if [[ ${IS_WINDOWS} -gt 0 ]]; then echo 'WINDOWS'; elif [[ ${IS_LINUX} -gt 0 ]]; then echo 'LINUX'; else echo 'UNKNOWN'; fi; )";
+THIS_OS="$(if [[ ${IS_WSL} -gt 0 ]]; then echo 'WSL'; elif [[ ${IS_WINDOWS} -gt 0 ]]; then echo 'WINDOWS'; elif [[ ${IS_LINUX} -gt 0 ]]; then echo 'LINUX'; else echo 'UNKNOWN'; fi; )";
 
 THIS_DISTRO="$(if [[ ${IS_RASPBIAN} -gt 0 ]]; then echo 'RASPBIAN'; elif [[ ${IS_CENTOS} -gt 0 ]]; then echo 'CENTOS'; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo 'UBUNTU'; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo 'ALPINE'; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo 'DEBIAN'; elif [[ ${IS_CYGWIN} -gt 0 ]]; then echo 'CYGWIN'; elif [[ ${IS_MINGW} -gt 0 ]]; then echo 'MINGW-W64'; else echo 'UNKNOWN'; fi; )";
 

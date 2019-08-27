@@ -128,7 +128,7 @@ else
 		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/bin";
 		echo "";
 		echo "Updating \"${DESTINATION_DIR}\" from \"${SOURCE_DIR}\"...";
-		rsync --archive --chown="root:root" --chmod="D0755,F0755" "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
+		rsync --archive --chown="root:root" --chmod=D0755,F755 "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
 		# find "${DESTINATION_DIR}" -type d -exec chmod 0644 "{}" ";"; # Set directory permissions
 		# find "${DESTINATION_DIR}" -type f -exec chmod 0755 "{}" ";"; # Set file permissions
 		dos2unix --quiet /usr/local/bin/*; # Convert any CRLF files to force line-endings to be LF (only)

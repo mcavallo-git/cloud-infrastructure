@@ -16,7 +16,7 @@ exec 2>&1;
 #
 # Script must run as root or via sudo
 #
-if [ "$(id -un)" != "root" ]; then
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
 	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
@@ -89,14 +89,6 @@ else
 	# 	echo "  |--> ${EACH_EXE}";
 	# done;
 
-	# Show all SYSTEM configuration files-found
-	echo "";
-	echo "[SYSTEM] git config file(s) found:";
-	for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
-		echo "  |";
-		echo "  |--> ${EACH_CONFIG}";
-	done;
-
 	# Show all GLOBAL configuration files-found
 	echo "";
 	echo "[GLOBAL] git config file(s) found:";
@@ -105,64 +97,82 @@ else
 		echo "  |--> ${EACH_CONFIG}";
 	done;
 
+	# Show all SYSTEM configuration files-found
+	echo "";
+	echo "[SYSTEM] git config file(s) found:";
+	for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
+		echo "  |";
+		echo "  |--> ${EACH_CONFIG}";
+	done;
+
 	# ------------------------------------------------------------
 
 	# Apply a specific [ git config ] value to each file found, call this script with inline-params $1 and $2 as follows:
-	if [ -n "$1" ]; then
+	if [ -n "$1" ] && [ -n "$2" ]; then
+
+		# ------------------------------------------------------------
+		# [GLOBAL] SHOW & UPDATE EACH CONFIG-FILE
 
 		echo "";
-		echo "  [GLOBAL] - Show git configuration value:";
+		echo "[GLOBAL] - Show & Update Git Config-Value(s)";
+		echo "  |";
+		echo "  |--> Key: [$1]";
 		for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
-			echo "    |";
-			echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
+			# Show git config-value (BEFORE update)
 			GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
-			if [ "$?" != "0" ]; then
-				GIT_CONFIG_VALUE=" [NO-VALUE]";
+			if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+			echo "  |";
+			echo "  |----> File: \"${EACH_CONFIG}\"";
+			echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
+			if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
+				# Config-value is already up-to-date
+				echo "  |------> ✓ Already up-to-date";
+			else
+				# Perform update on git config-value
+				if [ "$2" == "--unset" ]; then
+					git config --file "${EACH_CONFIG}" --unset "$1";
+				else
+					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
+				fi;
+				# Show git config-value (AFTER update)
+				GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
+				if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+				echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
 			fi;
-			echo "          |-->  ${GIT_CONFIG_VALUE}";
 		done;
 
-		if [ -n "$2" ]; then
-			if [ "$2" == "--unset" ]; then
-				echo "  [GLOBAL] - Unsetting git configuration value:";
-				for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
-					echo "    |";
-					echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
-					echo "          |-->  $2";
-					git config --file "${EACH_CONFIG}" --unset "$1";
-				done;
-			else
-				echo "  [GLOBAL] - Setting git configuration value:";
-				for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
-					echo "    |";
-					echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
-					echo "          |-->  $2";
-					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
-				done;
-			fi;
-		fi;
+		# ------------------------------------------------------------
+		# [SYSTEM] SHOW & UPDATE EACH CONFIG-FILE
 
 		echo "";
-			echo "  [SYSTEM] - Show git configuration value:";
+		echo "[SYSTEM] - Show & Update Git Config-Value(s)";
+		echo "  |";
+		echo "  |--> Key: [$1]";
 		for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
-			echo "    |";
-			echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
+			# Show git config-value (BEFORE update)
 			GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
-			if [ "$?" != "0" ]; then
-				GIT_CONFIG_VALUE=" [NO-VALUE]";
+			if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+			echo "  |";
+			echo "  |----> File: \"${EACH_CONFIG}\"";
+			echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
+			if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
+				# Config-value is already up-to-date
+				echo "  |------> ✓ Already up-to-date";
+			else
+				# Perform update on git config-value
+				if [ "$2" == "--unset" ]; then
+					git config --file "${EACH_CONFIG}" --unset "$1";
+				else
+					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
+				fi;
+				# Show git config-value (AFTER update)
+				GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
+				if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+				echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
 			fi;
-			echo "          |-->  ${GIT_CONFIG_VALUE}";
 		done;
 
-		if [ -n "$2" ]; then
-			echo "  [SYSTEM] - Setting git configuration value:";
-			for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
-				echo "    |";
-				echo "    |--> $1   (in file: \"${EACH_CONFIG}\")";
-				echo "          |-->  $2";
-				git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
-			done;
-		fi;
+		# ------------------------------------------------------------
 
 	else
 

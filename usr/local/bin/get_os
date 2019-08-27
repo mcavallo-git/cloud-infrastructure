@@ -16,8 +16,6 @@ exec 2>&1;
 
 fi;
 
-RETURN_STRING="";
-
 # ------------------------------------------------------------
 #
 # Verbosity setting as an argument
@@ -40,14 +38,26 @@ THIS_KERNEL_NAME="$(uname -s;)";
 #
 # Type of OS (Operating System)
 #
-IS_LINUX=$(if [[ $(uname -s | grep -i Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
 
-# Verify if Linux environment is actually an instance of WSL (Windows Subsystem for Linux)
-IS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi;);
-IS_CYGWIN=$(if [[ $(uname -s | grep -i Cygwin | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-IS_MINGW=$(if [[ $(uname -s | grep -i Mingw | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]]; then
+	if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
+		THIS_OS_TYPE='WSL';
+	else
+		THIS_OS_TYPE='LINUX';
+	fi;
+elif [[ "${OSTYPE}" == "darwin"* ]]; then
+	THIS_OS_TYPE='MAC';
+else
+	THIS_OS_TYPE='WINDOWS';
+fi;
 
-# IS_RASPI_CPU=$(if [ "$(uname -s)" == "Linux" ] && [[ $(uname -m | grep arm | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+IS_WINDOWS=$(if [ "${THIS_OS_TYPE}" == "WINDOWS" ]; then echo 1; else echo 0; fi;);
+IS_LINUX=$(if [ "${THIS_OS_TYPE}" == "LINUX" ]; then echo 1; else echo 0; fi;);
+IS_MAC=$(if [ "${THIS_OS_TYPE}" == "MAC" ]; then echo 1; else echo 0; fi;);
+IS_WSL=$(if [ "${THIS_OS_TYPE}" == "WSL" ]; then echo 1; else echo 0; fi;);
+
+IS_CYGWIN=$(if [[ $(uname -s | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "cygwin" ]; then echo 1; else echo 0; fi;);
+IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
 IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
@@ -55,18 +65,42 @@ IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat 
 IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 
-IS_WINDOWS="$(if [[ ${IS_WSL} -gt 0 ]] || [[ ${IS_CYGWIN} -gt 0 ]] || [[ ${IS_MINGW} -gt 0 ]]; then echo 1; else echo 0; fi; )";
+# Get this host's shell-distro
+THIS_DISTRO="UNKNOWN";
+if [[ ${IS_WINDOWS} -gt 0 ]]; then
+	# Windows shell-distro(s)
+	if [[ ${IS_CYGWIN} -gt 0 ]]; then
+		THIS_DISTRO="CYGWIN";
+	elif [[ ${IS_MINGW} -gt 0 ]]; then
+		THIS_DISTRO="MINGW";
+	fi;
+elif [[ ${IS_LINUX} -gt 0 ]]; then
+	# Linux shell-distro(s)
+	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
+		THIS_DISTRO="RASPBIAN";
+	elif [[ ${IS_CENTOS} -gt 0 ]]; then
+		THIS_DISTRO="CENTOS";
+	elif [[ ${IS_UBUNTU} -gt 0 ]]; then
+		THIS_DISTRO="UBUNTU";
+	elif [[ ${IS_ALPINE} -gt 0 ]]; then
+		THIS_DISTRO="ALPINE";
+	elif [[ ${IS_DEBIAN} -gt 0 ]]; then
+		THIS_DISTRO="DEBIAN";
+	fi;
+fi;
 
-THIS_OS="$(if [[ ${IS_WSL} -gt 0 ]]; then echo 'WSL'; elif [[ ${IS_WINDOWS} -gt 0 ]]; then echo 'WINDOWS'; elif [[ ${IS_LINUX} -gt 0 ]]; then echo 'LINUX'; else echo 'UNKNOWN'; fi; )";
-
-THIS_DISTRO="$(if [[ ${IS_RASPBIAN} -gt 0 ]]; then echo 'RASPBIAN'; elif [[ ${IS_CENTOS} -gt 0 ]]; then echo 'CENTOS'; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo 'UBUNTU'; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo 'ALPINE'; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo 'DEBIAN'; elif [[ ${IS_CYGWIN} -gt 0 ]]; then echo 'CYGWIN'; elif [[ ${IS_MINGW} -gt 0 ]]; then echo 'MINGW-W64'; else echo 'UNKNOWN'; fi; )";
-
-RETURN_STRING="${THIS_OS}, ${THIS_DISTRO}";
+# Set the final OS value (to return)
+THIS_OS="${THIS_OS_TYPE}, ${THIS_DISTRO}";
 
 if [ "${VERBOSE}" == "1" ]; then
 	echo "";
+	echo "THIS_OS=${THIS_OS}";
+	echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
+	echo "THIS_DISTRO=${THIS_DISTRO}";
+	echo "";
 	echo "IS_WINDOWS=${IS_WINDOWS}";
 	echo "IS_LINUX=${IS_LINUX}"; \
+	echo "IS_MAC=${IS_MAC}"; \
 	echo "IS_WSL=${IS_WSL}"; \
 	echo "";
 	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
@@ -79,6 +113,11 @@ if [ "${VERBOSE}" == "1" ]; then
 	echo "";
 fi;
 
-echo "${RETURN_STRING}";
+echo "${THIS_OS}";
 
-# ------------------------------------------------------------
+#	------------------------------------------------------------
+#	Citation(s)
+#
+#		stackoverflow.com  |  "How to detect the OS from a Bash script?"  |  https://stackoverflow.com/a/8597411
+#
+#	------------------------------------------------------------

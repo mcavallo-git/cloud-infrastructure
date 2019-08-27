@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LOCAL_SBIN="/usr/local/sbin/jenkins_war_update" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+# LOCAL_SBIN="/usr/local/sbin/update_jenkins_warfile" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #
@@ -72,8 +72,15 @@ else
 			# Skip buggy Jenkins runtime(s)
 			echo "";
 			echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
-			echo "$(date +'%D  %r')     |-->  Version: 2.185";
+			echo "$(date +'%D  %r')     |-->  Version: ${JENKINS_VERSION_DOWNLOADED}";
 			echo "$(date +'%D  %r')     |-->  Reason: Has a bug (error) in its Java's SSH runtime which breaks ability to SSH into nodes as-intended (all nodes go offline)";
+
+		# elif [ "${JENKINS_VERSION_DOWNLOADED}" == "OTHER-BUGGY-VERSION" ]; then
+		# 	# Skip buggy Jenkins runtime(s)
+		# 	echo "";
+		# 	echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
+		# 	echo "$(date +'%D  %r')     |-->  Version: OTHER-BUGGY-VERSION";
+		# 	echo "$(date +'%D  %r')     |-->  Reason: Explanation of why this version is buggy and shouldn't be used in production";
 
 		elif [ "${JENKINS_VERSION_SYSTEM}" == "${JENKINS_VERSION_DOWNLOADED}" ]; then
 			# No update to version #

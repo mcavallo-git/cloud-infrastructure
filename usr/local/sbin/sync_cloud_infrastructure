@@ -124,25 +124,29 @@ else
 		# ------------------------------------------------------------
 		# Sync [ /usr/local/bin ] files (e.g. non-admin commands)
 		# ------------------------------------------------------------
+		DESTINATION_DIR="/usr/local/bin";
+		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/bin";
 		echo "";
-		echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
-		cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
-		chown "root:root" /usr/local/bin/*;
-		chmod 0755 /usr/local/bin/*;
-		dos2unix --quiet /usr/local/bin/*;
+		echo "Updating \"${DESTINATION_DIR}\" from \"${SOURCE_DIR}\"...";
+		rsync --archive --chown="root:root" "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
+		find "${DESTINATION_DIR}" -type d -exec chmod 0644 "{}" ";"; # Set directory permissions
+		find "${DESTINATION_DIR}" -type f -exec chmod 0755 "{}" ";"; # Set file permissions
+		dos2unix --quiet /usr/local/bin/*; # Convert any CRLF files to force line-endings to be LF (only)
 
 		# ------------------------------------------------------------
 		# Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
 		# ------------------------------------------------------------
+		DESTINATION_DIR="/usr/local/sbin";
+		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/sbin";
 		echo "";
-		echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
-		cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
-		chown "root:root" /usr/local/sbin/*;
-		chmod 0755 /usr/local/sbin/*;
-		dos2unix --quiet /usr/local/sbin/*;
+		echo "Updating \"${DESTINATION_DIR}\" from \"${SOURCE_DIR}\"...";
+		rsync --archive --chown="root:root" "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
+		find "${DESTINATION_DIR}" -type d -exec chmod 0644 "{}" ";"; # Set directory permissions
+		find "${DESTINATION_DIR}" -type f -exec chmod 0755 "{}" ";"; # Set file permissions
+		dos2unix --quiet /usr/local/sbin/*; # Convert any CRLF files to force line-endings to be LF (only)
 
 		echo "";
-		echo "Local bin & sbin are now synced with 'origin/master'";
+		echo "Local bin & sbin are in-sync & up-to-date";
 		echo "";
 
 		# ------------------------------------------------------------

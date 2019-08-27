@@ -74,7 +74,7 @@ if [[ ${IS_WINDOWS} -gt 0 ]]; then
 	elif [[ ${IS_MINGW} -gt 0 ]]; then
 		THIS_DISTRO="MINGW";
 	fi;
-elif [[ ${IS_LINUX} -gt 0 ]]; then
+elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 	# Linux shell-distro(s)
 	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
 		THIS_DISTRO="RASPBIAN";

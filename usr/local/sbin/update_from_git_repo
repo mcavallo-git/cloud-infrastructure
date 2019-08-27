@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LOCAL_SBIN="/usr/local/sbin/update_bins_from_sftp" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+# LOCAL_SBIN="/usr/local/sbin/update_from_git_repo" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #
@@ -143,7 +143,7 @@ else
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-				echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)"
+				echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
 				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
@@ -173,7 +173,12 @@ else
 		done;
 		echo "";
 
-		
+		# ------------------------------------------------------------
+		# Remove old/renamed scripts (if found to exist)
+		# ------------------------------------------------------------
+		TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+
+
 	fi;
 
 	exit ${EXIT_CODE};

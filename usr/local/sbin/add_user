@@ -23,7 +23,7 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 elif [ -z "${USER_NAME}" ]; then
 	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No Username defined (Required)";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Required variable  \$USER_NAME  found to be empty/unset";
 	echo "                       |";
 	echo "                       |--> Example call -->$  \$USER_NAME=\"[USERNAME]\" && $(basename \"${0}\");";
 	echo "";

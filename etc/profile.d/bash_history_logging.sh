@@ -83,7 +83,6 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		fi;
 		export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
 
-
 	fi;
 
 fi;

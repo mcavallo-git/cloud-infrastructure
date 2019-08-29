@@ -6,7 +6,9 @@
 
 ***
 <h1>Cloud Infrastructure</h1>
-<h4>SYNC-1-LINER</h4>
+
+***
+<h2>SYNC-1-LINER</h2>
 <div>
 
 ```

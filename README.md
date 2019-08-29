@@ -6,7 +6,7 @@
 
 ***
 <h1>Cloud Infrastructure</h1>
-<h4>Quick-Sync 1-Liner (Shellscript)</h4>
+<h4>Sync Server/Workstation via this Cloud-Sync 1-Liner (Shellscript)</h4>
 
 ```
 

@@ -18,8 +18,8 @@ REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastr
 
 ***
 <h3>Linux Filesystem Hierarchy (Overview)</h3>
-# <details><summary><i>Show/Hide Content</i></summary>
-# <p>
+<!-- <details><summary><i>Show/Hide Content</i></summary> -->
+<!-- <p> -->
 
 ```
 HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
@@ -496,8 +496,8 @@ Linux                                                 2017-11-26                
 
        about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
 ```
-# </p>
-# </details>
+<!-- </p> -->
+<!-- </details> -->
 
 #### [hier(7) - Linux man page](https://linux.die.net/man/7/hier)
 

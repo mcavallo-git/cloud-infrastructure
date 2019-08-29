@@ -10,7 +10,7 @@
 
 <!-- ------------------------------------------------------------ -->
 
-<hr />
+
 ***
 <h3>Cloud Infrastructure</h3>
 <h3>Sync Cloud Repository to a Server/Workstation (1-Liner - Shellscript)</h3>

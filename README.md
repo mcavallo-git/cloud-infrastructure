@@ -6,13 +6,12 @@
 
 ***
 <h1>Cloud Infrastructure</h1>
-<h4>Sync Server/Workstation via this Cloud-Sync 1-Liner (Shellscript)</h4>
-
+<h4>Sync Server/Workstation via this Cloud-Sync 1-Liner (Shellscript):</h4>
+<span style="margin-left:20px;" >
 ```
-
 REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure"" && LOCAL_CLOUD_SYNC="${HOME}/$(basename ${REMOTE_CLOUD_SYNC})" && sudo wget "${REMOTE_CLOUD_SYNC}" --output-document="${LOCAL_CLOUD_SYNC}" && chmod 0700 "${LOCAL_CLOUD_SYNC}" && . "${LOCAL_CLOUD_SYNC}" && rm -f "${LOCAL_CLOUD_SYNC}";
-
 ```
+</span>
 
 <!-- ------------------------------------------------------------ -->
 

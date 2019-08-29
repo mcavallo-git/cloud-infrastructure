@@ -16,10 +16,21 @@ exec 2>&1;
 #
 # Script must run as root or via sudo
 #
-if [ "$(id -un)" != "root" ]; then
+# if [ "$(id -un)" != "root" ]; then
+# 	echo "";
+# 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+# 	sleep 30;
+# 	exit 1;
+# el
+if [ -z "${USER_NAME}" ]; then
 	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No Username defined (Required)";
+	echo "                       |";
+	echo "                       |--> Example call -->$  \$USER_NAME=\"[USERNAME]\" && . \"$(realpath ${0})\";";
+	echo "";
+	sleep 30;
 	exit 1;
+
 else
 	# ------------------------------------------------------------
 	#	   Set the username, ID, homedir, etc.
@@ -27,23 +38,27 @@ else
 
 	# User Info
 	USER_NAME="newuser";
-	USER_ID="1234";
-	USER_SHELL="/bin/bash";
+	USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
+	USER_SHELL="${USER_SHELL:-/bin/bash}";
 
 	# User Directory-Info
-	DIR_USER_HOME="/home/${USER_NAME}"; CREATE_USERHOME="1";
-	DIR_USER_SSH="${DIR_USER_HOME}/.ssh"; CREATE_USERSSH="1";
+	DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
+	DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
+	
+	CREATE_USERHOME="${CREATE_USERHOME:-1}";
+	CREATE_USERSSH="${CREATE_USERSSH:-1}";
 
 	# Primary Group Info
-	GROUP_NAME="${USER_NAME}"; CREATE_GROUP="1";
-	GROUP_ID="${USER_ID}";
+	GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
+	GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
+	CREATE_GROUP="${CREATE_GROUP:-1}";
 
 	# Options - Password
-	SET_USER_PASSWORD="0";
+	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
 
 	# Options - Sudo
-	ADD_USER_TO_SUDOERS="0";
-	SUDO_REQUIRES_PASS="0";
+	ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS:-0}";
+	SUDO_REQUIRES_PASS="${SUDO_REQUIRES_PASS:-0}";
 
 	#	------------------------------------------------------------
 	#	   Values below are based off of the above values
@@ -54,7 +69,7 @@ else
 		echo "Must run \"${0}\" as user 'root'.";
 		exit 1;
 
-	elif [ "$(id ${USER_ID} 2>/dev/null)" != "" ]; then
+	elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "$(id ${USER_ID} 2>/dev/null)" != "" ]; then
 
 		echo "User ID \"${USER_ID}\" already taken, please choose another and re-run this script.";
 		exit 1;
@@ -73,9 +88,24 @@ else
 
 	else
 
-		groupadd --gid "${GROUP_ID}" "${GROUP_NAME}";
 
-		useradd --create-home --uid "${USER_ID}" --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+		if [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then
+			groupadd "${GROUP_NAME}";
+			useradd --create-home --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+
+		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
+			groupadd "${GROUP_NAME}";
+			useradd --create-home --uid "${USER_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+
+		elif [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
+			groupadd --gid "${GROUP_ID}" "${GROUP_NAME}";
+			useradd --create-home --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+
+		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then
+			groupadd --gid "${GROUP_ID}" "${GROUP_NAME}";
+			useradd --create-home --uid "${USER_ID}" --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+
+		fi;
 
 		if [ "${CREATE_USERSSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
 			# Create user's SSH directory "~/.ssh"

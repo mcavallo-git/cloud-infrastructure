@@ -22,22 +22,15 @@ if [ "$(id -un)" != "root" ]; then
 	sleep 30;
 	exit 1;
 
-elif [ -z "${USER_NAME}" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Required variable  \$USER_NAME  found to be empty/unset";
-	echo "                       |";
-	echo "                       |--> Example call -->$  \$USER_NAME=\"[USERNAME]\" && $(basename \"${0}\");";
-	echo "";
-	sleep 30;
-	exit 1;
-
 else
 	# ------------------------------------------------------------
 	#	   Set the username, ID, homedir, etc.
 	# ------------------------------------------------------------
 
 	# User Info
-	USER_NAME="newuser";
+	while [ -z "${USER_NAME}" ]; do
+		echo ""; read -p " [ $(basename "${0}";) ]  Choose a Username:  " -t 60 -r; USER_NAME="${REPLY}";
+	done;
 	USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
 	USER_SHELL="${USER_SHELL:-/bin/bash}";
 

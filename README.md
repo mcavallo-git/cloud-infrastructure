@@ -4,15 +4,16 @@
 
 <!-- ------------------------------------------------------------ -->
 
-<h1>cloud-infrastructure</h1>
+***
+<h1>Cloud Infrastructure</h1>
 <h6><i>DevOps tools, scripts, & more</i></h6>
 
 <!-- ------------------------------------------------------------ -->
 
 <hr />
-<h3>Sync this Repo (via Bash)</h3>
-<details><summary><i>Show/Hide Content</i></summary>
-<p>
+***
+<h3>Cloud Infrastructure</h3>
+<h3>Sync Cloud Repository to a Server/Workstation (1-Liner - Shellscript)</h3>
 
 ```
 
@@ -20,11 +21,12 @@ REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastr
 
 ```
 
-</p>
-</details>
-
 <!-- ------------------------------------------------------------ -->
 
+***
+<h3>Linux Filesystem Hierarchy (Overview)</h3>
+<details><summary><i>Show/Hide Content</i></summary>
+<p>
 
 ```
 HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
@@ -501,6 +503,8 @@ Linux                                                 2017-11-26                
 
        about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
 ```
+</p>
+</details>
 
 #### [hier(7) - Linux man page](https://linux.die.net/man/7/hier)
 

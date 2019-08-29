@@ -1,6 +1,6 @@
 <!-- ------------------------------------------------------------ -->
 
-<!-- [THIS FILE ON GITHUB] https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md#sync-serverworkstation-via-this-cloud-sync-1-liner-shellscript [THIS FILE ON GITHUB] -->
+<!-- [THIS FILE ON GITHUB] https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md#sync-1-liner [THIS FILE ON GITHUB] -->
 
 <!-- ------------------------------------------------------------ -->
 

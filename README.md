@@ -1,12 +1,12 @@
 <!-- ------------------------------------------------------------ -->
 
-<!-- [THIS FILE ON GITHUB] https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md#cloud-infrastructure [THIS FILE ON GITHUB] -->
+<!-- [THIS FILE ON GITHUB] https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md#sync-serverworkstation-via-this-cloud-sync-1-liner-shellscript [THIS FILE ON GITHUB] -->
 
 <!-- ------------------------------------------------------------ -->
 
 ***
 <h1>Cloud Infrastructure</h1>
-<h4>Sync Server/Workstation via this Cloud-Sync 1-Liner (Shellscript):</h4>
+<h4>SYNC-1-LINER</h4>
 <div>
 ```
 

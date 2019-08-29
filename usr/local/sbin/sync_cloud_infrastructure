@@ -2,6 +2,13 @@
 #
 # LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
+#	------------------------------------------------------------
+#
+#####  [ SINGLE LINE OF CODE TO SYNC THIS REPO ]:
+#
+#	REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure"" && LOCAL_CLOUD_SYNC="${HOME}/$(basename ${REMOTE_CLOUD_SYNC})" && sudo wget "${REMOTE_CLOUD_SYNC}" --output-document="${LOCAL_CLOUD_SYNC}" && chmod 0700 "${LOCAL_CLOUD_SYNC}" && . "${LOCAL_CLOUD_SYNC}" && rm -f "${LOCAL_CLOUD_SYNC}";
+#
+#
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile

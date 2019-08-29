@@ -6,14 +6,7 @@
 
 ***
 <h1>Cloud Infrastructure</h1>
-<h6><i>DevOps tools, scripts, & more</i></h6>
-
-<!-- ------------------------------------------------------------ -->
-
-
-***
-<h3>Cloud Infrastructure</h3>
-<h3>Sync Cloud Repository to a Server/Workstation (1-Liner - Shellscript)</h3>
+<h4>Quick-Sync 1-Liner (Shellscript)</h4>
 
 ```
 

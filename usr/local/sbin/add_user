@@ -90,19 +90,19 @@ else
 
 
 		if [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then
-			groupadd "${GROUP_NAME}" 2> "/dev/null";
+			if [ "${CREATE_GROUP}" == "1" ]; then groupadd "${GROUP_NAME}" 2> "/dev/null"; fi;
 			useradd --create-home --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
 
 		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
-			groupadd "${GROUP_NAME}" 2> "/dev/null";
+			if [ "${CREATE_GROUP}" == "1" ]; then groupadd "${GROUP_NAME}" 2> "/dev/null"; fi;
 			useradd --create-home --uid "${USER_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
 
 		elif [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
-			groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null";
+			if [ "${CREATE_GROUP}" == "1" ]; then groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null"; fi;
 			useradd --create-home --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
 
 		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then
-			groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null";
+			if [ "${CREATE_GROUP}" == "1" ]; then groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null"; fi;
 			useradd --create-home --uid "${USER_ID}" --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
 
 		fi;

@@ -21,6 +21,7 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	sleep 30;
 	exit 1;
+
 elif [ -z "${USER_NAME}" ]; then
 	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Required variable  \$USER_NAME  found to be empty/unset";

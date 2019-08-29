@@ -28,7 +28,12 @@ else
 
 	# User Info
 	while [ -z "${USER_NAME}" ]; do
-		echo ""; read -p " [ $(basename "${0}";) ]  Choose a Username:  " -t 60 -r; USER_NAME="${REPLY}";
+		echo "";
+		read -p " [ $(basename "${0}";) ]  Enter a Username:  " -t 60 -r;
+		USER_NAME="${REPLY}";
+		if [ -n "${USER_NAME}" ]; then
+			break;
+		fi;
 	done;
 	USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
 	USER_SHELL="${USER_SHELL:-/bin/bash}";

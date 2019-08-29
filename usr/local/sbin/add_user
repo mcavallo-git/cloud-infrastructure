@@ -35,7 +35,10 @@ else
 			break;
 		fi;
 	done;
-	USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
+
+	# USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
+	# GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
+	# GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
 	USER_SHELL="${USER_SHELL:-/bin/bash}";
 
 	# User Directory-Info
@@ -44,11 +47,6 @@ else
 	
 	CREATE_USERHOME="${CREATE_USERHOME:-1}";
 	CREATE_USERSSH="${CREATE_USERSSH:-1}";
-
-	# Primary Group Info
-	GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
-	GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
-	CREATE_GROUP="${CREATE_GROUP:-1}";
 
 	# Options - Password
 	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
@@ -61,20 +59,29 @@ else
 	#	   Values below are based off of the above values
 	# ------------------------------------------------------------
 
-	if [ "$(id -un)" != "root" ]; then
-
-		echo "Must run \"${0}\" as user 'root'.";
+	if [ -z "${USER_NAME}" ]; then
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: \$USER_NAME is empty/unset";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "$(id ${USER_ID} 2>/dev/null)" != "" ]; then
+	elif [[ -v USER_NAME ]] \
+			&& [[ -v USER_ID ]] \
+			&& [[ "${USER_ID}" =~ ^-?[0-9]+$ ]] \
+			&& [ "$(id -u ${USER_ID} >/dev/null 2>&1; echo $?;)" == "0" ] \
+			&& [ "$(id -un ${USER_ID})" != "${USER_NAME}" ]; then
 
-		echo "User ID \"${USER_ID}\" already taken, please choose another and re-run this script.";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: User ID \"${USER_ID}\" is already taken by user \"$(id -un ${USER_ID})\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [ "${CREATE_GROUP}" == "1" ] && [ "$(getent group ${GROUP_ID} 2>/dev/null)" != "" ]; then
+	elif [[ -v GROUP_NAME ]] \
+			&& [[ -v GROUP_ID ]] \
+			&& [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]] \
+			&& [ "$(id -gn ${GROUP_ID} >/dev/null 2>&1; echo $?;)" == "0" ] \
+			&& [ "$(id -gn ${GROUP_ID})" != "${GROUP_NAME}" ]; then
 
-		echo "Group ID \"${GROUP_ID}\" already taken, please choose another and re-run this script.";
-		echo "If this is desired, please set \$CREATE_GROUP to \"0\" and re-run this script.";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Group-ID \"${GROUP_ID}\" resolved to Group Name \"$(id -gn ${GROUP_ID})\", which is NOT equal to the declared Group-Name value of \"${GROUP_NAME}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
 	elif [ "${CREATE_USERHOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
@@ -85,24 +92,56 @@ else
 
 	else
 
+		# ------------------------------------------------------------
+		# GROUP-CREATION
+		if [[ -v GROUP_NAME ]] && [ "$(id -g ${GROUP_NAME} >/dev/null 2>&1; echo $?;)" == "0" ]; then
+			GARGS="";
 
-		if [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then
-			if [ "${CREATE_GROUP}" == "1" ]; then groupadd "${GROUP_NAME}" 2> "/dev/null"; fi;
-			useradd --create-home --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
+			# Group-ID
+			if [ -n "${GROUP_ID}" ]; then
+				GARGS="${GARGS} --gid \"${GROUP_ID}\"";
+			fi;
+			GARGS="$(echo -e "${GARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 
-		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" == "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
-			if [ "${CREATE_GROUP}" == "1" ]; then groupadd "${GROUP_NAME}" 2> "/dev/null"; fi;
-			useradd --create-home --uid "${USER_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
-
-		elif [ "${USER_ID}" == "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then #[[ "${USER_ID}" =~ ^-?[0-9]+$ ]]
-			if [ "${CREATE_GROUP}" == "1" ]; then groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null"; fi;
-			useradd --create-home --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
-
-		elif [ "${USER_ID}" != "NEXT_AVAILABLE_ID" ] && [ "${GROUP_ID}" != "NEXT_AVAILABLE_ID" ]; then
-			if [ "${CREATE_GROUP}" == "1" ]; then groupadd --gid "${GROUP_ID}" "${GROUP_NAME}" 2> "/dev/null"; fi;
-			useradd --create-home --uid "${USER_ID}" --gid "${GROUP_ID}" --home-dir "${DIR_USER_HOME}" --shell "${USER_SHELL}" "${USER_NAME}";
-
+			# Create the Group
+			groupadd "${GARGS}" "${GROUP_NAME}";
+			GROUP_ID=$(id -gn "${GROUP_NAME}");
 		fi;
+
+		# ------------------------------------------------------------
+		# USER-CREATION
+		UARGS="";
+
+		# Create-Homedir
+		if [[ -v CREATE_USERHOME ]]; && [ "${CREATE_USERHOME}" == "1" ]; then
+			UARGS="${UARGS} --create-home";
+		fi;
+
+		# Place-Homedir
+		if [[ -v DIR_USER_HOME ]]; && [ -n "${DIR_USER_HOME}" ]; then
+			UARGS="${UARGS} --home-dir \"${DIR_USER_HOME}\"";
+		fi;
+
+		# UID
+		if [[ -v USER_ID ]] && [[ "${USER_ID}" =~ ^-?[0-9]+$ ]]; then
+			UARGS="${UARGS} --uid \"${USER_ID}\"";
+		fi;
+
+		# Group-ID ( & Name )
+		if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
+			UARGS="${UARGS} --groups \"${GROUP_ID}\"";
+		elif [[ -v GROUP_NAME ]] && [[ -n "${GROUP_NAME}" ]]; then
+			UARGS="${UARGS} --groups \"${GROUP_NAME}\""; fi;
+		fi;
+
+		# Shell
+		if [[ -v USER_SHELL ]]; && [ -n "${USER_SHELL}" ]; then
+			UARGS="${UARGS} --shell \"${USER_SHELL}\"";
+		fi;
+
+		# Create the User
+		UARGS="$(echo -e "${UARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+		useradd "${UARGS}" "${USER_NAME}";
 
 		if [ "${CREATE_USERSSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
 			# Create user's SSH directory "~/.ssh"
@@ -115,23 +154,22 @@ else
 		# Make user a sudoer (able to run as root using 'sudo' command)
 		if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then
 
+			# Add user to the "sudo" usergroup (if not already in it)
+			SUDO_GROUP="sudo";
+			if [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
+				usermod --append --groups "${SUDO_GROUP}" "${USER_NAME}";
+			fi;
+
+			# Add user-named-file into the sudoer.d directory to strengthen logins (and get away from typed passwords)
 			SUDOER_FILEPATH="/etc/sudoers.d/${USER_NAME}";
-
-			# Add user to the 'sudo' usergroup (sudoers)
-			usermod --append --groups "sudo" "${USER_NAME}";
-
 			if [ "${SUDO_REQUIRES_PASS}" == "0" ]; then
-
 				# Choice 1/2: No password required for user to run 'sudo' commands
 				echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "${SUDOER_FILEPATH}";
 				chmod 440 "${SUDOER_FILEPATH}";
-
 			else
-
 				# Choice 2/2: Require a password when user runs 'sudo' commands
 				echo "${USER_NAME} ALL=(ALL) ALL" > "${SUDOER_FILEPATH}";
 				chmod 440 "${SUDOER_FILEPATH}";
-
 			fi;
 
 			# Refer to "/etc/ssh/sshd_config" for more-advanced SSH config
@@ -144,7 +182,6 @@ else
 			#				[Enter password] > ENTER
 			#			[Confirm password] > ENTER
 		fi;
-		
 		exit 0;
 
 	fi;

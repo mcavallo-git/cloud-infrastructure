@@ -25,7 +25,7 @@ elif [ -z "${USER_NAME}" ]; then
 	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No Username defined (Required)";
 	echo "                       |";
-	echo "                       |--> Example call -->$  \$USER_NAME=\"[USERNAME]\" && . \"$(realpath ${0})\";";
+	echo "                       |--> Example call -->$  \$USER_NAME=\"[USERNAME]\" && $(basename \"${0}\");";
 	echo "";
 	sleep 30;
 	exit 1;

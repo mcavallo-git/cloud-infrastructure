@@ -115,12 +115,12 @@ else
 		UARGS="";
 
 		# Create Home-Directory (Y/N)
-		if [[ -v CREATE_HOME ]]; && [ "${CREATE_HOME}" == "1" ]; then
+		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
 			UARGS="${UARGS} --create-home";
 		fi;
 
 		# User Home-Directory
-		if [[ -v DIR_USER_HOME ]]; && [ -n "${DIR_USER_HOME}" ]; then
+		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
 			UARGS="${UARGS} --home-dir \"${DIR_USER_HOME}\"";
 		fi;
 
@@ -137,7 +137,7 @@ else
 		fi;
 
 		# User Shell
-		if [[ -v USER_SHELL ]]; && [ -n "${USER_SHELL}" ]; then
+		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
 			UARGS="${UARGS} --shell \"${USER_SHELL}\"";
 		fi;
 

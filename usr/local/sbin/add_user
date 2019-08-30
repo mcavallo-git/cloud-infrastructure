@@ -22,11 +22,11 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 
 else
-	# ------------------------------------------------------------
-	#	   Set the username, ID, homedir, etc.
-	# ------------------------------------------------------------
 
-	# User Info
+	set -e; # Exit immediately if a command exits with a non-zero status
+	set -x; # Print commands and their arguments as they are executed
+
+	# If no username given, ask terminal user for username
 	while [ -z "${USER_NAME}" ]; do
 		echo "";
 		read -p " Create a user with what username?   " -t 60 -r;

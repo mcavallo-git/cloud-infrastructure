@@ -29,7 +29,7 @@ else
 	# User Info
 	while [ -z "${USER_NAME}" ]; do
 		echo "";
-		read -p " [ $(basename "${0}";) ]  Enter a Username:  " -t 60 -r;
+		read -p " Create a user with what username?   " -t 60 -r;
 		USER_NAME="${REPLY}";
 		if [ -n "${USER_NAME}" ]; then
 			break;

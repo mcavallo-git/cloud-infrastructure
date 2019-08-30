@@ -45,8 +45,8 @@ else
 	DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
 	DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
 	
-	CREATE_USERHOME="${CREATE_USERHOME:-1}";
-	CREATE_USERSSH="${CREATE_USERSSH:-1}";
+	CREATE_HOME="${CREATE_HOME:-1}";
+	CREATE_HOME_SSH="${CREATE_HOME_SSH:-1}";
 
 	# Options - Password
 	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
@@ -84,10 +84,10 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [ "${CREATE_USERHOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
+	elif [ "${CREATE_HOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
 
 		echo "Home Directory already exists: \"${DIR_USER_HOME}\".";
-		echo "If you still want to use this directory, set \$CREATE_USERHOME to \"0\" and re-run this script.";
+		echo "If you still want to use this directory, set \$CREATE_HOME to \"0\" and re-run this script.";
 		exit 1;
 
 	else
@@ -101,6 +101,8 @@ else
 			if [ -n "${GROUP_ID}" ]; then
 				GARGS="${GARGS} --gid \"${GROUP_ID}\"";
 			fi;
+
+			# Trim whitespace
 			GARGS="$(echo -e "${GARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 
 			# Create the Group
@@ -112,44 +114,45 @@ else
 		# USER-CREATION
 		UARGS="";
 
-		# Create-Homedir
-		if [[ -v CREATE_USERHOME ]]; && [ "${CREATE_USERHOME}" == "1" ]; then
+		# Create Home-Directory (Y/N)
+		if [[ -v CREATE_HOME ]]; && [ "${CREATE_HOME}" == "1" ]; then
 			UARGS="${UARGS} --create-home";
 		fi;
 
-		# Place-Homedir
+		# User Home-Directory
 		if [[ -v DIR_USER_HOME ]]; && [ -n "${DIR_USER_HOME}" ]; then
 			UARGS="${UARGS} --home-dir \"${DIR_USER_HOME}\"";
 		fi;
 
-		# UID
+		# User ID
 		if [[ -v USER_ID ]] && [[ "${USER_ID}" =~ ^-?[0-9]+$ ]]; then
 			UARGS="${UARGS} --uid \"${USER_ID}\"";
 		fi;
 
-		# Group-ID ( & Name )
+		# User Default Group (Group-ID/Group-Name)
 		if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
 			UARGS="${UARGS} --groups \"${GROUP_ID}\"";
 		elif [[ -v GROUP_NAME ]] && [[ -n "${GROUP_NAME}" ]]; then
 			UARGS="${UARGS} --groups \"${GROUP_NAME}\""; fi;
 		fi;
 
-		# Shell
+		# User Shell
 		if [[ -v USER_SHELL ]]; && [ -n "${USER_SHELL}" ]; then
 			UARGS="${UARGS} --shell \"${USER_SHELL}\"";
 		fi;
 
-		# Create the User
+		# Trim whitespace
 		UARGS="$(echo -e "${UARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+
+		# Create the User
 		useradd "${UARGS}" "${USER_NAME}";
 
-		if [ "${CREATE_USERSSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
+		if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
 			# Create user's SSH directory "~/.ssh"
 			mkdir "${DIR_USER_SSH}";
 			chmod 0700 "${DIR_USER_SSH}";
 			chown "${USER_ID}" "${DIR_USER_SSH}";
 		fi;
-
 
 		# Make user a sudoer (able to run as root using 'sudo' command)
 		if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then

@@ -131,8 +131,7 @@ else
 		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/bin";
 		echo -e "\nUpdating \"${DESTINATION_DIR}\"...\n";
 		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod=D0755,F755 "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
-		find "${DESTINATION_DIR}" -type d -exec chmod 0755 "{}" ";"; # Ensure directory permissions are set as-intended
-		find "${DESTINATION_DIR}" -type f -exec chmod 755 "{}" ";"; # Ensure file permissions are set as-intended
+		chmod -R 0755 "${DESTINATION_DIR}"; # Ensure file & directory permissions are set as-intended
 		dos2unix --quiet /usr/local/bin/*; # Convert any CRLF files to force line-endings to be LF (only)
 
 		# ------------------------------------------------------------
@@ -142,8 +141,7 @@ else
 		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/sbin";
 		echo -e "\nUpdating \"${DESTINATION_DIR}\"...\n";
 		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D0755,F0755" "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
-		find "${DESTINATION_DIR}" -type d -exec chmod 0755 "{}" ";"; # Ensure directory permissions are set as-intended
-		find "${DESTINATION_DIR}" -type f -exec chmod 755 "{}" ";"; # Ensure file permissions are set as-intended
+		chmod -R 0755 "${DESTINATION_DIR}"; # Ensure file & directory permissions are set as-intended
 		dos2unix --quiet /usr/local/sbin/*; # Convert any CRLF files to force line-endings to be LF (only)
 
 		echo "";

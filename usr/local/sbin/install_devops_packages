@@ -25,32 +25,33 @@ else
 
 	APT_PACKAGES=();
 
-	APT_PACKAGES+=("software-properties-common");
 	APT_PACKAGES+=("apt-rdepends");
-	APT_PACKAGES+=("vim");
-	APT_PACKAGES+=("dos2unix");
-	APT_PACKAGES+=("nmap");
-	APT_PACKAGES+=("ufw");
-	APT_PACKAGES+=("p7zip-full");
-	APT_PACKAGES+=("p7zip-rar");
-	APT_PACKAGES+=("yui-compressor");
 	APT_PACKAGES+=("bc");
-	APT_PACKAGES+=("wget");
+	APT_PACKAGES+=("certbot");
 	APT_PACKAGES+=("default-jdk-headless");
 	APT_PACKAGES+=("default-jre-headless");
-	APT_PACKAGES+=("multitail");
-	APT_PACKAGES+=("sslscan");
-	APT_PACKAGES+=("nginx-full");
-	APT_PACKAGES+=("certbot");
+	APT_PACKAGES+=("dos2unix");
 	APT_PACKAGES+=("git");
+	APT_PACKAGES+=("multitail");
+	APT_PACKAGES+=("nginx-full");
+	APT_PACKAGES+=("nmap");
+	APT_PACKAGES+=("p7zip-full");
+	APT_PACKAGES+=("p7zip-rar");
+	APT_PACKAGES+=("software-properties-common");
+	APT_PACKAGES+=("sslscan");
+	APT_PACKAGES+=("ufw");
+	APT_PACKAGES+=("vim");
+	APT_PACKAGES+=("wget");
+	APT_PACKAGES+=("yui-compressor");
+
 
 	UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
 		ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);
 		if [ "${ALREADY_INSTALLED}" != "0" ]; then
-			echo "Package \"${EACH_PKG}\" is already installed.";
+			echo "✓ Package \"${EACH_PKG}\" is already installed";
 		else
-			echo "Package \"${EACH_PKG}\" not found locally - installing...";
+			echo "× Package \"${EACH_PKG}\" not found locally - installing...";
 			if [[ "${EACH_PKG}" == "nginx"* ]]; then
 				if [ $(apt policy 2>"/dev/null" | grep "http://ppa.launchpad.net/nginx" | wc -l;) -eq 0 ]; then
 					add-apt-repository --yes --update "ppa:nginx/stable";

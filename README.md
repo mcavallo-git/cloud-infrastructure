@@ -10,7 +10,7 @@
 <!-- ------------------------------------------------------------ -->
 
 <hr />
-<details><summary><i>Sync-1-Liner</i></summary>
+<details><summary>Sync-1-Liner</summary>
 <ul>
 
 <li>PowerShell

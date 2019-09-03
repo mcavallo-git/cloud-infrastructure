@@ -44,7 +44,6 @@ else
 	APT_PACKAGES+=("wget");
 	APT_PACKAGES+=("yui-compressor");
 
-
 	UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
 		ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);

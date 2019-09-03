@@ -16,14 +16,7 @@
 <li>PowerShell
 <div>
 
-<pre><code>
-REPO_FILE="https://raw.githubusercontent.com/bonealnet/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && \
-LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && \
-wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \
-chmod 0700 "${LOCAL_FILE}" && \
-"${LOCAL_FILE}" && \
-rm "${LOCAL_FILE}";
-</code></pre>
+<pre><code>REPO_FILE="https://raw.githubusercontent.com/bonealnet/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && "${LOCAL_FILE}" && rm "${LOCAL_FILE}";</code></pre>
 
 <p><code>
 REPO_FILE="https://raw.githubusercontent.com/bonealnet/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && \

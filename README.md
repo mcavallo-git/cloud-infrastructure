@@ -17,7 +17,7 @@
 
 <details>
 	<summary>Linux Filesystem Hierarchy (Overview)</summary>
-	<pre><code><a href="tree/master/usr/local/share/hier.man">hier(7) - Linux man page</a></pre></code>
+	<pre><code><a href="blob/master/usr/local/share/man/hier.man">hier(7) - Linux man page</a></pre></code>
 </details>
 
 <hr /><!-- ------------------------------------------------------------ -->

@@ -4,25 +4,31 @@
 
 <!-- ------------------------------------------------------------ -->
 
-***
+<hr />
 <h1>Cloud Infrastructure</h1>
-
-***
-<h2>SYNC-1-LINER</h2>
-<div>
-
-```REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_CLOUD_SYNC="${HOME}/$(basename ${REMOTE_CLOUD_SYNC})" && curl --url "${REMOTE_CLOUD_SYNC}" --output "${LOCAL_CLOUD_SYNC}" && chmod 0700 "${LOCAL_CLOUD_SYNC}" && sudo "${LOCAL_CLOUD_SYNC}" && rm -f "${LOCAL_CLOUD_SYNC}";```
-
-</div>
 
 <!-- ------------------------------------------------------------ -->
 
-***
-<h3>Linux Filesystem Hierarchy (Overview)</h3>
-<!-- <details><summary><i>Show/Hide Content</i></summary> -->
-<!-- <p> -->
+<hr />
+<details>
+<summary>
+	<h3>Sync-1-Liner (PowerShell)</h3>
+</summary>
+<pre><code>
+REMOTE_CLOUD_SYNC="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_CLOUD_SYNC="${HOME}/$(basename ${REMOTE_CLOUD_SYNC})" && curl --url "${REMOTE_CLOUD_SYNC}" --output "${LOCAL_CLOUD_SYNC}" && chmod 0700 "${LOCAL_CLOUD_SYNC}" && sudo "${LOCAL_CLOUD_SYNC}" && rm -f "${LOCAL_CLOUD_SYNC}";
+</pre></code>
+</details>
 
-```
+<!-- ------------------------------------------------------------ -->
+
+<hr />
+<details>
+
+<summary>
+	<h3>Linux Filesystem Hierarchy (Overview)</h3>
+</summary>
+
+<pre><code>
 HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
 
 NAME
@@ -496,9 +502,8 @@ COLOPHON
 Linux                                                 2017-11-26                                              HIER(7)
 
        about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
-```
-<!-- </p> -->
-<!-- </details> -->
+</pre></code>
+</details>
 
 #### [hier(7) - Linux man page](https://linux.die.net/man/7/hier)
 

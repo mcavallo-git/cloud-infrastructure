@@ -25,9 +25,7 @@
 <hr />
 <details>
 
-<summary>
-	<h3>Linux Filesystem Hierarchy (Overview)</h3>
-</summary>
+<summary>Linux Filesystem Hierarchy (Overview)</summary>
 
 <!-- <pre><code> -->
 

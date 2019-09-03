@@ -25,8 +25,7 @@
 <hr />
 <details>
 <summary>Linux Filesystem Hierarchy (Overview)</summary>
-<!-- <pre><code> -->```
-HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
+<pre><code>HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
 
 NAME
        hier - description of the filesystem hierarchy
@@ -496,12 +495,7 @@ COLOPHON
        about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
        https://www.kernel.org/doc/man-pages/.
 
-Linux                                                 2017-11-26                                              HIER(7)
-
-       about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
-```
-
-<!-- </pre></code> -->
+Linux                                                 2017-11-26                                              HIER(7)</pre></code>
 
 </details>
 

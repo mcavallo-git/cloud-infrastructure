@@ -24,12 +24,8 @@
 
 <hr />
 <details>
-
 <summary>Linux Filesystem Hierarchy (Overview)</summary>
-
-<!-- <pre><code> -->
-
-```
+<!-- <pre><code> -->```
 HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
 
 NAME

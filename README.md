@@ -1,15 +1,11 @@
-<!-- ------------------------------------------------------------ -->
+<!--  [View this file Online]  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md  -->
 
-<!-- [THIS FILE ON GITHUB] https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md [THIS FILE ON GITHUB] -->
+<hr /><!-- ------------------------------------------------------------ -->
 
-<!-- ------------------------------------------------------------ -->
-
-<hr />
 <h1>Cloud Infrastructure</h1>
 
-<!-- ------------------------------------------------------------ -->
+<hr /><!-- ------------------------------------------------------------ -->
 
-<hr />
 <details><summary>Sync-1-Liner</summary>
 <br />
 <ul>
@@ -21,9 +17,8 @@
 </ul>
 </details>
 
-<!-- ------------------------------------------------------------ -->
+<hr /><!-- ------------------------------------------------------------ -->
 
-<hr />
 <details>
 <summary>Linux Filesystem Hierarchy (Overview)</summary>
 <pre><code>HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
@@ -499,6 +494,8 @@ COLOPHON
 Linux                                                 2017-11-26                                              HIER(7)</pre></code>
 
 </details>
+
+<hr /><!-- ------------------------------------------------------------ -->
 
 #### [hier(7) - Linux man page](https://linux.die.net/man/7/hier)
 

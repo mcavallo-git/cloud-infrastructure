@@ -125,31 +125,46 @@ else
 		EXIT_CODE=0;
 
 		# ------------------------------------------------------------
-		# Sync [ /usr/local/bin ] files (e.g. non-admin commands)
+		# /usr/local/bin
 		# ------------------------------------------------------------
-		DESTINATION_DIR="/usr/local/bin";
-		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/bin";
-		echo -e "\nUpdating \"${DESTINATION_DIR}\"...\n";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod=D0755,F755 "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
-		chmod -R 0755 "${DESTINATION_DIR}"; # Ensure file & directory permissions are set as-intended
-		dos2unix --quiet /usr/local/bin/*; # Convert any CRLF files to force line-endings to be LF (only)
-
-		# ------------------------------------------------------------
-		# Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
-		# ------------------------------------------------------------
-		DESTINATION_DIR="/usr/local/sbin";
-		SOURCE_DIR="${DIR_REPO_BASE}/usr/local/sbin";
-		echo -e "\nUpdating \"${DESTINATION_DIR}\"...\n";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D0755,F0755" "${SOURCE_DIR}/" "${DESTINATION_DIR}"; # Perform the file-sync
-		chmod -R 0755 "${DESTINATION_DIR}"; # Ensure file & directory permissions are set as-intended
-		dos2unix --quiet /usr/local/sbin/*; # Convert any CRLF files to force line-endings to be LF (only)
-
-		echo "";
-		echo "Local bin & sbin are in-sync & up-to-date";
+		DESTINATION_PATH="/usr/local/bin";
+		FILE_PERMS="0755"; DIR_PERMS="0755";
+		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${DIR_REPO_BASE}${DESTINATION_PATH}/" "${DESTINATION_PATH}"; # Perform dir-sync
+		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+		echo "Sync complete:  ${DESTINATION_PATH}";
 		echo "";
 
+
 		# ------------------------------------------------------------
-		# Sync [ /home/USER/* ] files (e.g. bash-config & terminal-formatting files)
+		# /usr/local/sbin
+		# ------------------------------------------------------------
+		DESTINATION_PATH="/usr/local/sbin";
+		FILE_PERMS="0755"; DIR_PERMS="0755";
+		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${DIR_REPO_BASE}${DESTINATION_PATH}/" "${DESTINATION_PATH}"; # Perform dir-sync
+		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+		echo "Sync complete:  ${DESTINATION_PATH}";
+		echo "";
+
+
+		# ------------------------------------------------------------
+		# /etc/profile.d/bash_history_logging.sh
+		# ------------------------------------------------------------
+		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
+		FILE_PERMS="0644"; DIR_PERMS="0644";
+		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${DIR_REPO_BASE}${DESTINATION_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+		echo "Sync complete:  ${DESTINATION_PATH}";
+		echo "";
+
+
+		# ------------------------------------------------------------
+		# Configurations, User-Home Directories
 		# ------------------------------------------------------------
 
 		# Get list of files to Copy into Home-Dirs

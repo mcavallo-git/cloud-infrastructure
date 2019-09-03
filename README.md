@@ -29,7 +29,9 @@
 	<h3>Linux Filesystem Hierarchy (Overview)</h3>
 </summary>
 
-<pre><code>
+<!-- <pre><code> -->
+
+```
 HIER(7)                                       Linux Programmer's Manual                                       HIER(7)
 
 NAME
@@ -503,7 +505,10 @@ COLOPHON
 Linux                                                 2017-11-26                                              HIER(7)
 
        about    reporting    bugs,    and    the    latest    version    of    this    page,    can   be   found   at
-</pre></code>
+```
+
+<!-- </pre></code> -->
+
 </details>
 
 #### [hier(7) - Linux man page](https://linux.die.net/man/7/hier)

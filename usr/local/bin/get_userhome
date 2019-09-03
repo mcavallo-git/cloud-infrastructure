@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_userhome" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$2" ] && [[ "$2" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+TARGET_USER=$(if [ -n "$1" ]; then echo "$1"; else whoami; fi;);
+
+ERROR_FINDING_USER=$(id ${TARGET_USER} 1>"/dev/null" 2>&1; echo $?;);
+if [ "${ERROR_FINDING_USER}" == "0" ]; then
+	USER_HOMEDIR=$(getent passwd "${TARGET_USER}" | cut --delimiter=: --fields=6);
+	echo "${USER_HOMEDIR}";
+	exit 0;
+else
+	id ${TARGET_USER};
+	exit 1;
+fi;

@@ -6,7 +6,8 @@
 
 # Count the number of inline arguments, then list each of them (newline-delimited)
 
-ARGS=("$@");
+ARGS=("${0}");
+ARGS+=("$@");
 COUNT_ARGS=${#ARGS[@]};
 echo "COUNT_ARGS = ${COUNT_ARGS}";
 for (( i=0;i<$COUNT_ARGS;i++ )); do

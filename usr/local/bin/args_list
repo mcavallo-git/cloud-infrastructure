@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/args_list" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+ 
+# Store inline arguments into an array as a grouped-string
+ARGS=("$@");
+
+# Count the number of inline arguments
+COUNT_ARGS=${#ARGS[@]};
+ 
+# List each inline-argument
+for (( i=0;i<$COUNT_ARGS;i++ )); do 
+	echo ${ARGS[${i}]};
+done;
+
+
+
+
+# ------------------------------------------------------------
+#
+#	Citation(s)
+#
+#		linuxconfig.org  |  "How do I print all arguments submitted on a command line from a bash script?"  |  https://linuxconfig.org/how-do-i-print-all-arguments-submitted-on-a-command-line-from-a-bash-script
+#
+# ------------------------------------------------------------

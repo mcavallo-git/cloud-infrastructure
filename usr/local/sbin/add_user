@@ -24,7 +24,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 
 	set -e; # Exit immediately if a command exits with a non-zero status
-	set -x; # Print commands and their arguments as they are executed
+	# set -x; # Print commands and their arguments as they are executed
 
 	# If no username given, ask terminal user for username
 	while [ -z "${USER_NAME}" ]; do
@@ -112,40 +112,56 @@ else
 
 		# ------------------------------------------------------------
 		# USER-CREATION
-		UARGS="";
-
-		# Create Home-Directory (Y/N)
-		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
-			UARGS="${UARGS} --create-home";
-		fi;
+		USERADD_STR="";
+		USERADD_ARR=();
 
 		# User Home-Directory
 		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
-			UARGS="${UARGS} --home-dir \"${DIR_USER_HOME}\"";
+			USERADD_STR="${USERADD_STR} --home-dir '${DIR_USER_HOME}'";
+			USERADD_ARR+=(--home-dir "'${DIR_USER_HOME}'");
+		fi;
+
+		# Create Home-Directory (Y/N)
+		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
+			USERADD_STR="${USERADD_STR} --create-home";
+			USERADD_ARR+=(--create-home);
 		fi;
 
 		# User ID
 		if [[ -v USER_ID ]] && [[ "${USER_ID}" =~ ^-?[0-9]+$ ]]; then
-			UARGS="${UARGS} --uid \"${USER_ID}\"";
+			USERADD_STR="${USERADD_STR} --uid '${USER_ID}'";
+			USERADD_ARR+=(--uid "\"${USER_ID}\"");
 		fi;
 
 		# User Default Group (Group-ID/Group-Name)
 		if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
-			UARGS="${UARGS} --groups \"${GROUP_ID}\"";
+			USERADD_STR="${USERADD_STR} --groups \"${GROUP_ID}\"";
+			USERADD_ARR+=(--groups "\"${GROUP_ID}\"");
 		elif [[ -v GROUP_NAME ]] && [[ -n "${GROUP_NAME}" ]]; then
-			UARGS="${UARGS} --groups \"${GROUP_NAME}\""; fi;
+			USERADD_STR="${USERADD_STR} --groups '${GROUP_NAME}\"";
+			USERADD_ARR+=(--groups "\"${GROUP_NAME}\"");
 		fi;
 
 		# User Shell
 		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
-			UARGS="${UARGS} --shell \"${USER_SHELL}\"";
+			USERADD_STR="${USERADD_STR} --shell \"${USER_SHELL}\"";
+			USERADD_ARR+=(--shell "\"${USER_SHELL}\"");
 		fi;
 
 		# Trim whitespace
-		UARGS="$(echo -e "${UARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+		# echo "(BEFORE TRIM) USERADD_STR=[${USERADD_STR}]";
+		
+		USERADD_STR="$(echo -e "${USERADD_STR}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+
+		# echo "(AFTER TRIM) USERADD_STR=[${USERADD_STR}]";
+
+		USERADD_ARR+=("\"${USER_NAME}\"");
 
 		# Create the User
-		useradd "${UARGS}" "${USER_NAME}";
+		# echo "Calling [ useradd ${USERADD_STR} \"${USER_NAME}\"; ] ..."
+		echo "Calling [ useradd ${USERADD_ARR[@]} \"${USER_NAME}\"; ] ..."
+		# useradd "${USERADD_STR}" "${USER_NAME}";
+		useradd "${USERADD_ARR[@]}";
 
 		if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
 			# Create user's SSH directory "~/.ssh"

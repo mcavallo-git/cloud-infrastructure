@@ -4,19 +4,14 @@
 #
 # ------------------------------------------------------------
 
- 
-# Store inline arguments into an array as a grouped-string
+# Count the number of inline arguments, then list each of them (newline-delimited)
+
 ARGS=("$@");
-
-# # Count the number of inline arguments
 COUNT_ARGS=${#ARGS[@]};
-
-# List each inline-argument
 echo "COUNT_ARGS = ${COUNT_ARGS}";
 for (( i=0;i<$COUNT_ARGS;i++ )); do 
 	echo "\$${i} = "${ARGS[${i}]};
 done;
-
 
 
 

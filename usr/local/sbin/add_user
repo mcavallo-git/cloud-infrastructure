@@ -39,14 +39,15 @@ else
 	ROLLBACK_IFS="${IFS}";
 	IFS=' '; # Set the global delimiter
 
-	# USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
-	# GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
-	# GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
-	# USER_SHELL="${USER_SHELL:-/bin/bash}";
+	# USER_NAME="...";
+	# USER_UID="${USER_UID:-NEXT_AVAILABLE_ID}";
+	USER_GNAME="${USER_GNAME:-${USER_NAME}}";
+	# USER_GID="${USER_GID:-NEXT_AVAILABLE_ID}";
+	USER_SHELL="${USER_SHELL:-/bin/bash}";
 
 	# User Directory-Info
-	# DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
-	# DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
+	DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
+	DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
 	
 	CREATE_HOME="${CREATE_HOME:-1}";
 	CREATE_HOME_SSH="${CREATE_HOME_SSH:-1}";
@@ -68,22 +69,22 @@ else
 		exit 1;
 
 	elif [[ -v USER_NAME ]] \
-			&& [[ -v USER_ID ]] \
-			&& [[ "${USER_ID}" =~ ^-?[0-9]+$ ]] \
-			&& [ "$(id -u ${USER_ID} >/dev/null 2>&1; echo $?;)" == "0" ] \
-			&& [ "$(id -un ${USER_ID})" != "${USER_NAME}" ]; then
+			&& [[ -v USER_UID ]] \
+			&& [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
+			&& [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
+			&& [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: User ID \"${USER_ID}\" is already taken by user \"$(id -un ${USER_ID})\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [[ -v GROUP_NAME ]] \
-			&& [[ -v GROUP_ID ]] \
-			&& [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]] \
-			&& [ "$(id -gn ${GROUP_ID} >/dev/null 2>&1; echo $?;)" == "0" ] \
-			&& [ "$(id -gn ${GROUP_ID})" != "${GROUP_NAME}" ]; then
+	elif [[ -v USER_GNAME ]] \
+			&& [[ -v USER_GID ]] \
+			&& [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
+			&& [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
+			&& [ "$(getent group ${USER_GID} | tr ':' ' ' | awk '{print $1}';)" != "${USER_GNAME}" ]; then
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Group-ID \"${GROUP_ID}\" resolved to Group Name \"$(id -gn ${GROUP_ID})\", which is NOT equal to the declared Group-Name value of \"${GROUP_NAME}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
@@ -97,20 +98,21 @@ else
 
 		# ------------------------------------------------------------
 		# GROUP-CREATION
-		if [[ -v GROUP_NAME ]] && [ "$(id -g ${GROUP_NAME} >/dev/null 2>&1; echo $?;)" == "0" ]; then
-			GARGS="";
 
+		
+		if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
+			# Group-Add Command
+			GROUPADD_ARR=(groupadd);
 			# Group-ID
-			if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
-				GARGS="${GARGS} --gid ${GROUP_ID}";
+			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+				GROUPADD_ARR+=(--gid ${USER_GID});
 			fi;
-
-			# Trim whitespace
-			GARGS="$(echo -e "${GARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
-
+			# Group Name
+			GROUPADD_ARR+=("${USER_GNAME}");
 			# Create the Group
-			groupadd "${GARGS}" "${GROUP_NAME}";
-			GROUP_ID=$(id -gn "${GROUP_NAME}");
+			echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
+			${GROUPADD_ARR[@]};
+			USER_GID=$(getent group "${USER_GNAME}" | tr ':' ' ' | awk '{print $3}';);
 		fi;
 
 		# ------------------------------------------------------------
@@ -120,7 +122,7 @@ else
 
 		# User Home-Directory
 		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
-			USERADD_ARR+=(--home-dir "\"${DIR_USER_HOME}\"");
+			USERADD_ARR+=(--home-dir "${DIR_USER_HOME}");
 		fi;
 
 		# Create Home-Directory (Y/N)
@@ -129,23 +131,23 @@ else
 		fi;
 
 		# User ID
-		if [[ -v USER_ID ]] && [[ "${USER_ID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_ARR+=(--uid "\"${USER_ID}\"");
+		if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
+			USERADD_ARR+=(--uid ${USER_UID});
 		fi;
 
 		# User Default Group (Group-ID/Group-Name)
-		if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_ARR+=(--groups "\"${GROUP_ID}\"");
-		elif [[ -v GROUP_NAME ]] && [[ -n "${GROUP_NAME}" ]]; then
-			USERADD_ARR+=(--groups "\"${GROUP_NAME}\"");
+		if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+			USERADD_ARR+=(--groups ${USER_GID});
+		elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
+			USERADD_ARR+=(--groups "${USER_GNAME}");
 		fi;
 
 		# User Shell
 		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
-			USERADD_ARR+=(--shell "\"${USER_SHELL}\"");
+			USERADD_ARR+=(--shell "${USER_SHELL}");
 		fi;
 
-		USERADD_ARR+=("\"${USER_NAME}\"");
+		USERADD_ARR+=("${USER_NAME}");
 
 		# Create the User
 		echo "Calling [ ${USERADD_ARR[@]}; ] ..."
@@ -155,7 +157,7 @@ else
 		# 	# Create user's SSH directory "~/.ssh"
 		# 	mkdir "${DIR_USER_SSH}";
 		# 	chmod 0700 "${DIR_USER_SSH}";
-		# 	chown "${USER_ID}" "${DIR_USER_SSH}";
+		# 	chown "${USER_UID}" "${DIR_USER_SSH}";
 		# fi;
 
 		# Make user a sudoer (able to run as root using 'sudo' command)
@@ -163,7 +165,7 @@ else
 
 			# Add user to the "sudo" usergroup (if not already in it)
 			SUDO_GROUP="sudo";
-			if [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
+			if [ -f "/usr/local/sbin/is_user_in_group" ] && [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
 				usermod --append --groups "${SUDO_GROUP}" "${USER_NAME}";
 			fi;
 

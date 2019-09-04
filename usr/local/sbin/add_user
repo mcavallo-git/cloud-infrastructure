@@ -36,6 +36,9 @@ else
 		fi;
 	done;
 
+	ROLLBACK_IFS="${IFS}";
+	IFS=' '; # Set the global delimiter
+
 	# USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
 	# GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
 	# GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
@@ -98,8 +101,8 @@ else
 			GARGS="";
 
 			# Group-ID
-			if [ -n "${GROUP_ID}" ]; then
-				GARGS="${GARGS} --gid \"${GROUP_ID}\"";
+			if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
+				GARGS="${GARGS} --gid ${GROUP_ID}";
 			fi;
 
 			# Trim whitespace
@@ -146,7 +149,7 @@ else
 
 		# Create the User
 		echo "Calling [ ${USERADD_ARR[@]}; ] ..."
-		"${USERADD_ARR[@]}";
+		${USERADD_ARR[@]};
 
 		# if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
 		# 	# Create user's SSH directory "~/.ssh"
@@ -189,5 +192,7 @@ else
 		exit 0;
 
 	fi;
+
+	IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 fi;

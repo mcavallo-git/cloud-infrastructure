@@ -10,7 +10,7 @@ ARGS=("$@");
 COUNT_ARGS=${#ARGS[@]};
 echo "COUNT_ARGS = ${COUNT_ARGS}";
 for (( i=0;i<$COUNT_ARGS;i++ )); do
-	echo "\$${i} = "${ARGS[${i}]}"$(test ${i} -eq $((${COUNT_ARGS}-1)) && echo \"\(LAST ARG\)\";)";
+	echo "\$${i} = "${ARGS[${i}]}$(test ${i} -eq $((${COUNT_ARGS}-1)) && echo " (LAST ARG)";);
 done;
 
 

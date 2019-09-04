@@ -191,6 +191,12 @@ else
 			#				[Enter password] > ENTER
 			#			[Confirm password] > ENTER
 		fi;
+
+		echo -e "\n User created \n ";
+		REVERSE_LOOKUP_HOMEDIR=$(getent passwd "${USER_NAME}" | cut --delimiter=: --fields=6);
+		echo "> ls -Al \"${REVERSE_LOOKUP_HOMEDIR}\"";
+		ls -Al "${REVERSE_LOOKUP_HOMEDIR}";
+
 		exit 0;
 
 	fi;

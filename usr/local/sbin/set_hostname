@@ -35,18 +35,25 @@ else
 	#	>		set_hostname "localhost.localdomain" "0";
 	#
 
-	if [ -z "${1}" ]; then
+	if [ -n "${1}" ] && [ -z "${SET_HOSTNAME}" ]; then
+		SET_HOSTNAME="${1}";
+	fi;
+
+	if [ -z "${SET_HOSTNAME}" ]; then
 
 		# Required variable empty: SET_HOSTNAME
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No value given for \$SET_HOSTNAME (\$1)";
-		echo "Please set \$1 to [ desired-hostname ]\" & re-run this script";
-		echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No value defined for \${SET_HOSTNAME} (first in-line argument)";
+		echo "                      Please define the new hostname (or hostname.domainname) by performing one of the following:";
+		echo "                       |";
+		echo "                       |--> option 1:  >   set_hostname \"localhost.localdomain\";";
+		echo "                       |";
+		echo "                       |--> option A:  >   env SET_HOSTNAME=\"localhost.localdomain\" set_hostname;";
 		echo "";
 		exit 1;
 
 	else
 
-		SET_FQDN="${1}";
+		SET_FQDN="${SET_HOSTNAME}";
 
 		SUBSTRING_ONLY_PERIODS="${SET_FQDN//[^.]}";
 		FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
@@ -177,7 +184,7 @@ else
 		if [ -n "${THIS_LAN_IPV6}" ]; then
 			echo "Resolved IPv6 Address (LAN) to: \"${THIS_LAN_IPV6}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Unable to resolve IPv6 Address (LAN).";
+			echo "Warning - Unable to resolve IPv6 Address (LAN).";
 		fi;
 
 		echo "";

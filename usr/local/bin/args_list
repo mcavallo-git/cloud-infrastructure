@@ -8,11 +8,12 @@
 # Store inline arguments into an array as a grouped-string
 ARGS=("$@");
 
-# Count the number of inline arguments
-COUNT_ARGS=${#ARGS[@]};
- 
+# # Count the number of inline arguments
+# COUNT_ARGS=${#ARGS[@]};
+
 # List each inline-argument
-for (( i=0;i<$COUNT_ARGS;i++ )); do 
+# for (( i=0;i<$COUNT_ARGS;i++ )); do
+for (( i=0;i<${#ARGS[@]};i++ )); do
 	echo ${ARGS[${i}]};
 done;
 

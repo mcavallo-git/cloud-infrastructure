@@ -12,8 +12,8 @@ ARGS=("$@");
 COUNT_ARGS=${#ARGS[@]};
 
 # List each inline-argument
-echo "${COUNT_ARGS} total args:"
-for (( i=0;i<${#ARGS[@]};i++ )); do
+echo "${COUNT_ARGS} total args:";
+for (( i=0;i<$COUNT_ARGS;i++ )); do 
 	echo ${ARGS[${i}]};
 done;
 

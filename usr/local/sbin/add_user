@@ -137,9 +137,9 @@ else
 
 		# User Default Group (Group-ID/Group-Name)
 		if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_ARR+=(--groups ${USER_GID});
+			USERADD_ARR+=(--gid ${USER_GID});
 		elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
-			USERADD_ARR+=(--groups "${USER_GNAME}");
+			USERADD_ARR+=(--gid "${USER_GNAME}");
 		fi;
 
 		# User Shell

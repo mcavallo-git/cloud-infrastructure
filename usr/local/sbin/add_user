@@ -39,11 +39,11 @@ else
 	# USER_ID="${USER_ID:-NEXT_AVAILABLE_ID}";
 	# GROUP_NAME="${GROUP_NAME:-${USER_NAME}}";
 	# GROUP_ID="${GROUP_ID:-NEXT_AVAILABLE_ID}";
-	USER_SHELL="${USER_SHELL:-/bin/bash}";
+	# USER_SHELL="${USER_SHELL:-/bin/bash}";
 
 	# User Directory-Info
-	DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
-	DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
+	# DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
+	# DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
 	
 	CREATE_HOME="${CREATE_HOME:-1}";
 	CREATE_HOME_SSH="${CREATE_HOME_SSH:-1}";
@@ -112,63 +112,48 @@ else
 
 		# ------------------------------------------------------------
 		# USER-CREATION
-		USERADD_STR="";
 		USERADD_ARR=();
+		USERADD_ARR+=(useradd);
 
 		# User Home-Directory
 		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
-			USERADD_STR="${USERADD_STR} --home-dir '${DIR_USER_HOME}'";
-			USERADD_ARR+=(--home-dir "'${DIR_USER_HOME}'");
+			USERADD_ARR+=(--home-dir "\"${DIR_USER_HOME}\"");
 		fi;
 
 		# Create Home-Directory (Y/N)
 		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
-			USERADD_STR="${USERADD_STR} --create-home";
 			USERADD_ARR+=(--create-home);
 		fi;
 
 		# User ID
 		if [[ -v USER_ID ]] && [[ "${USER_ID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_STR="${USERADD_STR} --uid '${USER_ID}'";
 			USERADD_ARR+=(--uid "\"${USER_ID}\"");
 		fi;
 
 		# User Default Group (Group-ID/Group-Name)
 		if [[ -v GROUP_ID ]] && [[ "${GROUP_ID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_STR="${USERADD_STR} --groups \"${GROUP_ID}\"";
 			USERADD_ARR+=(--groups "\"${GROUP_ID}\"");
 		elif [[ -v GROUP_NAME ]] && [[ -n "${GROUP_NAME}" ]]; then
-			USERADD_STR="${USERADD_STR} --groups '${GROUP_NAME}\"";
 			USERADD_ARR+=(--groups "\"${GROUP_NAME}\"");
 		fi;
 
 		# User Shell
 		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
-			USERADD_STR="${USERADD_STR} --shell \"${USER_SHELL}\"";
 			USERADD_ARR+=(--shell "\"${USER_SHELL}\"");
 		fi;
-
-		# Trim whitespace
-		# echo "(BEFORE TRIM) USERADD_STR=[${USERADD_STR}]";
-		
-		USERADD_STR="$(echo -e "${USERADD_STR}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
-
-		# echo "(AFTER TRIM) USERADD_STR=[${USERADD_STR}]";
 
 		USERADD_ARR+=("\"${USER_NAME}\"");
 
 		# Create the User
-		# echo "Calling [ useradd ${USERADD_STR} \"${USER_NAME}\"; ] ..."
-		echo "Calling [ useradd ${USERADD_ARR[@]} \"${USER_NAME}\"; ] ..."
-		# useradd "${USERADD_STR}" "${USER_NAME}";
-		useradd "${USERADD_ARR[@]}";
+		echo "Calling [ ${USERADD_ARR[@]}; ] ..."
+		"${USERADD_ARR[@]}";
 
-		if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
-			# Create user's SSH directory "~/.ssh"
-			mkdir "${DIR_USER_SSH}";
-			chmod 0700 "${DIR_USER_SSH}";
-			chown "${USER_ID}" "${DIR_USER_SSH}";
-		fi;
+		# if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
+		# 	# Create user's SSH directory "~/.ssh"
+		# 	mkdir "${DIR_USER_SSH}";
+		# 	chmod 0700 "${DIR_USER_SSH}";
+		# 	chown "${USER_ID}" "${DIR_USER_SSH}";
+		# fi;
 
 		# Make user a sudoer (able to run as root using 'sudo' command)
 		if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then

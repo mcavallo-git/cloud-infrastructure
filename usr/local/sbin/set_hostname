@@ -77,6 +77,45 @@ else
 		# Determine Dry-Run mode
 		#
 
+		ARGS=("$@");
+		COUNT_ARGS=${#ARGS[@]};
+		echo "COUNT_ARGS = ${COUNT_ARGS}";
+		for (( i=0;i<$COUNT_ARGS;i++ )); do
+
+			# Walk through any inline-arguments passed to this function
+			EACH_ARG=${ARGS[${i}]};
+			BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number (because of bash's ${0} containing the entire inline command)
+
+			# Check if this is the last inline-argument or if there are more to follow
+			if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+				NEXT_ARG="";
+			else
+				NEXT_ARG=${ARGS[$((${i}+1))]};
+			fi;
+
+			if [ -n "${EACH_ARG}" ]; then
+
+				# Detect inline hostname
+				if [ ${BASH_ARG_NUMBER} -eq 1 ] && [[ "${EACH_ARG}" != "-"* ]]; then # --force
+					DRY_RUN="0";
+				if [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
+					DRY_RUN="0";
+				elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
+					DRY_RUN="0";
+				fi;
+
+				# Detect non dry-run mode
+				if [ "${EACH_ARG}" == "--force" ]; then # --force
+					DRY_RUN="0";
+				if [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
+					DRY_RUN="0";
+				elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
+					DRY_RUN="0";
+				fi;
+
+			fi;
+		done;
+
 		if [ -n "${DRY_RUN}" ]; then
 			if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
 				echo "";
@@ -359,5 +398,7 @@ sleep 1;
 #		https://www.linode.com/docs/getting-started/#setting-the-hostname
 #
 #		stackoverflow.com  |  "Count occurrences of a char in a string using Bash"  |  https://stackoverflow.com/a/16679640
+#
+#		computerhope.com  |  "Linux test command"  |  https://www.computerhope.com/unix/test.htm
 #
 # ------------------------------------------------------------

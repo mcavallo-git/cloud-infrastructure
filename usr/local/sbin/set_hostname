@@ -74,11 +74,12 @@ else
 		echo "";
 
 		# ------------------------------------------------------------
-		# Determine Dry-Run mode
+		# Parse inline arguments (passed to current script)
 		#
 
 		ARGS=("$@");
 		COUNT_ARGS=${#ARGS[@]};
+		ARGS_HOSTNAME_DEFINED=0;
 		echo "COUNT_ARGS = ${COUNT_ARGS}";
 		for (( i=0;i<$COUNT_ARGS;i++ )); do
 
@@ -95,19 +96,44 @@ else
 
 			if [ -n "${EACH_ARG}" ]; then
 
-				# Detect inline hostname
-				if [ ${BASH_ARG_NUMBER} -eq 1 ] && [[ "${EACH_ARG}" != "-"* ]]; then # --force
-					DRY_RUN="0";
-				if [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
-					DRY_RUN="0";
-				elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
-					DRY_RUN="0";
+				# Parse inline hostname
+				if [ ${BASH_ARG_NUMBER} -eq 1 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then
+					NEXT_ARG="${EACH_ARG}";
+					EACH_ARG="--hostname";
+				fi;
+				if [ "${EACH_ARG}" == "--hostname" ]; then
+					if [ "${ARGS_HOSTNAME_DEFINED}" == "1" ]; then
+						echo "";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
+						echo "Inline parameters contain multiple hostname values";
+						echo "Please call again using one, single value for ";
+						echo "";
+						exit 1;
+					elif [ -z "${NEXT_ARG}" ]; then
+						echo "";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
+						echo "Function called with an empty value for the hostname (or --hostname as the last argument)"
+						echo "Please call again using \"--hostname [VALID_HOSTNAME]\"";
+						echo "";
+						exit 1;
+					elif [ "${NEXT_ARG}" != "$(echo ${NEXT_ARG} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
+						echo "";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
+						echo "Function called with invalid hostname \"${NEXT_ARG}\"";
+						echo "Please call again using a valid hostname string";
+						echo "";
+						exit 1;
+					else
+						ARGS_HOSTNAME_DEFINED=1;
+						SET_HOSTNAME="${NEXT_ARG}";
+						SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
+					fi;
 				fi;
 
-				# Detect non dry-run mode
+				# Parse dry-run / non-dry-run calls
 				if [ "${EACH_ARG}" == "--force" ]; then # --force
 					DRY_RUN="0";
-				if [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
+				elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
 					DRY_RUN="0";
 				elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
 					DRY_RUN="0";

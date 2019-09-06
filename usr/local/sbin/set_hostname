@@ -124,9 +124,9 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ DRY-RUN MODE ACTIVE ⚠️ SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE - SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING OUTSIDE OF DRY-RUN MODE)";
 		fi;
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] Hostname will be updated to \"${SET_HOSTNAME}\" (unless already defined as-such)";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] Domain-name will be updated to \"${SET_DOMAIN}\" (unless already defined as-such)";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] FQDN therefore becomes \"${SET_FQDN}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_DOMAIN:   \"${SET_DOMAIN}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_FQDN:   \"${SET_FQDN}\"";
 
 		# ------------------------------------------------------------
 		# Determine Linux distro
@@ -201,19 +201,14 @@ else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN Local IPv6 Address";
 		fi;
 
-		echo "";
-
 		# ------------------------------------------------------------
 		#	If Dry-Run mode is off, require user to confirm changes
 		#
 
-		echo "";
 		if [[ "${DRY_RUN}" == "0" ]]; then
 			echo "";
 			echo "Dry-Run Mode:  OFF";
-			echo "";
 			read -p "  --> Press 'y' to confirm that the above value(s) match the intended values for this device's hostname & domain-name ( y / n )" -n 1 -r
-			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
@@ -222,6 +217,7 @@ else
 				exit 1;
 			fi;
 		else
+			echo "";
 			echo "Dry-Run Mode:  ON";
 		fi;
 		echo "";

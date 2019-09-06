@@ -31,38 +31,32 @@ else
 
 		# Service found to exist locally
 
-		# echo "";
 		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (before reload)...";
 		# service nginx status;
 
 		if [ -f "/run/nginx.pid" ]; then
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Reloading NGINX Service...";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
 			sudo nginx -t && sudo sleep 1 && sudo service nginx reload;
 		else
 			# Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
 			PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
 			if [ -n "${PID_ROGUE_NGINX_INSTANCE}" ]; then
 				# Snipe rogue nginx PIDs
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Killing Rogue NGINX Instance...";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
 				sudo kill "${PID_ROGUE_NGINX_INSTANCE}";
 			fi;
 			# Start nginx service, again
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Starting NGINX Service...";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
 			sudo nginx -t && sudo sleep 1 && sudo service nginx start;
 		fi;
 
-		# echo "";
 		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (after reload)...";
 		# service nginx status;
 		
 	else
 	
 		# Service NOT found to exist locally
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - service \"${SERVICE_NAME}\" not found amongst local services";
 
 	fi;
 fi;

@@ -101,19 +101,11 @@ else
 	if [ -z "${SET_HOSTNAME}" ]; then
 
 		# Required variable empty: SET_HOSTNAME
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
-		echo "Function called with an empty value for the hostname"
-		echo "You may call this script with hostname declaration in-line via:  --hostname YOUR-DESIRED-HOSTNAME";
-		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Command \"$(realpath ${0};)\" called with empty hostname:  \"\" - Please call again using:  --hostname VALID-HOSTNAME";
 		exit 1;
 
 	elif [ "${SET_HOSTNAME}" != "$(echo ${SET_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
-		echo "Function called with invalid hostname \"${SET_HOSTNAME}\"";
-		echo "You may call this script with hostname declaration in-line via:  --hostname YOUR-DESIRED-HOSTNAME";
-		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Command \"$(realpath ${0};)\" called with invalid hostname:  \"${SET_HOSTNAME}\" - Please call again using:  --hostname VALID-HOSTNAME";
 		exit 1;
 	
 	else
@@ -132,18 +124,13 @@ else
 
 		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
 		
-		echo "";
-		echo "Set Hostname: \"${SET_HOSTNAME}\"";
-		echo "Set Domain: \"${SET_DOMAIN}\"";
-		echo " |";
-		echo " |--> FQDN will be: \"${SET_FQDN}\"";
-		echo "";
 		if [ ${DRY_RUN} -eq 1 ]; then
-		echo "⚠️ THIS IS A DRY RUN ⚠️";
-		echo " |--> SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE";
-		echo " |--> SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING IN NON DRY-RUN MODE)";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ DRY RUN ⚠️ - SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE - SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING OUTSIDE OF DRY-RUN MODE)";
 		fi;
-		echo "";
+
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] Hostname will be updated to \"${SET_HOSTNAME}\" (unless already defined as-such)";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] Domain-name will be updated to \"${SET_DOMAIN}\" (unless already defined as-such)";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] FQDN therefore becomes \"${SET_FQDN}\"";
 
 		# ------------------------------------------------------------
 		# Determine Linux distro
@@ -190,18 +177,17 @@ else
 
 		### Show Resolved WAN IPv4
 		if [ -n "${THIS_WAN_IPV4}" ]; then
-			echo "Resolved IPv4 Address (WAN) to: \"${THIS_WAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve IPv4 Address (WAN).";
-			echo "If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve outgoing WAN IPv4 Address - If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
 		fi;
 
 		### Show Resolved Gateway IPv4
 		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
-			echo "Resolved IPv4 Default Gateway (LAN) to: \"${GATEWAY_LAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Gateway-IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve IPv4 Default Gateway (LAN).";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN's Gateway-IPv4.";
 		fi;
 
 		### Show Resolved LAN IPv4

@@ -21,6 +21,7 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
+
 	# ------------------------------------------------------------
 	#
 	# This script modifies a Linux instance's host & domain name(s)
@@ -29,10 +30,10 @@ else
 	#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
 	#
 	### Run using "DRY-RUN" mode:
-	#	>		set_hostname "localhost.localdomain" "1";
+	#	>		set_hostname "localhost.localdomain" --dry-run "1";
 	#
 	### Run using "LIVE" mode:
-	#	>		set_hostname "localhost.localdomain" "0";
+	#	>		set_hostname "localhost.localdomain" --dry-run "0";
 	#
 
 

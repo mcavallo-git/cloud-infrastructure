@@ -125,9 +125,9 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ DRY-RUN MODE ACTIVE ⚠️ SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE - SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING OUTSIDE OF DRY-RUN MODE)";
 		fi;
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_DOMAIN:   \"${SET_DOMAIN}\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] SET_FQDN:   \"${SET_FQDN}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ SET_DOMAIN:   \"${SET_DOMAIN}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ SET_FQDN:   \"${SET_FQDN}\"";
 
 		# ------------------------------------------------------------
 		# Determine Linux distro
@@ -174,7 +174,7 @@ else
 
 		### Show Resolved WAN IPv4
 		if [ -n "${THIS_WAN_IPV4}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve outgoing WAN IPv4 Address - If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
@@ -182,14 +182,14 @@ else
 
 		### Show Resolved Gateway IPv4
 		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Gateway IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ LAN Gateway IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Notice - Unable to resolve LAN's Gateway-IPv4.";
 		fi;
 
 		### Show Resolved LAN IPv4
 		if [ -n "${THIS_LAN_IPV4}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve LAN Local IPv4 Address  - If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
 			exit 1;
@@ -197,7 +197,7 @@ else
 
 		### Show Resolved LAN IPv6
 		if [ -n "${THIS_LAN_IPV6}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Notice - Unable to resolve LAN Local IPv6 Address";
 		fi;
@@ -210,9 +210,9 @@ else
 			echo "";
 			read -p "  --> Press 'y' to confirm & apply above configuration ( y / n )" -n 1 -r
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Confirmed by user - Proceeding with changes to hostname & domain-name...";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
-				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Cancelled by user - Exiting after 60s...";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') ❗ - Cancelled by user - Exiting after 60s...";
 				sleep 60;
 				exit 1;
 			fi;

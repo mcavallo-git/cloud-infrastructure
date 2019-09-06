@@ -181,6 +181,14 @@ else
 
 
 		# ------------------------------------------------------------
+		# /etc/letsencrypt/renewal-hooks/deploy/reload_nginx
+		# ------------------------------------------------------------
+		if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
+			ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
+		fi;
+
+		
+		# ------------------------------------------------------------
 		# Configurations, User-Home Directories
 		# ------------------------------------------------------------
 

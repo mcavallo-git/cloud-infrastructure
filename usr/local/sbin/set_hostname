@@ -67,11 +67,7 @@ else
 
 			if [ "${EACH_ARG}" == "--hostname" ]; then
 				if [ "${ARGS_HOSTNAME_DEFINED}" == "1" ]; then
-					echo "";
-					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
-					echo "Inline parameters contain multiple hostname values";
-					echo "Please call again using one, single value for ";
-					echo "";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Inline parameters contain more than one value for hostname. Please call again using one, single value";
 					exit 1;
 				else
 					ARGS_HOSTNAME_DEFINED=1;
@@ -125,7 +121,7 @@ else
 		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
 		
 		if [ ${DRY_RUN} -eq 1 ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ DRY RUN ⚠️ - SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE - SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING OUTSIDE OF DRY-RUN MODE)";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ DRY-RUN MODE ACTIVE ⚠️ - SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE - SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING OUTSIDE OF DRY-RUN MODE)";
 		fi;
 
 		echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] Hostname will be updated to \"${SET_HOSTNAME}\" (unless already defined as-such)";

@@ -185,25 +185,24 @@ else
 
 		### Show Resolved Gateway IPv4
 		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Gateway-IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Gateway IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN's Gateway-IPv4.";
 		fi;
 
 		### Show Resolved LAN IPv4
 		if [ -n "${THIS_LAN_IPV4}" ]; then
-			echo "Resolved IPv4 Address (LAN) to: \"${THIS_LAN_IPV4}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve IPv4 Address (LAN).";
-			echo "If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value and re-run this script.";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve LAN Local IPv4 Address  - If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
 			exit 1;
 		fi;
 
 		### Show Resolved LAN IPv6
 		if [ -n "${THIS_LAN_IPV6}" ]; then
-			echo "Resolved IPv6 Address (LAN) to: \"${THIS_LAN_IPV6}\"";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
 		else 
-			echo "Warning - Unable to resolve IPv6 Address (LAN).";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN Local IPv6 Address";
 		fi;
 
 		echo "";

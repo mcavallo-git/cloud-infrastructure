@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [ "$(id -un)" != "root" ]; then
 	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
 	# ------------------------------------------------------------
@@ -43,6 +43,7 @@ else
 	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
 	ARGS_HOSTNAME_DEFINED=0;
+	DRY_RUN=1;
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
 		# Walk through any inline-arguments passed to this function
@@ -67,23 +68,9 @@ else
 			if [ "${EACH_ARG}" == "--hostname" ]; then
 				if [ "${ARGS_HOSTNAME_DEFINED}" == "1" ]; then
 					echo "";
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
 					echo "Inline parameters contain multiple hostname values";
 					echo "Please call again using one, single value for ";
-					echo "";
-					exit 1;
-				elif [ -z "${NEXT_ARG}" ]; then
-					echo "";
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
-					echo "Function called with an empty value for the hostname (or --hostname as the last argument)"
-					echo "Please call again using \"--hostname [VALID_HOSTNAME]\"";
-					echo "";
-					exit 1;
-				elif [ "${NEXT_ARG}" != "$(echo ${NEXT_ARG} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
-					echo "";
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error during \"${0}\":";
-					echo "Function called with invalid hostname \"${NEXT_ARG}\"";
-					echo "Please call again using a valid hostname string";
 					echo "";
 					exit 1;
 				else
@@ -114,15 +101,21 @@ else
 	if [ -z "${SET_HOSTNAME}" ]; then
 
 		# Required variable empty: SET_HOSTNAME
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - No value defined for \${SET_HOSTNAME} (first in-line argument)";
-		echo "                      Please define the new hostname (or hostname.domainname) by performing one of the following:";
-		echo "                       |";
-		echo "                       |--> option 1:  >   set_hostname \"localhost.localdomain\";";
-		echo "                       |";
-		echo "                       |--> option A:  >   env SET_HOSTNAME=\"localhost.localdomain\" set_hostname;";
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
+		echo "Function called with an empty value for the hostname"
+		echo "You may call this script with hostname declaration in-line via:  --hostname YOUR-DESIRED-HOSTNAME";
 		echo "";
 		exit 1;
 
+	elif [ "${SET_HOSTNAME}" != "$(echo ${SET_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error while running \"${0}\":";
+		echo "Function called with invalid hostname \"${SET_HOSTNAME}\"";
+		echo "You may call this script with hostname declaration in-line via:  --hostname YOUR-DESIRED-HOSTNAME";
+		echo "";
+		exit 1;
+	
 	else
 
 		SET_FQDN="${SET_HOSTNAME}";
@@ -136,6 +129,7 @@ else
 			SET_HOSTNAME=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --only-delimited);
 			SET_DOMAIN=$(echo "${SET_FQDN}" | cut --delimiter="." --fields=1 --complement --only-delimited);
 		fi;
+
 		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
 		
 		echo "";
@@ -144,41 +138,12 @@ else
 		echo " |";
 		echo " |--> FQDN will be: \"${SET_FQDN}\"";
 		echo "";
-
-		if [ -n "${DRY_RUN}" ]; then
-			if [ "${DRY_RUN}" != "1" ] && [ "${DRY_RUN}" != "0" ]; then
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Invalid value given for \$DRY_RUN (\$2==\"${2}\")";
-				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
-				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
-				echo "";
-				echo "Resetting \$DRY_RUN to \"1\"";
-				DRY_RUN=1;
-			fi;
-		elif [ -n "${2}" ]; then
-			if [ "${2}" != "1" ] && [ "${2}" != "0" ]; then
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Invalid value given for \$DRY_RUN (\$2==\"${2}\")";
-				echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
-				echo "  ( e.g. set_hostname \"localhost.localdomain\" \"1\"; )";
-				echo "";
-				echo "Resetting \$DRY_RUN to \"1\"";
-				echo "";
-				DRY_RUN=1;
-			else
-				DRY_RUN=${2};
-			fi;
-		else
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - No value given for \$DRY_RUN (\$2)";
-			echo "Please set to \"1\" for dry-run mode, \"0\" for live-run mode";
-			echo "  ( e.g. set_hostname \"localhost.localdomain\" \"0\"; )";
-			echo "";
-			echo "";
-			echo "Resetting \$DRY_RUN to \"1\"";
-			echo "";
-			DRY_RUN=1;
+		if [ ${DRY_RUN} -eq 1 ]; then
+		echo "⚠️ THIS IS A DRY RUN ⚠️";
+		echo " |--> SYSTEM VALUES WILL NOT BE AFFECTED/MODIFIED WHILE IN DRY-RUN MODE";
+		echo " |--> SCRIPT WILL SHOW \"WHAT-IF\" OUTPUTS (SHOWING WHAT WOULD HAPPEN IF RUNNING IN NON DRY-RUN MODE)";
 		fi;
+		echo "";
 
 		# ------------------------------------------------------------
 		# Determine Linux distro
@@ -227,7 +192,7 @@ else
 		if [ -n "${THIS_WAN_IPV4}" ]; then
 			echo "Resolved IPv4 Address (WAN) to: \"${THIS_WAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve IPv4 Address (WAN).";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve IPv4 Address (WAN).";
 			echo "If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
 		fi;
@@ -236,14 +201,14 @@ else
 		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
 			echo "Resolved IPv4 Default Gateway (LAN) to: \"${GATEWAY_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning - Unable to resolve IPv4 Default Gateway (LAN).";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve IPv4 Default Gateway (LAN).";
 		fi;
 
 		### Show Resolved LAN IPv4
 		if [ -n "${THIS_LAN_IPV4}" ]; then
 			echo "Resolved IPv4 Address (LAN) to: \"${THIS_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve IPv4 Address (LAN).";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Error - Unable to resolve IPv4 Address (LAN).";
 			echo "If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value and re-run this script.";
 			exit 1;
 		fi;

@@ -28,10 +28,13 @@ else
 	SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 	
 	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then
-		# Service found to exist as a local service
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (before reload)...";
-		service nginx status;
+
+		# Service found to exist locally
+
+		# echo "";
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (before reload)...";
+		# service nginx status;
+
 		if [ -f "/run/nginx.pid" ]; then
 			echo "";
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Reloading NGINX Service...";
@@ -50,12 +53,16 @@ else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Starting NGINX Service...";
 			sudo nginx -t && sudo sleep 1 && sudo service nginx start;
 		fi;
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (after reload)...";
-		service nginx status;
+
+		# echo "";
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (after reload)...";
+		# service nginx status;
+		
 	else
-		# Service NOT found to exist as a local service
+	
+		# Service NOT found to exist locally
 		echo "";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+
 	fi;
 fi;

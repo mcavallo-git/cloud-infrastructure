@@ -35,8 +35,7 @@ else
 	### Run using "LIVE" mode:
 	#	>		set_hostname "localhost.localdomain" --dry-run "0";
 	#
-
-
+	#
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
 	#
@@ -154,19 +153,19 @@ else
 		RESOLVER_3="https://ident.me";
 		RESOLVER_4="https://bot.whatismyipaddress.com";
 
-		### Get WAN IPv4
+		### Get WAN-Outgoing IPv4
 		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
 		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
 		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
 		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
 
-		### Get LAN Gateway IPv4
+		### Get LAN-Local's Gateway IPv4
 		GATEWAY_LAN_IPV4=$(ip route|grep 'default via '|sed --quiet --regexp-extended --expression="s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
 
-		### Get LAN NIC (by-name)
+		### Get LAN-Local IPv4(s) - One per NIC
 		THIS_LAN_NIC=$(ip route|grep 'default via '|sed --quiet --regexp-extended --expression="s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 
-		### Get LAN IPv4 / IPv6
+		### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
 		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
 		THIS_LAN_IPV6=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\:');
 
@@ -216,9 +215,9 @@ else
 			read -p "  --> Press 'y' to confirm that the above value(s) match the intended values for this device's hostname & domain-name ( y / n )" -n 1 -r
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "Confirmed by user - Proceeding with changes to hostname & domain-name...";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
-				echo "Cancelled by user - Exiting after 60s...";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Cancelled by user - Exiting after 60s...";
 				sleep 60;
 				exit 1;
 			fi;

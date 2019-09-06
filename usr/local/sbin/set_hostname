@@ -207,7 +207,6 @@ else
 
 		if [[ "${DRY_RUN}" == "0" ]]; then
 			echo "";
-			echo "Dry-Run Mode:  OFF";
 			read -p "  --> Press 'y' to confirm & apply above configuration ( y / n )" -n 1 -r
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Confirmed by user - Proceeding with changes to hostname & domain-name...";
@@ -216,9 +215,6 @@ else
 				sleep 60;
 				exit 1;
 			fi;
-		else
-			echo "";
-			echo "Dry-Run Mode:  ON";
 		fi;
 		echo "";
 

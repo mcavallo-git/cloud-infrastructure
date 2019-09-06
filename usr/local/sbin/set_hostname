@@ -183,7 +183,7 @@ else
 		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Gateway IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN's Gateway-IPv4.";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Notice - Unable to resolve LAN's Gateway-IPv4.";
 		fi;
 
 		### Show Resolved LAN IPv4
@@ -198,7 +198,7 @@ else
 		if [ -n "${THIS_LAN_IPV6}" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
 		else 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Warning - Unable to resolve LAN Local IPv6 Address";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') ⚠️ Notice - Unable to resolve LAN Local IPv6 Address";
 		fi;
 
 		# ------------------------------------------------------------
@@ -208,7 +208,7 @@ else
 		if [[ "${DRY_RUN}" == "0" ]]; then
 			echo "";
 			echo "Dry-Run Mode:  OFF";
-			read -p "  --> Press 'y' to confirm that the above value(s) match the intended values for this device's hostname & domain-name ( y / n )" -n 1 -r
+			read -p "  --> Press 'y' to confirm & apply above configuration ( y / n )" -n 1 -r
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "$(date +'%Y-%m-%d %H:%M:%S') [ ℹ ] - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else

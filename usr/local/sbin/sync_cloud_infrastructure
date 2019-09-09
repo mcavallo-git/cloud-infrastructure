@@ -234,7 +234,7 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
-			if [ "${ARGS_CRONJOB}" == "JENKINS" ]; then # Sync Cronjob
+			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then # Sync Cronjob
 				# ------------------------------------------------------------
 				# /etc/cron.d/CRON_jenkins_log_cleanup
 				# ------------------------------------------------------------

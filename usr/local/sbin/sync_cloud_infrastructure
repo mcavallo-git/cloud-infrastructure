@@ -31,9 +31,11 @@ else
 
 	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
+
 	ARGS_CRONJOB="";
 	HELP_CRONJOB="Argument which sets-up/removes sync cronjob must be called as either \"--cron setup\" or \"--cron remove\"";
-	DRY_RUN=1;
+	RESTART_SERVICE_CRON=0;
+
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
@@ -224,12 +226,14 @@ else
 				echo -e "\nCreating/Updating Cron-File \"${DESTINATION_PATH}\"...\n";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				RESTART_SERVICE_CRON=1;
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
 				echo "";
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then # Remove Cronjob
 				echo -e "\nRemoving Cron-File \"${DESTINATION_PATH}\"...\n";
 				rm -fv "${DESTINATION_PATH}";
+				RESTART_SERVICE_CRON=1;
 				echo "";
 			fi;
 		fi;
@@ -306,6 +310,12 @@ else
 		TO_DEL="/usr/local/sbin/install_utilities"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
+		# ------------------------------------------------------------
+		# Restart necessary service(s)
+		# ------------------------------------------------------------
+		if [ ${RESTART_SERVICE_CRON} -eq 1 ]; then
+			service cron restart;
+		fi;
 	fi;
 
 	exit ${EXIT_CODE};

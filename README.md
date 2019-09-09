@@ -35,7 +35,6 @@
 		<sub> → <i>Create/Configure Required Linux SSH Policies (no Multifactor Authentication)</i></sub>
 	</summary>
 	<br />
-	<p>Using the user-creation script @ https://raw.githubusercontent.com/bonealnet/cloud-infrastructure/master/usr/local/sbin/add_user ...</p>
 	<ol>
 		<li>Create a backup snapshot of EBS Volume via the AWS Dashboard @ https://console.aws.amazon.com/ec2#Snapshots</li><br />
 		<li>Run the following line of code to modify the ssh configuration script by [ backing-up the existing script ] & [ updating the script to require public-key authentication ]: <pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.no_mfa" && LOCAL_FILE="${SSHD_CONFIG}.no_mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; service ssh restart;</code></pre></li>

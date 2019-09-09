@@ -33,7 +33,7 @@ else
 	COUNT_ARGS=${#ARGS[@]};
 
 	ARGS_CRONJOB="";
-	HELP_CRONJOB="Argument which sets-up/removes sync cronjob must be called as either \"--cron setup\" or \"--cron remove\"";
+	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 	RESTART_SERVICE_CRON=0;
 
 	# Walk through any inline-arguments passed to this function
@@ -55,8 +55,10 @@ else
 
 			# Parse cronjob calls
 			if [ "${EACH_ARG}" == "--cron" ]; then
-				if [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "setup" ]; then # --cron setup
-					ARGS_CRONJOB="SETUP";
+				if [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "sync" ]; then # --cron sync
+					ARGS_CRONJOB="SYNC";
+				elif [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "jenkins" ]; then # --cron remove
+					ARGS_CRONJOB="JENKINS";
 				elif [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "remove" ]; then # --cron remove
 					ARGS_CRONJOB="REMOVE";
 				else
@@ -216,26 +218,57 @@ else
 
 
 		# ------------------------------------------------------------
-		# /etc/cron.d/CRON_sync_cloud_infrastructure
+		# /etc/cron.d/...
 		# ------------------------------------------------------------
-		if [ "${ARGS_CRONJOB}" == "SETUP" ] || [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
-			DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
-			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-			FILE_PERMS="0644"; DIR_PERMS="0644";
-			if [ "${ARGS_CRONJOB}" == "SETUP" ]; then # Setup Cronjob
-				echo -e "\nCreating/Updating Cron-File \"${DESTINATION_PATH}\"...\n";
+		if [ "${ARGS_CRONJOB}" == "SYNC" ] || [ "${ARGS_CRONJOB}" == "JENKINS" ] || [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
+			RESTART_SERVICE_CRON=1;
+			if [ "${ARGS_CRONJOB}" == "SYNC" ]; then # Sync Cronjob
+				# ------------------------------------------------------------
+				# /etc/cron.d/CRON_sync_cloud_infrastructure
+				# ------------------------------------------------------------
+				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0644";
+				echo -e "\nSyncing Cronjob \"${DESTINATION_PATH}\"...\n";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-				RESTART_SERVICE_CRON=1;
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
-				echo "";
+			if [ "${ARGS_CRONJOB}" == "JENKINS" ]; then # Sync Cronjob
+				# ------------------------------------------------------------
+				# /etc/cron.d/CRON_jenkins_log_cleanup
+				# ------------------------------------------------------------
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0644";
+				echo -e "\nSyncing Cronjob \"${DESTINATION_PATH}\"...\n";
+				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				echo "Sync complete:  ${DESTINATION_PATH}";
+				# ------------------------------------------------------------
+				# /etc/cron.d/CRON_jenkins_warfile_update
+				# ------------------------------------------------------------
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0644";
+				echo -e "\nSyncing Cronjob \"${DESTINATION_PATH}\"...\n";
+				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				echo "Sync complete:  ${DESTINATION_PATH}";
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then # Remove Cronjob
-				echo -e "\nRemoving Cron-File \"${DESTINATION_PATH}\"...\n";
+				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
+				echo -e "\nRemoving Cronjob \"${DESTINATION_PATH}\"...\n";
 				rm -fv "${DESTINATION_PATH}";
-				RESTART_SERVICE_CRON=1;
-				echo "";
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
+				echo -e "\nRemoving Cronjob \"${DESTINATION_PATH}\"...\n";
+				rm -fv "${DESTINATION_PATH}";
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
+				echo -e "\nRemoving Cronjob \"${DESTINATION_PATH}\"...\n";
+				rm -fv "${DESTINATION_PATH}";
 			fi;
+			echo "";
 		fi;
 
 

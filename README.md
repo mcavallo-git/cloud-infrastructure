@@ -2,16 +2,22 @@
 
 <h1>Cloud Infrastructure</h1>
 
-<hr /><!-- ------------------------------------------------------------ -->
+<!-- ------------------------------------------------------------ -->
 
-<details><summary>Sync-1-Liner</summary>
+<details><summary>
+		<strong>Sync-Repo</strong>
+		<sub><i> → Syncs git repository & all runtime shellscripts</i></sub>
+	</summary>
 	<br />
-	<ul>
-		<li>Copy/Paste the following line of code to pull this codebase to a given Linux machine:
-		<pre><code>REPO_FILE="https://raw.githubusercontent.com/bonealnet/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && "${LOCAL_FILE}" && rm "${LOCAL_FILE}";</code></pre>
-		</li>
-	</ul>
+	<ol>
+	<li>Download and run the cloud-sync shellscript from the git-repo by calling:<br />
+	<pre><code>
+REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";
+	</code></pre>
+	</li>
+	</ol>
 </details>
+<hr />
 
 <hr /><!-- ------------------------------------------------------------ -->
 

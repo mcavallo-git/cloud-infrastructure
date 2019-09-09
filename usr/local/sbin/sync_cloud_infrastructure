@@ -222,9 +222,9 @@ else
 		# ------------------------------------------------------------
 		if [ "${ARGS_CRONJOB}" == "SYNC" ] || [ "${ARGS_CRONJOB}" == "JENKINS" ] || [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
 			RESTART_SERVICE_CRON=1;
-			if [ "${ARGS_CRONJOB}" == "SYNC" ]; then # Sync Cronjob
+			if [ "${ARGS_CRONJOB}" == "SYNC" ]; then
 				# ------------------------------------------------------------
-				# /etc/cron.d/CRON_sync_cloud_infrastructure
+				# --cron jenkins   -->   /etc/cron.d/CRON_sync_cloud_infrastructure
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -234,9 +234,9 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
-			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then # Sync Cronjob
+			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
 				# ------------------------------------------------------------
-				# /etc/cron.d/CRON_jenkins_log_cleanup
+				# --cron jenkins   -->   /etc/cron.d/CRON_jenkins_log_cleanup
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -247,7 +247,7 @@ else
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
 				# ------------------------------------------------------------
-				# /etc/cron.d/CRON_jenkins_warfile_update
+				# --cron sync   -->    /etc/cron.d/CRON_jenkins_warfile_update
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -257,7 +257,10 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
-			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then # Remove Cronjob
+			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
+				# ------------------------------------------------------------
+				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)
+				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
 				echo -e "\nRemoving Cronjob \"${DESTINATION_PATH}\"...\n";
 				rm -fv "${DESTINATION_PATH}";
@@ -279,7 +282,7 @@ else
 			ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
 		fi;
 
-		
+
 		# ------------------------------------------------------------
 		# Configurations, User-Home Directories
 		# ------------------------------------------------------------

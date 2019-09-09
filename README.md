@@ -1,4 +1,10 @@
-<!--  [View this file Online]  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md  -->
+<!-- ------------------------------------------------------------ ---
+
+This file (on GitHub):
+
+	https://github.com/mcavallo-git/cloud-infrastructure/#cloud-infrastructure
+
+--- ------------------------------------------------------------- -->
 
 <h3>Cloud Infrastructure</h3>
 <hr />

@@ -11,9 +11,7 @@
 	</summary>
 	<br />
 	<ol>
-	<li>Download and run the cloud-sync shellscript from the git-repo by calling:<br />
-	<pre><code>REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";</code></pre>
-	</li>
+		<li>Download and run the cloud-sync shellscript from the git-repo by calling:<br /><pre><code>REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";</code></pre></li>
 	</ol>
 <hr /></details>
 
@@ -25,8 +23,7 @@
 	</summary>
 	<br />
 	<ol>
-	<li>Install utility/devops-tool packages by calling: <pre><code>sudo install_apt_packages;</code></pre></li>
-	<p>(this step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced (populated) from the git repository)</p>
+		<li>Install utility/devops-tool packages by calling: <pre><code>sudo install_apt_packages;</code></pre><br /><i>(this step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced (populated) from the git repository)</i></li>
 	</ol>
 <hr /></details></li>
 

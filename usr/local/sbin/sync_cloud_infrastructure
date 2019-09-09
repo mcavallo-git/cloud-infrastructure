@@ -24,14 +24,6 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
-
-echo "";
-echo "------------------------------------------------------------";
-echo "\$@:";
-echo "$@";
-echo "------------------------------------------------------------";
-echo "";
-
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
 	#

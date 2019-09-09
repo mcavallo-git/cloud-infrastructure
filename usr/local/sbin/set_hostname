@@ -45,23 +45,26 @@ else
 	COUNT_ARGS=${#ARGS[@]};
 	ARGS_HOSTNAME_DEFINED=0;
 	DRY_RUN=1;
+	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
-		# Walk through any inline-arguments passed to this function
 		EACH_ARG=${ARGS[${i}]};
-		# BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number (because of bash's ${0} containing the entire inline command)
+		# BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
 
 		# Check if this is the last inline-argument or if there are more to follow
 		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
 			NEXT_ARG="";
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" != "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
 		fi;
 
-		if [ -n "${EACH_ARG}" ]; then
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
 			# Parse inline hostname
-			if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then
+			if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
 				NEXT_ARG="${EACH_ARG}";
 				EACH_ARG="--hostname";
 			fi;

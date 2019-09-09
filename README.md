@@ -24,7 +24,7 @@
 	</summary>
 	<br />
 	<ol>
-		<li>Install utility/devops-tool packages by calling: <pre><code>sudo install_apt_packages;</code></pre><sub> ⚠️ This step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced via <code>sync_cloud_infrastructure</code></sub></li>
+		<li>Install utility/devops-tool packages by calling: <pre><code>sudo install_apt_packages;</code></pre><sub> ⚠️ This step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced via <code>sync_cloud_infrastructure (from step "Setup Repository Sync")</code></sub></li>
 	</ol>
 <hr /></details></li>
 

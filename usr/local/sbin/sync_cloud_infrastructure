@@ -24,6 +24,53 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
+
+	# ------------------------------------------------------------
+	# Parse inline arguments (passed to current script)
+	#
+
+	ARGS=("$@");
+	COUNT_ARGS=${#ARGS[@]};
+	ARGS_CRONJOB="";
+	HELP_CRONJOB="Argument which sets-up/removes sync cronjob must be called as either \"--cron setup\" or \"--cron remove\"";
+	DRY_RUN=1;
+	# Walk through any inline-arguments passed to this function
+	for (( i=0;i<$COUNT_ARGS;i++ )); do
+
+		EACH_ARG=${ARGS[${i}]};
+
+		# Check if this is the last inline-argument or if there are more to follow
+		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+			NEXT_ARG="";
+		else
+			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
+		fi;
+
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+			# Parse cronjob calls
+			if [ "${EACH_ARG}" == "--cron" ]; then
+				if [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "setup" ]; then # --cron setup
+					ARGS_CRONJOB="SETUP";
+				elif [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "remove" ]; then # --cron remove
+					ARGS_CRONJOB="REMOVE";
+				else
+					if [ -n "${ARGS_CRONJOB}" ]; then
+						echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Invalid inline-argument:   Multiple instances of \"--cron\" detected";
+					else
+						echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
+					fi;
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ ${HELP_CRONJOB}";
+					exit 1;
+				fi;
+			fi;
+
+		fi;
+	done;
+
 	# ------------------------------------------------------------
 	
 	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
@@ -169,15 +216,23 @@ else
 		# ------------------------------------------------------------
 		# /etc/cron.d/CRON_sync_cloud_infrastructure
 		# ------------------------------------------------------------
-		DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
-		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-		FILE_PERMS="0644"; DIR_PERMS="0644";
-		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "Sync complete:  ${DESTINATION_PATH}";
-		echo "";
+		if [ "${ARGS_CRONJOB}" == "SETUP" ] || [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
+			DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
+			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+			FILE_PERMS="0644"; DIR_PERMS="0644";
+			if [ "${ARGS_CRONJOB}" == "SETUP" ]; then # Setup Cronjob
+				echo -e "\nCreating/Updating Cron-File \"${DESTINATION_PATH}\"...\n";
+				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				echo "Sync complete:  ${DESTINATION_PATH}";
+				echo "";
+			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then # Remove Cronjob
+				echo -e "\nRemoving Cron-File \"${DESTINATION_PATH}\"...\n";
+				rm -fv "${DESTINATION_PATH}";
+				echo "";
+			fi;
+		fi;
 
 
 		# ------------------------------------------------------------

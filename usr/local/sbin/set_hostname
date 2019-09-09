@@ -56,7 +56,7 @@ else
 			NEXT_ARG="";
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
-			if [[ "${NEXT_ARG}" != "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
 				NEXT_ARG="";
 			fi;
 		fi;

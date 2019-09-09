@@ -19,21 +19,25 @@ REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/m
 </details>
 <hr />
 
-<hr /><!-- ------------------------------------------------------------ -->
+<!-- ------------------------------------------------------------ -->
 
-<details>
-	<summary>Linux Filesystem Hierarchy</summary>
+<details><summary>
+		<strong>Linux Filesystem Hierarchy</strong>
+	</summary>
 	<pre><code><a href="usr/local/share/man/hier.man">man hier; # hier - description of the filesystem hierarchy</a></pre></code>
 </details>
 
-<hr /><!-- ------------------------------------------------------------ -->
+<hr />
 
-<details>
-	<summary>Citation(s)</summary>
-	<pre><code>
-		<ul>
-			<li><h4><a href="https://linux.die.net/man/7/hier">hier(7) - Linux man page</a></h4></li>
-			<li><h4><a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard">Filesystem Hierarchy Standard (FHS)</a></h4></li>
-		</ul>
-	</pre></code>
+<!-- ------------------------------------------------------------ -->
+
+<details><summary>
+		<strong>Citation(s)</strong>
+	</summary>
+	<ul>
+		<li><h4><a href="https://linux.die.net/man/7/hier"><pre><code>hier(7) - Linux man page</pre></code></a></h4></li>
+		<li><h4><a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard"><pre><code>Filesystem Hierarchy Standard (FHS)</pre></code></a></h4></li>
+	</ul>
 </details>
+
+<!-- ------------------------------------------------------------ -->

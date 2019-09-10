@@ -30,9 +30,6 @@ else
 
 	REPO_CREDS="${HOME}/.ssh/jenkins-config.push";
 
-	FILEPATH_ARCHIVE_7Z_CONFIG="${HOME}/jenkins_export_config.${START_TIMESTAMP}.7z";
-	FILEPATH_ARCHIVE_7Z_PLUGINS="${HOME}/jenkins_export_plugins.${START_TIMESTAMP}.7z";
-
 	# Determine user's home-directory location
 	if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
 		JENKINS_HOME=$(getent passwd "${TARGET_USER}" | cut --delimiter=: --fields=6);
@@ -42,6 +39,9 @@ else
 
 		# ------------------------------------------------------------
 		# Export all 'config.xml' (jenkins-config) files
+
+		FILEPATH_ARCHIVE_7Z_CONFIG="${HOME}/jenkins_export_config.${START_TIMESTAMP}.7z";
+	
 		echo -e "\nCompressing config-files from \"${JENKINS_HOME}/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
 		cd "$(dirname ${JENKINS_HOME})" && \
 		find "$(basename ${JENKINS_HOME})/" \
@@ -73,6 +73,9 @@ else
 
 		# ------------------------------------------------------------
 		# Export all files contained in the 'plugins' directory
+	
+		FILEPATH_ARCHIVE_7Z_PLUGINS="${HOME}/jenkins_export_plugins.${START_TIMESTAMP}.7z";
+
 		echo -e "\nCompressing plugins from \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\"...\n";
 		cd "$(dirname ${JENKINS_HOME})" && \
 		7z -v100m u "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";

@@ -49,7 +49,7 @@ else
 	-name 'config.xml' \
 	-not -path "${JENKINS_HOME}/config-history/*" \
 	-type f \
-	-exec 7z a "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on '{}';
+	-exec 7z a "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on '{}' \; \
 	;
 
 	# 7z a "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on '{}';

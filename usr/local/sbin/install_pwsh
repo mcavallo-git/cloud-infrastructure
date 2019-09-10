@@ -76,6 +76,13 @@ else
 		echo "Please see Microsoft's tutorial page for installing PowerShell Core @:";
 		echo " |    ";
 		echo " |--> https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux";
+	else
+		echo "";
+		echo "Testing PowerShell Core by calling [ pwsh -Command \"get-childitem env:\" ]...";
+		echo "------------------------------------------------------------";
+		pwsh -Command "get-childitem env:"
+		echo "------------------------------------------------------------";
+		echo "";
 	fi;
 
 	# pwsh; # Start PowerShell

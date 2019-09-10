@@ -41,8 +41,8 @@ else
 
 		# ------------------------------------------------------------
 
-		cd "${JENKINS_HOME}" && \
-		find "./" \
+		cd "$(dirname "'${JENKINS_HOME}'")" && \
+		find "$(basename "'${JENKINS_HOME}'")/" \
 			-mindepth 1 \
 			-maxdepth 3 \
 			-name 'config.xml' \

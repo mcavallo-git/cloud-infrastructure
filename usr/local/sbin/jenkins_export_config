@@ -58,6 +58,7 @@ else
 		chmod 0600 "${FILEPATH_ARCHIVE_7Z}" && \
 		mkdir -p "./config-exports" && \
 		mv "${FILEPATH_ARCHIVE_7Z}" "./config-exports/." && \
+		shopt -s "globstar" && \
 		source "${REPO_CREDS}" && \
 		env \
 			GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
@@ -67,7 +68,7 @@ else
 			GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
 			GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
 			EMAIL="${REMOTE_EMAIL}" \
-		git add ./*.7z && \
+		git add ./**/*.7z && \
 		git commit -m"${START_TIMESTAMP} | Backing-up Jenkins config-scripts" -a && \
 		git push;
 

@@ -49,15 +49,15 @@ else
 			-not -path "./config-history/*" \
 			-type f \
 			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
-			# -exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' > /dev/null \; ;
 
 		# ------------------------------------------------------------
 		# Export all files contained in the 'plugins' directory
 		cd "$(dirname ${JENKINS_HOME})" && \
-		find "$(basename ${JENKINS_HOME})/plugins/" \
-			-type f \
-			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
-			# -exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' > /dev/null \; ;
+		7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "$(basename ${JENKINS_HOME})/plugins/";
+		
+		# find "$(basename ${JENKINS_HOME})/plugins/" \
+		# 	-type f \
+		# 	-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
 
 		# ------------------------------------------------------------
 

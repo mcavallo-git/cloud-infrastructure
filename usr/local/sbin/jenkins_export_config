@@ -54,11 +54,11 @@ else
 
 		# ------------------------------------------------------------
 		
-		chmod 0600 "${FILEPATH_ARCHIVE_7Z}";
 
-		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git');
-
+		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 		cd "${GIT_WORK_TREE}" && \
+		chmod 0600 "${FILEPATH_ARCHIVE_7Z}" && \
+		mv "${FILEPATH_ARCHIVE_7Z}" "." && \
 		source "${REPO_CREDS}" && \
 		env \
 			GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \

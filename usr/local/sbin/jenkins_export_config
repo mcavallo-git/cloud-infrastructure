@@ -60,7 +60,7 @@ else
 		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 		cd "${GIT_WORK_TREE}" && \
 		chmod 0600 "${FILEPATH_ARCHIVE_7Z_CONFIG}" && \
-		mkdir -p "./config-exports" && \
+		mkdir -p "./config-exports/" && \
 		mv "${FILEPATH_ARCHIVE_7Z_CONFIG}" "./config-exports/." && \
 		shopt -s "globstar" && \
 		source "${REPO_CREDS}" && \
@@ -91,8 +91,8 @@ else
 		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 		cd "${GIT_WORK_TREE}" && \
 		chmod 0600 "${FILEPATH_ARCHIVE_7Z_PLUGINS}" && \
-		mkdir -p "./plugin-exports" && \
-		mv "${FILEPATH_ARCHIVE_7Z_PLUGINS}" "./plugin-exports/." && \
+		mkdir -p "./plugin-exports/${START_TIMESTAMP}/" && \
+		mv "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "./plugin-exports/${START_TIMESTAMP}/." && \
 		shopt -s "globstar" && \
 		source "${REPO_CREDS}" && \
 		env \

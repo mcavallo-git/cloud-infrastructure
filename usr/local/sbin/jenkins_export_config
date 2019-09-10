@@ -58,12 +58,7 @@ else
 
 		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git');
 
-		cd "${GIT_WORK_TREE}";
-
-		git add ./*.7z;
-
-		git commit -m"${START_TIMESTAMP} | Backing-up Jenkins config-scripts" -a;
-		
+		cd "${GIT_WORK_TREE}" && \
 		source "${REPO_CREDS}" && \
 		env \
 			GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
@@ -73,6 +68,8 @@ else
 			GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
 			GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
 			EMAIL="${REMOTE_EMAIL}" \
+		git add ./*.7z && \
+		git commit -m"${START_TIMESTAMP} | Backing-up Jenkins config-scripts" -a && \
 		git push;
 
 	fi;

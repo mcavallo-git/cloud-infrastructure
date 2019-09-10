@@ -84,7 +84,7 @@ else
 		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
 		du -sh "${JENKINS_HOME}/plugins/";
 
-		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\"...\n";
+		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 100-MB incremenets)...\n";
 		cd "$(dirname ${JENKINS_HOME})" && \
 		7z -v100m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";
 

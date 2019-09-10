@@ -5,7 +5,12 @@
 # ------------------------------------------------------------
 #
 #
-# echo -e "REMOTE_HOST=\"github.com\";\nREMOTE_OWNER=\"mcavallo-git\";\nREMOTE_REPOSITORY=\"cloud-infrastructure\";\nREMOTE_PRIVATE_KEY=\"${HOME}/.ssh/authorized_keys\";" > "$HOME/git_cloud_init.sh"; git_init "$HOME/git_cloud_init.sh";
+#	METHOD A (set git-repo variables as env-vars as part of the script call)
+#		env REMOTE_HOST="github.com" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="cloud-infrastructure" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" /usr/local/bin/git_init;
+#
+#
+#	METHOD B (call with inline-argument #1 as a credentials-source)
+#		echo -e "REMOTE_HOST=\"github.com\";\nREMOTE_OWNER=\"mcavallo-git\";\nREMOTE_REPOSITORY=\"cloud-infrastructure\";\nREMOTE_PRIVATE_KEY=\"${HOME}/.ssh/authorized_keys\";" > "$HOME/git_cloud_init.sh" && git_init "$HOME/git_cloud_init.sh";
 #
 #
 # ------------------------------------------------------------

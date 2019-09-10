@@ -37,13 +37,11 @@ else
 
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 
-		cd $JENKINS_HOME;
-
 		git_init "$HOME/.ssh/jenkins-config.pull";
 
 		# ------------------------------------------------------------
 
-		cd $JENKINS_HOME && \
+		cd "${JENKINS_HOME}" && \
 		find "./" \
 			-mindepth 1 \
 			-maxdepth 3 \

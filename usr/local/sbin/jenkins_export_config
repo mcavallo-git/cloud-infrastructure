@@ -40,7 +40,7 @@ else
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 
 		# ------------------------------------------------------------
-
+		# Export all 'config.xml' (jenkins-config) files
 		cd "$(dirname ${JENKINS_HOME})" && \
 		find "$(basename ${JENKINS_HOME})/" \
 			-mindepth 1 \
@@ -48,7 +48,15 @@ else
 			-name 'config.xml' \
 			-not -path "./config-history/*" \
 			-type f \
-			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; \
+			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' > /dev/null \; \
+		;
+
+		# ------------------------------------------------------------
+		# Export all files contained in the 'plugins' directory
+		cd "$(dirname ${JENKINS_HOME})" && \
+		find "$(basename ${JENKINS_HOME})/plugins/" \
+			-type f \
+			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' > /dev/null \; \
 		;
 
 		# ------------------------------------------------------------
@@ -69,8 +77,10 @@ else
 			GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
 			EMAIL="${REMOTE_EMAIL}" \
 		git add ./**/*.7z && \
-		git commit -m"${START_TIMESTAMP} | Backing-up Jenkins config-scripts" -a && \
+		git commit -m"${START_TIMESTAMP} | Exporting Jenkins-configuration from $(hostname)" -a && \
 		git push;
+
+		# ------------------------------------------------------------
 
 	fi;
 

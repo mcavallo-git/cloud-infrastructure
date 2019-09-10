@@ -48,8 +48,10 @@ else
 			-name 'config.xml' \
 			-not -path "./config-history/*" \
 			-type f \
-			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' > /dev/null \; \
+			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' \; \
 		;
+		# 	-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' > /dev/null \; \
+		# ;
 
 		# ------------------------------------------------------------
 

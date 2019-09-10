@@ -118,7 +118,7 @@ else
 		WIN32_USERNAME=$(wsl_get_windows_username);
 		WIN32_USER_ERRORS="$?";
 	fi;
-	if [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
+	if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
 		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');

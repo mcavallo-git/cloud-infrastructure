@@ -41,21 +41,19 @@ else
 
 		git_init "$HOME/.ssh/jenkins-config.pull";
 
-	# ------------------------------------------------------------
+		# ------------------------------------------------------------
 
-	find "${JENKINS_HOME}/" \
-	-mindepth 1 \
-	-maxdepth 3 \
-	-name 'config.xml' \
-	-not -path "${JENKINS_HOME}/config-history/*" \
-	-type f \
-	-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -w"${JENKINS_HOME}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' \; \
-	;
+		cd $JENKINS_HOME && \
+		find "./" \
+			-mindepth 1 \
+			-maxdepth 3 \
+			-name 'config.xml' \
+			-not -path "./config-history/*" \
+			-type f \
+			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' > /dev/null \; \
+		;
 
-	# 7z a "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on '{}';
-	# 7z a "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on '{}' > /dev/null;
-
-	# ------------------------------------------------------------
+		# ------------------------------------------------------------
 
 		# git init;
 		# shopt -s globstar; # If set, the pattern ‘**’ used in a filename expansion context will match all files and zero or more directories and subdirectories. If the pattern is followed by a ‘/’, only directories and subdirectories match.

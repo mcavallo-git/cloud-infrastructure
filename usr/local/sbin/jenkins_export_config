@@ -50,6 +50,8 @@ else
 			-type f \
 			-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; \
 		;
+		chmod 0600 "${FILEPATH_ARCHIVE_7Z}";
+
 		# 	-exec 7z u "${FILEPATH_ARCHIVE_7Z}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf '{}' > /dev/null \; \
 		# ;
 

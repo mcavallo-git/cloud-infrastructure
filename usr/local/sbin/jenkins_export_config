@@ -134,6 +134,9 @@ GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 cd "${GIT_WORK_TREE}";
 # 7z x "LATEST_ARCHIVE.7z";
 # rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
+
+### REVERT TO ORIGINAL DOCKER-CONFIG FILES AS-OF ~ 2019-09-11_15-35
+# rsync --archive --inplace --checksum --verbose "/root/tester/bak/var/lib/docker/volumes/jenkins-data/_data" "/var/lib/docker/volumes/jenkins-data/_data";
 fi;
 
 

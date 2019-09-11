@@ -132,6 +132,8 @@ if [ 0 -eq 1 ]; then
 REPO_CREDS="${HOME}/.ssh/jenkins-config.pull" && \
 GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 cd "${GIT_WORK_TREE}";
+# 7z x "LATEST_ARCHIVE.7z";
+# rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
 fi;
 
 

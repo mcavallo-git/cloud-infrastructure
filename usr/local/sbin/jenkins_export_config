@@ -43,7 +43,8 @@ else
 		# Export all 'config.xml' (jenkins-config) files
 
 		FILEPATH_ARCHIVE_7Z_CONFIG="${HOME}/jenkins_export_config.${START_TIMESTAMP}.7z";
-	
+		POINTER_LATEST_7Z_CONFIG="${JENKINS_HOME}/jenkins_export_config.latest.7z";
+
 		# echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
 		# du -sh "${JENKINS_HOME}/**/config.xml";
 
@@ -56,6 +57,9 @@ else
 			-not -path "./config-history/*" \
 			-type f \
 			-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
+		if [ "$?" == "0" ]; then
+			ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}" "${POINTER_LATEST_7Z_CONFIG}";
+		fi;
 
 		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 		cd "${GIT_WORK_TREE}" && \
@@ -80,6 +84,7 @@ else
 		# Export all files contained in the 'plugins' directory
 	
 		FILEPATH_ARCHIVE_7Z_PLUGINS="${HOME}/jenkins_export_plugins.${START_TIMESTAMP}.7z";
+		POINTER_LATEST_7Z_PLUGINS="${JENKINS_HOME}/jenkins_export_plugins.latest.7z";
 
 		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
 		du -sh "${JENKINS_HOME}/plugins/";
@@ -87,6 +92,9 @@ else
 		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
 		cd "$(dirname ${JENKINS_HOME})" && \
 		7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";
+		if [ "$?" == "0" ]; then
+			ln -sf "${FILEPATH_ARCHIVE_7Z_PLUGINS}.001" "${POINTER_LATEST_7Z_PLUGINS}";
+		fi;
 
 		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
 		cd "${GIT_WORK_TREE}" && \

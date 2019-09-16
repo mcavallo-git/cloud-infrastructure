@@ -101,7 +101,7 @@ else
 			mkdir -p "./plugin-exports" && \
 			mkdir -p "./plugin-exports/${START_TIMESTAMP}" && \
 			mv "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/." && \
-			ln -sf "${TARGET_LATEST_7Z_PLUGINS}" "${R}" && \
+			ln -sf "${TARGET_LATEST_7Z_PLUGINS}" "${POINTER_LATEST_7Z_PLUGINS}" && \
 			shopt -s "globstar" && \
 			source "${REPO_CREDS}" && \
 			env \

@@ -95,7 +95,7 @@ else
 		if [ "$?" == "0" ]; then
 
 			GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
-			TARGET_LATEST_7Z_PLUGINS="${GIT_WORK_TREE}/config-exports/$(basename ${FILEPATH_ARCHIVE_7Z_PLUGINS}).001" && \
+			TARGET_LATEST_7Z_PLUGINS="${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/$(basename ${FILEPATH_ARCHIVE_7Z_PLUGINS}).001" && \
 			cd "${GIT_WORK_TREE}" && \
 			chmod 0600 "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* && \
 			mkdir -p "./plugin-exports" && \

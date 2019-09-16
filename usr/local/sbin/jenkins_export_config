@@ -26,7 +26,7 @@ else
 
 	START_TIMESTAMP="$(date +'%Y-%m-%d_%H-%M-%S')";
 
-	TARGET_USER="jenkins";
+	USERNAME_JENKINS="jenkins";
 
 	REPO_CREDS="${HOME}/.ssh/jenkins-config.push";
 
@@ -34,7 +34,7 @@ else
 
 	# Determine user's home-directory location
 	if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
-		JENKINS_HOME=$(getent passwd "${TARGET_USER}" | cut --delimiter=: --fields=6);
+		JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
 	fi;
 
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
@@ -101,7 +101,7 @@ else
 			mkdir -p "./plugin-exports" && \
 			mkdir -p "./plugin-exports/${START_TIMESTAMP}" && \
 			mv "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/." && \
-			ln -sf "${TARGET_LATEST_7Z_PLUGINS}" "${POINTER_LATEST_7Z_PLUGINS}" && \
+			ln -sf "${TARGET_LATEST_7Z_PLUGINS}" "${R}" && \
 			shopt -s "globstar" && \
 			source "${REPO_CREDS}" && \
 			env \

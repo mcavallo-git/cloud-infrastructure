@@ -121,33 +121,58 @@ else
 
 		# ------------------------------------------------------------
 
-	fi;
+		if [ 0 -eq 1 ]; then
+			# Roll-Back all Jenkins plugins to [ latest export ]
+			#  | --> If a different plugins-export (7z archive) other than ${LATEST_ARCHIVE_PLUGINS} is desired, just modify (via SSH terminal) the
+			#        symbolic link referenced by ${LATEST_ARCHIVE_PLUGINS} and this command should still sort out the rest
+			USERNAME_JENKINS="jenkins" && \
+			JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6) && \
+			BAK_CURRENT_CONFIG="${JENKINS_HOME}/config.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
+			LATEST_ARCHIVE_CONFIG=$(realpath "${JENKINS_HOME}/jenkins_export_config.latest.7z") && \
+			BAK_CURRENT_PLUGINS="${JENKINS_HOME}/plugins.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
+			LATEST_ARCHIVE_PLUGINS=$(realpath "${JENKINS_HOME}/jenkins_export_plugins.latest.7z") && \
+			test -f "${LATEST_ARCHIVE_PLUGINS}" && \
+			cd $(dirname "${LATEST_ARCHIVE_PLUGINS}") && \
+			7z x $(basename "${LATEST_ARCHIVE_PLUGINS}") && \
+			service jenkins stop && \
+			mv "${JENKINS_HOME}/plugins" "${BAK_CURRENT_PLUGINS}" && \
+			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${BAK_CURRENT_PLUGINS}" && \
+			mv "$(dirname "${LATEST_ARCHIVE_PLUGINS}")/${JENKINS_HOME}/plugins" "${JENKINS_HOME}/plugins" && \
+			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${JENKINS_HOME}/plugins" && \
+			service jenkins start && \
+			rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
+			df -h ".";
 
-fi;
+		fi;
 
+		# ------------------------------------------------------------
+
+		# Backup docker-based Jenkins instance
+		if [ 0 -eq 1 ]; then
+		BASE_DIR="/root/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
+		mkdir -p "${BASE_DIR}" && \
+		7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
+		fi;
+
+		# ------------------------------------------------------------
+
+		# Update docker-based Jenkins instance
+		if [ 0 -eq 1 ]; then
+		REPO_CREDS="${HOME}/.ssh/jenkins-config.pull" && \
+		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
+		cd "${GIT_WORK_TREE}";
+		# 7z x "LATEST_ARCHIVE.7z";
+		# rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
+
+		# ------------------------------------------------------------
+
+		fi;
 
 # ------------------------------------------------------------
 
-# Backup docker-based Jenkins instance
-if [ 0 -eq 1 ]; then
-BASE_DIR="/root/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
-mkdir -p "${BASE_DIR}" && \
-7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
+	fi;
+
 fi;
-
-
-# Update docker-based Jenkins instance
-if [ 0 -eq 1 ]; then
-REPO_CREDS="${HOME}/.ssh/jenkins-config.pull" && \
-GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
-cd "${GIT_WORK_TREE}";
-# 7z x "LATEST_ARCHIVE.7z";
-# rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
-
-### REVERT TO ORIGINAL DOCKER-CONFIG FILES AS-OF ~ 2019-09-11_15-35
-# cp -rf "/root/tester/bak/var/lib/docker/volumes/jenkins-data/_data" "/var/lib/docker/volumes/jenkins-data/_data";
-fi;
-
 
 # ------------------------------------------------------------
 # 

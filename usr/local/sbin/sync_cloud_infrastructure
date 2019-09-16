@@ -236,6 +236,17 @@ else
 				echo "Sync complete:  ${DESTINATION_PATH}";
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
 				# ------------------------------------------------------------
+				# --cron sync   -->    /etc/cron.d/CRON_jenkins_export_config
+				# ------------------------------------------------------------
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0644";
+				echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				echo "Sync complete:  ${DESTINATION_PATH}";
+				# ------------------------------------------------------------
 				# --cron jenkins   -->   /etc/cron.d/CRON_jenkins_log_cleanup
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
@@ -262,6 +273,9 @@ else
 				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
+				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
+				rm -fv "${DESTINATION_PATH}";
+				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
 				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
 				rm -fv "${DESTINATION_PATH}";
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";

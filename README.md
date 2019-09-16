@@ -17,7 +17,7 @@ This file (on GitHub):
 		<sub> → <i>Syncs git repository & all runtime shellscripts</i></sub>
 	</summary>
 	<ol>
-		<li><h6>Sync the "cloud-infrastructure" repository to a given Linux instance by calling:</h6><br />
+		<li><h6>Sync Linux-shellscripts via the "<a href="#sync_cloud_infrastructure">sync_cloud_infrastructure</h6>" script by calling:</h6><br />
 			<pre><code>REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";</code></pre></li>
 	</ol>
 <hr /></details></li>

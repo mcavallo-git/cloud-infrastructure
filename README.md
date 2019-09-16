@@ -6,7 +6,8 @@ This file (on GitHub):
 
 --- ------------------------------------------------------------- -->
 
-<h3>Cloud Infrastructure</h3>
+<h1 id="cloud-infrastructure">Cloud Infrastructure</h1>
+↳ <i id="readme">Scripts to enhannce SSH-terminal versatility in a Linux environment</i>
 <hr />
 <ul>
 

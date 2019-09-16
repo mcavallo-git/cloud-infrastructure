@@ -12,7 +12,7 @@ This file (on GitHub):
 
 <!-- ------------------------------------------------------------ -->
 
-<li><details><summary>
+<li><details open><summary>
 		<strong>Setup Repository Sync</strong>
 		<sub> → <i>Syncs git repository & all runtime shellscripts</i></sub>
 	</summary>

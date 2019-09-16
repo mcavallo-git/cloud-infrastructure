@@ -156,7 +156,7 @@ else
 			#
 			# Backup [ Docker-based Jenkins instance ]
 			#
-			BASE_DIR="/root/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
+			BASE_DIR="${HOME}/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
 			mkdir -p "${BASE_DIR}" && \
 			7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
 		fi;

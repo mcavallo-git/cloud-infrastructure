@@ -128,7 +128,8 @@ else
 			#  |--> NOTE:  This command will reference the file pointed-to (see below) located at "${JENKINS_HOME}/jenkins_export_plugins.latest.7z"
 			#  |
 			#  |--> NOTE:  If a different plugins backup-file (7z archive) other than "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" is needed to-be-rolled-back-to, SSH into the
-			#              Jenkins server and redirect the symbolic link to the desired target-archive (and keep the link located @ "${JENKINS_HOME}/jenkins_export_plugins.latest.7z")
+			#                Jenkins server and redirect the symbolic link to the desired target-archive by overwriting/updating the link
+			#                located @ "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" to point to your desired file/archive.
 			#              Once you have updated the symbolic link to point-to your desired archive, use the same command, below (as-if nothing changed, since it uses the same sym-link)
 			#
 			USERNAME_JENKINS="jenkins" && \

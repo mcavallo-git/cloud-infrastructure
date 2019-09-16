@@ -76,7 +76,7 @@ else
 				GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
 				GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
 				EMAIL="${REMOTE_EMAIL}" \
-			git add ./**/*.7z && \
+			git add "${GIT_WORK_TREE}/config-exports/"**/* && \
 			git commit -m"${START_TIMESTAMP} | Exported Jenkins config-files from $(hostname)" -a && \
 			git push;
 		fi;
@@ -112,7 +112,7 @@ else
 				GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
 				GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
 				EMAIL="${REMOTE_EMAIL}" \
-			git add ./plugin-exports/${START_TIMESTAMP}/* && \
+			git add "${GIT_WORK_TREE}/plugin-exports/"**/* && \
 			git commit -m"${START_TIMESTAMP} | Exported Jenkins plugins from $(hostname)" -a && \
 			git push;
 

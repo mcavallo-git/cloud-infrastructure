@@ -25,7 +25,7 @@ This file (on GitHub):
 <!-- ------------------------------------------------------------ -->
 
 <li><details><summary>
-		<strong>Setup Packages</strong>
+		<strong>Setup Packages (Ubuntu)</strong>
 		<sub> → <i>Setup/Configure Required Linux Packages</i></sub>
 	</summary>
 	<br />
@@ -67,9 +67,9 @@ This file (on GitHub):
 		<strong>Citation(s)</strong>
 	</summary>
 	<ul>
-		<li><h4><a href="usr/local/share/man/hier.man"><pre><code>man hier;   # hier - description of the filesystem hierarchy</pre></code></a></h4></li><br />
-		<li><h4><a href="https://linux.die.net/man/7/hier"><pre><code>hier(7) - Linux man page</pre></code></a></h4></li><br />
-		<li><h4><a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard"><pre><code>Filesystem Hierarchy Standard (FHS)</pre></code></a></h4></li><br />
+		<li><h4><a href="usr/local/share/man/hier.man"><pre><code>man hier;   # hier - description of the filesystem hierarchy</pre></code></a></h4></li>
+		<li><h4><a href="https://linux.die.net/man/7/hier"><pre><code>hier(7) - Linux man page</pre></code></a></h4></li>
+		<li><h4><a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard"><pre><code>Filesystem Hierarchy Standard (FHS)</pre></code></a></h4></li>
 	</ul>
 <hr /></details></li>
 

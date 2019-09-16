@@ -8,7 +8,7 @@ This file (on GitHub):
 
 <h3 id="cloud-infrastructure">
 	Cloud Infrastructure<br />
-	<sub>↳ <i id="readme">Scripts to enhannce SSH-terminal versatility in a Linux environment</i></sub>
+	<sub>↳ <i id="readme">Scripts to enhance SSH-terminal versatility in a Linux environment</i></sub>
 </h3>
 <hr />
 <ul>

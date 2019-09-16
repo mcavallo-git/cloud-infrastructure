@@ -13,7 +13,7 @@ This file (on GitHub):
 <!-- ------------------------------------------------------------ -->
 
 <li><details open><summary>
-		<strong>Setup Repository Sync</strong>
+		<strong>Sync "cloud-infrastructure" Shellscripts</strong>
 		<sub> → <i>Syncs git repository & all runtime shellscripts</i></sub>
 	</summary>
 	<ol>

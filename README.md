@@ -2,7 +2,6 @@
 
 This file (on GitHub):
 
-	https://github.com/mcavallo-git/cloud-infrastructure/#cloud-infrastructure
 	https://github.com/mcavallo-git/cloud-infrastructure/#sync_cloud_infrastructure
 
 --- ------------------------------------------------------------- -->

@@ -63,6 +63,7 @@ if [ "$(which git)" == "" ] && [ "$(id -un)" == "root" ]; then
 		fi;
 	fi;
 fi;
+
 #
 # fail-out if git is not installed & could not be installed
 #
@@ -80,14 +81,16 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_REPOSITORY is empty.\n";
 fi;
 
-if [ -z "${REMOTE_PRIVATE_KEY}" ] && [ -n "${REMOTE_SSH_KEY}"]; then
-	REMOTE_PRIVATE_KEY="${REMOTE_SSH_KEY}";
-fi;
+#
+# fail-out if private-key is unset / empty / not-found / not a file
+#
+REMOTE_PRIVATE_KEY="${REMOTE_PRIVATE_KEY:-${REMOTE_SSH_KEY}}";
 if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
 elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error - File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
 fi;
+
 #
 # fail-out if any startup errors were found
 #
@@ -97,10 +100,12 @@ if [ -n "${FAIL_MSG}" ]; then
 	sleep 20;
 	exit 1;
 fi;
-#
+
+
 # ------------------------------------------------------------
 #
 # Welcome the User
+#
 LINE_BREAK="------------------------------------------------------------";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Git Setup/Config";
@@ -113,7 +118,7 @@ else
 fi;
 
 
-# ensure that the git repos-dir exists
+# Ensure that the git repos-dir exists
 if [ ! -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${ALL_REPOS_DIR}\"";
 	mkdir -p "${ALL_REPOS_DIR}";
@@ -121,7 +126,7 @@ fi;
 
 # ------------------------------------------------------------
 # set default privileges (user:group) for git-repo dirs
-MATCH_CHOWN="$(dirname ${ALL_REPOS_DIR})";
+MATCH_CHOWN=$(dirname "${ALL_REPOS_DIR}");
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Obtaining user & group info (to apply to Git directory & subdirectories)";
 
@@ -138,29 +143,15 @@ GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
 echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
 
 # ------------------------------------------------------------
-# set repository branch
-echo "$(date '+%Y-%m-%d %H:%M:%S') | Checking for branch-to-use...";
-if [ -n "${CHECKOUT_BRANCH}" ]; then 
-	echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${CHECKOUT_BRANCH}\" as checkout branch (from var \"CHECKOUT_BRANCH\")";
-fi;
-if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${REPO_BRANCH}" ]; then 
-	CHECKOUT_BRANCH="${REPO_BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${REPO_BRANCH}\" (var \"REPO_BRANCH\")";
-fi;
-if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${REMOTE_BRANCH}" ]; then 
-	CHECKOUT_BRANCH="${REMOTE_BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${REMOTE_BRANCH}\" (var \"REMOTE_BRANCH\")";
-fi;
-if [ ! -n "${CHECKOUT_BRANCH}" ] && [ -n "${BRANCH}" ]; then
-	CHECKOUT_BRANCH="${BRANCH}"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${BRANCH}\" (var \"BRANCH\")";
-fi;
-if [ ! -n "${CHECKOUT_BRANCH}" ]; then
-	CHECKOUT_BRANCH="master"; echo "$(date '+%Y-%m-%d %H:%M:%S') | Using branch \"${CHECKOUT_BRANCH}\" as checkout branch (fallback method)";
-fi;
+# Set the target checkout branch
+CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-master}}}}";
+echo -e "\n""Target branch-name: \"${CHECKOUT_BRANCH}\"...";
 
 # ------------------------------------------------------------
-# set 'git' as default username (if none is set)
-if [ ! -n "${REMOTE_USER_NAME}" ]; then REMOTE_USER_NAME="git"; fi;
-#
-# verify that the git repos-dir has correct ownership & access-privileges set
+# Set 'git' as default username (if none is set)
+REMOTE_USER_NAME="${REMOTE_USER_NAME:-git}";
+
+# Verify that the git repos-dir has correct ownership & access-privileges set
 if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file permissions to \"0700\"";
 	chmod 0700 "${ALL_REPOS_DIR}";

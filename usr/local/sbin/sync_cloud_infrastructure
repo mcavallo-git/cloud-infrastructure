@@ -16,6 +16,17 @@ exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then
+
+#	### Pull the raw version of the file directly out of GitHub
+REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && \
+LOCAL_FILE="/usr/local/bin/$(basename ${REPO_FILE})" && \
+sudo wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \
+sudo chmod 0755 "${LOCAL_FILE}" && \
+sudo chown "root:root" "${LOCAL_FILE}";
+
+fi;
+# ------------------------------------------------------------
 #
 # Script must run as root or via sudo
 #

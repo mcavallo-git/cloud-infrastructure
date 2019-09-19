@@ -18,7 +18,7 @@ exec 2>&1;
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then
 
-#	### Pull the raw version of the file directly out of GitHub
+#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
 REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && \
 LOCAL_FILE="/usr/local/bin/$(basename ${REPO_FILE})" && \
 sudo wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \

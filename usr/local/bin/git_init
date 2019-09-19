@@ -10,6 +10,17 @@
 #		env REMOTE_HOST="github.com" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="cloud-infrastructure" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" /usr/local/bin/git_init;
 #
 #
+if [ 0 -eq 1 ]; then
+
+#	### Pull the 'git_init' script straight out of GitHub.com's repo and into "/usr/local/bin/git_init"
+REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init" && \
+LOCAL_FILE="/usr/local/bin/$(basename ${REPO_FILE})" && \
+sudo wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \
+sudo chmod 0755 "${LOCAL_FILE}" && \
+sudo chown "root:root" "${LOCAL_FILE}";
+
+fi;
+#
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile

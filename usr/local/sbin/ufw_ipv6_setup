@@ -22,6 +22,8 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
+	RESTART_SERVICE_UFW=0;
+	# ------------------------------------------------------------
 	#
 	# UFW | Service Check
 	#  |--> Fail-out if UFW does NOT exist as local service
@@ -48,6 +50,7 @@ else
 					--expression='/^# Allow ICMPv6 Pinging$/d' \
 					--expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/d' \
 					"/etc/ufw/before6.rules";
+				RESTART_SERVICE_UFW=1;
 			fi;
 		else
 			echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( Y/N )  " -n 1 -t 20 -r;
@@ -58,6 +61,7 @@ else
 					--expression='/^#.+line or these rules.+$/d' \
 					--expression='/^COMMIT$/i\# Allow ICMPv6 Pinging\n-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
 					"/etc/ufw/before6.rules";
+				RESTART_SERVICE_UFW=1;
 			fi;
 		fi;
 		# ------------------------------------------------------------
@@ -76,6 +80,7 @@ else
 					--expression='/^# Allow ICMPv6 Multicast$/d' \
 					--expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/d' \
 					"/etc/ufw/before6.rules";
+				RESTART_SERVICE_UFW=1;
 			fi;
 		else
 			echo -e "\n""IPv6 Multicast is currently DISABLED";
@@ -87,9 +92,17 @@ else
 					--expression='/^#.+line or these rules.+$/d' \
 					--expression='/^COMMIT$/i\# Allow ICMPv6 Multicast\n-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
 					"/etc/ufw/before6.rules";
+				RESTART_SERVICE_UFW=1;
 			fi;
 		fi;
 		# ------------------------------------------------------------
+		# Restart necessary service(s)
+		# ------------------------------------------------------------
+		if [ ${RESTART_SERVICE_UFW} -eq 1 ]; then
+			service ufw restart;
+			service ufw status;
+		fi;
+
 	fi;
 fi;
 

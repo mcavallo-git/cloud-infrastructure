@@ -1,11 +1,13 @@
 #!/bin/bash
 #    Docker - List Volume Maps
 
-clear; \
-echo ""; \
-echo "Docker - Listing Active Volume-Maps..."; \
-echo "------------------------------------------------------------"; \
-ALL_VOLUME_MAPS=$(docker inspect --format='{{range .HostConfig.Binds}}{{println .}}{{end}}' $(docker ps --quiet) | grep -v '^$';); \
-echo "${ALL_VOLUME_MAPS}"; \
-echo "------------------------------------------------------------"; \
-echo ""; \
+clear;
+echo "";
+echo "Docker - Listing Active Volume-Maps...";
+echo "-----------------------------------------------docker -------------";
+
+docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$';
+
+echo "";
+echo "------------------------------------------------------------";
+echo "";

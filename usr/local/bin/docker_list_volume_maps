@@ -24,13 +24,13 @@ test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_i
 if [ "${is_docker_installed}" -eq 1 ]; then
 # | grep 'Host' --color
 for EACH_VOLMAP in "$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet))"; do
-test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}" || echo "${EACH_VOLMAP}";
+test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}" || echo -e "${TEXT_COLORLESS}${EACH_VOLMAP}";
 done;
 else
 echo "Docker is NOT installed";
 fi;
 echo "";
-echo "------------------------------------------------------------";
+echo -e "${TEXT_COLORLESS}""------------------------------------------------------------";
 echo "";
 
 IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime

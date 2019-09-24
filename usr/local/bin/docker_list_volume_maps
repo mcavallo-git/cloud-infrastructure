@@ -12,8 +12,9 @@ echo "";
 # Expanded using variable replacement:
 #
 
+TEXT_RESET='\e[0m';
 TEXT_TEAL='\033[0;96m';
-TEXT_RED='\033[0;31m';
+TEXT_RED='\033[0;31m'; # 
 TEXT_COLORLESS='\033[0m'; # No Color
 
 test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
@@ -22,7 +23,7 @@ if [ "${is_docker_installed}" -eq 1 ]; then
 # | grep 'Host' --color
 DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet));
 for EACH_VOLMAP in "${DOCKER_VOLMAPS[@]}"; do
-echo -e "${TEXT_TEAL}$(echo ${EACH_VOLMAP} | grep 'Host' 2>/dev/null)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}" || echo -e "${TEXT_RED}${EACH_VOLMAP}"; echo -e "${TEXT_COLORLESS}";
+echo -e "${TEXT_RESET}$(echo -e ${EACH_VOLMAP} | grep '^|-->  Source:' 2>/dev/null)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}" || echo -e "${TEXT_RED}${EACH_VOLMAP}";
 done;
 else
 echo "Docker is NOT installed";
@@ -38,5 +39,7 @@ echo "";
 #  docs.docker.com  |  "Format command and log output"  |  https://docs.docker.com/config/formatting/
 #
 #  docs.docker.com  |  "docker inspect"  |  https://docs.docker.com/engine/reference/commandline/inspect/
+#
+#  misc.flogisoft.com  |  "Bash tips: Colors and formatting (ANSI/VT100 Control sequences)"  |  https://misc.flogisoft.com/bash/tip_colors_and_formatting
 #
 # ------------------------------------------------------------

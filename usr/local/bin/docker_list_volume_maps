@@ -22,16 +22,12 @@ TEXT_COLORLESS='\033[0m'; # No Color
 
 test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
 if [ "${is_docker_installed}" -eq 1 ]; then
-	# | grep 'Host' --color
-	# for EACH_VOLMAP in "$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet))"; do
 
 	docker inspect \
-	--format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' \
+	--format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' \
 	$(docker ps --quiet) \
 	| while read EACH_VOLMAP
 	do
-		# docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) \
-		# | while IFS= read -r -d $'\0' EACH_VOLMAP; do
 		test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
 	done;
 

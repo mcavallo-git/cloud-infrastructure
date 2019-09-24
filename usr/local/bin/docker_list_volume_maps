@@ -2,6 +2,9 @@
 #    Docker - List Volume Maps
 
 
+ROLLBACK_IFS="${IFS}";
+IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
+
 clear;
 echo "";
 echo "Docker - Listing Active Volume-Maps...";
@@ -30,6 +33,7 @@ echo "";
 echo "------------------------------------------------------------";
 echo "";
 
+IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
 
 # ------------------------------------------------------------
 #  Citation(s)

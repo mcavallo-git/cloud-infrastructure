@@ -24,6 +24,8 @@ test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_i
 if [ "${is_docker_installed}" -eq 1 ]; then
 # | grep 'Host' --color
 for EACH_VOLMAP in "$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet))"; do
+date;
+echo "EACH_VOLMAP = [${EACH_VOLMAP}]";
 test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
 done;
 else

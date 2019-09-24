@@ -4,7 +4,8 @@
 clear;
 echo "";
 echo "Docker - Listing Active Volume-Maps...";
-echo "-----------------------------------------------docker -------------";
+echo "------------------------------------------------------------";
+echo "";
 
 docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$';
 

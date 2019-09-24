@@ -8,6 +8,7 @@ IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 clear;
 echo "";
 echo "Docker - Listing Active Volume-Maps...";
+DASHES="------------------------------------------------------------";
 # ------------------------------------------------------------
 #
 # Expanded using variable replacement:
@@ -21,9 +22,8 @@ TEXT_COLORLESS='\033[0m'; # No Color
 test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
 if [ "${is_docker_installed}" -eq 1 ]; then
 
-	echo "------------------------------------------------------------";
 	docker inspect \
-	--format='{{println}}{{.Config.Image}}  (Image) {{range .Mounts}}{{println}}|{{println}}|→ 📁 {{.Source}}  (Host){{println}}|   ↳ {{.Destination}}  (Container){{end}}' \
+	--format=''${DASHES}'{{println}}{{.Config.Image}}  (Image) {{range .Mounts}}{{println}}|{{println}}|→ 📁 {{.Source}}  (Host){{println}}|   ↳ {{.Destination}}  (Container){{end}}' \
 	$(docker ps --quiet) \
 	| while read EACH_VOLMAP
 	do

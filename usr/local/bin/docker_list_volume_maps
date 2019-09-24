@@ -21,7 +21,7 @@ test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_i
 if [ "${is_docker_installed}" -eq 1 ]; then
 # | grep 'Host' --color
 for EACH_VOLMAP in "$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet))"; do
-test -n "$(echo ${EACH_VOLMAP} | grep '^|-->  Source:' 2>/dev/null)" && echo $(echo -e 'IN IF-CASE' && echo -e "${TEXT_TEAL}${EACH_VOLMAP}") || echo "${EACH_VOLMAP}";
+test -n "$(echo ${EACH_VOLMAP} | grep '^.*Destination.*$' 2>/dev/null;)" && echo $(echo -e 'IN IF-CASE' && echo -e "${TEXT_TEAL}${EACH_VOLMAP}") || echo "${EACH_VOLMAP}";
 done;
 else
 echo "Docker is NOT installed";

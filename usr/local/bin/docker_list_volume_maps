@@ -20,7 +20,7 @@ test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_i
 if [ "${is_docker_installed}" -eq 1 ]; then
 # echo "Docker IS installed";
 # | grep 'Host' --color
-DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$');
+DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet));
 for EACH_VOLMAP in "${DOCKER_VOLMAPS[@]}"; do
 echo -e "${TEXT_TEAL}$(echo ${EACH_VOLMAP} | grep 'Host' 2>/dev/null)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}" || echo -e "${TEXT_RED}${EACH_VOLMAP}"; echo -e "${TEXT_COLORLESS}";
 done;

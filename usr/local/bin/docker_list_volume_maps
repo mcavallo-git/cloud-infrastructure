@@ -24,7 +24,7 @@ test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_i
 if [ "${is_docker_installed}" -eq 1 ]; then
 
 	docker inspect \
-	--format='{{println}} ❖ {{.Config.Image}}  (Image) {{range .Mounts}}{{println}}{{println}} 📁 {{.Source}}  (Host){{println}}  ↳ {{.Destination}}  (Container){{end}}' \
+	--format='{{println}} ❖ {{.Config.Image}}  (Image) {{range .Mounts}}{{println}}{{println}} 📁 {{.Source}}  (Host){{println}}  ⇀ {{.Destination}}  (Container){{end}}' \
 	$(docker ps --quiet) \
 	| while read EACH_VOLMAP
 	do

@@ -14,18 +14,16 @@ echo "";
 test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
 if [ "${is_docker_installed}" -eq 1 ]; then
 	echo "Docker IS	installed";
+
+	# | grep 'Host' --color
+	DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$');
+	for EACH_VOLMAP in "${DOCKER_VOLMAPS[@]}"; do
+	echo -e "\e[96m$(echo ${EACH_VOLMAP} | grep 'Host' 2>/dev/null)" && echo -e "\e[96m${EACH_VOLMAP}" || echo -e "\e[39m${EACH_VOLMAP}"; echo "";
+	done;
+
 else
 	echo "Docker is NOT installed";
 fi;
-
-# | grep 'Host' --color
-DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$');
-for EACH_VOLMAP in "${DOCKER_VOLMAPS[@]}"; do
-test -n "$(echo ${EACH_VOLMAP} | grep 'Host' 2>/dev/null)" && echo -e "\e[96m${EACH_VOLMAP}" || echo -e "\e[39m${EACH_VOLMAP}";
-done;
-
-# echo -e "Default \e[96mLight cyan"
-
 echo "";
 echo "------------------------------------------------------------";
 echo "";

@@ -26,8 +26,12 @@ if [ "${is_docker_installed}" -eq 1 ]; then
 # for EACH_VOLMAP in "$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet))"; do
 
 docker inspect \
---format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) \
-| while IFS= read -r -d $'\0' EACH_VOLMAP; do
+--format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' \
+$(docker ps --quiet) \
+| while read EACH_VOLMAP
+do
+# docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) \
+# | while IFS= read -r -d $'\0' EACH_VOLMAP; do
 date;
 echo "EACH_VOLMAP = [${EACH_VOLMAP}]";
 test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";

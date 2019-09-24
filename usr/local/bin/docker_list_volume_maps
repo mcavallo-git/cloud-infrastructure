@@ -1,14 +1,41 @@
 #!/bin/bash
 #    Docker - List Volume Maps
 
+
 clear;
 echo "";
 echo "Docker - Listing Active Volume-Maps...";
 echo "------------------------------------------------------------";
 echo "";
+# ------------------------------------------------------------
+#
+# Expanded using variable replacement:
+#
+test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
+if [ "${is_docker_installed}" -eq 1 ]; then
+	echo "Docker IS	installed";
+else
+	echo "Docker is NOT installed";
+fi;
 
-docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$';
+# | grep 'Host' --color
+DOCKER_VOLMAPS=$(docker inspect --format='{{println}}Image: {{.Config.Image}}{{range .Mounts}}{{println}}|{{println}}|-->  Source:  {{.Source}}  (Host){{println}}|--> Maps-To:  {{.Destination}}  (Container){{end}}' $(docker ps --quiet) | grep -v '^$');
+for EACH_VOLMAP in "${DOCKER_VOLMAPS[@]}"; do
+test -n "$(echo ${EACH_VOLMAP} | grep 'Host' 2>/dev/null)" && echo -e "\e[96m${EACH_VOLMAP}" || echo -e "\e[39m${EACH_VOLMAP}";
+done;
+
+# echo -e "Default \e[96mLight cyan"
 
 echo "";
 echo "------------------------------------------------------------";
 echo "";
+
+
+# ------------------------------------------------------------
+#  Citation(s)
+#
+#  docs.docker.com  |  "Format command and log output"  |  https://docs.docker.com/config/formatting/
+#
+#  docs.docker.com  |  "docker inspect"  |  https://docs.docker.com/engine/reference/commandline/inspect/
+#
+# ------------------------------------------------------------

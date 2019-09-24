@@ -1,7 +1,20 @@
 #!/bin/bash
-docker --version | grep "Docker version" && is_docker_installed=1 || is_docker_installed=0;
+# ------------------------------------------------------------
+#
+# Shorthand test to determine if docker is installed (or not)
+#
+test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && echo "Docker IS installed" || echo "Docker is NOT installed";
+
+# ------------------------------------------------------------
+#
+# Expanded using variable replacement:
+#
+test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
 if [ "${is_docker_installed}" -eq 1 ]; then
-	echo "Docker IS	installed"
+	echo "Docker IS	installed";
 else
-	echo "Docker is NOT installed"
-fi; 
+	echo "Docker is NOT installed";
+fi;
+
+
+# ------------------------------------------------------------

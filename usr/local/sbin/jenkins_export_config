@@ -55,6 +55,8 @@ else
 
 		if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
 
+			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
+
 			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
 			ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
 			chmod 0600 "${FILEPATH_ARCHIVE_7Z_FULL}"* && \
@@ -102,7 +104,6 @@ else
 				-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
 
 			if [ "$?" == "0" ]; then
-
 				mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
 				ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}"* "${POINTER_LATEST_7Z_CONFIG}" && \
 				chmod 0600 "${FILEPATH_ARCHIVE_7Z_CONFIG}"* && \
@@ -133,7 +134,7 @@ else
 			cd "$(dirname ${JENKINS_HOME})" && \
 			7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";
 
-			
+
 			if [ "$?" == "0" ]; then
 
 				mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" && \

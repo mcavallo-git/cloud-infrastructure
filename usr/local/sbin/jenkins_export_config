@@ -59,7 +59,7 @@ else
 
 			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
 			ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
-			7z -v49m a "${FILEPATH_ARCHIVE_7Z_FULL}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/" > /dev/null && \
+			7z -v49m a "${FILEPATH_ARCHIVE_7Z_FULL}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/" && \
 			chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" \
 			;
 

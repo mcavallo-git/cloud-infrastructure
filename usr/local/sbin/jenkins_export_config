@@ -37,97 +37,126 @@ else
 		JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
 	fi;
 
+	
+
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 
 		# ------------------------------------------------------------
 		# Export all 'config.xml' (jenkins-config) files
 
-		FILEPATH_ARCHIVE_7Z_CONFIG="${HOME}/jenkins_export_config.${START_TIMESTAMP}.7z";
+		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
+		FILEPATH_ARCHIVE_7Z_CONFIG="${GIT_WORK_TREE}/config-exports/${START_TIMESTAMP}/export.7z" && \
+		FILEPATH_ARCHIVE_7Z_FULL="${GIT_WORK_TREE}/full-exports/${START_TIMESTAMP}/export.7z" && \
+		FILEPATH_ARCHIVE_7Z_PLUGINS="${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/export.7z" && \
+
 		POINTER_LATEST_7Z_CONFIG="${JENKINS_HOME}/jenkins_export_config.latest.7z";
-
-		# echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
-		# du -sh "${JENKINS_HOME}/**/config.xml";
-
-		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
-
-		cd "$(dirname ${JENKINS_HOME})" && \
-		find "$(basename ${JENKINS_HOME})/" \
-			-mindepth 1 \
-			-maxdepth 1 \
-			-name '*.xml' \
-			-type f \
-			-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
-
-		cd "$(dirname ${JENKINS_HOME})" && \
-		find "$(basename ${JENKINS_HOME})/" \
-			-mindepth 2 \
-			-maxdepth 3 \
-			-name 'config.xml' \
-			-not -path "./config-history/*" \
-			-type f \
-			-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
-
-		if [ "$?" == "0" ]; then
-			GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
-			TARGET_LATEST_7Z_CONFIG="${GIT_WORK_TREE}/config-exports/$(basename ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
-			cd "${GIT_WORK_TREE}" && \
-			chmod 0600 "${FILEPATH_ARCHIVE_7Z_CONFIG}" && \
-			mkdir -p "./config-exports" && \
-			mv "${FILEPATH_ARCHIVE_7Z_CONFIG}" "${GIT_WORK_TREE}/config-exports/." && \
-			ln -sf "${TARGET_LATEST_7Z_CONFIG}" "${POINTER_LATEST_7Z_CONFIG}" && \
-			shopt -s "globstar" && \
-			source "${REPO_CREDS}" && \
-			env \
-				GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
-				GIT_CURL_VERBOSE="1" \
-				GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
-				GIT_COMMITTER_NAME="${REMOTE_USERNAME}" \
-				GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
-				GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
-				EMAIL="${REMOTE_EMAIL}" \
-			git add "${GIT_WORK_TREE}/config-exports/"**/* && \
-			git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
-			git push;
-		fi;
-		# ------------------------------------------------------------
-		# Export all files contained in the 'plugins' directory
-	
-		FILEPATH_ARCHIVE_7Z_PLUGINS="${HOME}/jenkins_export_plugins.${START_TIMESTAMP}.7z";
+		POINTER_LATEST_7Z_FULL="${JENKINS_HOME}/jenkins_export_full.latest.7z";
 		POINTER_LATEST_7Z_PLUGINS="${JENKINS_HOME}/jenkins_export_plugins.latest.7z";
 
-		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
-		du -sh "${JENKINS_HOME}/plugins/";
+		if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
 
-		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
-		cd "$(dirname ${JENKINS_HOME})" && \
-		7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";
-		if [ "$?" == "0" ]; then
+			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
+			ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
+			chmod 0600 "${FILEPATH_ARCHIVE_7Z_FULL}"* && \
+			7z -v49m a "${FILEPATH_ARCHIVE_7Z_FULL}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/" > /dev/null;
 
-			GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
-			TARGET_LATEST_7Z_PLUGINS="${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/$(basename ${FILEPATH_ARCHIVE_7Z_PLUGINS}).001" && \
-			cd "${GIT_WORK_TREE}" && \
-			chmod 0600 "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* && \
-			mkdir -p "./plugin-exports" && \
-			mkdir -p "./plugin-exports/${START_TIMESTAMP}" && \
-			mv "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/." && \
-			ln -sf "${TARGET_LATEST_7Z_PLUGINS}" "${POINTER_LATEST_7Z_PLUGINS}" && \
-			shopt -s "globstar" && \
-			source "${REPO_CREDS}" && \
-			env \
-				GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
-				GIT_CURL_VERBOSE="1" \
-				GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
-				GIT_COMMITTER_NAME="${REMOTE_USERNAME}" \
-				GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
-				GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
-				EMAIL="${REMOTE_EMAIL}" \
-			git add "${GIT_WORK_TREE}/plugin-exports/"**/* && \
-			git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
-			git push;
+			if [ "$?" == "0" ]; then
+				shopt -s "globstar" && \
+				source "${REPO_CREDS}" && \
+				cd "${GIT_WORK_TREE}" && \
+				env \
+					GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
+					GIT_CURL_VERBOSE="1" \
+					GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
+					GIT_COMMITTER_NAME="${REMOTE_USERNAME}" \
+					GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
+					GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
+					EMAIL="${REMOTE_EMAIL}" \
+				git add "${GIT_WORK_TREE}/"**/* && \
+				git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+				git push;
+			fi;
+
+		else
+
+			# echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
+			# du -sh "${JENKINS_HOME}/**/config.xml";
+
+			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
+
+			cd "$(dirname ${JENKINS_HOME})" && \
+			find "$(basename ${JENKINS_HOME})/" \
+				-mindepth 1 \
+				-maxdepth 1 \
+				-name '*.xml' \
+				-type f \
+				-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
+
+			cd "$(dirname ${JENKINS_HOME})" && \
+			find "$(basename ${JENKINS_HOME})/" \
+				-mindepth 2 \
+				-maxdepth 3 \
+				-name 'config.xml' \
+				-not -path "./config-history/*" \
+				-type f \
+				-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
+
+			if [ "$?" == "0" ]; then
+
+				mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
+				ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}"* "${POINTER_LATEST_7Z_CONFIG}" && \
+				chmod 0600 "${FILEPATH_ARCHIVE_7Z_CONFIG}"* && \
+				shopt -s "globstar" && \
+				source "${REPO_CREDS}" && \
+				cd "${GIT_WORK_TREE}" && \
+				env \
+					GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
+					GIT_CURL_VERBOSE="1" \
+					GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
+					GIT_COMMITTER_NAME="${REMOTE_USERNAME}" \
+					GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
+					GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
+					EMAIL="${REMOTE_EMAIL}" \
+				git add "${GIT_WORK_TREE}/"**/* && \
+				git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+				git push;
+
+
+			fi;
+			# ------------------------------------------------------------
+			# Export all files contained in the 'plugins' directory
+
+			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
+			du -sh "${JENKINS_HOME}/plugins/";
+
+			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
+			cd "$(dirname ${JENKINS_HOME})" && \
+			7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/";
+
+			
+			if [ "$?" == "0" ]; then
+
+				mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" && \
+				ln -sf "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${POINTER_LATEST_7Z_PLUGINS}" && \
+				chmod 0600 "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* && \
+				shopt -s "globstar" && \
+				source "${REPO_CREDS}" && \
+				cd "${GIT_WORK_TREE}" && \
+				env \
+					GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
+					GIT_CURL_VERBOSE="1" \
+					GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
+					GIT_COMMITTER_NAME="${REMOTE_USERNAME}" \
+					GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
+					GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
+					EMAIL="${REMOTE_EMAIL}" \
+				git add "${GIT_WORK_TREE}/"**/* && \
+				git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+				git push;
+
+			fi;
 
 		fi;
-
-
 
 		if [ 0 -eq 1 ]; then
 			# ------------------------------------------------------------

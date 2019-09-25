@@ -61,6 +61,7 @@ else
 		cd "$(dirname ${JENKINS_HOME})" && \
 		find "$(basename ${JENKINS_HOME})/" \
 			-mindepth 2 \
+			-maxdepth 3 \
 			-name 'config.xml' \
 			-not -path "./config-history/*" \
 			-type f \

@@ -48,11 +48,19 @@ else
 		# echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
 		# du -sh "${JENKINS_HOME}/**/config.xml";
 
-		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"${JENKINS_HOME}/**/config.xml\" into \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
+		echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
+
 		cd "$(dirname ${JENKINS_HOME})" && \
 		find "$(basename ${JENKINS_HOME})/" \
 			-mindepth 1 \
-			-maxdepth 3 \
+			-maxdepth 1 \
+			-name '*.xml' \
+			-type f \
+			-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
+
+		cd "$(dirname ${JENKINS_HOME})" && \
+		find "$(basename ${JENKINS_HOME})/" \
+			-mindepth 2 \
 			-name 'config.xml' \
 			-not -path "./config-history/*" \
 			-type f \

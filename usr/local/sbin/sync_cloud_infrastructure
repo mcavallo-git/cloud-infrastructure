@@ -376,8 +376,6 @@ else
 		TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/sync_config_gpg_git"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
-		if [[ -f "/usr/local/sbin/sync_upd" ]]; then sudo "/usr/local/sbin/sync_upd"; fi;
-
 		# ------------------------------------------------------------
 		# Restart necessary service(s)
 		# ------------------------------------------------------------

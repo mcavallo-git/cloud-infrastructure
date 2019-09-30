@@ -508,15 +508,15 @@ fi;
 # SSH-Key, Email
 if [ -f "${GIT_SSH_PERSONAL}" ]; then
 	COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
-	SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
 	COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
+	SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
 	if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
 		GPG_KEY_ID="${GPG_KEY_ID_PERSONAL}"; # GPG-Key
 	fi;
 elif [ -f "${GIT_SSH_WORK}" ]; then
 	COMMIT_NAME="${COMMIT_NAME_WORK}";
-	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
 	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
+	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
 	if [ -n "${GPG_KEY_ID_WORK}" ]; then
 		GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
 	fi;
@@ -572,6 +572,8 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 			echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 			# Strings
+			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 			if [ -n "${GPG_KEY_ID}" ]; then
 				# Strings (GPG)
@@ -596,8 +598,8 @@ fi;
 GPG_KEY_ID="";
 if [ -f "${GIT_SSH_WORK}" ]; then
 	COMMIT_NAME="${COMMIT_NAME_WORK}";
-	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
 	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
+	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
 	if [ -n "${GPG_KEY_ID_WORK}" ]; then
 		GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
 	fi;
@@ -624,6 +626,8 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 		if [ -n "${GPG_KEY_ID}" ]; then
 			# Strings (GPG)
+			KEY="user.name";       VAL="${COMMIT_NAME}";                      git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.email";      VAL="${COMMIT_EMAIL}";                     git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets
 			KEY="gpg.program";                                                git config --local --unset "${KEY}";

@@ -1,0 +1,130 @@
+# ------------------------------------------------------------
+#
+# SSHD_CONF="/etc/ssh/sshd_config";
+#
+# See the sshd_config(5) manpage for details
+#
+
+AddressFamily inet
+
+AllowTcpForwarding no
+
+AuthenticationMethods publickey
+
+AuthorizedKeysFile /etc/ssh/authorized_keys/%u
+
+ChallengeResponseAuthentication yes
+
+ClientAliveCountMax 10
+
+ClientAliveInterval 30
+
+DenyUsers boneal
+
+IgnoreRhosts yes
+
+HostbasedAuthentication no
+
+LoginGraceTime 60
+
+LogLevel INFO
+
+MaxAuthTries 1
+
+MaxSessions 10
+
+MaxStartups 10:30:60
+
+PasswordAuthentication no
+
+PermitEmptyPasswords no
+
+PermitRootLogin no
+
+PermitUserEnvironment no
+
+PermitTunnel no
+
+Port 22
+Port 24
+
+PrintLastLog yes
+
+PrintMotd no
+
+Protocol 2
+
+PubkeyAuthentication yes
+
+StrictModes yes
+
+Subsystem sftp internal-sftp -l INFO
+
+SyslogFacility AUTH
+
+TCPKeepAlive no
+
+UseDNS no
+
+UsePAM yes
+
+X11DisplayOffset 10
+
+X11Forwarding yes
+
+# ------------------------------------------------------------
+#
+#  SFTP Jailed Users
+#
+
+Match Group sftp_jailed_users LocalPort 22
+  AuthenticationMethods publickey
+  ChrootDirectory %h
+  AllowAgentForwarding no
+  X11Forwarding no
+  ForceCommand internal-sftp
+
+#
+# addgroup --system "sftp_jailed_users"; # Add SFTP jail group
+#
+# usermod -G "sftp_jailed_users" "USERNAME"; # Apply SFTP jail (to user)
+#
+# ------------------------------------------------------------
+#
+#  SFTP over Port-24
+#
+
+Match User boneal_backup,mcavallo,phanna,rgodithi,cavalol LocalPort 24
+  AuthenticationMethods publickey
+  AllowAgentForwarding no
+  X11Forwarding no
+  ForceCommand internal-sftp
+
+#
+# addgroup --system "sftp_port24_users";  # Add port-24 SFTP group
+#
+# usermod -G "sftp_port24_users" "USERNAME"; # Allow Port-24 SFTP (to user)
+#
+# ------------------------------------------------------------
+#
+
+Match User jenkins_ssh Address 13.58.94.67 LocalPort 22
+  AuthenticationMethods publickey
+
+Match User boneal_backup Address 52.15.93.108 LocalPort 22
+  AuthenticationMethods publickey
+
+# ------------------------------------------------------------
+#
+#  Citation(s)
+#
+#    Documentation
+#      --> https://freebsd.org/cgi/man.cgi?sshd_config(5)
+#      --> https://www.openssh.com/manual.html
+#      --> https://linux.die.net/man/5/sshd_config
+#      --> https://debian-administration.org/article/87
+#
+#    Discussion
+#      --> https://askubuntu.com/questions/2271/how-to-harden-an-ssh-server
+#
+# ------------------------------------------------------------

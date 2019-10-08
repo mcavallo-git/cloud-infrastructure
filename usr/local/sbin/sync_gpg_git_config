@@ -469,23 +469,25 @@ fi;
 # ------------------------------------------------------------
 # [ SYSTEM ] && [ GLOBAL ] Git Configs
 
-REPO_GIT_CFG_ALL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
-GIT_CONFIG_ALL="${HOME}/.gpg_git/git_config_all" && \
-mkdir -p $(dirname "${GIT_CONFIG_ALL}") && \
-curl --output "${GIT_CONFIG_ALL}" "${REPO_GIT_CFG_ALL}";
+###  Download the "git_config_all" script, which will scour the current drive for all git exe's, then
+###  perform config-updates on each exe's global & system config-files with the values given (below)
+GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
+GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
+mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
+curl --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
-if [ -f "${GIT_CONFIG_ALL}" ]; then
+if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 
 # Strings
-KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL}" "${KEY}" "${VAL}";
-KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL}" "${KEY}" "${VAL}";
+KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # Unsets
-KEY="commit.gpgSign";                "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
-KEY="gpg.program";                   "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
-KEY="push.gpgSign";                  "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
-KEY="user.signingkey";               "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
+KEY="commit.gpgSign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="push.gpgSign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 
-rm -f "${GIT_CONFIG_ALL}";
+rm -f "${GIT_CONFIG_ALL_LOCAL}";
 
 fi;
 

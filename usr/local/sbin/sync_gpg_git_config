@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/sync_gpg_git_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # SYNC 1-LINER:
-#		REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" && LOCAL_FILE="${HOME}/sync_gpg_git_config" && mkdir -p $(dirname "${LOCAL_FILE}") && curl --output "${LOCAL_FILE}" "${REPO_FILE}" && "${LOCAL_FILE}" && rm -f "${LOCAL_FILE}";
+#		REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" && LOCAL_FILE="${HOME}/.gpg_git/sync_gpg_git_config" && mkdir -p $(dirname "${LOCAL_FILE}") && curl --output "${LOCAL_FILE}" "${REPO_FILE}" && "${LOCAL_FILE}" && rm -f "${LOCAL_FILE}";
 #
 # ------------------------------------------------------------
 #
@@ -469,14 +469,25 @@ fi;
 # ------------------------------------------------------------
 # [ SYSTEM ] && [ GLOBAL ] Git Configs
 
+REPO_GIT_CFG_ALL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
+GIT_CONFIG_ALL="${HOME}/.gpg_git/git_config_all" && \
+mkdir -p $(dirname "${GIT_CONFIG_ALL}") && \
+curl --output "${GIT_CONFIG_ALL}" "${REPO_GIT_CFG_ALL}";
+
+if [ -f "${GIT_CONFIG_ALL}" ]; then
+
 # Strings
-KEY="color.ui";        VAL="auto";   /usr/local/sbin/git_config_all "${KEY}" "${VAL}";
-KEY="core.autocrlf";   VAL="input";  /usr/local/sbin/git_config_all "${KEY}" "${VAL}";
+KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL}" "${KEY}" "${VAL}";
+KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL}" "${KEY}" "${VAL}";
 # Unsets
-KEY="commit.gpgSign";                /usr/local/sbin/git_config_all "${KEY}" "--unset";
-KEY="gpg.program";                   /usr/local/sbin/git_config_all "${KEY}" "--unset";
-KEY="push.gpgSign";                  /usr/local/sbin/git_config_all "${KEY}" "--unset";
-KEY="user.signingkey";               /usr/local/sbin/git_config_all "${KEY}" "--unset";
+KEY="commit.gpgSign";                "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
+KEY="gpg.program";                   "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
+KEY="push.gpgSign";                  "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
+KEY="user.signingkey";               "${GIT_CONFIG_ALL}" "${KEY}" "--unset";
+
+rm -f "${GIT_CONFIG_ALL}";
+
+fi;
 
 # ------------------------------------------------------------
 # [ GLOBAL ] Git Configs

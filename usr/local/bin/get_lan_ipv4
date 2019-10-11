@@ -33,6 +33,7 @@ SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadc
 ifconfig | while read EACH_LINE; do
 
 	# Parse the LAN IPv4 ("inet") from the ifconfig string
+	echo "EACH_LINE=[${EACH_LINE}]";
 	EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
 
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
@@ -52,8 +53,8 @@ ifconfig | while read EACH_LINE; do
 
 done;
 
-test -n "${THIS_LAN_IPV4}" && echo "THIS_LAN_IPV4 = ${THIS_LAN_IPV4}";
-test -n "${THIS_LAN_NETMASK}" && echo "THIS_LAN_NETMASK = ${THIS_LAN_NETMASK}";
-test -n "${THIS_LAN_BROADCAST}" && echo "THIS_LAN_BROADCAST = ${THIS_LAN_BROADCAST}";
+echo "THIS_LAN_IPV4 = [ ${THIS_LAN_IPV4} ]";
+echo "THIS_LAN_NETMASK = [ ${THIS_LAN_NETMASK} ]";
+echo "THIS_LAN_BROADCAST = [ ${THIS_LAN_BROADCAST} ]";
 
 # ------------------------------------------------------------

@@ -18,10 +18,16 @@ fi;
 #
 # ------------------------------------------------------------
 
-# THIS_LAN_IPV4="";
-# THIS_LAN_INET="";
-# THIS_LAN_NETMASK="";
-# THIS_LAN_BROADCAST="";
+THIS_LAN_IPV4="";
+THIS_LAN_INET="";
+THIS_LAN_NETMASK="";
+THIS_LAN_BROADCAST="";
+
+START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
+
+TMP_LAN_INET="/tmp/get_lan_ipv4.${START_TIMESTAMP}.inet";
+TMP_LAN_NETMASK="/tmp/get_lan_ipv4.${START_TIMESTAMP}.netmask";
+TMP_LAN_BROADCAST="/tmp/get_lan_ipv4.${START_TIMESTAMP}.broadcast";
 
 LOOPBACK_IPV4="127.0.0.1";
 
@@ -41,6 +47,8 @@ ifconfig | while read EACH_LINE; do
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
 
 		# If the parsed IPv4 is not a loopback IPv4, then save it
+		echo "${EACH_INET}" > "${TMP_LAN_INET}";
+
 		export THIS_LAN_IPV4="${EACH_INET}";
 		export THIS_LAN_INET="${EACH_INET}";
 		# THIS_LAN_IPV4=${EACH_INET};
@@ -50,10 +58,8 @@ ifconfig | while read EACH_LINE; do
 		EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
 		EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
 		if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
-			export THIS_LAN_NETMASK="${EACH_NETMASK}";
-			export THIS_LAN_BROADCAST="${EACH_BROADCAST}";
-			# THIS_LAN_NETMASK=${EACH_NETMASK};
-			# THIS_LAN_BROADCAST=${EACH_BROADCAST};
+			echo "${EACH_NETMASK}" > "${TMP_LAN_NETMASK}";
+			echo "${EACH_BROADCAST}" > "${TMP_LAN_BROADCAST}";
 		fi;
 
 		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
@@ -65,9 +71,14 @@ ifconfig | while read EACH_LINE; do
 
 done;
 
-echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
-echo "EACH_INET=[${EACH_INET}]";
-echo "EACH_NETMASK=[${EACH_NETMASK}]";
-echo "EACH_BROADCAST=[${EACH_BROADCAST}]";
+test -f "${TMP_LAN_INET}" && THIS_LAN_IPV4=$(cat "${TMP_LAN_INET}");
+test -f "${TMP_LAN_INET}" && THIS_LAN_INET=$(cat "${TMP_LAN_INET}");
+test -f "${TMP_LAN_NETMASK}" && THIS_LAN_NETMASK=$(cat "${TMP_LAN_NETMASK}");
+test -f "${TMP_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(cat "${TMP_LAN_BROADCAST}");
+
+echo "THIS_LAN_IPV4=[${THIS_LAN_IPV4}]";
+echo "THIS_LAN_INET=[${THIS_LAN_INET}]";
+echo "THIS_LAN_NETMASK=[${THIS_LAN_NETMASK}]";
+echo "THIS_LAN_BROADCAST=[${THIS_LAN_BROADCAST}]";
 
 # ------------------------------------------------------------

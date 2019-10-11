@@ -40,8 +40,6 @@ ifconfig | while read EACH_LINE; do
 
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
 
-		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
-
 		# If the parsed IPv4 is not a loopback IPv4, then save it
 		THIS_LAN_IPV4="${EACH_INET}";
 		THIS_LAN_INET="${EACH_INET}";
@@ -53,6 +51,11 @@ ifconfig | while read EACH_LINE; do
 			THIS_LAN_NETMASK="${EACH_NETMASK}";
 			THIS_LAN_BROADCAST="${EACH_BROADCAST}";
 		fi;
+
+		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
+		echo "EACH_INET=[${EACH_INET}]";
+		echo "EACH_NETMASK=[${EACH_NETMASK}]";
+		echo "EACH_BROADCAST=[${EACH_BROADCAST}]";
 
 	fi;
 

@@ -41,15 +41,19 @@ ifconfig | while read EACH_LINE; do
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
 
 		# If the parsed IPv4 is not a loopback IPv4, then save it
-		THIS_LAN_IPV4=${EACH_INET};
-		THIS_LAN_INET=${EACH_INET};
+		export THIS_LAN_IPV4="${EACH_INET}";
+		export THIS_LAN_INET="${EACH_INET}";
+		# THIS_LAN_IPV4=${EACH_INET};
+		# THIS_LAN_INET=${EACH_INET};
 
 		# Parse the Netmask & Broadcast from the ifconfig string
 		EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
 		EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
 		if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
-			THIS_LAN_NETMASK=${EACH_NETMASK};
-			THIS_LAN_BROADCAST=${EACH_BROADCAST};
+			export THIS_LAN_NETMASK="${EACH_NETMASK}";
+			export THIS_LAN_BROADCAST="${EACH_BROADCAST}";
+			# THIS_LAN_NETMASK=${EACH_NETMASK};
+			# THIS_LAN_BROADCAST=${EACH_BROADCAST};
 		fi;
 
 		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";

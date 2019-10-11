@@ -29,7 +29,7 @@ if [ -n "${1}" ]; then
 	echo "";
 	curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 		if [ "${EACH_LINE}" == "error check your search parameter" ]; then
-			echo "  Error - Hostname \"${1}\" not found";
+			echo -e "\nError in call to \"get_subdomains\"  →  Hostname not found:  \"${1}\"\n";
 		else
 			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);

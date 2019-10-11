@@ -8,18 +8,15 @@
 if [ -n "${HOME}" ]; then
 	USER_HOMEDIR="${HOME}";
 
-if [ -z "${USER_HOMEDIR}" ] && [ -n "$(which getent;)" ]; then
-	if [ -n "$(getent passwd $(whoami;) | cut --delimiter=: --fields=6;)" ]; then
-		USER_HOMEDIR="$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)";
-	fi;
-fi;
+elif [ -n "$(which getent;)" ] && [ -n "$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)" ]; then
+	USER_HOMEDIR="$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)";
 
-if [ -z "${USER_HOMEDIR}" ] && [ -n "$(which realpath;)" ] && [ -n "$(realpath ~;)" ]; then
-	USER_HOMEDIR="$(realpath ~;)";
-fi;
+elif [ -n "$(which realpath;)" ] && [ -n "$(realpath ~;)" ]; then
+	USER_HOMEDIR="$(realpath ~)";
 
-if [ -z "${USER_HOMEDIR}" ] && [ -n "$(which readlink;)" ] && [ -n "$(readlink -f ~;)" ]; then
-	USER_HOMEDIR="$(readlink -f ~;)";
+elif [ -n "$(which readlink;)" ] && [ -n "$(readlink -f ~;)" ]; then
+	USER_HOMEDIR="$(readlink -f ~)";
+
 fi;
 
 if [ -n "${USER_HOMEDIR}" ]; then

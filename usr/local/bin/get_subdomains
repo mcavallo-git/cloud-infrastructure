@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_subdomains" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+if [ -n "$2" ] && [[ "$2" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+#
+# ------------------------------------------------------------
+
+if [ -n "${1}" ]; then
+
+	REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+	SED_LINE='s/^(.+),'${REGEX_IPV4}'$/\0/p';
+	SED_FQDN='s/^(.+),'${REGEX_IPV4}'$/\1/p';
+	SED_IPV4='s/^(.+),'${REGEX_IPV4}'$/\2/p';
+
+	# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
+	curl "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
+		EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
+		EACH_FQDN=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_FQDN}";);
+		EACH_IPV4=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_IPV4}";);
+		echo "FQDN: ${EACH_FQDN}  →  IPv4: ${EACH_IPV4}";
+	done;
+
+	exit 0;
+
+else
+
+	echo "Error in call to \"get_subdomains\" → Must call with [ HOSTNAME ] as the first argument ( e.g. > get_subdomains google.com )";
+	exit 1;
+
+fi;
+
+# ------------------------------------------------------------

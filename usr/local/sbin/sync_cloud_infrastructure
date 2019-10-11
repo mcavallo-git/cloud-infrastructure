@@ -36,14 +36,13 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
-	#
 
 	# Make sure required runtime(s) are installed
 	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
+	# Parse inline arguments (passed to current script)
 	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
 

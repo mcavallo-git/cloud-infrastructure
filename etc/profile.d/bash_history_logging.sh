@@ -6,17 +6,13 @@
 
 # Resolve current user's home-directory
 if [ -n "${HOME}" ]; then
-	USER_HOMEDIR="${HOME}";
-
+USER_HOMEDIR="${HOME}";
 elif [ -n "$(which getent;)" ] && [ -n "$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)" ]; then
-	USER_HOMEDIR="$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)";
-
+USER_HOMEDIR="$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)";
 elif [ -n "$(which realpath;)" ] && [ -n "$(realpath ~;)" ]; then
-	USER_HOMEDIR="$(realpath ~)";
-
+USER_HOMEDIR="$(realpath ~)";
 elif [ -n "$(which readlink;)" ] && [ -n "$(readlink -f ~;)" ]; then
-	USER_HOMEDIR="$(readlink -f ~)";
-
+USER_HOMEDIR="$(readlink -f ~)";
 fi;
 
 if [ -n "${USER_HOMEDIR}" ]; then

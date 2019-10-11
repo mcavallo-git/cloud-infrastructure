@@ -30,8 +30,9 @@ if [ -n "${1}" ]; then
 		# EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
 		# EACH_FQDN=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_FQDN}";);
 		# EACH_IPV4=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_IPV4}";);
-		# echo "FQDN: ${EACH_FQDN}  →  IPv4: ${EACH_IPV4}";
-		echo "FQDN: $(echo ${EACH_LINE} | cut -d, -f 0)  →  IPv4: $(echo ${EACH_LINE} | cut -d, -f 1)";
+		EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 0;);
+		EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 1;);
+		echo "FQDN: ${EACH_FQDN}  →  IPv4: ${EACH_IPV4}";
 	done;
 
 	exit 0;

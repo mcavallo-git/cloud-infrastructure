@@ -39,14 +39,14 @@ else
 
 		# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
 		echo "";
-		echo "   IPv4           | FQDN              ";
-		echo "  ----------------|-------------------";
+		echo "   IPv4            | FQDN              ";
+		echo "  -----------------|-------------------";
 		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 			EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";
 			EACH_IPV4_RPAD="${EACH_IPV4_RPAD:0:15}";
-			echo "  ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
+			echo "   ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
 		done;
 		echo "";
 

@@ -32,7 +32,7 @@ if [ -n "${1}" ]; then
 		# EACH_IPV4=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_IPV4}";);
 		EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
 		EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
-		EACH_IPV4_RPAD="${EACH_IPV4}$(printf -v pad %15s;)";
+		EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";
 		EACH_IPV4_RPAD="${EACH_IPV4_RPAD:0:15}";
 
 		# echo "FQDN: ${EACH_FQDN}  →  IPv4: ${EACH_IPV4}";

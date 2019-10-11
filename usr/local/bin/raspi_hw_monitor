@@ -2,6 +2,10 @@
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 
+CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+MinTemp_Celsuis=${CurrentTemp_Celsuis};
+MaxTemp_Celsuis=${CurrentTemp_Celsuis};
+
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 
 while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
@@ -34,8 +38,10 @@ list_clock_freq="${list_clock_freq}Freq, cpu, max\t=  $(($(cat /sys/devices/syst
 list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
 for EachComponent in "${Components_ClockFreq[@]}"; do
 Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
+if [ $(echo "${Each_ClockFreq_Hz} > 0" | bc -l) -eq 1 ]; then
 list_clock_freq="${list_clock_freq}\n";
 list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l) MHz";
+fi;
 done;
 # list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
 
@@ -67,7 +73,18 @@ done;
 # ------------------------------------------------------------
 
 CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
-list_temperature="Temp, SoC\t=  ${CurrentTemp_Celsuis}°C";
+
+if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} < ${MinTemp_Celsuis}" | bc -l) -eq 1 ]; then
+MinTemp_Celsuis=${CurrentTemp_Celsuis};
+fi;
+
+if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq 1 ]; then
+MaxTemp_Celsuis=${CurrentTemp_Celsuis};
+fi;
+
+list_temperature="SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
+list_temperature="SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
+list_temperature="SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
 
 # ------------------------------------------------------------
 

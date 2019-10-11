@@ -82,9 +82,12 @@ if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq
 MaxTemp_Celsuis=${CurrentTemp_Celsuis};
 fi;
 
-list_temperature="SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
-list_temperature="SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
-list_temperature="SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
+list_temperature="";
+list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
+list_temperature="${list_temperature}\n";
+list_temperature="${list_temperature}SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
+list_temperature="${list_temperature}\n";
+list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
 
 # ------------------------------------------------------------
 

@@ -8,8 +8,8 @@
 if [ -n "${HOME}" ]; then
 	USER_HOMEDIR="${HOME}";
 
-elif [ -n "$(which getent;)" ] && [ -n "$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)" ]; then
-	USER_HOMEDIR="$(getent passwd $(whoami) | cut --delimiter=: --fields=6;)";
+elif [ -n "${USERNAME}" ] && [ -n "$(which getent;)" ] && [ -n "$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)" ]; then
+	USER_HOMEDIR="$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)";
 
 elif [ -n "$(which realpath;)" ] && [ -n "$(realpath ~;)" ]; then
 	USER_HOMEDIR="$(realpath ~)";

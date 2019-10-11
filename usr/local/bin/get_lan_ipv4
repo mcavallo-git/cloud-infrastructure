@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_lan_ipv4" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+#
+# ------------------------------------------------------------
+
+THIS_LAN_IPV4="";
+THIS_LAN_INET="";
+THIS_LAN_NETMASK=""
+THIS_LAN_BROADCAST="";
+
+LOOPBACK_IPV4="127.0.0.1";
+
+REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\1/p';
+SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
+SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
+
+ifconfig | while read EACH_LINE; do
+
+	# Parse the LAN IPv4 ("inet") from the ifconfig string
+	EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
+
+	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
+		# If the parsed IPv4 is not a loopback IPv4, then save it
+		THIS_LAN_IPV4="${EACH_INET}";
+		THIS_LAN_INET="${EACH_INET}";
+
+		# Parse the Netmask & Broadcast from the ifconfig string
+		EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
+		EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
+		if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
+			THIS_LAN_NETMASK="${EACH_NETMASK}";
+			THIS_LAN_BROADCAST="${EACH_BROADCAST}";
+		fi;
+
+	fi;
+
+done;
+
+test -n "${THIS_LAN_IPV4}" && echo "THIS_LAN_IPV4 = ${THIS_LAN_IPV4}";
+test -n "${THIS_LAN_NETMASK}" && echo "THIS_LAN_NETMASK = ${THIS_LAN_NETMASK}";
+test -n "${THIS_LAN_BROADCAST}" && echo "THIS_LAN_BROADCAST = ${THIS_LAN_BROADCAST}";
+
+# ------------------------------------------------------------

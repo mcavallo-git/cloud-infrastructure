@@ -20,7 +20,7 @@ elif [ -n "$(which readlink;)" ] && [ -n "$(readlink -f ~;)" ]; then
 fi;
 
 if [ -n "${USER_HOMEDIR}" ]; then
-
+	
 	# Define the fullpath for the log-directory
 	BASH_LOGDIR="${USER_HOMEDIR}/.bash-logs";
 
@@ -83,6 +83,14 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
 
 	fi;
+
+	test -n "${PERSISTENT_CMD}" && unset -v PERSISTENT_CMD;
+	test -n "${APPEND_CMD}" && unset -v APPEND_CMD;
+	test -n "${DAT_USER}" && unset -v DAT_USER;
+	test -n "${GET_LAST_COMMAND}" && unset -v GET_LAST_COMMAND;
+	test -n "${BASH_LOGDIR}" && unset -v BASH_LOGDIR;
+	test -n "${BASH_LOGFILE}" && unset -v BASH_LOGFILE;
+	test -n "${USER_HOMEDIR}" && unset -v USER_HOMEDIR;
 
 fi;
 

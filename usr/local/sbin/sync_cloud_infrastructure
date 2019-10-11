@@ -328,11 +328,11 @@ else
 			fi;
 		done;
 		echo "";
-		echo "❖ Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+		echo "ℹ️: Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-				echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
+				echo "    → \"${EACH_FILE}\" (Home-Directory File)";
 				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
@@ -355,7 +355,7 @@ else
 							chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
 							chmod 600 "${DEST_FULLPATH}";
 						fi;
-						echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
+						echo "${USERNAME_RPAD} ✓  [ ${DEST_FULLPATH} ]";
 					fi;
 				done;
 			fi;

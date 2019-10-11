@@ -18,38 +18,42 @@ fi;
 #
 # ------------------------------------------------------------
 
-if [ -n "${1}" ]; then
+if [ -z "${1}" ]; then
+
+	echo -e "\nError in call to \"get_subdomains\"\n  → Expected syntax:     >  get_subdomains HOSTNAME;\n";
+	exit 1;
+
+else
 
 	REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
 	SED_LINE='s/^(.+),'${REGEX_IPV4}'$/\0/p';
 	SED_FQDN='s/^(.+),'${REGEX_IPV4}'$/\1/p';
 	SED_IPV4='s/^(.+),'${REGEX_IPV4}'$/\2/p';
 
-	# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
-	echo "";
-	echo " IPv4             | FQDN              ";
-	echo "--------------------------------------";
-	echo "  ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
+	SMOKE_TEST=$(curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | head -n 1;);
+	if [ "${SMOKE_TEST}" == "error check your search parameter" ]; then
+		echo -e "\nError in call to \"get_subdomains\"\n  →  Hostname not found:  \"${1}\"\n";
+		exit 1;
 
-	curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
-		if [ "${EACH_LINE}" == "error check your search parameter" ]; then
-			echo -e "\nError in call to \"get_subdomains\"\n  →  Hostname not found:  \"${1}\"\n";
-		else
+	else
+
+		# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
+		echo "";
+		echo " IPv4             | FQDN              ";
+		echo "--------------------------------------";
+		echo "  ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
+		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 			EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";
 			EACH_IPV4_RPAD="${EACH_IPV4_RPAD:0:15}";
 			echo "  ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
-		fi;
-	done;
-	echo "";
+		done;
+		echo "";
 
-	exit 0;
+		exit 0;
 
-else
-
-	echo -e "\nError in call to \"get_subdomains\"\n  → Expected syntax:     >  get_subdomains HOSTNAME;\n";
-	exit 1;
+	fi;
 
 fi;
 

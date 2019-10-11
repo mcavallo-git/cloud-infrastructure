@@ -49,11 +49,6 @@ ifconfig | while read EACH_LINE; do
 		# If the parsed IPv4 is not a loopback IPv4, then save it
 		echo "${EACH_INET}" > "${TMP_LAN_INET}";
 
-		export THIS_LAN_IPV4="${EACH_INET}";
-		export THIS_LAN_INET="${EACH_INET}";
-		# THIS_LAN_IPV4=${EACH_INET};
-		# THIS_LAN_INET=${EACH_INET};
-
 		# Parse the Netmask & Broadcast from the ifconfig string
 		EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
 		EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
@@ -62,19 +57,14 @@ ifconfig | while read EACH_LINE; do
 			echo "${EACH_BROADCAST}" > "${TMP_LAN_BROADCAST}";
 		fi;
 
-		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
-		echo "EACH_INET=[${EACH_INET}]";
-		echo "EACH_NETMASK=[${EACH_NETMASK}]";
-		echo "EACH_BROADCAST=[${EACH_BROADCAST}]";
-
 	fi;
 
 done;
 
-test -f "${TMP_LAN_INET}" && THIS_LAN_IPV4=$(cat "${TMP_LAN_INET}");
-test -f "${TMP_LAN_INET}" && THIS_LAN_INET=$(cat "${TMP_LAN_INET}");
-test -f "${TMP_LAN_NETMASK}" && THIS_LAN_NETMASK=$(cat "${TMP_LAN_NETMASK}");
-test -f "${TMP_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(cat "${TMP_LAN_BROADCAST}");
+# Instantiate exported variables
+test -f "${TMP_LAN_INET}" && export THIS_LAN_IPV4=$(cat "${TMP_LAN_INET}") && export THIS_LAN_INET=$(cat "${TMP_LAN_INET}") && rm "${TMP_LAN_INET}";
+test -f "${TMP_LAN_NETMASK}" && export THIS_LAN_NETMASK=$(cat "${TMP_LAN_NETMASK}") && rm "${TMP_LAN_NETMASK}";
+test -f "${TMP_LAN_BROADCAST}" && export THIS_LAN_BROADCAST=$(cat "${TMP_LAN_BROADCAST}") && rm "${TMP_LAN_BROADCAST}";
 
 echo "THIS_LAN_IPV4=[${THIS_LAN_IPV4}]";
 echo "THIS_LAN_INET=[${THIS_LAN_INET}]";

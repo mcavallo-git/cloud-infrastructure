@@ -34,13 +34,14 @@ SED_BROADCAST='s/^\ *inet\ +'${REGEX_IPV4}'\ +netmask\ +'${REGEX_IPV4}'\ +broadc
 ifconfig | while read EACH_LINE; do
 
 	EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
-	# echo "EACH_LINE=[${EACH_LINE}]";
-	echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
 
 	# Parse the LAN IPv4 ("inet") from the ifconfig string
 	EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
 
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
+
+		echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
+
 		# If the parsed IPv4 is not a loopback IPv4, then save it
 		THIS_LAN_IPV4="${EACH_INET}";
 		THIS_LAN_INET="${EACH_INET}";

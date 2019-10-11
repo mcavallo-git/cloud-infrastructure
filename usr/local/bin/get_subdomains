@@ -26,12 +26,12 @@ if [ -n "${1}" ]; then
 	SED_IPV4='s/^(.+),'${REGEX_IPV4}'$/\2/p';
 
 	# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
-	curl "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
+	curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 		# EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
 		# EACH_FQDN=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_FQDN}";);
 		# EACH_IPV4=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_IPV4}";);
-		EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 0;);
-		EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 1;);
+		EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
+		EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 		echo "FQDN: ${EACH_FQDN}  →  IPv4: ${EACH_IPV4}";
 	done;
 

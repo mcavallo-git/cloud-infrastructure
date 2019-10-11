@@ -26,14 +26,18 @@ THIS_LAN_BROADCAST="";
 LOOPBACK_IPV4="127.0.0.1";
 
 REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+SED_LINE='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\0/p';
 SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\1/p';
 SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
 SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
 
 ifconfig | while read EACH_LINE; do
 
+	EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
+	# echo "EACH_LINE=[${EACH_LINE}]";
+	echo "EACH_SED_LINE=[${EACH_SED_LINE}]";
+
 	# Parse the LAN IPv4 ("inet") from the ifconfig string
-	echo "EACH_LINE=[${EACH_LINE}]";
 	EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
 
 	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then

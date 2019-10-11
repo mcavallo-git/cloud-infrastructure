@@ -26,10 +26,10 @@ THIS_LAN_BROADCAST="";
 LOOPBACK_IPV4="127.0.0.1";
 
 REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
-SED_LINE='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\0/p';
-SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\1/p';
-SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
-SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
+SED_LINE='s/^\ *inet\ +'${REGEX_IPV4}'\ +netmask\ +'${REGEX_IPV4}'\ +broadcast\ +'${REGEX_IPV4}'\ *$/\0/p';
+SED_INET='s/^\ *inet\ +'${REGEX_IPV4}'\ +netmask\ +'${REGEX_IPV4}'\ +broadcast\ +'${REGEX_IPV4}'\ *$/\1/p';
+SED_NETMASK='s/^\ *inet\ +'${REGEX_IPV4}'\ +netmask\ +'${REGEX_IPV4}'\ +broadcast\ +'${REGEX_IPV4}'\ *$/\5/p';
+SED_BROADCAST='s/^\ *inet\ +'${REGEX_IPV4}'\ +netmask\ +'${REGEX_IPV4}'\ +broadcast\ +'${REGEX_IPV4}'\ *$/\9/p';
 
 ifconfig | while read EACH_LINE; do
 

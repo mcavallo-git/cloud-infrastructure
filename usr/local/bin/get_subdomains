@@ -37,16 +37,30 @@ else
 
 	else
 
+		# Re-instantiate bash array via unset + declare
+		test -v ARR_IPV4_FQDN && unset ARR_IPV4_FQDN;
+		test -v ARR_IPV4_FQDN[@] && unset ARR_IPV4_FQDN;
+		declare -A ARR_IPV4_FQDN;
+		ARR_IPV4_FQDN+=(["Key One"]="Val One");
+		ARR_IPV4_FQDN+=(["Key Two"]="Val Two");
+		ARR_IPV4_FQDN+=(["Key A"]="Val A");
+		ARR_IPV4_FQDN+=(["Key B"]="Val B");
+
 		# Determine (and show) all subdomains and their resolved IPv4 addresses for input domain ( as ${1} )
-		echo "";
-		echo "   IPv4            | FQDN              ";
-		echo "  -----------------|-------------------";
 		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 			EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";
 			EACH_IPV4_RPAD="${EACH_IPV4_RPAD:0:15}";
 			echo "   ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
+		done;
+
+		echo "";
+		echo "   IPv4            | FQDN              ";
+		echo "  -----------------|-------------------";
+		for DAT_KEY in "${!ARR_IPV4_FQDN[@]}"; do
+				DAT_ITEM="${ARR_IPV4_FQDN[${DAT_KEY}]}";
+				echo "ARR_IPV4_FQDN[${DAT_KEY}] = ${DAT_ITEM}";
 		done;
 		echo "";
 

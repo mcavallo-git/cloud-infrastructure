@@ -55,35 +55,26 @@ else
 			ARR_IPV4_FQDN+=(["${EACH_IPV4}"]+="${EACH_FQDN}");
 		done;
 
+		# Sort the table by IPv4 address
 		ROLLBACK_IFS="${IFS}";
 		IFS=$'\n'; # Set the global delimiter
-		# sort <<<"${!ARR_IPV4_FQDN[*]}";
 		ARR_SORTED_IPV4=($(sort <<<"${!ARR_IPV4_FQDN[*]}"));
 		IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 		# Show all FQDNs (subdomain + domains), grouped by IPv4 address (tied to their DNS A-Record)
-		# ARR_TABLE_ROWS=();
-		# for EACH_KEY in "${!ARR_IPV4_FQDN_SORTED[@]}"; do
+
+		echo "";
+		echo "   IPv4            | FQDN              ";
+		echo "  -----------------|-------------------";
 		for EACH_KEY in "${ARR_SORTED_IPV4[@]}"; do
 			EACH_VAL="${ARR_IPV4_FQDN[${EACH_KEY}]}";
 			EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
 			EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
 			echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
-			# ARR_TABLE_ROWS+=("   ${EACH_KEY_RPAD} | ${EACH_VAL}");
+			echo "                   | ${EACH_VAL}";
 		done;
-
-		# ROLLBACK_IFS="${IFS}";
-		# IFS=$'\n'; # Set the global delimiter
-		# ARR_TABLE_ROWS_SORTED=($(sort <<<"${ARR_TABLE_ROWS[*]}"));
-		# IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
-
-		# echo "";
-		# echo "   IPv4            | FQDN              ";
-		# echo "  -----------------|-------------------";
-		# for EACH_KEY in "${!ARR_IPV4_FQDN[@]}"; do
-		#
-		# done;
-
+		echo "";
+		
 		exit 0;
 
 	fi;

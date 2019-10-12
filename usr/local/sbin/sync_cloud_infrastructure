@@ -276,6 +276,20 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
+				# ------------------------------------------------------------
+				# --cron sync   -->    /etc/cron.d/CRON_raspi_hw_monitor
+				# ------------------------------------------------------------
+				RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
+				if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
+					DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
+					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+					FILE_PERMS="0644"; DIR_PERMS="0644";
+					echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+					rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+					echo "Sync complete:  ${DESTINATION_PATH}";
+				fi;
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
 				# ------------------------------------------------------------
 				# --cron sync   -->    /etc/cron.d/CRON_jenkins_export_config
@@ -310,20 +324,6 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
-				# ------------------------------------------------------------
-				# --cron sync   -->    /etc/cron.d/CRON_raspi_hw_monitor
-				# ------------------------------------------------------------
-				RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
-				if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
-					DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
-					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-					FILE_PERMS="0644"; DIR_PERMS="0644";
-					echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
-					rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-					echo "Sync complete:  ${DESTINATION_PATH}";
-				fi;
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
 				# ------------------------------------------------------------
 				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)

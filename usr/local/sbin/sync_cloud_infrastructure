@@ -413,16 +413,12 @@ else
 
 
 		# ------------------------------------------------------------
-		# Restart necessary service(s)
+		# Cleanup log files outside of the retention-policy's max-age
 		# ------------------------------------------------------------
 		DIRECTORY_TO_CLEAN="${LOGDIR}/";
 		MAX_RETENTION_DAYS=14;
 		if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
-			find ${DIRECTORY_TO_CLEAN} \
-			-type f \
-			-mtime +${MAX_RETENTION_DAYS} \
-			-exec rm -v -- '{}' \; \
-			;
+			find ${DIRECTORY_TO_CLEAN} -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -v -- "{}" ";";
 		fi;
 
 

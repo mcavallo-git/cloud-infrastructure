@@ -48,6 +48,7 @@ else
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 			test -v ARR_IPV4_FQDN["${EACH_IPV4}"] && ARR_IPV4_FQDN+=(["${EACH_IPV4}"]+=", ");
 			ARR_IPV4_FQDN+=(["${EACH_IPV4}"]+="${EACH_FQDN}");
+			echo "ARR_IPV4_FQDN = [ ${ARR_IPV4_FQDN[@]} ]";
 		done;
 
 		# Show all FQDNs (subdomain + domains), grouped by IPv4 address (tied to their DNS A-Record)

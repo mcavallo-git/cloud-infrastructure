@@ -160,7 +160,16 @@ else
 			SOURCE_DIR_ERRS=$?;
 		fi;
 	else
-
+		# ------------------------------------------------------------
+		# Create link to repo-manuals
+		# ------------------------------------------------------------
+		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
+		if [ -d "${MAN_DIR}" ]; then
+			ln -sf "${MAN_DIR}" "${HOME}/man"; # Current User's Homedir
+			if [ -v SUDO_USER ] && [ -d "$(getent passwd ${SUDO_USER} | cut -d: -f 6;)" ]; then
+				ln -sf "${MAN_DIR}" "$(getent passwd ${SUDO_USER} | cut -d: -f 6;)/man"; # Sudoer User's Homedir
+			fi;
+		fi;
 	
 	fi;
 

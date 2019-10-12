@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 # Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
 #  
-#   REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";
+#   wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync && rm "/usr/local/sbin/sync_cloud_infrastructure";
 #
 # ------------------------------------------------------------
 #
@@ -18,16 +18,14 @@ exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then
+# If this runtime hasn't been updated in the last 60 seconds, then update it before running it
+if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 
-#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && \
-LOCAL_FILE="/usr/local/bin/$(basename ${REPO_FILE})" && \
-sudo wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \
-sudo chmod 0755 "${LOCAL_FILE}" && \
-sudo chown "root:root" "${LOCAL_FILE}";
+	#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
+	wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync && rm "/usr/local/sbin/sync_cloud_infrastructure";
 
 fi;
+
 # ------------------------------------------------------------
 #
 # Script must run as root or via sudo

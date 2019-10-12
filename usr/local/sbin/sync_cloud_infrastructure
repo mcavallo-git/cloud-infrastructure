@@ -159,6 +159,9 @@ else
 			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 			SOURCE_DIR_ERRS=$?;
 		fi;
+	else
+
+	
 	fi;
 
 	if [ -z "${DIR_REPO_BASE}" ]; then
@@ -365,9 +368,9 @@ else
 		# ------------------------------------------------------------
 		# Remove old/renamed scripts (if found to exist)
 		# ------------------------------------------------------------
-		
+		#   bin-scripts
 		TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-
+		#   sbin-scripts
 		TO_DEL="/usr/local/sbin/jenkins-config-export"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/install_devops_packages"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
@@ -382,6 +385,7 @@ else
 			service cron restart;
 			service cron status;
 		fi;
+
 	fi;
 
 	exit ${EXIT_CODE};

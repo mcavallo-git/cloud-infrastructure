@@ -2,8 +2,10 @@
 #
 # LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
-# SYNC 1-LINER:
-#		https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md
+# ------------------------------------------------------------
+# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+#  
+#   REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";
 #
 # ------------------------------------------------------------
 #
@@ -160,7 +162,7 @@ else
 			SOURCE_DIR_ERRS=$?;
 		fi;
 	else
-	
+
 		# ------------------------------------------------------------
 		# Create link to repo-manuals
 		# ------------------------------------------------------------

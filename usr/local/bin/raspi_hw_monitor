@@ -93,13 +93,15 @@ CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --ex
 
 if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} < ${MinTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MinTemp_Celsuis=${CurrentTemp_Celsuis};
-echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
+# echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
 fi;
+echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
 
 if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MaxTemp_Celsuis=${CurrentTemp_Celsuis};
-echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
+# echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 fi;
+echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 
 list_temperature="";
 list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";

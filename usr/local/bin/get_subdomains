@@ -53,19 +53,17 @@ else
 			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
 			test -v ARR_IPV4_FQDN["${EACH_IPV4}"] && ARR_IPV4_FQDN+=(["${EACH_IPV4}"]+=", ");
 			ARR_IPV4_FQDN+=(["${EACH_IPV4}"]+="${EACH_FQDN}");
-			echo "ARR_IPV4_FQDN = [ ${ARR_IPV4_FQDN[@]} ]";
 		done;
 
 		# Show all FQDNs (subdomain + domains), grouped by IPv4 address (tied to their DNS A-Record)
 		echo "";
 		echo "   IPv4            | FQDN              ";
 		echo "  -----------------|-------------------";
-		echo "ARR_IPV4_FQDN = [ ${ARR_IPV4_FQDN[@]} ]";
-		for EACH_IPV4 in "${!ARR_IPV4_FQDN[@]}"; do
-			EACH_FQDN="${ARR_IPV4_FQDN[${EACH_IPV4}]}";
-			EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";
-			EACH_IPV4_RPAD="${EACH_IPV4_RPAD:0:15}";
-			echo "   ${EACH_IPV4_RPAD} | ${EACH_FQDN}";
+		for EACH_KEY in "${!ARR_IPV4_FQDN[@]}"; do
+			EACH_VAL="${ARR_IPV4_FQDN[${EACH_KEY}]}";
+			EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
+			EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
+			echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
 		done;
 		echo "";
 

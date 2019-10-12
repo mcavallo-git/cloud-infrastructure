@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LOCAL_SBIN="/usr/local/sbin/sudoer_edit" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+# LOCAL_SBIN="/usr/local/sbin/sudoer_status" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #
@@ -96,7 +96,12 @@ else
 
 	# ------------------------------------------------------------
  
-	if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
+	if [ -z "${TARGET_USER}" ]; then 
+		echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Must define a target-user via:  >  sudoer_status --user USERNAME"; sleep 60; exit 1;
+
+
+	# ------------------------------------------------------------
+	elif [ "${EDIT_ACTION}" == "ALLOW" ]; then 
 		# Allow user to masquerade as the root user (via the 'sudo' command)
 
 		SUDOER_FILE_CONTENTS="";

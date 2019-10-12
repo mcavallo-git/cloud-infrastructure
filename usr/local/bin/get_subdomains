@@ -41,7 +41,7 @@ else
 		test -v ARR_IPV4_FQDN && unset ARR_IPV4_FQDN;
 		test -v ARR_IPV4_FQDN[@] && unset ARR_IPV4_FQDN;
 		declare -A ARR_IPV4_FQDN;
-		
+
 		# Resolved IPv4 addresses for given domain ( as ${1} )
 		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
 			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
@@ -54,6 +54,7 @@ else
 		echo "";
 		echo "   IPv4            | FQDN              ";
 		echo "  -----------------|-------------------";
+		echo "ARR_IPV4_FQDN = [ ${ARR_IPV4_FQDN[@]} ]"; do
 		for EACH_IPV4 in "${!ARR_IPV4_FQDN[@]}"; do
 			EACH_FQDN="${ARR_IPV4_FQDN[${EACH_IPV4}]}";
 			EACH_IPV4_RPAD="${EACH_IPV4}$(printf %15s;)";

@@ -168,9 +168,19 @@ else
 		# ------------------------------------------------------------
 		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
 		if [ -d "${MAN_DIR}" ]; then
-			ln -sf "${MAN_DIR}" "${HOME}/man"; # Current User's Homedir
-			if [ -v SUDO_USER ] && [ -d "$(getent passwd ${SUDO_USER} | cut -d: -f 6;)" ]; then
-				ln -sf "${MAN_DIR}" "$(getent passwd ${SUDO_USER} | cut -d: -f 6;)/man"; # Sudoer User's Homedir
+			# Current User 
+			if [ ! -h "${HOME}/man" ]; then
+				ln -sf "${MAN_DIR}" "${HOME}/man";
+			fi;
+			if [ -v SUDO_USER ]; then
+				# Sudoer User (also create link in default user's homedir)
+				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)/man";
+				if [ -d "${SUDOER_HOMEDIR}" ]; then
+					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
+						ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";
+					fi;
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" ""
+				fi;
 			fi;
 		fi;
 	

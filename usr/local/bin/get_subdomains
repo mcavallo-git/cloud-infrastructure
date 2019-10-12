@@ -59,12 +59,15 @@ else
 		echo "";
 		echo "   IPv4            | FQDN              ";
 		echo "  -----------------|-------------------";
-		for EACH_KEY in "$(echo "${!ARR_IPV4_FQDN[@]}" | sort;)"; do
+		ECHO_TABLE_ROWS="";
+		for EACH_KEY in "${!ARR_IPV4_FQDN[@]}"; do
 			EACH_VAL="${ARR_IPV4_FQDN[${EACH_KEY}]}";
 			EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
 			EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
-			echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
+			# echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
+			ECHO_TABLE_ROWS+=$(echo -e "\n   ${EACH_KEY_RPAD} | ${EACH_VAL}");
 		done;
+		echo "${ECHO_TABLE_ROWS}";
 		echo "";
 
 		exit 0;

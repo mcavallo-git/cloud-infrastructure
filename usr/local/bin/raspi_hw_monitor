@@ -1,14 +1,31 @@
 #!/bin/bash
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+
+MinTemp_LogFile="${LOGDIR}/min_temp";
+MaxTemp_LogFile="${LOGDIR}/max_temp";
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 
 CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
-MinTemp_Celsuis=${CurrentTemp_Celsuis};
-MaxTemp_Celsuis=${CurrentTemp_Celsuis};
+
+MinTemp_LogPath="${LOGDIR}/min_temp";
+MinTemp_LogVal=$(if [ -f "${MinTemp_LogPath}" ] && [ -r "${MinTemp_LogPath}" ]; then cat "${MinTemp_LogPath}"; else echo ""; fi;);
+MinTemp_Celsuis=${MinTemp_LogVal:-${CurrentTemp_Celsuis}};
+
+MaxTemp_LogPath="${LOGDIR}/max_temp";
+MaxTemp_LogVal=$(if [ -f "${MaxTemp_LogPath}" ] && [ -r "${MaxTemp_LogPath}" ]; then cat "${MaxTemp_LogPath}"; else echo ""; fi;);
+MaxTemp_Celsuis=${MaxTemp_LogVal:-${CurrentTemp_Celsuis}};
 
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 
-while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
+# while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
 
 # ------------------------------------------------------------
 
@@ -76,10 +93,12 @@ CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --ex
 
 if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} < ${MinTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MinTemp_Celsuis=${CurrentTemp_Celsuis};
+echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
 fi;
 
 if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MaxTemp_Celsuis=${CurrentTemp_Celsuis};
+echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 fi;
 
 list_temperature="";
@@ -100,12 +119,23 @@ list_all="${list_all}${list_voltages}\n\n---------------------------------------
 list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
 list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------";
 
+# ------------------------------------------------------------
+
+# done;
+
+if [ ${#} -gt 0 ] && [ -n "$(echo ${@} | grep tail;)" ]; then
+# Recursive loopback call (tail continuously)
 clear;
 echo -e "${list_all}";
 sleep 1;
+/usr/local/bin/raspi_hw_monitor --tail
+
+else
+# Just call once
+echo -e "${list_all}";
+
+fi;
 
 # ------------------------------------------------------------
-
-done;
 
 fi;

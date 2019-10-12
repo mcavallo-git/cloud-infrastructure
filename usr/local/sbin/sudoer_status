@@ -51,7 +51,7 @@ else
 			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
 				if [ -n "${EDIT_ACTION}" ]; then
 					# Error - Multiple add/remove actions defined
-					echo "$(date +'%Y-%m-%d %H:%M:%S') Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; sleep 60; exit 1;
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; sleep 60; exit 1;
 				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ]; then
 					EDIT_ACTION="ALLOW"; # Add user as a sudoer
 				elif [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
@@ -65,10 +65,10 @@ else
 			if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
 				if [ -n "${TARGET_USER}" ]; then
 					# Error - Multiple users defined
-					echo "$(date +'%Y-%m-%d %H:%M:%S') Error → Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; sleep 60; exit 1;
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; sleep 60; exit 1;
 				elif [ -z "$(id ${NEXT_ARG} 2>/dev/null)" ]; then
 					# Error - Non-existent target-user
-					echo "$(date +'%Y-%m-%d %H:%M:%S') Error → User \"${NEXT_ARG}\" not found to exist"; sleep 60; exit 1;
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User \"${NEXT_ARG}\" not found to exist"; sleep 60; exit 1;
 				else
 					TARGET_USER="${NEXT_ARG}";
 				fi;
@@ -97,7 +97,7 @@ else
 	# ------------------------------------------------------------
  
 	if [ -z "${TARGET_USER}" ]; then 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Error → Must define a target-user via:  >  sudoer_status --user USERNAME"; sleep 60; exit 1;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Must define a target-user via:  >  sudoer_status --user USERNAME"; sleep 60; exit 1;
 
 
 	# ------------------------------------------------------------

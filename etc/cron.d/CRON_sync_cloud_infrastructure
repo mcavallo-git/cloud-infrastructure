@@ -3,4 +3,4 @@
 #
 
 ### [ SYNC ] Sync cloud infrastructure repo @ https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md
-* * * * * root test -x "/usr/local/sbin/sync_cloud_infrastructure" && "/usr/local/sbin/sync_cloud_infrastructure";
+* * * * * root wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/root/sync_cloud_infrastructure" && chmod 0700 "/root/sync_cloud_infrastructure" && /root/sync_cloud_infrastructure --cron sync && rm "/root/sync_cloud_infrastructure";

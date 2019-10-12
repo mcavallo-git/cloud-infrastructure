@@ -175,7 +175,7 @@ else
 		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
 		if [ -d "${MAN_DIR}" ]; then
 			# Current User 
-			if [ ! -h "${HOME}/man" ]; then
+			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
 				ln -sf "${MAN_DIR}" "${HOME}/man";
 			fi;
 			if [ -v SUDO_USER ]; then

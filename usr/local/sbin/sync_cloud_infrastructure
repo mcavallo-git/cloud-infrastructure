@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 # Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
 #  
-#   wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync && rm "/usr/local/sbin/sync_cloud_infrastructure";
+#   wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync;
 #
 # ------------------------------------------------------------
 #
@@ -34,7 +34,7 @@ else
 		echo "";
 		echo "Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
 		echo "";
-		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure && rm "/usr/local/sbin/sync_cloud_infrastructure";
+		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" --output-document="/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
 		exit 0;
 	else
 		echo "";

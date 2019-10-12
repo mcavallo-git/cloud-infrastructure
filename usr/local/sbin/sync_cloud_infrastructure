@@ -412,6 +412,20 @@ else
 		fi;
 
 
+		# ------------------------------------------------------------
+		# Restart necessary service(s)
+		# ------------------------------------------------------------
+		DIRECTORY_TO_CLEAN="${LOGDIR}/";
+		MAX_RETENTION_DAYS=14;
+		if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
+			find ${DIRECTORY_TO_CLEAN} \
+			-type f \
+			-mtime +${MAX_RETENTION_DAYS} \
+			-exec rm -v -- '{}' \; \
+			;
+		fi;
+
+
 	fi;
 
 	exit ${EXIT_CODE};

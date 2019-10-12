@@ -95,10 +95,9 @@ else
 	exit 0;
 
 	# ------------------------------------------------------------
- 
 	if [ -z "${TARGET_USER}" ]; then 
+		# Error - Empty/Invalid target-user
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Must define a target-user via:  >  sudoer_status --user USERNAME"; sleep 60; exit 1;
-
 
 	# ------------------------------------------------------------
 	elif [ "${EDIT_ACTION}" == "ALLOW" ]; then 
@@ -122,10 +121,11 @@ else
 		if [ -z "$(getent group sudo)" ]; then
 			groupadd "${GROUP_SUDOERS}";
 		fi;
+
 		# Add the user to the group 'sudo'
 		usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
 
-
+	# ------------------------------------------------------------
 	elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
 		# Deny user from masquerading as the root user (via the 'sudo' command)
 
@@ -142,7 +142,6 @@ else
 
 	else
 		#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
-
 		sudo --list --other-user="${TARGET_USER}";
 
 

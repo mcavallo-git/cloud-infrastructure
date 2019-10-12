@@ -180,7 +180,7 @@ else
 			fi;
 			if [ -v SUDO_USER ]; then
 				# Sudoer User (also create link in default user's homedir)
-				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)/man";
+				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 				if [ -d "${SUDOER_HOMEDIR}" ]; then
 					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
 						ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";

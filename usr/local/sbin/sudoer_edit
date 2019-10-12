@@ -1,0 +1,151 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/sudoer_edit" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Parse inline arguments (passed to current script)
+	ARGS=("$@");
+	COUNT_ARGS=${#ARGS[@]};
+	
+	EDIT_ACTION="";
+	TARGET_USER="";
+	REQUIRE_USERPASS="1";
+
+	# Walk through any inline-arguments passed to this function
+	for (( i=0;i<$COUNT_ARGS;i++ )); do
+
+		EACH_ARG=${ARGS[${i}]};
+
+		# Check if this is the last inline-argument or if there are more to follow
+		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+			NEXT_ARG="";
+		else
+			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
+		fi;
+
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+			# ------------------------------------------------------------
+			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
+				if [ -n "${EDIT_ACTION}" ]; then
+					# Error - Multiple add/remove actions defined
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; sleep 60; exit 1;
+				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ]; then
+					EDIT_ACTION="ALLOW"; # Add user as a sudoer
+				elif [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
+					EDIT_ACTION="REVOKE"; # Remove user from sudoers
+				else
+					EDIT_ACTION=""; # Show user's sudoer-status
+				fi;
+			fi;
+
+			# ------------------------------------------------------------
+			if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
+				if [ -n "${TARGET_USER}" ]; then
+					# Error - Multiple users defined
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; sleep 60; exit 1;
+				elif [ -z "$(id ${NEXT_ARG} 2>/dev/null)" ]; then
+					# Error - Non-existent target-user
+					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ User \"${NEXT_ARG}\" not found to exist"; sleep 60; exit 1;
+				else
+					TARGET_USER="${NEXT_ARG}";
+				fi;
+			fi;
+
+			# ------------------------------------------------------------
+			# Skip requiring user-pass when they call the 'sudo' command
+			if [ "${EACH_ARG}" == "--nopass" ]; then
+				REQUIRE_USERPASS="0";
+			fi;
+
+			# ------------------------------------------------------------
+
+		fi;
+
+
+	done;
+
+	echo "TARGET_USER = [ ${TARGET_USER} ]";
+	echo "REQUIRE_USERPASS = [ ${REQUIRE_USERPASS} ]";
+	echo "EDIT_ACTION = [ ${EDIT_ACTION} ]";
+
+	sleep 60;
+	exit 0;
+
+	# ------------------------------------------------------------
+
+	if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
+		# Allow user to masquerade as the root user (via the 'sudo' command)
+
+		SUDOER_FILE_CONTENTS="";
+		if [[ "${SUDO_REQUIRES_USERPASS}" == "1" ]]; then
+			SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) ALL";
+		else
+			SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) NOPASSWD:ALL";
+		fi;
+
+		# Add the user-specific 'sudo' config-file
+		SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
+		echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
+		chmod 400 "${SUDOER_FILE_FULLPATH}" && \
+		chown "root:root" "${SUDOER_FILE_FULLPATH}";
+
+		GROUP_SUDOERS="sudo";
+		# Create the group 'sudo' (if it doesn't already exist)
+		if [ -z "$(getent group sudo)" ]; then
+			groupadd "${GROUP_SUDOERS}";
+		fi;
+		# Add the user to the group 'sudo'
+		usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
+
+
+	elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
+		# Deny user from masquerading as the root user (via the 'sudo' command)
+
+		# Remove the user-specific 'sudo' config-file
+		SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
+		if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
+			rm -f "${SUDOER_FILE_FULLPATH}";
+		fi;
+
+		# Remove the user from the group 'sudo'
+		GROUP_SUDOERS="sudo";
+		gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
+
+
+	else
+		#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
+
+		sudo --list --other-user="${TARGET_USER}";
+
+
+	fi;
+
+	# ------------------------------------------------------------
+
+
+
+
+fi;

@@ -58,7 +58,7 @@ else
 		ROLLBACK_IFS="${IFS}";
 		IFS=$'\n'; # Set the global delimiter
 		sort <<<"${ARR_IPV4_FQDN[*]}";
-		ARR_IPV4_FQDN_SORTED=($(sort <<<"${ARR_IPV4_FQDN[*]}"));
+		ARR_IPV4_FQDN_SORTED=($(sort <<<"${!ARR_IPV4_FQDN[*]}"));
 		IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 		# Show all FQDNs (subdomain + domains), grouped by IPv4 address (tied to their DNS A-Record)

@@ -67,8 +67,7 @@ else
 			# echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
 			ECHO_TABLE_ROWS+=$(echo -e "   ${EACH_KEY_RPAD} | ${EACH_VAL}\n");
 		done;
-		echo "${ECHO_TABLE_ROWS}";
-		echo "";
+		echo "${ECHO_TABLE_ROWS}" | sort;
 
 		exit 0;
 

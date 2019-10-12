@@ -210,6 +210,7 @@ else
 		# Required source directory/directories exist - Sync them to local workstation/server
 		EXIT_CODE=0;
 
+
 		# ------------------------------------------------------------
 		# /usr/local/bin
 		# ------------------------------------------------------------
@@ -387,6 +388,7 @@ else
 		done;
 		echo "";
 
+
 		# ------------------------------------------------------------
 		# Remove old/renamed scripts (if found to exist)
 		# ------------------------------------------------------------
@@ -400,6 +402,7 @@ else
 		TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/sync_config_gpg_git"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
+
 		# ------------------------------------------------------------
 		# Restart necessary service(s)
 		# ------------------------------------------------------------
@@ -407,6 +410,7 @@ else
 			service cron restart;
 			service cron status;
 		fi;
+
 
 	fi;
 

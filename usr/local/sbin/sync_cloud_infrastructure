@@ -406,9 +406,9 @@ else
 		# ------------------------------------------------------------
 		# Restart necessary service(s)
 		# ------------------------------------------------------------
-		if [ ${RESTART_SERVICE_CRON} -eq 1 ]; then
-			service cron restart;
-			service cron status;
+		if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			/usr/sbin/service cron restart;
+			/usr/sbin/service cron status;
 		fi;
 
 

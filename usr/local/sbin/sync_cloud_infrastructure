@@ -85,11 +85,11 @@ else
 					ARGS_CRONJOB="REMOVE";
 				else
 					if [ -n "${ARGS_CRONJOB}" ]; then
-						echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Invalid inline-argument:   Multiple instances of \"--cron\" detected";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') Error → Invalid inline-argument:   Multiple instances of \"--cron\" detected";
 					else
-						echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') Error → Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
 					fi;
-					echo "$(date +'%Y-%m-%d %H:%M:%S') ⛔ ${HELP_CRONJOB}";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') Error → ${HELP_CRONJOB}";
 					exit 1;
 				fi;
 			fi;

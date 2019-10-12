@@ -185,7 +185,7 @@ else
 					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
 						ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";
 					fi;
-					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" ""
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
 				fi;
 			fi;
 		fi;

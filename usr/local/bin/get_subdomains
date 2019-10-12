@@ -57,7 +57,7 @@ else
 
 		ROLLBACK_IFS="${IFS}";
 		IFS=$'\n'; # Set the global delimiter
-		sort <<<"${!ARR_IPV4_FQDN[*]}";
+		# sort <<<"${!ARR_IPV4_FQDN[*]}";
 		ARR_SORTED_IPV4=($(sort <<<"${!ARR_IPV4_FQDN[*]}"));
 		IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 

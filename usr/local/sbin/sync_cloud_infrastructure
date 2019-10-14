@@ -191,7 +191,7 @@ else
 		SOURCE_DIR_ERRS=$?;
 
 		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-			echo -e "\nInfo → Using linux user's repo-files from [ ${DIR_REPO_BASE} ]";
+			echo "  |→ Using linux user's repo-files from [ ${DIR_REPO_BASE} ]";
 
 		else 
 		
@@ -204,7 +204,7 @@ else
 				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 				SOURCE_DIR_ERRS=$?;
 				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-					echo -e "\nInfo → Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
+					echo "  |→ Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;
 

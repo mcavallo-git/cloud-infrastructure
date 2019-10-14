@@ -90,60 +90,80 @@ else
 
 	done;
 
-	# ------------------------------------------------------------
+
+	# Verify validity of ${TARGET_USER}
 	if [ -z "${TARGET_USER}" ]; then 
-		# Error - Empty/Invalid target-user
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Must define a target-user via:  >  sudoer_status --user USERNAME"; exit 1;
 
-	# ------------------------------------------------------------
-	elif [ "${EDIT_ACTION}" == "ALLOW" ]; then 
-		# Allow user to masquerade as the root user (via the 'sudo' command)
+		# Error - Empty/Unset target-user
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Target-user empty / unset";
+		echo -e "$(date +'%Y-%m-%d %H:%M:%S') | Info → Must specify a valid local-user to target via:""\n""  >  sudoer_status --user USERNAME""\n"; exit 1;
+		
+	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then echo "error"; else echo "Exists!"; fi;
 
-		SUDOER_FILE_CONTENTS="";
-		if [[ "${SUDO_REQUIRES_USERPASS}" == "1" ]]; then
-			SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) ALL";
-		else
-			SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) NOPASSWD:ALL";
-		fi;
-
-		# Add the user-specific 'sudo' config-file
-		SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
-		echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
-		chmod 400 "${SUDOER_FILE_FULLPATH}" && \
-		chown "root:root" "${SUDOER_FILE_FULLPATH}";
-
-		GROUP_SUDOERS="sudo";
-		# Create the group 'sudo' (if it doesn't already exist)
-		if [ -z "$(getent group sudo)" ]; then
-			groupadd "${GROUP_SUDOERS}";
-		fi;
-
-		# Add the user to the group 'sudo'
-		usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
-
-	# ------------------------------------------------------------
-	elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
-		# Deny user from masquerading as the root user (via the 'sudo' command)
-
-		# Remove the user-specific 'sudo' config-file
-		SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
-		if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
-			rm -f "${SUDOER_FILE_FULLPATH}";
-		fi;
-
-		# Remove the user from the group 'sudo'
-		GROUP_SUDOERS="sudo";
-		gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
+		# Error - User not found
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found: \"${TARGET_USER}\")";
+		echo -e "$(date +'%Y-%m-%d %H:%M:%S') | Info → Must specify a valid local-user to target via:""\n""  >  sudoer_status --user USERNAME""\n";
+		exit 1;
 
 	else
-		#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
+
+		# ------------------------------------------------------------
+		if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
+			# Allow user to masquerade as the root user (via the 'sudo' command)
+
+			SUDOER_FILE_CONTENTS="";
+			if [[ "${SUDO_REQUIRES_USERPASS}" == "1" ]]; then
+				SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) ALL";
+			else
+				SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) NOPASSWD:ALL";
+			fi;
+
+			# Add the user-specific 'sudo' config-file
+			SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
+			echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
+			chmod 400 "${SUDOER_FILE_FULLPATH}" && \
+			chown "root:root" "${SUDOER_FILE_FULLPATH}";
+
+			GROUP_SUDOERS="sudo";
+			# Create the group 'sudo' (if it doesn't already exist)
+			if [ -z "$(getent group sudo)" ]; then
+				groupadd "${GROUP_SUDOERS}";
+			fi;
+
+			# Add the user to the group 'sudo'
+			usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
+
+		# ------------------------------------------------------------
+		elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
+			# Deny user from masquerading as the root user (via the 'sudo' command)
+
+			# Remove the user-specific 'sudo' config-file
+			SUDOER_FILE_FULLPATH="/etc/sudoers.d/${TARGET_USER}";
+			if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
+				rm -f "${SUDOER_FILE_FULLPATH}";
+			fi;
+
+			# Remove the user from the group 'sudo'
+			GROUP_SUDOERS="sudo";
+			gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
+
+		else
+			#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
+
+		fi;
+		# ------------------------------------------------------------
+
+		sudo --list --other-user="${TARGET_USER}";
 
 	fi;
-	# ------------------------------------------------------------
-
-	sudo --list --other-user="${TARGET_USER}";
-
 
 fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#		stackoverflow.com  |  "Check Whether a User Exists"  |  https://stackoverflow.com/a/14811915
+#
+# ------------------------------------------------------------

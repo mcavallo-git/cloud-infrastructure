@@ -273,8 +273,7 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
 		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-		# echo -e "\nCalling [ rsync --archive --inplace --checksum --verbose --chown=\"root:root\" --chmod=\"D0755,F0755\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]...\n";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
+		rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		echo "Sync complete:  ${DESTINATION_PATH}";
@@ -288,8 +287,7 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
 		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-		# echo -e "\nCalling [ rsync --archive --inplace --checksum --verbose --chown=\"root:root\" --chmod=\"D${DIR_PERMS},F${FILE_PERMS}\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]...\n";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
+		rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		echo "Sync complete:  ${DESTINATION_PATH}";
@@ -303,7 +301,7 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0644";
 		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+		rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		echo "Sync complete:  ${DESTINATION_PATH}";
@@ -323,7 +321,7 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
@@ -336,7 +334,7 @@ else
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
 					echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-					rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+					rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					echo "Sync complete:  ${DESTINATION_PATH}";
@@ -349,7 +347,7 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
@@ -360,7 +358,7 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";
@@ -371,7 +369,7 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+				rsync --archive --inplace --checksum --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				echo "Sync complete:  ${DESTINATION_PATH}";

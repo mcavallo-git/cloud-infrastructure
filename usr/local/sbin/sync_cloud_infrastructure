@@ -141,7 +141,7 @@ else
 	if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
-		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
 			echo "";
 			echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
@@ -159,14 +159,14 @@ else
 		
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
-		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 3 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
 		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
 			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
 			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 3 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
 			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 			SOURCE_DIR_ERRS=$?;

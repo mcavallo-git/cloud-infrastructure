@@ -133,86 +133,86 @@ else
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 	
-	# WIN32_HOMEDIR="";
-	# DIR_REPO_BASE="";
+	WIN32_HOMEDIR="";
+	DIR_REPO_BASE="";
 
-	# # Detect & handle WSL instance(s)
-	# WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
-	# if [ -n "${WSL_CHECK_EXISTS}" ]; then
-	# 	echo "";
-	# 	echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
-	# 	WIN32_USERNAME=$(wsl_get_windows_username);
-	# 	WIN32_USER_ERRORS="$?";
-	# fi;
+	# Detect & handle WSL instance(s)
+	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
+	if [ -n "${WSL_CHECK_EXISTS}" ]; then
+		echo "";
+		echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
+		WIN32_USERNAME=$(wsl_get_windows_username);
+		WIN32_USER_ERRORS="$?";
+	fi;
 
-	# if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
-	# 	#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-	# 	echo "";
-	# 	echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
-	# 	WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
-	# 	WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
-	# 	if [ ! -n "${WIN32_USR_LOCAL}" ]; then
-	# 		echo "";
-	# 		echo "Error → Unable to locate directory matching '${REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
-	# 		exit 1;
-	# 	else
-	# 		DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
-	# 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-	# 	fi;
-	# fi;
+	if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
+		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
+		echo "";
+		echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
+		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
+		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+			echo "";
+			echo "Error → Unable to locate directory matching '${REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+			exit 1;
+		else
+			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
+			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+		fi;
+	fi;
 
-	# if [ -z "${WIN32_HOMEDIR}" ]; then
-	# 	# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
-	# 	echo "";
-	# 	echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";
-	# 	echo "Info → Checking for local repository files within user [ $(whoami) ]'s home-directory";
-	# 	WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
-	# 	WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
-	# 	DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
-	# 	DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-	# 	SOURCE_DIR_ERRS=$?;
+	if [ -z "${WIN32_HOMEDIR}" ]; then
+		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
+		echo "";
+		echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";
+		echo "Info → Checking for local repository files within user [ $(whoami) ]'s home-directory";
+		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
+		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
+		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
+		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+		SOURCE_DIR_ERRS=$?;
 
-	# 	if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-	# 		echo -e "\nInfo → Using linux user's repo-files from [ ${DIR_REPO_BASE} ]";
+		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+			echo -e "\nInfo → Using linux user's repo-files from [ ${DIR_REPO_BASE} ]";
 
-	# 	else 
+		else 
 		
-	# 		if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
-	# 			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-	# 			echo "Info → Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
-	# 			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-	# 			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
-	# 			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
-	# 			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-	# 			SOURCE_DIR_ERRS=$?;
-	# 			if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-	# 				echo -e "\nInfo → Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
-	# 			fi;
-	# 		fi;
+			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
+				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
+				echo "Info → Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
+				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
+				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
+				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+				SOURCE_DIR_ERRS=$?;
+				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+					echo -e "\nInfo → Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
+				fi;
+			fi;
 
-	# 	fi;
+		fi;
 
-	# else
-	# 	# Running in WSL - Create link to repo-manuals
-	# 	MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
-	# 	if [ -d "${MAN_DIR}" ]; then
-	# 		# Current User 
-	# 		if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
-	# 			ln -sf "${MAN_DIR}" "${HOME}/man";
-	# 		fi;
-	# 		if [ -v SUDO_USER ]; then
-	# 			# Sudoer User (also create link in default user's homedir)
-	# 			SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
-	# 			if [ -d "${SUDOER_HOMEDIR}" ]; then
-	# 				if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
-	# 					ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";
-	# 				fi;
-	# 				chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
-	# 			fi;
-	# 		fi;
-	# 	fi;
+	else
+		# Running in WSL - Create link to repo-manuals
+		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
+		if [ -d "${MAN_DIR}" ]; then
+			# Current User 
+			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
+				ln -sf "${MAN_DIR}" "${HOME}/man";
+			fi;
+			if [ -v SUDO_USER ]; then
+				# Sudoer User (also create link in default user's homedir)
+				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
+				if [ -d "${SUDOER_HOMEDIR}" ]; then
+					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
+						ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";
+					fi;
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
+				fi;
+			fi;
+		fi;
 
-	# fi;
+	fi;
 
 	if [ -z "${DIR_REPO_BASE}" ]; then
 		# Error-out if any required variable(s) are empty/unset

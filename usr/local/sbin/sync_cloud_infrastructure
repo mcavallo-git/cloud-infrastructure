@@ -176,12 +176,6 @@ else
 			SOURCE_DIR_ERRS=$?;
 		fi;
 
-		if [ -n "${DIR_REPO_BASE}" ]; then
-			echo "";
-			echo "Info → Using files from local repo:  \"${DIR_REPO_BASE}\"";
-			echo "";
-		fi;
-
 	else
 		# Running in WSL - Create link to repo-manuals
 		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
@@ -228,6 +222,8 @@ else
 		# Required source directory/directories exist - Sync them to local workstation/server
 		EXIT_CODE=0;
 
+		echo "";
+		echo "Info → DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
 
 		# ------------------------------------------------------------
 		# /usr/local/bin

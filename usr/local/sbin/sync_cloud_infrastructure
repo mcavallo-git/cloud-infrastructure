@@ -262,7 +262,7 @@ else
 		DESTINATION_PATH="/usr/local/bin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
-		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 		# echo -e "\nCalling [ rsync --archive --inplace --checksum --verbose --chown=\"root:root\" --chmod=\"D0755,F0755\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]...\n";
 		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
@@ -277,7 +277,7 @@ else
 		DESTINATION_PATH="/usr/local/sbin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
-		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 		# echo -e "\nCalling [ rsync --archive --inplace --checksum --verbose --chown=\"root:root\" --chmod=\"D${DIR_PERMS},F${FILE_PERMS}\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]...\n";
 		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
@@ -292,7 +292,7 @@ else
 		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0644";
-		echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+		echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 		rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -312,7 +312,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -325,7 +325,7 @@ else
 					DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
-					echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+					echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 					rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -338,7 +338,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -349,7 +349,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -360,7 +360,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo -e "\nUpdating \"${DESTINATION_PATH}\"...\n";
+				echo "Info → Updating \"${DESTINATION_PATH}\" with changes from \"${REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --verbose --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)

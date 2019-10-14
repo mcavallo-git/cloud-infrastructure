@@ -121,12 +121,15 @@ else
 	git pull;
 
 	# Set ownership for git-repo as-intended
+	echo "";
+	echo "Info → Setting ownership for repository directory";
 	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories
+	echo "";
+	echo "Info → Setting ownership for repository files";
 	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
 
 	# ------------------------------------------------------------
-
-	EXIT_CODE=1;
+	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 	
 	WIN32_HOMEDIR="";
 	DIR_REPO_BASE="";

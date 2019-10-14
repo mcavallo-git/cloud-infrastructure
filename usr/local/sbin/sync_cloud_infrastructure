@@ -44,6 +44,12 @@ else
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
+	REPO_NAME="cloud-infrastructure";
+	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/${REPO_NAME}.git";
+
+	WIN32_HOMEDIR="";
+
+	DIR_REPO_BASE="";
 
 	# ------------------------------------------------------------
 	# Make sure required runtime(s) are installed
@@ -109,9 +115,6 @@ else
 	done;
 
 	# ------------------------------------------------------------
-	
-	REPO_NAME="cloud-infrastructure"
-	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/${REPO_NAME}.git";
 
 	# Ensure the (GitHub) Repos directory exists, locally
 	LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
@@ -134,16 +137,22 @@ else
 
 	# Set ownership for git-repo files as-intended
 	echo "Info → Setting ownership for directories within the \"${REPO_NAME}\" synced repository";
-	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories
+	BENCHMARK_START=$(date +'%s.%N');
+	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
+	find "/var/www/html" -type d -print0 | xargs -0 chmod 0775; # directories, xargs + chmod
+	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 	# Set ownership for git-repo directories as-intended
 	echo "Info → Setting ownership for files within the \"${REPO_NAME}\" synced repository";
-	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
-
-	# ------------------------------------------------------------
-
-	WIN32_HOMEDIR="";
-	DIR_REPO_BASE="";
+	BENCHMARK_START=$(date +'%s.%N');
+	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
+	find "/var/www/html" -type f -print0 | xargs -0 chmod 0664; # files, xargs + chmod
+	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 	
+	# ------------------------------------------------------------
+	# Detect & handle WSL instance(s)
 	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
 		# Detect & handle WSL instance(s)
 		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);

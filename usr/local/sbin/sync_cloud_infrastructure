@@ -123,11 +123,11 @@ else
 
 	# Set ownership for git-repo files as-intended
 	echo "";
-	echo "Info → Setting ownership for directories under \"${LOCAL_REPO_PATH}\"";
+	echo "Info → Setting ownership for \"${REPO_NAME}\" repo's directories";
 	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories
 	# Set ownership for git-repo directories as-intended
 	echo "";
-	echo "Info → Setting ownership for files under \"${LOCAL_REPO_PATH}\"";
+	echo "Info → Setting ownership for \"${REPO_NAME}\" repo's files";
 	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
 
 	# ------------------------------------------------------------

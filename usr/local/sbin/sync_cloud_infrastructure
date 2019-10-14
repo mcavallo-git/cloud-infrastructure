@@ -99,7 +99,8 @@ else
 
 	# ------------------------------------------------------------
 	
-	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
+	REPO_NAME="cloud-infrastructure"
+	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/${REPO_NAME}.git";
 
 	# Ensure the (GitHub) Repos directory exists, locally
 	LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
@@ -108,7 +109,7 @@ else
 	fi;
 
 	# Clone the repo if it hasn't been synced, yet
-	LOCAL_REPO_PATH="${LOCAL_PARENT_PATH}/cloud-infrastructure/";
+	LOCAL_REPO_PATH="${LOCAL_PARENT_PATH}/${REPO_NAME}/";
 	if [ ! -d "${LOCAL_REPO_PATH}" ]; then
 		cd "${LOCAL_PARENT_PATH}" && \
 		git clone "${GIT_SOURCE_REPO_URL}";
@@ -149,10 +150,10 @@ else
 		echo "";
 		echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
-		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
 		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
 			echo "";
-			echo "Error → Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+			echo "Error → Unable to locate directory matching '${REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
 			exit 1;
 		else
 			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
@@ -166,7 +167,7 @@ else
 		echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";
 		echo "Info → Checking for local repository files within user [ $(whoami) ]'s home-directory";
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
-		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
@@ -180,7 +181,7 @@ else
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
 				echo "Info → Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
 				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
 				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
 				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 				SOURCE_DIR_ERRS=$?;

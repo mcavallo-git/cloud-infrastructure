@@ -276,8 +276,7 @@ else
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "Sync complete:  ${DESTINATION_PATH}";
-		echo "";
+		echo "  |→ Sync complete";
 
 
 		# ------------------------------------------------------------
@@ -290,8 +289,7 @@ else
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "Sync complete:  ${DESTINATION_PATH}";
-		echo "";
+		echo "  |→ Sync complete";
 
 
 		# ------------------------------------------------------------
@@ -304,8 +302,7 @@ else
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "Sync complete:  ${DESTINATION_PATH}";
-		echo "";
+		echo "  |→ Sync complete";
 
 
 		# ------------------------------------------------------------
@@ -324,7 +321,7 @@ else
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "Sync complete:  ${DESTINATION_PATH}";
+				echo "  |→ Sync complete";
 				# ------------------------------------------------------------
 				# --cron sync   -->    /etc/cron.d/CRON_raspi_hw_monitor
 				# ------------------------------------------------------------
@@ -337,7 +334,7 @@ else
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-					echo "Sync complete:  ${DESTINATION_PATH}";
+					echo "  |→ Sync complete";
 				fi;
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
 				# ------------------------------------------------------------
@@ -350,7 +347,7 @@ else
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "Sync complete:  ${DESTINATION_PATH}";
+				echo "  |→ Sync complete";
 				# ------------------------------------------------------------
 				# --cron jenkins   -->   /etc/cron.d/CRON_jenkins_log_cleanup
 				# ------------------------------------------------------------
@@ -361,7 +358,7 @@ else
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "Sync complete:  ${DESTINATION_PATH}";
+				echo "  |→ Sync complete";
 				# ------------------------------------------------------------
 				# --cron sync   -->    /etc/cron.d/CRON_jenkins_warfile_update
 				# ------------------------------------------------------------
@@ -372,7 +369,7 @@ else
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "Sync complete:  ${DESTINATION_PATH}";
+				echo "  |→ Sync complete";
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
 				# ------------------------------------------------------------
 				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)

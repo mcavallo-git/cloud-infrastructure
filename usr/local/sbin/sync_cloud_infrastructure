@@ -161,7 +161,7 @@ else
 		fi;
 	fi;
 
-	if [ -z "${WIN32_HOMEDIR}" ]; then
+	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		echo "";
 		echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";

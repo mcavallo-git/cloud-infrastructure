@@ -74,7 +74,7 @@ else
 
 				elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 					# Error - Non-existent target-user
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found as a local user: \"${TARGET_USER}\"";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found as a local user: \"${NEXT_ARG}\"";
 					echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
 				else

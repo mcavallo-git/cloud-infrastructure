@@ -98,7 +98,7 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Target-user empty / unset";
 		echo -e "$(date +'%Y-%m-%d %H:%M:%S') | Info → Must specify a valid local-user to target via:""\n""  >  sudoer_status --user USERNAME""\n"; exit 1;
 		
-	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then echo "error"; else echo "Exists!"; fi;
+	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
 		# Error - User not found
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found: \"${TARGET_USER}\")";

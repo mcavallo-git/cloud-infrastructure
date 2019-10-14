@@ -133,11 +133,9 @@ else
 	git pull;
 
 	# Set ownership for git-repo files as-intended
-	echo "";
 	echo "Info → Setting ownership for directories within the \"${REPO_NAME}\" synced repository";
 	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories
 	# Set ownership for git-repo directories as-intended
-	echo "";
 	echo "Info → Setting ownership for files within the \"${REPO_NAME}\" synced repository";
 	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
 
@@ -150,7 +148,6 @@ else
 		# Detect & handle WSL instance(s)
 		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
 		if [ -n "${WSL_CHECK_EXISTS}" ]; then
-			echo "";
 			echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
 			WIN32_USERNAME=$(wsl_get_windows_username);
 			WIN32_USER_ERRORS="$?";
@@ -158,7 +155,6 @@ else
 		
 		if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 			#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-			echo "";
 			echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
 			WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
 			WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
@@ -175,8 +171,7 @@ else
 
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
-		echo "";
-		echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";
+		# echo "Info → Unset/Empty variable: \${WIN32_HOMEDIR} ";
 		echo "Info → Checking for local repository files within user [ $(whoami) ]'s home-directory";
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");

@@ -153,25 +153,33 @@ else
 	fi;
 
 	if [ -z "${WIN32_HOMEDIR}" ]; then
+
+		echo "";
+		echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+		
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
-		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 3 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
 		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
 			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
 			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 3 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
 			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 			SOURCE_DIR_ERRS=$?;
 		fi;
-	else
 
-		# ------------------------------------------------------------
-		# Create link to repo-manuals
-		# ------------------------------------------------------------
+		if [ -n "${DIR_REPO_BASE}" ]; then
+			echo "";
+			echo "Info → Using files from local repo:  \"${DIR_REPO_BASE}\"";
+			echo "";
+		fi;
+
+	else
+		# Running in WSL - Create link to repo-manuals
 		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
 		if [ -d "${MAN_DIR}" ]; then
 			# Current User 
@@ -189,7 +197,7 @@ else
 				fi;
 			fi;
 		fi;
-	
+
 	fi;
 
 	if [ -z "${DIR_REPO_BASE}" ]; then

@@ -136,14 +136,14 @@ else
 	# Clone the repo if it hasn't been synced, yet
 	if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
 		cd "${GIT_LOCAL_PARENT_PATH}" && \
-		git clone "${GIT_SOURCE_REPO_URL}";
+		git clone --quiet "${GIT_SOURCE_REPO_URL}";
 	fi;
 
 	# Sync local workstation's commands with the repo's commands
 	cd "${GIT_LOCAL_REPO_PATH}" && \
-	git fetch && \
-	git reset --hard "origin/master" && \
-	git pull;
+	git fetch --quiet && \
+	git reset --quiet --hard "origin/master" && \
+	git pull --quiet;
 
 	# ------------------------------------------------------------
 

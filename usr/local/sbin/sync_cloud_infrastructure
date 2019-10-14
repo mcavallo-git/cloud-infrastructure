@@ -140,16 +140,16 @@ else
 	# Set ownership for git-repo files as-intended
 	echo "Info → Setting ownership for directories within the \"${REPO_NAME}\" synced repository";
 	BENCHMARK_START=$(date +'%s.%N');
-	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
-	# find "/var/www/html" -type d -print0 | xargs -0 chmod 0775; # directories, xargs + chmod
+	# find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
+	find "/var/www/html" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 	# Set ownership for git-repo directories as-intended
 	echo "Info → Setting ownership for files within the \"${REPO_NAME}\" synced repository";
 	BENCHMARK_START=$(date +'%s.%N');
-	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
-	# find "/var/www/html" -type f -print0 | xargs -0 chmod 0664; # files, xargs + chmod
+	# find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
+	find "/var/www/html" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 	
@@ -237,7 +237,7 @@ else
 		EXIT_CODE=1;
 
 		echo "";
-		echo "Error - Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+		echo "Error → Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 		# Error-out if any required source directories are missing
@@ -245,15 +245,15 @@ else
 
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
 			echo "";
-			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+			echo "Error → Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
 		fi;
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 			echo "";
-			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+			echo "Error → Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 		fi;
 
 	else
-		# Required source directory/directories exist - Sync them to local workstation/server
+		# Required source directory/directories exist → Sync them to local workstation/server
 		EXIT_CODE=0;
 
 		# ------------------------------------------------------------

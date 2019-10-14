@@ -4,6 +4,10 @@
 #
 # ------------------------------------------------------------
 #
+# test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
+#
+# ------------------------------------------------------------
+#
 # Log all shell output & error output to logfile
 #
 LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
@@ -52,7 +56,7 @@ else
 				if [ -n "${EDIT_ACTION}" ]; then
 					# Error - Multiple add/remove actions defined
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
-				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ]; then
+				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]; then
 					EDIT_ACTION="ALLOW"; # Add user as a sudoer
 				elif [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
 					EDIT_ACTION="REVOKE"; # Remove user from sudoers
@@ -133,10 +137,13 @@ else
 
 	else
 		#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
-		sudo --list --other-user="${TARGET_USER}";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info → To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 
 	fi;
 	# ------------------------------------------------------------
+
+	sudo --list --other-user="${TARGET_USER}";
 
 
 fi;

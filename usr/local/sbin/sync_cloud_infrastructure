@@ -134,17 +134,19 @@ else
 	# Detect & handle WSL instance(s)
 	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
 	if [ -n "${WSL_CHECK_EXISTS}" ]; then
+		echo "";
+		echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
 		WIN32_USERNAME=$(wsl_get_windows_username);
 		WIN32_USER_ERRORS="$?";
 	fi;
-	
+
 	if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
 		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
 			echo "";
-			echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+			echo "Error → Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
 			exit 1;
 		else
 			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
@@ -153,9 +155,6 @@ else
 	fi;
 
 	if [ -z "${WIN32_HOMEDIR}" ]; then
-
-		echo "";
-		echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
 		
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";

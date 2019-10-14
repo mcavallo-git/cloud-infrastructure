@@ -134,11 +134,11 @@ else
 
 	# Set ownership for git-repo files as-intended
 	echo "";
-	echo "Info → Setting ownership for \"${REPO_NAME}\" repo's directories";
+	echo "Info → Setting ownership for directories within the \"${REPO_NAME}\" synced repository";
 	find "${LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories
 	# Set ownership for git-repo directories as-intended
 	echo "";
-	echo "Info → Setting ownership for \"${REPO_NAME}\" repo's files";
+	echo "Info → Setting ownership for files within the \"${REPO_NAME}\" synced repository";
 	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
 
 	# ------------------------------------------------------------

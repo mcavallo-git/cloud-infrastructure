@@ -166,14 +166,25 @@ else
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
-		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
-			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-			echo "Info → Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
-			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
-			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-			SOURCE_DIR_ERRS=$?;
+
+		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+			echo -e "\nInfo → Using linux user's repo-files from [ ${DIR_REPO_BASE} ]";
+
+		else 
+		
+			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
+				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
+				echo "Info → Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
+				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
+				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+				SOURCE_DIR_ERRS=$?;
+				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+					echo -e "\nInfo → Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
+				fi;
+			fi;
+
 		fi;
 
 	else
@@ -221,9 +232,6 @@ else
 	else
 		# Required source directory/directories exist - Sync them to local workstation/server
 		EXIT_CODE=0;
-
-		echo "";
-		echo "Info → DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
 
 		# ------------------------------------------------------------
 		# /usr/local/bin

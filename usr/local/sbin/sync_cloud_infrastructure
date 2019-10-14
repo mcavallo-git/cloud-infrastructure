@@ -44,19 +44,22 @@ else
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
-	# ------------------------------------------------------------
 
+	# ------------------------------------------------------------
 	# Make sure required runtime(s) are installed
 	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
+
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
+
 	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
 
 	ARGS_CHECK_WSL=0;
+
 	ARGS_CRONJOB="";
 	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 	RESTART_SERVICE_CRON=0;

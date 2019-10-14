@@ -51,7 +51,6 @@ else
 			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
 				if [ -n "${EDIT_ACTION}" ]; then
 					# Error - Multiple add/remove actions defined
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; sleep 60; exit 1;
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
 				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--add" ]; then
 					EDIT_ACTION="ALLOW"; # Add user as a sudoer

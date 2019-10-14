@@ -33,15 +33,9 @@ else
 
 	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-		echo "";
-		echo "Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
-		echo "";
+		echo "Info → Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
 		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
 		exit 0;
-	else
-		# echo "";
-		# echo "Skipping GitHub-sync for \"/usr/local/sbin/sync_cloud_infrastructure\" (last-modified date was in the last 60s)";
-		echo "";
 	fi;
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached

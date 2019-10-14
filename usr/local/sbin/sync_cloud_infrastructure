@@ -42,6 +42,9 @@ else
 		echo "";
 	fi;
 	# ------------------------------------------------------------
+	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
+
+	# ------------------------------------------------------------
 
 	# Make sure required runtime(s) are installed
 	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
@@ -49,11 +52,11 @@ else
 	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
 	# ------------------------------------------------------------
-
 	# Parse inline arguments (passed to current script)
 	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
 
+	ARGS_CHECK_WSL=0;
 	ARGS_CRONJOB="";
 	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 	RESTART_SERVICE_CRON=0;
@@ -94,6 +97,11 @@ else
 				fi;
 			fi;
 
+			# Parse cronjob calls
+			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
+				ARGS_CHECK_WSL=1;
+			fi;
+
 		fi;
 	done;
 
@@ -131,33 +139,34 @@ else
 	find "${LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files
 
 	# ------------------------------------------------------------
-	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
-	
+
 	WIN32_HOMEDIR="";
 	DIR_REPO_BASE="";
-
-	# Detect & handle WSL instance(s)
-	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
-	if [ -n "${WSL_CHECK_EXISTS}" ]; then
-		echo "";
-		echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
-		WIN32_USERNAME=$(wsl_get_windows_username);
-		WIN32_USER_ERRORS="$?";
-	fi;
-
-	if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
-		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-		echo "";
-		echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
-		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
-		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
-		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+	
+	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
+		# Detect & handle WSL instance(s)
+		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
+		if [ -n "${WSL_CHECK_EXISTS}" ]; then
 			echo "";
-			echo "Error → Unable to locate directory matching '${REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
-			exit 1;
-		else
-			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
-			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+			echo "Info → Checking for Windows Subsystem for Linux (WSL) Environment";
+			WIN32_USERNAME=$(wsl_get_windows_username);
+			WIN32_USER_ERRORS="$?";
+		fi;
+		
+		if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
+			#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
+			echo "";
+			echo "Info → Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+			WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
+			WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${REPO_NAME}/usr/local");
+			if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+				echo "";
+				echo "Error → Unable to locate directory matching '${REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+				exit 1;
+			else
+				DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
+				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+			fi;
 		fi;
 	fi;
 

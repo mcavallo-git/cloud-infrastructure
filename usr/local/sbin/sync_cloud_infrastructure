@@ -30,21 +30,38 @@ else
 	# If this runtime hasn't been updated in the last 60 seconds, then update it before running it
 	
 	SCRIPT_START=$(date +'%s.%N');
+	
+	GIT_SOURCE_REPO_URL="";
+	DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
+	
+	FILEPATH_GIT_SOURCE_REPO_URL="/etc/owner";
+
+	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
+		echo "https://github.com/bonealnet/cloud-infrastructure.git" > "${FILEPATH_GIT_SOURCE_REPO_URL}";
+	fi;
+
+	GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
+
+	# Fall-back to the default Git-Repo if none is defined, locally
+	if [ -z "${GIT_SOURCE_REPO_URL}" ]; then
+		GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
+	fi;
+
+	GIT_REPO_OWNER="$(basename $(dirname ${GIT_SOURCE_REPO_URL};);)";
+	GIT_REPO_NAME="$(basename ${GIT_SOURCE_REPO_URL} | cut -d. -f1;)";
 
 	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
 		echo "Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
-		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
+		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
 		exit 0;
 	fi;
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
-	GIT_REPO_NAME="cloud-infrastructure";
 	GIT_LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
 	GIT_LOCAL_REPO_PATH="${GIT_LOCAL_PARENT_PATH}/${GIT_REPO_NAME}/";
 
-	GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/${GIT_REPO_NAME}.git";
 
 	WIN32_HOMEDIR="";
 

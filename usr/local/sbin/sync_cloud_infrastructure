@@ -34,11 +34,27 @@ else
 	GIT_SOURCE_REPO_URL="";
 	DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 	
-	FILEPATH_GIT_SOURCE_REPO_URL="/etc/owner";
+	DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
 
-	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
-		echo "https://github.com/bonealnet/cloud-infrastructure.git" > "${FILEPATH_GIT_SOURCE_REPO_URL}";
+	# ------------------------------------------------------------
+	# Make sure the Config directory exists (create it if it doesn't)
+	if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
+		mkdir -p "${DIRNAME_LOCAL_CONFIG}";
 	fi;
+	if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
+		chmod 755	"${DIRNAME_LOCAL_CONFIG}";
+	fi;
+
+	FILEPATH_GIT_SOURCE_REPO_URL="/etc/sync_cloud_infrastructure.url";
+	OLD_SOURCE_FILEPATH="/etc/owner"; # !!! REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM
+
+	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then			
+		cat "${OLD_SOURCE_FILEPATH}" > "${FILEPATH_GIT_SOURCE_REPO_URL}";
+	fi;
+	
+	if [ -f "${OLD_SOURCE_FILEPATH}" ]; then # !!! REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM
+		rm "${OLD_SOURCE_FILEPATH}"; # !!! REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM
+	fi; # !!! REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM
 
 	GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
 

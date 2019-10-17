@@ -50,11 +50,12 @@ else
 	# ------------------------------------------------------------
 	# vvv   REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM   vvv
 	OLD_SOURCE_FILEPATH="/etc/owner";
-	OLD_SOURCE_FILEPATH_V2="/etc/sync_cloud_infrastructure.url";
 	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
 		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
-	elif [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH_V2}" ]; then
-		mv -f "${OLD_SOURCE_FILEPATH_V2}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
+	fi;
+	OLD_SOURCE_FILEPATH="/etc/sync_cloud_infrastructure.url";
+	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
+		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
 	fi; 
 	# ^^^   REMOVE ANYTIME AFTER 2019-10-17 @ 04:05 PM   ^^^
 	# ------------------------------------------------------------

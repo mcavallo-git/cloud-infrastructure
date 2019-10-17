@@ -48,8 +48,11 @@ else
 
 	FILEPATH_GIT_SOURCE_REPO_URL="/etc/sync_cloud_infrastructure/git_source_repo.url";
 
+
+
 	# ------------------------------------------------------------
 	# vvv   REMOVE ANYTIME AFTER 2019-10-18 @ 04:05 PM   vvv
+	#
 	OLD_SOURCE_FILEPATH="/etc/owner";
 	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
 		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
@@ -58,8 +61,11 @@ else
 	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
 		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
 	fi; 
+	#
 	# ^^^   REMOVE ANYTIME AFTER 2019-10-18 @ 04:05 PM   ^^^
 	# ------------------------------------------------------------
+
+
 
 	GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
 

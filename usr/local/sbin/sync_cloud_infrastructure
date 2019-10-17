@@ -60,12 +60,13 @@ else
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
 	GIT_LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
-	GIT_LOCAL_REPO_PATH="${GIT_LOCAL_PARENT_PATH}/${GIT_REPO_NAME}/";
 
+	GIT_LOCAL_REPO_PATH="${GIT_LOCAL_PARENT_PATH}/${GIT_REPO_NAME}/";
 
 	WIN32_HOMEDIR="";
 
 	DIR_REPO_BASE="";
+
 
 	# ------------------------------------------------------------
 	# Make sure required runtime(s) are installed
@@ -85,6 +86,8 @@ else
 	ARGS_CRONJOB="";
 	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 	RESTART_SERVICE_CRON=0;
+
+	ARGS_SYNC_SSH_CONFIG=0;
 
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
@@ -122,9 +125,14 @@ else
 				fi;
 			fi;
 
-			# Parse cronjob calls
+			# Parse WSL-Check calls
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
 				ARGS_CHECK_WSL=1;
+			fi;
+
+			# Parse SSH-Config calls
+			if [ "${EACH_ARG}" == "--ssh" ] || [ "${EACH_ARG}" == "--sshd" ]; then
+				ARGS_SYNC_SSH_CONFIG=1;
 			fi;
 
 		fi;
@@ -157,7 +165,6 @@ else
 	git pull --quiet;
 
 	# ------------------------------------------------------------
-
 	# Set ownership for git-repo files as-intended
 	echo "Info: Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
 	BENCHMARK_START=$(date +'%s.%N');
@@ -175,9 +182,24 @@ else
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 	
 	# ------------------------------------------------------------
-	# Detect & handle WSL instance(s)
+	# Update SSH Configuration
+	if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
+		# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+		echo "";
+		echo "!!! Warning !!!";
+		echo "     To avoid being locked-out, you should open a new SSH connection (on the side)";
+		echo "     Please do this now, then come back to this terminal to continue";
+		read -p "Are you sure you want to continue? (y/n)   " -t 20 -r;
+		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+			echo "Confirmed";
+		else
+			echo "Skipped";
+		fi;
+	fi;
+	
+	# ------------------------------------------------------------
+	# Check for (Detect/Handle) WSL instance(s)
 	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
-		# Detect & handle WSL instance(s)
 		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
 		if [ -n "${WSL_CHECK_EXISTS}" ]; then
 			echo "Info: Checking for Windows Subsystem for Linux (WSL) Environment";
@@ -201,6 +223,7 @@ else
 		fi;
 	fi;
 
+	# ------------------------------------------------------------
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		# echo "Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";

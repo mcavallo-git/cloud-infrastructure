@@ -186,10 +186,10 @@ else
 	if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 		# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
 		echo "";
-		echo "!!! Warning !!!";
-		echo "     To avoid being locked-out, you should open a new SSH connection (on the side)";
-		echo "     Please do this now, then come back to this terminal to continue";
-		read -p "Are you sure you want to continue? (y/n)   " -t 20 -r;
+		echo "!!! Warning !!!  To avoid being locked-out, you should open a new SSH connection (on the side)";
+		echo " |               Please do this now, then come back to this terminal to continue";
+		echo " |";
+		read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "Confirmed";
 		else

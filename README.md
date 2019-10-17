@@ -22,7 +22,7 @@ This file (on GitHub):
 	<ol>
 		<li>
 			<h6 id="">Sync Linux-shellscripts via the "sync_cloud_infrastructure" script by calling:</h6><br />
-			<pre id="sync_cloud_infrastructure"><code>REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" && LOCAL_FILE="${HOME}/sync_cloud_infrastructure" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0700 "${LOCAL_FILE}" && ${LOCAL_FILE} --cron sync && rm "${LOCAL_FILE}";</code></pre></li>
+			<pre id="sync_cloud_infrastructure"><code>wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync;</code></pre></li>
 	</ol>
 <hr /></details></li>
 

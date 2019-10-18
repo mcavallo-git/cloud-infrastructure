@@ -98,9 +98,9 @@ else
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
 
-	COUNT_ARGS=${#ARGS[@]};
 
 	ARGS=("$@");
+	ARGS_COUNT=${#ARGS[@]};
 	ARGS_CHECK_WSL=0;
 	ARGS_CRONJOB="";
 	ARGS_SYNC_DDNS=0;
@@ -114,12 +114,12 @@ else
 	RESTART_SERVICE_SSH=0;
 
 	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$COUNT_ARGS;i++ )); do
+	for (( i=0;i<$ARGS_COUNT;i++ )); do
 
 		EACH_ARG=${ARGS[${i}]};
 
 		# Check if this is the last inline-argument or if there are more to follow
-		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+		if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
 			NEXT_ARG="";
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};

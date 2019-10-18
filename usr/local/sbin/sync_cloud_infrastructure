@@ -658,19 +658,45 @@ else
 
 
 		# ------------------------------------------------------------
-		# Restart necessary service(s)
+		# Restart Service (if needed)  -->  cron
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
-			/usr/sbin/service cron restart;
-			/usr/sbin/service cron status;
-		fi;
-		if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/local/sbin/reload_nginx" ]; then
-			/usr/local/sbin/reload_nginx;
-		fi;
-		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
-			/usr/sbin/service ssh restart;
+			SERVICE_NAME="cron";
+			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+			if [ -z "${SERVICE_MATCHES}" ]; then
+				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+			else
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status;
+			fi;
 		fi;
 
+		# ------------------------------------------------------------
+		# Restart Service (if needed)  -->  nginx
+		# ------------------------------------------------------------
+		if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			SERVICE_NAME="nginx";
+			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+			if [ -z "${SERVICE_MATCHES}" ]; then
+				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+			else
+				/usr/local/sbin/reload_nginx;
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# Restart Service (if needed)  -->  ssh
+		# ------------------------------------------------------------
+		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			SERVICE_NAME="ssh";
+			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+			if [ -z "${SERVICE_MATCHES}" ]; then
+				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+			else
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status;
+			fi;
+		fi;
 
 		# ------------------------------------------------------------
 		# Cleanup log files outside of the retention-policy's max-age

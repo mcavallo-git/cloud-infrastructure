@@ -149,9 +149,12 @@ else
 				fi;
 			fi;
 
+			echo "EACH_ARG = [${EACH_ARG}]";
+
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
 				ARGS_CHECK_WSL=1; # Parse WSL-Check calls
 			fi;
+
 			if [ "${EACH_ARG}" == "--ddns" ]; then
 				ARGS_SYNC_DDNS=1; # Parse DDNS-Sync Calls
 			fi;

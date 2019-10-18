@@ -8,7 +8,7 @@
 if [ 0 -eq 1 ]; then
 
 mkdir -p "${HOME}/.gpg_git" \
-&& curl --output "${HOME}/.gpg_git/sync_gpg_git_config" "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" \
+&& curl --silent --output "${HOME}/.gpg_git/sync_gpg_git_config" "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" \
 && "${HOME}/.gpg_git/sync_gpg_git_config" \
 && rm -f "${HOME}/.gpg_git/sync_gpg_git_config";
 
@@ -483,7 +483,7 @@ fi;
 GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
 GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
 mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
-curl --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
+curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
 if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 

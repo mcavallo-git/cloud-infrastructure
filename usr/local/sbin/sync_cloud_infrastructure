@@ -110,6 +110,8 @@ else
 	ARGS_SYNC_SSH_CONFIG=0;
 	RESTART_SERVICE_SSH=0;
 
+	ARGS_SYNC_DDNS=0;
+
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
@@ -154,6 +156,11 @@ else
 			# Parse SSH-Config calls
 			if [ "${EACH_ARG}" == "--ssh" ] || [ "${EACH_ARG}" == "--sshd" ]; then
 				ARGS_SYNC_SSH_CONFIG=1;
+			fi;
+
+			# Parse DDNS-Sync Calls
+			if [ "${EACH_ARG}" == "--ddns" ]; then
+				ARGS_SYNC_DDNS=1;
 			fi;
 
 		fi;
@@ -201,28 +208,6 @@ else
 	find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-	
-	# ------------------------------------------------------------
-	# Update SSH Configuration
-	if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
-		# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-		echo "";
-		echo "!!! Warning !!!  To avoid being locked-out, you should open a new SSH connection (on the side)";
-		echo " |               Please do this now, then come back to this terminal to continue";
-		echo " |";
-		read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
-		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-			# Backup & Update the sshd_config (SSH Server) file
-			mv "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.${START_TIMESTAMP}.bak" \
-			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/ssh/sshd_config.no_mfa" -O "/etc/ssh/sshd_config.no_mfa" -q \
-			&& chmod 0644 "/etc/ssh/sshd_config.no_mfa" \
-			&& cp -f "/etc/ssh/sshd_config.no_mfa" "/etc/ssh/sshd_config" \
-			&& RESTART_SERVICE_SSH=1;
-			# echo "Confirmed";
-		else
-			echo "Skipped SSH-Config Update";
-		fi;
-	fi;
 	
 	# ------------------------------------------------------------
 	# Check for (Detect/Handle) WSL instance(s)
@@ -517,6 +502,37 @@ else
 		done;
 
 
+		# ------------------------------------------------------------
+		# Update SSH Configuration
+		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
+			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+			echo "";
+			echo "!!! Warning !!!  To avoid being locked-out, you should open a new SSH connection (on the side)";
+			echo " |               Please do this now, then come back to this terminal to continue";
+			echo " |";
+			read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
+			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+				# Backup & Update the sshd_config (SSH Server) file
+				mv "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.${START_TIMESTAMP}.bak" \
+				&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/ssh/sshd_config.no_mfa" -O "/etc/ssh/sshd_config.no_mfa" -q \
+				&& chmod 0644 "/etc/ssh/sshd_config.no_mfa" \
+				&& cp -f "/etc/ssh/sshd_config.no_mfa" "/etc/ssh/sshd_config" \
+				&& RESTART_SERVICE_SSH=1;
+				# echo "Confirmed";
+			else
+				echo "Skipped SSH-Config Update";
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# Sync DDNS Hostname(s)
+		if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
+			/usr/local/bin/ddns_setup \
+			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/cron.d/CRON_ddns_updater" -O "/etc/cron.d/CRON_ddns_updater" -q \
+			&& chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
+			&& RESTART_SERVICE_CRON=1;
+		fi;
+		
 		# ------------------------------------------------------------
 		# Remove old/renamed scripts (if found to exist)
 		# ------------------------------------------------------------

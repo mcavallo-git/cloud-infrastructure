@@ -98,23 +98,19 @@ else
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
 
-	ARGS=("$@");
 	COUNT_ARGS=${#ARGS[@]};
 
+	ARGS=("$@");
 	ARGS_CHECK_WSL=0;
-
 	ARGS_CRONJOB="";
-	RESTART_SERVICE_CRON=0;
-	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
-
-	ARGS_SYNC_SSH_CONFIG=0;
-	RESTART_SERVICE_SSH=0;
-
 	ARGS_SYNC_DDNS=0;
-
+	ARGS_SYNC_NGINX=0;
+	ARGS_SYNC_SSH_CONFIG=0;
 	ARGS_SYNC_UFW=0;
 
-	ARGS_SYNC_NGINX=0;
+	RESTART_SERVICE_CRON=0;
+	RESTART_SERVICE_NGINX=0;
+	RESTART_SERVICE_SSH=0;
 
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
@@ -147,7 +143,7 @@ else
 					else
 						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
 					fi;
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → ${HELP_CRONJOB}";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 					exit 1;
 				fi;
 			fi;
@@ -599,17 +595,41 @@ else
 		# ------------------------------------------------------------
 		# Sync/Update the current device's nginx configuration & associated dependencies
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
-			# nginx_sync_dir
-			# if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
-			# 	mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
-			# fi;
-			# CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-			# wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
-			# && wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
-			# && chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
-			# && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
-			# && RESTART_SERVICE_CRON=1 \
-			# && RESTART_SERVICE_SSH=1;
+
+			# ------------------------------------------------------------
+			# /usr/local/bin
+			# ------------------------------------------------------------
+			DESTINATION_PATH="/etc/nginx";
+			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+			FILE_PERMS="0644"; DIR_PERMS="0755";
+			echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
+			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+			find "/etc/nginx/sites-available/" \
+				-mindepth 1 \
+				-maxdepth 1 \
+				-name "*.nginx" \
+				-type "f" \
+				-print0 \
+			| while IFS= read -r -d $'\0' EachFile; do
+				EachFQDN=$(echo "$(basename ${EachFile})" | rev | cut -d. -f 1 --complement | rev);
+				Each_SitesAvailable="/etc/nginx/sites-available/${EachFile}";
+				Each_SitesEnabled="/etc/nginx/sites-enabled/${EachFQDN}";
+				if [ "$(dig +short ${EachFQDN};)" == "$(curl -s -4 https://icanhazip.com)" ]; then
+					# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
+					ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
+					echo "  |→ Enabling NGINX FQDN \"${EachFQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
+				elif [ -L "${Each_SitesEnabled}" ]; then
+					# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
+					unlink "${Each_SitesEnabled}";
+					echo "  |→ Disabling NGINX FQDN \"${EachFQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
+				else
+					echo "  |→ Skipping NGINX FQDN \"${EachFQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+				fi;
+			done;
+			echo "  |→ Sync complete";
+			RESTART_SERVICE_NGINX=1;
 		fi;
 		
 		# ------------------------------------------------------------
@@ -633,6 +653,9 @@ else
 		if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			/usr/sbin/service cron restart;
 			/usr/sbin/service cron status;
+		fi;
+		if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/local/sbin/reload_nginx" ]; then
+			/usr/local/sbin/reload_nginx;
 		fi;
 		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			/usr/sbin/service ssh restart;

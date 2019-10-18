@@ -1,0 +1,6 @@
+#
+# DAT_CRON="/etc/cron.d/CRON_update_system" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}" && service cron restart;
+#
+
+### [ System ] Update+Upgrade locally-installed firmware & packages
+10 04 * * 0 root test -x "/usr/local/sbin/update_system" && "/usr/local/sbin/update_system";

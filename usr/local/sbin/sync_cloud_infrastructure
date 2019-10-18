@@ -67,7 +67,10 @@ else
 
 
 
-	GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
+	GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
+	if [ -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
+		GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
+	fi; 
 
 	# Fall-back to the default Git-Repo if none is defined, locally
 	if [ -z "${GIT_SOURCE_REPO_URL}" ]; then

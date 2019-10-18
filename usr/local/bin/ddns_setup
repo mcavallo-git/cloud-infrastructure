@@ -20,9 +20,6 @@ fi;
 
 # Setup Namecheap DDNS Hostname(s)
 NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
-if [ ! -d "$(dirname ${NAMECHEAP_SECRET})" ]; then
-	mkdir -p "$(dirname ${NAMECHEAP_SECRET})";
-fi;
 if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 	read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -t 20 -r;
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -48,6 +45,9 @@ if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 			exit 1;
 		fi;
 
+		if [ ! -d "$(dirname ${NAMECHEAP_SECRET})" ]; then
+			mkdir -p "$(dirname ${NAMECHEAP_SECRET})";
+		fi;
 		# Output the base64-encoded string to the output file which will be pulled-in by the ddns_updater script (via cronjob)
 		echo -n "https://dynamicdns.park-your-domain.com/update?host=${NAMECHEAP_SUBDOMAIN}&domain=${NAMECHEAP_DOMAIN}&password=${NAMECHEAP_TOKEN}&ip=" | base64 --wrap=0 > "${NAMECHEAP_SECRET}";
 
@@ -70,6 +70,9 @@ fi;
 # # Setup Duck-DNS DDNS Hostname(s)
 # DUCKDNS_SECRET="${HOME}/.duck-dns/secret";
 # if [ ! -f "${DUCKDNS_SECRET}" ]; then
+# 	if [ ! -d "$(dirname ${DUCKDNS_SECRET})" ]; then
+# 		mkdir -p "$(dirname ${DUCKDNS_SECRET})";
+# 	fi;
 # 	curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
 # fi;
 # 

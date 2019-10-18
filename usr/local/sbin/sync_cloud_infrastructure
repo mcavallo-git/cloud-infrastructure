@@ -107,6 +107,7 @@ else
 	ARGS_SYNC_NGINX=0;
 	ARGS_SYNC_SSH_CONFIG=0;
 	ARGS_SYNC_UFW=0;
+	ARGS_VERBOSE=0;
 
 	RESTART_SERVICE_CRON=0;
 	RESTART_SERVICE_NGINX=0;
@@ -151,26 +152,41 @@ else
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
 				ARGS_CHECK_WSL=1; # Parse WSL-Check calls
 			fi;
-
-			if [ "${EACH_ARG}" == "--ssh" ] || [ "${EACH_ARG}" == "--sshd" ]; then
-				ARGS_SYNC_SSH_CONFIG=1; # Parse SSH-Config calls
-			fi;
-
 			if [ "${EACH_ARG}" == "--ddns" ]; then
 				ARGS_SYNC_DDNS=1; # Parse DDNS-Sync Calls
-			fi;
-
-			if [ "${EACH_ARG}" == "--ufw" ]; then
-				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
 
 			if [ "${EACH_ARG}" == "--nginx" ]; then
 				ARGS_SYNC_NGINX=1; # Parse NGINX-Sync Calls
 			fi;
 
+			if [ "${EACH_ARG}" == "--ssh" ] || [ "${EACH_ARG}" == "--sshd" ]; then
+				ARGS_SYNC_SSH_CONFIG=1; # Parse SSH-Config calls
+			fi;
+
+			if [ "${EACH_ARG}" == "--ufw" ]; then
+				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
+			fi;
+
+			if [ "${EACH_ARG}" == "--verbose" ]; then
+				ARGS_VERBOSE=1; # Parse Verbose Calls
+			fi;
+
 		fi;
 
 	done;
+
+	if [ ${ARGS_VERBOSE} -eq 1 ]; then
+		echo "";
+		echo "ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
+		echo "ARGS_CRONJOB = [ ${ARGS_CRONJOB} ]";
+		echo "ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
+		echo "ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
+		echo "ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
+		echo "ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
+		echo "ARGS_VERBOSE = [ ${ARGS_VERBOSE} ]";
+		echo "";
+	fi;
 
 	# ------------------------------------------------------------
 	# Ensure the (GitHub) Repos directory exists, locally
@@ -593,9 +609,6 @@ else
 
 		# ------------------------------------------------------------
 		# Sync/Update the current device's nginx configuration & associated dependencies
-		echo "";
-		echo "ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
-		echo "";
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
 			# ------------------------------------------------------------
 			# /etc/nginx

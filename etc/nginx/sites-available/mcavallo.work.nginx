@@ -1,0 +1,104 @@
+# ------------------------------------------------------------
+#
+#==--  mcavallo.work
+#
+server {
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
+	server_name mcavallo.work;
+	if ($scheme != "https") {
+		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+	}
+	ssl_certificate "/etc/letsencrypt/live/mcavallo.work/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.work/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.work/chain.pem";
+	location / {
+		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+	}
+	include "/etc/nginx/nginx_error_locations.conf";
+}
+
+
+# ------------------------------------------------------------
+#
+#==--  www.mcavallo.work
+#
+server {
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
+	server_name www.mcavallo.work;
+	if ($scheme != "https") {
+		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+	}
+	ssl_certificate "/etc/letsencrypt/live/mcavallo.work/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.work/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.work/chain.pem";
+	location / {
+		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+	}
+	include "/etc/nginx/nginx_error_locations.conf";
+}
+
+
+# ------------------------------------------------------------
+#
+#==--  git.mcavallo.work
+#
+server {
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
+	server_name git.mcavallo.work;
+	if ($scheme != "https") {
+		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+	}
+	ssl_certificate "/etc/letsencrypt/live/mcavallo.work/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.work/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.work/chain.pem";
+	location / {
+		return 302 https://bitbucket.org/%7B266b630f-8096-4ed2-8828-364b067bbf37%7D/; # Redirect to BitBucket
+	}
+	include "/etc/nginx/nginx_error_locations.conf";
+}
+
+
+# ------------------------------------------------------------
+### Enable nginx host
+#
+# DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
+# ------------------------------------------------------------
+### Create LetsEncrypt Certs
+#
+# DN="mcavallo.work";
+# certbot --nginx \
+# -d ${DN} \
+# -d git.${DN} \
+# -d www.${DN} \
+# ;
+#
+# ------------------------------------------------------------
+###	Debug -> ensure nginx is routing as-intended
+#
+# http://mcavallo.work
+# http://git.mcavallo.work
+# http://www.mcavallo.work
+#
+# https://mcavallo.work
+# https://git.mcavallo.work
+# https://www.mcavallo.work
+#
+# ------------------------------------------------------------
+### Remove Domain & Cert
+###   |--> Deletes NGINX Files & Symlinks
+###   |--> Deletes LetsEncrypt Files
+###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
+#
+# FQDN="mcavallo.work"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
+#
+# ------------------------------------------------------------

@@ -27,14 +27,20 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# If this runtime hasn't been updated in the last 60 seconds, then update it before running it
+	# Instantiate runtime variables
 	
-	SCRIPT_START=$(date +'%s.%N');
-	
+	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+
 	GIT_SOURCE_REPO_URL="";
-	
+
 	DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
-	
+
 	DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
 
 	# ------------------------------------------------------------
@@ -46,27 +52,8 @@ else
 		chmod 755	"${DIRNAME_LOCAL_CONFIG}";
 	fi;
 
+	# Get the Git Source-Repo from the local device's config
 	FILEPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
-
-
-
-	# ------------------------------------------------------------
-	# vvv   REMOVE ANYTIME AFTER 2019-10-18 @ 04:05 PM   vvv
-	#
-	OLD_SOURCE_FILEPATH="/etc/owner";
-	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
-		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
-	fi;
-	OLD_SOURCE_FILEPATH="/etc/sync_cloud_infrastructure.url";
-	if [ ! -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ] && [ -f "${OLD_SOURCE_FILEPATH}" ]; then
-		mv -f "${OLD_SOURCE_FILEPATH}" "${FILEPATH_GIT_SOURCE_REPO_URL}"; 
-	fi; 
-	#
-	# ^^^   REMOVE ANYTIME AFTER 2019-10-18 @ 04:05 PM   ^^^
-	# ------------------------------------------------------------
-
-
-
 	GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
 	if [ -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
 		GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
@@ -79,6 +66,9 @@ else
 
 	GIT_REPO_OWNER="$(basename $(dirname ${GIT_SOURCE_REPO_URL};);)";
 	GIT_REPO_NAME="$(basename ${GIT_SOURCE_REPO_URL} | cut -d. -f1;)";
+	
+	# ------------------------------------------------------------
+	# If this script's last-modified date was more than 60-seconds ago, update it before proceeding
 
 	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
@@ -114,10 +104,11 @@ else
 	ARGS_CHECK_WSL=0;
 
 	ARGS_CRONJOB="";
-	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 	RESTART_SERVICE_CRON=0;
+	HELP_CRONJOB="Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 
 	ARGS_SYNC_SSH_CONFIG=0;
+	RESTART_SERVICE_SSH=0;
 
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
@@ -221,9 +212,15 @@ else
 		echo " |";
 		read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-			echo "Confirmed";
+			# Backup & Update the sshd_config (SSH Server) file
+			mv "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.${START_TIMESTAMP}.bak" \
+			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/ssh/sshd_config.no_mfa" -O "/etc/ssh/sshd_config.no_mfa" -q \
+			&& chmod 0755 "/etc/ssh/sshd_config.no_mfa" \
+			&& cp -f "/etc/ssh/sshd_config.no_mfa" "/etc/ssh/sshd_config" \
+			&& RESTART_SERVICE_SSH=1;
+			# echo "Confirmed";
 		else
-			echo "Skipped";
+			echo "Skipped SSH-Config Update";
 		fi;
 	fi;
 	
@@ -542,6 +539,9 @@ else
 			/usr/sbin/service cron restart;
 			/usr/sbin/service cron status;
 		fi;
+		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			/usr/sbin/service ssh restart;
+		fi;
 
 
 		# ------------------------------------------------------------
@@ -558,7 +558,7 @@ else
 
 	# ------------------------------------------------------------
 	# Show Runtime Statistics
-	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${SCRIPT_START}" | bc);
+	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${START_SECONDS_NANOSECONDS}" | bc);
 	echo "Info: Script Complete";
 	echo "  |→ Net Duration: [ ${SCRIPT_DELTA}s ]";
 

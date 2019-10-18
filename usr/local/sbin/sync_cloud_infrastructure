@@ -595,9 +595,8 @@ else
 		# ------------------------------------------------------------
 		# Sync/Update the current device's nginx configuration & associated dependencies
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
-
 			# ------------------------------------------------------------
-			# /usr/local/bin
+			# /etc/nginx
 			# ------------------------------------------------------------
 			DESTINATION_PATH="/etc/nginx";
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -606,9 +605,8 @@ else
 			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' EachFile; do
-				EachFQDN=$(echo "$(basename ${EachFile})" | rev | cut -d. -f 1 --complement | rev);
-				Each_SitesAvailable="/etc/nginx/sites-available/${EachFile}";
+			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
+				EachFQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
 				Each_SitesEnabled="/etc/nginx/sites-enabled/${EachFQDN}";
 				if [ "$(dig +short ${EachFQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
 					# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server

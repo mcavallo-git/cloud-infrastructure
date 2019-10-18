@@ -195,9 +195,14 @@ else
 
 fi;
 
+FILE_DESCRIPTOR_GLOBAL=&6;
+
 exec &>/dev/tty
 
 echo "---> TEST-ECHO - date: [ $(date +'%Y-%m-%d %H:%M:%S')] <---"
+echo ""
+echo "FILE_DESCRIPTOR_GLOBAL=[ ${FILE_DESCRIPTOR_GLOBAL} ]"
+echo ""
 
 
 

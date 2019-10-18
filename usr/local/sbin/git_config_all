@@ -9,7 +9,6 @@
 LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-echo "\$LOGFILE=[ ${LOGFILE} ]";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
@@ -193,3 +192,10 @@ else
 	# ------------------------------------------------------------
 
 fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   unix.stackexchange.com  |  "Why does process substitution result in a file called /dev/fd/63 which is a pipe?"  |  https://unix.stackexchange.com/a/156088
+#
+# ------------------------------------------------------------

@@ -30,9 +30,40 @@ else
 		VERBOSE="0";
 	fi;
 
-	# Files to pull data in-from
-	HOSTS_WHITELIST="/etc/ddns_ufw_update.whitelist";
-	OLD_ALLOWEDS="/etc/ddns_ufw_update.resolved";
+	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update";
+	mkdir -p "${DIRNAME_LOCAL_CONFIG}";
+
+	# File containing hosts to allow through UFW
+	#  |--> All lines in given whitelist file must be in a specific format/syntax
+	#        |
+	#        |--> Syntax:    TCP/UDP:PORT:SUBDOMAIN.DOMAIN.TLD
+	#        |--> Example:   tcp:22:demo.example.com
+	#
+	HOSTS_WHITELIST="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist";
+
+	# Output file to hold the resolved hostnames
+	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
+
+
+
+	# ------------------------------------------------------------
+	#
+	# !!! DEPRECATED !!! REMOVE AFTER 2019-10-18 @ NOON CENTRAL
+	#
+	DEPRECATED_WHITELIST="${DIRNAME_LOCAL_CONFIG}.whitelist";
+	if [ -f "${DEPRECATED_WHITELIST}" ] && [ ! -f "${HOSTS_WHITELIST}" ]; then
+		mv "${DEPRECATED_WHITELIST}" "${HOSTS_WHITELIST}";
+	fi;
+	DEPRECATED_RESOLVED="${DIRNAME_LOCAL_CONFIG}.resolved";
+	if [ -f "${DEPRECATED_RESOLVED}" ] && [ ! -f "${HOSTS_RESOLVED}" ]; then
+		mv "${DEPRECATED_RESOLVED}" "${HOSTS_RESOLVED}";
+	fi;
+	#
+	# !!! DEPRECATED !!! REMOVE AFTER 2019-10-18 @ NOON CENTRAL
+	#
+	# ------------------------------------------------------------
+
+
 
 	add_rule() {
 		local proto=$1;
@@ -67,8 +98,8 @@ else
 		port=$(echo ${line} | cut -d: -f2);
 		host=$(echo ${line} | cut -d: -f3);
 		
-		if [ -f ${OLD_ALLOWEDS} ]; then
-			old_ip=$(cat ${OLD_ALLOWEDS} | grep ${host} | cut -d: -f2);
+		if [ -f ${HOSTS_RESOLVED} ]; then
+			old_ip=$(cat ${HOSTS_RESOLVED} | grep ${host} | cut -d: -f2);
 		fi;
 
 		ip=$(dig +short $host | tail -n 1);
@@ -89,11 +120,11 @@ else
 
 		add_rule $proto $port $ip;
 
-		if [ -f ${OLD_ALLOWEDS} ]; then
-			sed -i.bak /^${host}*/d ${OLD_ALLOWEDS};
+		if [ -f ${HOSTS_RESOLVED} ]; then
+			sed -i.bak /^${host}*/d ${HOSTS_RESOLVED};
 		fi;
 
-		echo "${host}:${ip}" >> ${OLD_ALLOWEDS};
+		echo "${host}:${ip}" >> ${HOSTS_RESOLVED};
 		
 	done;
 

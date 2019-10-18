@@ -606,18 +606,18 @@ else
 			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
-				EachFQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
-				Each_SitesEnabled="/etc/nginx/sites-enabled/${EachFQDN}";
-				if [ "$(dig +short ${EachFQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
+				Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
+				Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
+				if [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
 					# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
 					ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-					echo "  |→ Enabling NGINX FQDN \"${EachFQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
+					echo "  |→ Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
 				elif [ -L "${Each_SitesEnabled}" ]; then
 					# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
 					unlink "${Each_SitesEnabled}";
-					echo "  |→ Disabling NGINX FQDN \"${EachFQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
+					echo "  |→ Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
 				else
-					echo "  |→ Skipping NGINX FQDN \"${EachFQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+					echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
 				fi;
 			done;
 			echo "  |→ Sync complete";

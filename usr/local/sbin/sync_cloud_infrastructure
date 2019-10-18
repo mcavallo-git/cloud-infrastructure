@@ -581,10 +581,18 @@ else
 		# ------------------------------------------------------------
 		# Sync UFW Whitelisted Host(s)
 		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
-			/usr/local/bin/ddns_setup \
-			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/cron.d/CRON_ddns_updater" -O "/etc/cron.d/CRON_ddns_updater" -q \
-			&& chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
-			&& RESTART_SERVICE_CRON=1;
+			DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
+			if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
+				mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
+			fi;
+			CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
+			wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
+			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+			&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
+			&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
+			&& RESTART_SERVICE_CRON=1 \
+			&& RESTART_SERVICE_SSH=1;
+
 		fi;
 		
 		# ------------------------------------------------------------

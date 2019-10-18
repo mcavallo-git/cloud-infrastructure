@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/ddns_updater" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+# ------------------------------------------------------------
+
+# Setup Namecheap DDNS Hostname(s)
+NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
+if [ ! -d "$(dirname ${NAMECHEAP_SECRET})" ]; then
+	mkdir -p "$(dirname ${NAMECHEAP_SECRET})";
+fi;
+if [ ! -f "${NAMECHEAP_SECRET}" ]; then
+	read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -t 20 -r;
+	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+	
+		# Namecheap Subdomain
+		REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 -r; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+		if [ -z "${NAMECHEAP_SUBDOMAIN}" ]; then
+			echo "Error: Invalid/empty Subdomain entered";
+			exit 1;
+		fi;
+
+		# Namecheap Domain
+		REPLY=""; read -p "Enter Namecheap Domain (WITHOUT subdomain):   " -t 120 -r; NAMECHEAP_DOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+		if [ -z "${NAMECHEAP_DOMAIN}" ]; then
+			echo "Error: Invalid/empty Domain entered";
+			exit 1;
+		fi;
+
+		# Namecheap Auth-Token
+		REPLY=""; read -p "Enter Namecheap Authentication Token (Pass):  " -t 120 -r; NAMECHEAP_TOKEN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+		if [ -z "${NAMECHEAP_TOKEN}" ]; then
+			echo "Error: Invalid/empty Authentication Token entered";
+			exit 1;
+		fi;
+
+		# Output the base64-encoded string to the output file which will be pulled-in by the ddns_updater script (via cronjob)
+		echo -n "https://dynamicdns.park-your-domain.com/update?host=${NAMECHEAP_SUBDOMAIN}&domain=${NAMECHEAP_DOMAIN}&password=${NAMECHEAP_TOKEN}&ip=" | base64 --wrap=0 > "${NAMECHEAP_SECRET}";
+
+	else
+		echo "Skipping Namecheap DDNS Sync";
+
+	fi;
+
+fi;
+
+# Ping the DDNS Server once before exiting
+if [ -f "${NAMECHEAP_SECRET}" ]; then
+	curl --max-time 10 --connect-timeout 10 "$(cat ${NAMECHEAP_SECRET} | base64 --decode)" && echo "";
+fi;
+
+
+# ------------------------------------------------------------
+
+# Setup Duck-DNS DDNS Hostname(s)
+# DUCKDNS_SECRET="${HOME}/.duck-dns/secret";
+# if [ ! -f "${DUCKDNS_SECRET}" ]; then
+# 	curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
+# fi;
+
+# Ping the DDNS Server once before exiting
+# if [ -f "${DUCKDNS_SECRET}" ]; then
+# 	curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
+# fi;
+
+# ------------------------------------------------------------

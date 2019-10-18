@@ -8,11 +8,10 @@
 #
 LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; # echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-# exec 2>&1 1> "${LOGFILE}";
-exec > >(tee -a "${LOGFILE}" );
-exec 2>&1;
-echo "";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec 2>&1 1> "${LOGFILE}";
+# exec > >(tee -a "${LOGFILE}" );
+# exec 2>&1;
 #
 # ------------------------------------------------------------
 #
@@ -195,15 +194,9 @@ else
 
 fi;
 
-FILE_DESCRIPTOR_GLOBAL=&6;
-
 exec &>/dev/tty
 
-echo "---> TEST-ECHO - date: [ $(date +'%Y-%m-%d %H:%M:%S')] <---"
-echo ""
-echo "FILE_DESCRIPTOR_GLOBAL=[ ${FILE_DESCRIPTOR_GLOBAL} ]"
-echo ""
-
+cat "${LOGFILE}";
 
 
 # ------------------------------------------------------------

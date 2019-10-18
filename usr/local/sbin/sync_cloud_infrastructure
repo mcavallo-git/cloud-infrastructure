@@ -382,7 +382,7 @@ else
 				# --cron sync   -->   /etc/cron.d/CRON_update_dns_config
 				# ------------------------------------------------------------
 				DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
-				read -p "Sync DNS servers (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)   " -t 20 -r; # Do not perform this sync unless user opts-in
+				read -p "Setup Automatic DNS-Server Updates (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)   " -t 20 -r; # Do not perform this sync unless user opts-in
 				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";

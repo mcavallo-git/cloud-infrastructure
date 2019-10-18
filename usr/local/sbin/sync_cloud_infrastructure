@@ -128,6 +128,8 @@ else
 			fi;
 		fi;
 
+		echo "EACH_ARG = [ ${EACH_ARG} ]";
+
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
 			# Parse cronjob calls
@@ -148,8 +150,6 @@ else
 					exit 1;
 				fi;
 			fi;
-
-			echo "EACH_ARG = [${EACH_ARG}]";
 
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
 				ARGS_CHECK_WSL=1; # Parse WSL-Check calls

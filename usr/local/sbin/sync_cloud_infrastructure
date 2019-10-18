@@ -164,7 +164,6 @@ else
 				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
 
-			
 			if [ "${EACH_ARG}" == "--nginx" ]; then
 				ARGS_SYNC_NGINX=1; # Parse NGINX-Sync Calls
 			fi;
@@ -598,7 +597,7 @@ else
 			# ------------------------------------------------------------
 			# /etc/nginx
 			# ------------------------------------------------------------
-			DESTINATION_PATH="/etc/nginx";
+			DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 			FILE_PERMS="0644"; DIR_PERMS="0755";
 			echo ">>> Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";

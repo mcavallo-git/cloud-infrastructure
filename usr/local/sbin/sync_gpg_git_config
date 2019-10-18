@@ -564,7 +564,9 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 		# Strings
 		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
-		if [ -n "${GPG_KEY_ID}" ]; then
+		if [ -z "${GPG_KEY_ID}" ]; then
+			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+		else
 			# Strings (GPG)
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets
@@ -597,7 +599,9 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
-			if [ -n "${GPG_KEY_ID}" ]; then
+			if [ -z "${GPG_KEY_ID}" ]; then
+				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+			else
 				# Strings (GPG)
 				KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 				# Unsets
@@ -646,7 +650,9 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 		# Strings
 		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
-		if [ -n "${GPG_KEY_ID}" ]; then
+		if [ -z "${GPG_KEY_ID}" ]; then
+			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+		else
 			# Strings (GPG)
 			KEY="user.name";       VAL="${COMMIT_NAME}";                      git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                     git config --local --replace-all "${KEY}" "${VAL}";
@@ -679,7 +685,9 @@ if [ -f "${GIT_SSH_WORK}" ] && [ ! -f "${GIT_SSH_PERSONAL}" ]; then
 		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 		# Strings
 		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
-		if [ -n "${GPG_KEY_ID}" ]; then
+		if [ -z "${GPG_KEY_ID}" ]; then
+			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+		else
 			# Strings (GPG)
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets

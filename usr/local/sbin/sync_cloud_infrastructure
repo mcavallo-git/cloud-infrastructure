@@ -567,8 +567,9 @@ else
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
 			echo "";
-			echo "!!! Warning !!!  To avoid being locked-out, you should open a new SSH connection (on the side)";
-			echo " |               Please do this now, then come back to this terminal to continue";
+			echo "!!! Warning !!!"
+			echo " |    To avoid being locked-out, you should open a new SSH connection (on the side)";
+			echo " |    Please do this now, then come back to this terminal to continue";
 			echo " |";
 			read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
 			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -593,19 +594,42 @@ else
 		fi;
 
 		# ------------------------------------------------------------
-		# Sync UFW Whitelisted Host(s)
+		# Sync UFW ("Uncomplicated Firewall")
 		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
-			DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
-			if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
-				mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
+			# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
+			if [ "$(which ufw)" == "" ]; then
+				echo "Info: Skipped UFW sync (incompatible Linux distro)";
+			else
+				# Check UFW Enabled/Disabled Status
+				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1);
+				if [ ${UFW_ENABLED} -eq 0 ]; then
+					# Prompt for confirmation before auto-enabling UFW
+					echo "!!! Warning !!! ";
+					echo " |";
+					echo " |--> UFW sync requested, however UFW is currently disabled";
+					echo " |";
+					read -p " |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
+					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+						ufw enable;
+					fi;
+				fi;
+				# Re-check UFW Enabled/Disabled Status
+				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1);
+				if [ ${UFW_ENABLED} -eq 0 ]; then
+					# Sync UFW Whitelisted Host(s)
+					DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
+					if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
+						mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
+					fi;
+					CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
+					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
+						&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+						&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
+						&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
+						&& RESTART_SERVICE_CRON=1 \
+						&& RESTART_SERVICE_SSH=1;
+				fi;
 			fi;
-			CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-			wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
-			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
-			&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
-			&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
-			&& RESTART_SERVICE_CRON=1 \
-			&& RESTART_SERVICE_SSH=1;
 		fi;
 
 		# ------------------------------------------------------------

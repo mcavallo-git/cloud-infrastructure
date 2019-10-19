@@ -110,30 +110,30 @@ else
 fi;
 
 # Get this host's shell-distro
-THIS_DISTRO="UNKNOWN";
+THIS_DISTRO="Unknown";
 if [[ ${IS_WINDOWS} -gt 0 ]]; then
 	# Windows shell-distro(s)
 	if [[ ${IS_CYGWIN} -gt 0 ]]; then
-		THIS_DISTRO="CYGWIN";
+		THIS_DISTRO="Cygwin";
 	elif [[ ${IS_MINGW} -gt 0 ]]; then
-		THIS_DISTRO="MINGW";
+		THIS_DISTRO="MinGW";
 	fi;
 elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 	# Linux shell-distro(s)
 	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
-		THIS_DISTRO="RASPBIAN";
+		THIS_DISTRO="Raspbian";
 	elif [[ ${IS_CENTOS} -gt 0 ]]; then
-		THIS_DISTRO="CENTOS";
+		THIS_DISTRO="CentOS";
 	elif [[ ${IS_UBUNTU} -gt 0 ]]; then
-		THIS_DISTRO="UBUNTU";
+		THIS_DISTRO="Ubuntu";
 	elif [[ ${IS_ALPINE} -gt 0 ]]; then
-		THIS_DISTRO="ALPINE";
+		THIS_DISTRO="Alpine";
 	elif [[ ${IS_DEBIAN} -gt 0 ]]; then
-		THIS_DISTRO="DEBIAN";
+		THIS_DISTRO="Debian";
 	fi;
 fi;
 
-THIS_RELEASE="UNKNOWN";
+THIS_RELEASE="Unknown";
 if [ -n "$(which lsb_release)" ]; then
 	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
 		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
@@ -141,9 +141,9 @@ if [ -n "$(which lsb_release)" ]; then
 fi;
 
 
-if [ "${THIS_DISTRO}" != "UNKNOWN" ]; then
+if [ "${THIS_DISTRO}" != "Unknown" ]; then
 	COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE}, ${THIS_DISTRO}";
-	if [ "${THIS_RELEASE}" != "UNKNOWN" ]; then
+	if [ "${THIS_RELEASE}" != "Unknown" ]; then
 		COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE} ${THIS_RELEASE}";
 	fi;
 fi;

@@ -84,39 +84,41 @@ else
 	# Main Runtime
 	#   |--> Iterate through the whitelisted hostnames (found in the whitelist-file) one-by-one
 	#
-	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read line;	do
-		proto=$(echo ${line} | cut -d: -f1);
-		port=$(echo ${line} | cut -d: -f2);
-		host=$(echo ${line} | cut -d: -f3);
-		
-		if [ -f ${HOSTS_RESOLVED} ]; then
-			old_ip=$(cat ${HOSTS_RESOLVED} | grep ${host} | cut -d: -f2);
-		fi;
+	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
+		if [ -n "${EACH_WHITELIST_LINE}" ]; then
+			proto=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
+			port=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
+			host=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
+			
+			if [ -f ${HOSTS_RESOLVED} ]; then
+				old_ip=$(cat ${HOSTS_RESOLVED} | grep ${host} | cut -d: -f2);
+			fi;
 
-		ip=$(dig +short $host | tail -n 1);
+			ip=$(dig +short $host | tail -n 1);
 
-		if [ -z ${ip} ]; then
+			if [ -z ${ip} ]; then
+				if [ -n "${old_ip}" ]; then
+					delete_rule $proto $port $old_ip;
+				fi;
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Failed to resolve the ip address of ${host}." 1>&2;
+				exit 1;
+			fi;
+
 			if [ -n "${old_ip}" ]; then
-				delete_rule $proto $port $old_ip;
+				if [ ${ip} != ${old_ip} ]; then
+					delete_rule $proto $port $old_ip;
+				fi;
 			fi;
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Failed to resolve the ip address of ${host}." 1>&2;
-			exit 1;
-		fi;
 
-		if [ -n "${old_ip}" ]; then
-			if [ ${ip} != ${old_ip} ]; then
-				delete_rule $proto $port $old_ip;
+			add_rule $proto $port $ip;
+
+			if [ -f ${HOSTS_RESOLVED} ]; then
+				sed -i.bak /^${host}*/d ${HOSTS_RESOLVED};
 			fi;
+
+			echo "${host}:${ip}" >> ${HOSTS_RESOLVED};
+
 		fi;
-
-		add_rule $proto $port $ip;
-
-		if [ -f ${HOSTS_RESOLVED} ]; then
-			sed -i.bak /^${host}*/d ${HOSTS_RESOLVED};
-		fi;
-
-		echo "${host}:${ip}" >> ${HOSTS_RESOLVED};
-		
 	done;
 
 

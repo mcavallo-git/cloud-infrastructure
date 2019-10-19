@@ -811,7 +811,8 @@ else
 	# Show Runtime Statistics
 	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${START_SECONDS_NANOSECONDS}" | bc);
 	echo -e "\n""Info: End of \"sync_cloud_infrastructure\" runtime";
-	echo -e "  |→ Net Duration: [ ${SCRIPT_DELTA}s ]""\n";
+	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+	echo "";
 
 
 	# ------------------------------------------------------------

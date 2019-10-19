@@ -204,23 +204,23 @@ else
 
 
 	# ------------------------------------------------------------
-	# Pull remote repository
-
+	# Fetch/Pull/Clone the Cloud-Infrastructure Repo
 	echo -e "\n""Info: Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
 	echo "  |→ Source (URL):        ${GIT_SOURCE_REPO_URL}";
 	echo "  |→ Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
-
+	BENCHMARK_START=$(date +'%s.%N');
 	# Clone the repo if it hasn't been synced, yet
 	if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
 		cd "${GIT_LOCAL_PARENT_PATH}" && \
 		git clone --quiet "${GIT_SOURCE_REPO_URL}";
 	fi;
-
 	# Sync local workstation's commands with the repo's commands
 	cd "${GIT_LOCAL_REPO_PATH}" && \
 	git fetch --quiet && \
 	git reset --quiet --hard "origin/master" && \
 	git pull --quiet;
+	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 	# ------------------------------------------------------------
 	# Set ownership for git-repo files as-intended

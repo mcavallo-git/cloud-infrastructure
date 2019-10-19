@@ -21,7 +21,9 @@ fi;
 # Setup Namecheap DDNS Hostname(s)
 NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
 if [ ! -f "${NAMECHEAP_SECRET}" ]; then
-	read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -t 20 -r;
+
+	echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -t 20 -r;
+
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 	
 		# Namecheap Subdomain

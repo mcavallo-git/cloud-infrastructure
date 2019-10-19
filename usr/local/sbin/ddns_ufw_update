@@ -51,13 +51,13 @@ else
 		local proto=$1;
 		local port=$2;
 		local ip=$3;
-		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
+		local regex="${WHITELIST_PORT}\/${WHITELIST_PROTOCOL}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep $regex);
 		if [ -z "$rule" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${proto}/${port} ALLOW IN ${ip}";
-			ufw allow proto ${proto} from ${ip} to any port ${port};
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}";
+			ufw allow proto ${WHITELIST_PROTOCOL} from ${ip} to any port ${WHITELIST_PORT};
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already exists: ${proto}/${port} ALLOW IN ${ip}"; fi;
+			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already exists: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}"; fi;
 		fi;
 	}
 
@@ -68,14 +68,14 @@ else
 		local proto=$1;
 		local port=$2;
 		local ip=$3;
-		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
+		local regex="${WHITELIST_PORT}\/${WHITELIST_PROTOCOL}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep $regex);
 		if [ -n "$rule" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${proto}/${port} ALLOW IN ${ip}";
-			ufw delete allow proto ${proto} from ${ip} to any port ${port};
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}";
+			ufw delete allow proto ${WHITELIST_PROTOCOL} from ${ip} to any port ${WHITELIST_PORT};
 			# ex) ufw allow proto tcp from any to any port 80,443
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already deleted: ${proto}/${port} ALLOW IN ${ip}"; fi;
+			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already deleted: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}"; fi;
 		fi;
 	}
 
@@ -86,37 +86,47 @@ else
 	#
 	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 		if [ -n "${EACH_WHITELIST_LINE}" ]; then
-			proto=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
-			port=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
-			host=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
-			
-			if [ -f ${HOSTS_RESOLVED} ]; then
-				old_ip=$(cat ${HOSTS_RESOLVED} | grep ${host} | cut -d: -f2);
-			fi;
 
-			ip=$(dig +short $host | tail -n 1);
+			echo "------------------------------------------------------------";
+			echo "EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
 
-			if [ -z ${ip} ]; then
-				if [ -n "${old_ip}" ]; then
-					delete_rule $proto $port $old_ip;
+			WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
+			WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
+			WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
+
+			OLD_RESOLVED_IPV4="";
+			if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
+				# Allow "Any" host to be used
+				CURRENT_RESOLVED_IPv4="any";
+			else
+				# Determine current & previous IPv4(s) for each hostname
+				CURRENT_RESOLVED_IPv4=$(dig +short $host | tail -n 1);
+				OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
+				# Remove old IPv4 rule(s)
+				if [ -z ${ip} ]; then
+					if [ -n "${OLD_RESOLVED_IPV4}" ]; then
+						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+					fi;
+					echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
+					# exit 1;
 				fi;
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Failed to resolve the ip address of ${host}." 1>&2;
-				exit 1;
-			fi;
 
-			if [ -n "${old_ip}" ]; then
-				if [ ${ip} != ${old_ip} ]; then
-					delete_rule $proto $port $old_ip;
+				# Remove old whitelist-rule(s)
+				if [ -n "${OLD_RESOLVED_IPV4}" ]; then
+					if [ ${ip} != ${OLD_RESOLVED_IPV4} ]; then
+						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+					fi;
 				fi;
+
 			fi;
 
-			add_rule $proto $port $ip;
+			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${ip};
 
 			if [ -f ${HOSTS_RESOLVED} ]; then
-				sed -i.bak /^${host}*/d ${HOSTS_RESOLVED};
+				sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};
 			fi;
 
-			echo "${host}:${ip}" >> ${HOSTS_RESOLVED};
+			echo "${WHITELIST_HOST}:${ip}" >> ${HOSTS_RESOLVED};
 
 		fi;
 	done;

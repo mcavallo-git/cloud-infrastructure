@@ -595,10 +595,10 @@ else
 					fi;
 				done;
 			fi;
-			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-			echo "  |";
-			echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 		done;
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |";
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------

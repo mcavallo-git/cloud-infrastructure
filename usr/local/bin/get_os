@@ -1,6 +1,15 @@
 #!/bin/bash
 #
-# LOCAL_BIN="/usr/local/bin/ddns_updater" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+# LOCAL_BIN="/usr/local/bin/get_os" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+# Run in Debug mode
+#
+if [ 0 -eq 1 ]; then
+
+env DEBUG_MODE=1 "/usr/local/sbin/get_os";
+
+fi;
 #
 # ------------------------------------------------------------
 #

@@ -26,15 +26,18 @@ exec 2>&1;
 fi;
 
 # ------------------------------------------------------------
+# Runtime Variable(s)
 #
-# Verbosity setting as an argument
-#
+
 VERBOSE="0";
 if [ -n "$1" ]; then
 	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
 		VERBOSE="1";
 	fi;
 fi;
+
+COMBINED_OS_DISTRO_RELEASE="";
+
 
 # ------------------------------------------------------------
 #
@@ -51,6 +54,7 @@ elif [[ "${OSTYPE}" == "darwin"* ]]; then
 else
 	THIS_OS_TYPE='WINDOWS';
 fi;
+COMBINED_OS_DISTRO_RELEASE="${THIS_OS_TYPE}";
 
 
 # ------------------------------------------------------------
@@ -78,7 +82,6 @@ fi;
 #
 THIS_KERNEL="$(uname -a;)";
 THIS_KERNEL_NAME="$(uname -s;)";
-
 
 IS_WINDOWS=$(if [ "${THIS_OS_TYPE}" == "WINDOWS" ]; then echo 1; else echo 0; fi;);
 IS_LINUX=$(if [ "${THIS_OS_TYPE}" == "LINUX" ]; then echo 1; else echo 0; fi;);
@@ -130,14 +133,27 @@ elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 	fi;
 fi;
 
-# Set the final OS value (to return)
-THIS_OS="${THIS_OS_TYPE}, ${THIS_DISTRO}";
+THIS_RELEASE="UNKNOWN";
+if [ -n "$(which lsb_release)" ]; then
+	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)"; ]; then
+		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
+	fi;
+fi;
+
+
+if [ "${THIS_DISTRO}" != "UNKNOWN" ]
+	COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE}, ${THIS_DISTRO}";
+	if [ "${THIS_RELEASE}" != "UNKNOWN" ]
+			COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE} ${THIS_RELEASE}";
+		fi;
+	fi;
+fi;
 
 if [ "${VERBOSE}" == "1" ]; then
 	echo "";
-	echo "THIS_OS=${THIS_OS}";
 	echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
 	echo "THIS_DISTRO=${THIS_DISTRO}";
+	echo "THIS_RELEASE=${THIS_RELEASE}";
 	echo "";
 	echo "IS_WINDOWS=${IS_WINDOWS}";
 	echo "IS_LINUX=${IS_LINUX}"; \
@@ -151,10 +167,24 @@ if [ "${VERBOSE}" == "1" ]; then
 	echo "IS_DEBIAN=${IS_DEBIAN}"; \
 	echo "IS_CYGWIN=${IS_CYGWIN}"; \
 	echo "IS_MINGW=${IS_MINGW}";
+fi;
+
+if [ "${VERBOSE}" == "1" ]; then
+	echo "";
+	echo "------------------------------------------------------------";
+	echo "";
+	echo -n "THIS OS:   ";
+fi;
+
+# Return the combined OS value
+echo "${COMBINED_OS_DISTRO_RELEASE}";
+
+if [ "${VERBOSE}" == "1" ]; then
+	echo "";
+	echo "------------------------------------------------------------";
 	echo "";
 fi;
 
-echo "${THIS_OS}";
 
 #	------------------------------------------------------------
 #	Citation(s)

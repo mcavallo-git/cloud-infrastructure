@@ -277,7 +277,7 @@ else
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
 		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-			echo "  |→ Using [ $(whoami) ] user's repo-files from [ ${DIR_REPO_BASE} ]";
+			echo "  |→ Using [ $(whoami) ] user's repository files from [ ${DIR_REPO_BASE} ]";
 		else 
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
@@ -291,7 +291,7 @@ else
 				SOURCE_DIR_ERRS=$?;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
-					echo "  |→ Using [ ${SUDO_USER} ] user's repo-files from [ ${DIR_REPO_BASE} ]";
+					echo "  |→ Using [ ${SUDO_USER} ] user's repository files from [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;
 		fi;

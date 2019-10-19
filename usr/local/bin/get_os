@@ -35,7 +35,7 @@ elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSI
 	VERBOSE=1;
 elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
 	VERBOSE=1;
-elif [ -n "$@" ] && [ -n "$(echo $@ | grep '--verbose';)" ]; then
+elif [ -n "$@" ] && [ -n "$(echo $@ | grep 'verbose';)" ]; then
 	VERBOSE=1;
 else
 	VERBOSE=0;

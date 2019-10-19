@@ -467,11 +467,14 @@ else
 						ufw enable;
 					fi;
 				fi;
+
 				# Re-check UFW Enabled/Disabled Status
 				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
 				fi;
+
+				# Proceed if UFW is, indeed, enabled
 				if [ ${UFW_ENABLED} -eq 1 ]; then
 
 					# Sync UFW Whitelisted Host(s)
@@ -499,6 +502,7 @@ else
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 				fi;
+
 			fi;
 		fi;
 

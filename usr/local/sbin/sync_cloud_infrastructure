@@ -181,6 +181,7 @@ else
 	done;
 
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+		echo "";
 		echo "Debug:  ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
 		echo "Debug:  ARGS_CRONJOB = [ ${ARGS_CRONJOB} ]";
 		echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
@@ -617,7 +618,7 @@ else
 				# Re-check UFW Enabled/Disabled Status
 				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-					echo "Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
+					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
 				fi
 				if [ ${UFW_ENABLED} -eq 0 ]; then
 					# Sync UFW Whitelisted Host(s)

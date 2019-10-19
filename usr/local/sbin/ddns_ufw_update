@@ -3,6 +3,15 @@
 # LOCAL_SBIN="/usr/local/sbin/ddns_ufw_update" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+# Run in Debug mode
+#
+if [ 0 -eq 1 ]; then
+
+env DEBUG_MODE=1 /usr/local/sbin/ddns_ufw_update
+
+fi;
+#
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -24,11 +33,12 @@ else
 	# ------------------------------------------------------------
 	# Declare runtime variable(s)
 	
-	# Verbosity-level, e.g. "Verbose-ness" of runtime-script
-	if [ -n "${VERBOSITY}" ] && (("${VERBOSITY}" >= "1")); then
-		VERBOSE="1";
-	else
-		VERBOSE="0";
+	# Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
+	DEBUG_MODE=0;
+	if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
+		DEBUG_MODE=1;
+	elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
+		DEBUG_MODE=1;
 	fi;
 
 	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update";
@@ -53,11 +63,11 @@ else
 		local ip=$3;
 		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
-		if [ -z "$rule" ]; then
+		if [ -z "${rule}" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${proto}/${port} ALLOW IN ${ip}";
 			ufw allow proto ${proto} from ${ip} to any port ${port};
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already exists: ${proto}/${port} ALLOW IN ${ip}"; fi;
+			test ${DEBUG_MODE} -eq 1 && echo "Info: Rule already exists: ${proto}/${port} ALLOW IN ${ip}";
 		fi;
 	}
 
@@ -70,12 +80,12 @@ else
 		local ip=$3;
 		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
-		if [ -n "$rule" ]; then
+		if [ -n "${rule}" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${proto}/${port} ALLOW IN ${ip}";
 			ufw delete allow proto ${proto} from ${ip} to any port ${port};
 			# ex) ufw allow proto tcp from any to any port 80,443
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already deleted: ${proto}/${port} ALLOW IN ${ip}"; fi;
+			test ${DEBUG_MODE} -eq 1 && echo "Info: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
 		fi;
 	}
 
@@ -98,6 +108,7 @@ else
 			echo "WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
 			echo "WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
 
+			CURRENT_RESOLVED_IPv4="";
 			OLD_RESOLVED_IPV4="";
 			if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
 				# Allow "Any" host to be used
@@ -121,6 +132,9 @@ else
 					fi;
 				fi;
 			fi;
+
+echo "CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
+echo "OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
 
 			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
 

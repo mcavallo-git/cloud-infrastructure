@@ -809,8 +809,9 @@ else
 
 	# ------------------------------------------------------------
 	# Show Runtime Statistics
-	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${START_SECONDS_NANOSECONDS}" | bc);
 	echo -e "\n""Info: End of \"sync_cloud_infrastructure\" runtime";
+	BENCHMARK_START=${START_SECONDS_NANOSECONDS};
+	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 	echo "";
 

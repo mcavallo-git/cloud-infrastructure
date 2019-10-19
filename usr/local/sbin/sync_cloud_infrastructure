@@ -240,7 +240,8 @@ else
 	find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-	
+
+
 	# ------------------------------------------------------------
 	# Check for (Detect/Handle) WSL instance(s)
 	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
@@ -266,6 +267,7 @@ else
 			fi;
 		fi;
 	fi;
+
 
 	# ------------------------------------------------------------
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
@@ -320,6 +322,7 @@ else
 				fi;
 			fi;
 		fi;
+
 
 	fi;
 
@@ -391,6 +394,95 @@ else
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+
+		# ------------------------------------------------------------
+		# Update SSH Configuration
+		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
+			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+			echo -e "\n""!!! Warning !!!";
+			echo " |";
+			echo " |--> Update to SSH Configuration Requested";
+			echo " |";
+			echo " |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+			echo " |";
+			read -p " |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+				# Backup & Update the sshd_config (SSH Server) file
+				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
+				SSHD_CONFIG_MFA_ENABLED="${SSHD_CONFIG_LIVE}.mfa";
+				SSHD_CONFIG_MFA_DISABLED="${SSHD_CONFIG_LIVE}.no_mfa";
+				echo -e "\n""Info: Updating \"${SSHD_CONFIG_MFA_DISABLED}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
+
+				mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
+					&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_MFA_DISABLED}" -O "${SSHD_CONFIG_MFA_DISABLED}" -q \
+					&& chmod 0644 "${SSHD_CONFIG_MFA_DISABLED}" \
+					&& cp -f "${SSHD_CONFIG_MFA_DISABLED}" "${SSHD_CONFIG_LIVE}" \
+					&& RESTART_SERVICE_SSH=1;
+
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				
+			else
+				echo "Skipped SSH-Config Update";
+			fi;
+		fi;
+
+
+		# ------------------------------------------------------------
+		# Sync UFW ("Uncomplicated Firewall")
+		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
+			# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
+			if [ "$(which ufw)" == "" ]; then
+				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
+			else
+				# Check UFW Enabled/Disabled Status
+				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+				if [ ${UFW_ENABLED} -eq 0 ]; then
+					# Prompt for confirmation before auto-enabling UFW
+					echo -e "\n""!!! Warning !!!";
+					echo " |";
+					echo " |--> UFW sync requested, however UFW is currently disabled";
+					echo " |";
+					read -p " |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
+					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+						ufw enable;
+					fi;
+				fi;
+				# Re-check UFW Enabled/Disabled Status
+				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
+				fi;
+				if [ ${UFW_ENABLED} -eq 0 ]; then
+
+					# Sync UFW Whitelisted Host(s)
+					DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
+					echo -e "\n""Info: Updating \"${DDNS_UFW_HOSTS_WHITELIST}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
+						mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
+					fi;
+					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
+						&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
+						&& RESTART_SERVICE_SSH=1;
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+					# Sync Cronjob Automation:  UFW DDNS Updates
+					CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
+					echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+						&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
+						&& RESTART_SERVICE_CRON=1;
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+				fi;
+			fi;
+		fi;
 
 
 		# ------------------------------------------------------------
@@ -601,40 +693,6 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
-
-		# ------------------------------------------------------------
-		# Update SSH Configuration
-		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
-			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-			echo -e "\n""!!! Warning !!!";
-			echo " |";
-			echo " |--> Update to SSH Configuration Requested";
-			echo " |";
-			echo " |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
-			echo " |";
-			read -p " |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
-			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-				# Backup & Update the sshd_config (SSH Server) file
-				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
-				SSHD_CONFIG_MFA_ENABLED="${SSHD_CONFIG_LIVE}.mfa";
-				SSHD_CONFIG_MFA_DISABLED="${SSHD_CONFIG_LIVE}.no_mfa";
-				echo -e "\n""Info: Updating \"${SSHD_CONFIG_MFA_DISABLED}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				BENCHMARK_START=$(date +'%s.%N');
-
-				mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
-					&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_MFA_DISABLED}" -O "${SSHD_CONFIG_MFA_DISABLED}" -q \
-					&& chmod 0644 "${SSHD_CONFIG_MFA_DISABLED}" \
-					&& cp -f "${SSHD_CONFIG_MFA_DISABLED}" "${SSHD_CONFIG_LIVE}" \
-					&& RESTART_SERVICE_SSH=1;
-
-				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-				
-			else
-				echo "Skipped SSH-Config Update";
-			fi;
-		fi;
-
 		# ------------------------------------------------------------
 		# Sync cronjob trigger to call script which updates a target DNS-Provider with current WAN IP
 		if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
@@ -649,62 +707,8 @@ else
 
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-
 		fi;
 
-		# ------------------------------------------------------------
-		# Sync UFW ("Uncomplicated Firewall")
-		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
-			# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
-			if [ "$(which ufw)" == "" ]; then
-				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
-			else
-				# Check UFW Enabled/Disabled Status
-				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-				if [ ${UFW_ENABLED} -eq 0 ]; then
-					# Prompt for confirmation before auto-enabling UFW
-					echo -e "\n""!!! Warning !!!";
-					echo " |";
-					echo " |--> UFW sync requested, however UFW is currently disabled";
-					echo " |";
-					read -p " |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
-					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-						ufw enable;
-					fi;
-				fi;
-				# Re-check UFW Enabled/Disabled Status
-				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
-				fi;
-				if [ ${UFW_ENABLED} -eq 0 ]; then
-
-					# Sync UFW Whitelisted Host(s)
-					DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
-					echo -e "\n""Info: Updating \"${DDNS_UFW_HOSTS_WHITELIST}\" with changes from \"${GIT_REPO_NAME}\" repository";
-					BENCHMARK_START=$(date +'%s.%N');
-					if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
-						mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
-					fi;
-					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
-						&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
-						&& RESTART_SERVICE_SSH=1;
-					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-
-					# Sync Cronjob Automation:  UFW DDNS Updates
-					CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-					echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
-					BENCHMARK_START=$(date +'%s.%N');
-					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
-						&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
-						&& RESTART_SERVICE_CRON=1;
-					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-
-				fi;
-			fi;
-		fi;
 
 		# ------------------------------------------------------------
 		# Sync/Update the current device's nginx configuration & associated dependencies
@@ -747,7 +751,8 @@ else
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 		fi;
-		
+
+
 		# ------------------------------------------------------------
 		# Remove old/renamed scripts (if found to exist)
 		# ------------------------------------------------------------

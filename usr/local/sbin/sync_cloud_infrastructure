@@ -606,8 +606,7 @@ else
 		# Update SSH Configuration
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-			echo "";
-			echo "!!! Warning !!!"
+			echo -e "\n""!!! Warning !!!";
 			echo " |    To avoid being locked-out, you should open a new SSH connection (on the side)";
 			echo " |    Please do this now, then come back to this terminal to continue";
 			echo " |";
@@ -662,7 +661,7 @@ else
 				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 				if [ ${UFW_ENABLED} -eq 0 ]; then
 					# Prompt for confirmation before auto-enabling UFW
-					echo "!!! Warning !!! ";
+					echo -e "\n""!!! Warning !!!";
 					echo " |";
 					echo " |--> UFW sync requested, however UFW is currently disabled";
 					echo " |";

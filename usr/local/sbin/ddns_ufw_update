@@ -154,7 +154,7 @@ else
 				CURRENT_RESOLVED_IPv4="any";
 			else
 				# Determine current & previous IPv4(s) for each hostname
-				CURRENT_RESOLVED_IPv4=$(dig +short $host | tail -n 1);
+				CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
 				OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
 				# Remove old IPv4 rule(s)
 				if [ -z ${CURRENT_RESOLVED_IPv4} ]; then

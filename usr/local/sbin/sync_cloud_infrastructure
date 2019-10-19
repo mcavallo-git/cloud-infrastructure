@@ -720,6 +720,15 @@ else
 			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+			DIFFIE_HELLMAN_PARAMETERS="/etc/ssl/certs/dhparam.pem";
+			if [ ! -f "${DIFFIE_HELLMAN_PARAMETERS}" ]; then
+				echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DIFFIE_HELLMAN_PARAMETERS}\"...";
+				DIFFIE_HELLMAN_BITS=2048;
+				# DIFFIE_HELLMAN_BITS=3072;
+				# DIFFIE_HELLMAN_BITS=4096;
+				openssl dhparam -out "${DIFFIE_HELLMAN_PARAMETERS}" ${DIFFIE_HELLMAN_BITS};
+			fi;
+			if [ ""]
 			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
 				Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
 				Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";

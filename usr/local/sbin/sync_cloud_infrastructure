@@ -673,7 +673,7 @@ else
 				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
-				fi
+				fi;
 				if [ ${UFW_ENABLED} -eq 0 ]; then
 
 					# Sync UFW Whitelisted Host(s)

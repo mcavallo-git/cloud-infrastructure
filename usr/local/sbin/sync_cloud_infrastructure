@@ -612,7 +612,7 @@ else
 			echo " |";
 			echo " |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
 			echo " |";
-			read -p " |-->  Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+			read -p " |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 				# Backup & Update the sshd_config (SSH Server) file
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";

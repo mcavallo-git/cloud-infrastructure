@@ -36,7 +36,7 @@ if [ -n "$1" ]; then
 	fi;
 fi;
 
-COMBINED_OS_DISTRO_RELEASE="";
+RETURNED_OS="Unknown";
 
 
 # ------------------------------------------------------------
@@ -54,7 +54,7 @@ elif [[ "${OSTYPE}" == "darwin"* ]]; then
 else
 	THIS_OS_TYPE='Windows';
 fi;
-COMBINED_OS_DISTRO_RELEASE="${THIS_OS_TYPE}";
+RETURNED_OS="${THIS_OS_TYPE}";
 
 
 # ------------------------------------------------------------
@@ -140,12 +140,12 @@ if [ -n "$(which lsb_release)" ]; then
 	fi;
 fi;
 
-
 if [ "${THIS_DISTRO}" != "Unknown" ]; then
-	COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE}, ${THIS_DISTRO}";
+	COMBINED_DISTRO_RELEASE="${THIS_DISTRO}";
 	if [ "${THIS_RELEASE}" != "Unknown" ]; then
-		COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE} ${THIS_RELEASE}";
+		COMBINED_DISTRO_RELEASE="${COMBINED_DISTRO_RELEASE} ${THIS_RELEASE}";
 	fi;
+	RETURNED_OS="${COMBINED_DISTRO_RELEASE} running on ${RETURNED_OS}";
 fi;
 
 if [ "${VERBOSE}" == "1" ]; then
@@ -176,7 +176,7 @@ if [ "${VERBOSE}" == "1" ]; then
 fi;
 
 # Return the combined OS value
-echo "${COMBINED_OS_DISTRO_RELEASE}";
+echo "${RETURNED_OS}";
 
 if [ "${VERBOSE}" == "1" ]; then
 	echo "";

@@ -87,12 +87,16 @@ else
 	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 		if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
-			echo "------------------------------------------------------------";
-			echo "EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-
 			WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
 			WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
 			WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
+
+
+			echo "------------------------------------------------------------";
+			echo "EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+			echo "WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+			echo "WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+			echo "WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
 
 			OLD_RESOLVED_IPV4="";
 			if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then

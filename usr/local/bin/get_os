@@ -29,16 +29,8 @@ fi;
 
 # ------------------------------------------------------------
 #
-# Kernel Info
+# OS (Operating System) Details
 #
-THIS_KERNEL="$(uname -a;)";
-THIS_KERNEL_NAME="$(uname -s;)";
-
-# ------------------------------------------------------------
-#
-# Type of OS (Operating System)
-#
-
 if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]]; then
 	if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
 		THIS_OS_TYPE='WSL';
@@ -51,6 +43,34 @@ else
 	THIS_OS_TYPE='WINDOWS';
 fi;
 
+
+# ------------------------------------------------------------
+#
+# Linux Distro (Distribution) Details
+#
+if [ -n "$(which lsb_release)" ]; then
+	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_DESCRIPTION="$(lsb_release --short --description | tr '[:lower:]' '[:upper:]';)";
+
+else
+	DISTRO_ID=""
+	DISTRO_RELEASE="";
+	DISTRO_CODENAME="";
+	DISTRO_DESCRIPTION="";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Kernel Info
+#
+THIS_KERNEL="$(uname -a;)";
+THIS_KERNEL_NAME="$(uname -s;)";
+
+
 IS_WINDOWS=$(if [ "${THIS_OS_TYPE}" == "WINDOWS" ]; then echo 1; else echo 0; fi;);
 IS_LINUX=$(if [ "${THIS_OS_TYPE}" == "LINUX" ]; then echo 1; else echo 0; fi;);
 IS_MAC=$(if [ "${THIS_OS_TYPE}" == "MAC" ]; then echo 1; else echo 0; fi;);
@@ -59,11 +79,23 @@ IS_WSL=$(if [ "${THIS_OS_TYPE}" == "WSL" ]; then echo 1; else echo 0; fi;);
 IS_CYGWIN=$(if [[ $(uname -s | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "cygwin" ]; then echo 1; else echo 0; fi;);
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
-IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+if [ -n "${DISTRO_ID}" ]; then
+	# Directly-compare the current OS' Distro-ID against known values runtime
+	IS_ALPINE=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "ALPINE" ]; then echo 1; else echo 0; fi;);
+	IS_CENTOS=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "CENTOS" ]; then echo 1; else echo 0; fi;);
+	IS_DEBIAN=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
+	IS_RASPBIAN=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
+	IS_UBUNTU=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
+
+else
+	# Manually determine Distro-type
+	IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+	IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+	IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+	IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+	IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+
+fi;
 
 # Get this host's shell-distro
 THIS_DISTRO="UNKNOWN";
@@ -117,6 +149,8 @@ echo "${THIS_OS}";
 
 #	------------------------------------------------------------
 #	Citation(s)
+#
+#		stackexchange.com  |  "How can I reliably get the operating system's name?"  |  https://unix.stackexchange.com/a/92218
 #
 #		stackoverflow.com  |  "How to detect the OS from a Bash script?"  |  https://stackoverflow.com/a/8597411
 #

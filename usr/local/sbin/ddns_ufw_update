@@ -38,6 +38,8 @@ else
 		DEBUG_MODE=1;
 	elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
 		DEBUG_MODE=1;
+	elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
+		DEBUG_MODE=1;
 	else
 		DEBUG_MODE=0;
 	fi;

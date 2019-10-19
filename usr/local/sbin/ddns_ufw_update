@@ -55,6 +55,8 @@ else
 	# Output file to hold the resolved hostnames
 	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
 
+echo "DEBUG_MODE = [ ${DEBUG_MODE} ]";
+
 	# ------------------------------------------------------------
 	# Function to add a rule to UFW
 	add_rule() {
@@ -63,6 +65,9 @@ else
 		local ip=$3;
 		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
+
+echo "-> IN FUNCTION [ add_rule()  ]";
+echo "-> DEBUG_MODE = [ ${DEBUG_MODE} ]";
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug: -> IN FUNCTION [ add_rule()  ]";
@@ -96,6 +101,10 @@ else
 		local ip=$3;
 		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
+
+echo "-> IN FUNCTION [ delete_rule()  ]";
+echo "-> DEBUG_MODE = [ ${DEBUG_MODE} ]";
+
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug: -> IN FUNCTION [ delete_rule()  ]";

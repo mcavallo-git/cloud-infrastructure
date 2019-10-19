@@ -843,6 +843,9 @@ else
 				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
+				if [ -n "$(which ${SERVICE_NAME};)" ]; then
+					ufw reload;
+				fi;
 				/usr/sbin/service "${SERVICE_NAME}" status;
 			fi;
 		fi;

@@ -5,7 +5,8 @@
 # ------------------------------------------------------------
 # Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
 #  
-#   wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --cron sync;
+#   wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --ssh --nginx --ddns --ufw --debug --cron sync;
+#
 #
 # ------------------------------------------------------------
 #
@@ -693,9 +694,11 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
+
 		# ------------------------------------------------------------
-		# Sync cronjob trigger to call script which updates a target DNS-Provider with current WAN IP
+		# Update DDNS A-Record(s)
 		if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
+			# Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
 			CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
 			echo -e "\n""Info: Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository";
 			BENCHMARK_START=$(date +'%s.%N');
@@ -707,6 +710,7 @@ else
 
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 		fi;
 
 

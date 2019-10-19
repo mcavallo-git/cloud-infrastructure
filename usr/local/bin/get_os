@@ -29,6 +29,18 @@ fi;
 # Runtime Variable(s)
 #
 
+if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
+	VERBOSE=1;
+elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
+	VERBOSE=1;
+elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
+	VERBOSE=1;
+elif [ -n "$@" ] && [ -n "$(echo $@ | grep '--verbose';)" ]; then
+	VERBOSE=1;
+else
+	VERBOSE=0;
+fi;
+
 VERBOSE="0";
 if [ -n "$1" ]; then
 	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
@@ -148,7 +160,7 @@ if [ "${THIS_DISTRO}" != "Unknown" ]; then
 	RETURNED_OS="${COMBINED_DISTRO_RELEASE} running on ${RETURNED_OS}";
 fi;
 
-if [ "${VERBOSE}" == "1" ]; then
+if [ ${VERBOSE} -eq 1 ]; then
 	echo "";
 	echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
 	echo "THIS_DISTRO=${THIS_DISTRO}";
@@ -168,7 +180,7 @@ if [ "${VERBOSE}" == "1" ]; then
 	echo "IS_MINGW=${IS_MINGW}";
 fi;
 
-if [ "${VERBOSE}" == "1" ]; then
+if [ ${VERBOSE} -eq 1 ]; then
 	echo "";
 	echo "------------------------------------------------------------";
 	echo "";
@@ -178,7 +190,7 @@ fi;
 # Return the combined OS value
 echo "${RETURNED_OS}";
 
-if [ "${VERBOSE}" == "1" ]; then
+if [ ${VERBOSE} -eq 1 ]; then
 	echo "";
 	echo "------------------------------------------------------------";
 	echo "";

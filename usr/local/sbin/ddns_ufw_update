@@ -51,13 +51,13 @@ else
 		local proto=$1;
 		local port=$2;
 		local ip=$3;
-		local regex="${WHITELIST_PORT}\/${WHITELIST_PROTOCOL}.*ALLOW.*IN.*${ip}";
+		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep $regex);
 		if [ -z "$rule" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}";
-			ufw allow proto ${WHITELIST_PROTOCOL} from ${ip} to any port ${WHITELIST_PORT};
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${proto}/${port} ALLOW IN ${ip}";
+			ufw allow proto ${proto} from ${ip} to any port ${port};
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already exists: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}"; fi;
+			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already exists: ${proto}/${port} ALLOW IN ${ip}"; fi;
 		fi;
 	}
 
@@ -68,14 +68,14 @@ else
 		local proto=$1;
 		local port=$2;
 		local ip=$3;
-		local regex="${WHITELIST_PORT}\/${WHITELIST_PROTOCOL}.*ALLOW.*IN.*${ip}";
+		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep $regex);
 		if [ -n "$rule" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}";
-			ufw delete allow proto ${WHITELIST_PROTOCOL} from ${ip} to any port ${WHITELIST_PORT};
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${proto}/${port} ALLOW IN ${ip}";
+			ufw delete allow proto ${proto} from ${ip} to any port ${port};
 			# ex) ufw allow proto tcp from any to any port 80,443
 		else
-			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already deleted: ${WHITELIST_PROTOCOL}/${WHITELIST_PORT} ALLOW IN ${ip}"; fi;
+			if [ "$VERBOSE" == "1" ]; then echo "$(date +'%Y-%m-%d %H:%M:%S') | … No action - Rule already deleted: ${proto}/${port} ALLOW IN ${ip}"; fi;
 		fi;
 	}
 
@@ -112,7 +112,7 @@ else
 				fi;
 				# Remove old whitelist-rule(s)
 				if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-					if [ ${ip} != ${OLD_RESOLVED_IPV4} ]; then
+					if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
 						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 					fi;
 				fi;
@@ -124,7 +124,7 @@ else
 				sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};
 			fi;
 
-			echo "${WHITELIST_HOST}:${ip}" >> ${HOSTS_RESOLVED};
+			echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${HOSTS_RESOLVED};
 
 		fi;
 	done;

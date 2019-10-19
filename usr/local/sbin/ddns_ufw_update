@@ -34,11 +34,12 @@ else
 	# Declare runtime variable(s)
 	
 	# Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
-	DEBUG_MODE=0;
 	if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
 		DEBUG_MODE=1;
 	elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
 		DEBUG_MODE=1;
+	else
+		DEBUG_MODE=0;
 	fi;
 
 	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update";

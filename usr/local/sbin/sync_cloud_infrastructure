@@ -66,16 +66,7 @@ else
 
 	GIT_REPO_OWNER="$(basename $(dirname ${GIT_SOURCE_REPO_URL};);)";
 	GIT_REPO_NAME="$(basename ${GIT_SOURCE_REPO_URL} | cut -d. -f1;)";
-	
-	# ------------------------------------------------------------
-	# If this script's last-modified date was more than 60-seconds ago, update it before proceeding
 
-	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
-		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
-		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
-		exit 0;
-	fi;
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
@@ -90,9 +81,21 @@ else
 
 	# ------------------------------------------------------------
 	# Make sure required runtime(s) are installed
+	REQUIRED_PKG="bc"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+
+
+	# ------------------------------------------------------------
+	# If this script's last-modified date was more than 60-seconds ago, update it before proceeding
+
+	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
+		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
+		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
+		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
+		exit 0;
+	fi;
 
 
 	# ------------------------------------------------------------
@@ -735,7 +738,7 @@ else
 	# Show Runtime Statistics
 	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${START_SECONDS_NANOSECONDS}" | bc);
 	echo -e "\n""Info: End of \"sync_cloud_infrastructure\" runtime";
-	echo "  |→ Net Duration: [ ${SCRIPT_DELTA}s ]";
+	echo -e "  |→ Net Duration: [ ${SCRIPT_DELTA}s ]""\n";
 
 
 	# ------------------------------------------------------------

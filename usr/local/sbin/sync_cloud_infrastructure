@@ -94,11 +94,13 @@ else
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
 		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
 		BENCHMARK_START=$(date +'%s.%N');
-		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q \
-			&& BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc) \
-			&& echo "  |→ Finished after ${BENCHMARK_DELTA}s" \
-			&& chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" \
-			&& "/usr/local/sbin/sync_cloud_infrastructure";
+		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q;
+		
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
+		"/usr/local/sbin/sync_cloud_infrastructure"
 		exit 0;
 	fi;
 

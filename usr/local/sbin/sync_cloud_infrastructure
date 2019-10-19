@@ -269,22 +269,20 @@ else
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		# echo -e "\n""Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";
-		echo -e "\n""Info: Checking for local repository files within user [ $(whoami) ]'s home-directory";
+		echo -e "\n""Info: Checking for local repository files within [ $(whoami) ] user's home-directory";
 		BENCHMARK_START=$(date +'%s.%N');
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
-		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-
 		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
 			echo "  |→ Using active-user's repo-files from [ ${DIR_REPO_BASE} ]";
 		else 
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-				echo -e "\n""Info: Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
+				echo "  |→ Repository not found within [ $(whoami) ] user's home-directory";
+				echo "  |→ Checking for local repository files within [ ${SUDO_USER} ] user's home-directory";
 				BENCHMARK_START=$(date +'%s.%N');
 				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
 				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
@@ -292,12 +290,13 @@ else
 				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 				SOURCE_DIR_ERRS=$?;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
 					echo "  |→ Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;
 		fi;
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 
 	else

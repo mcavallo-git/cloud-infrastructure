@@ -110,7 +110,7 @@ else
 	ARGS_SYNC_NGINX=0;
 	ARGS_SYNC_SSH_CONFIG=0;
 	ARGS_SYNC_UFW=0;
-	ARGS_VERBOSE=0;
+	ARGS_DEBUG_ENABLED=0;
 
 	RESTART_SERVICE_CRON=0;
 	RESTART_SERVICE_NGINX=0;
@@ -172,15 +172,15 @@ else
 				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
 
-			if [ "${EACH_ARG}" == "--verbose" ]; then
-				ARGS_VERBOSE=1; # Parse Verbose Calls
+			if [ "${EACH_ARG}" == "--debug" ] || [ "${EACH_ARG}" == "--verbose" ]; then
+				ARGS_DEBUG_ENABLED=1; # Parse Debug/Verbose Calls
 			fi;
 
 		fi;
 
 	done;
 
-	if [ ${ARGS_VERBOSE} -eq 1 ]; then
+	if [ ${ARGS_DEBUG_ENABLED} -eq 1 ]; then
 		echo "";
 		echo "ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
 		echo "ARGS_CRONJOB = [ ${ARGS_CRONJOB} ]";
@@ -188,7 +188,7 @@ else
 		echo "ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
 		echo "ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
 		echo "ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
-		echo "ARGS_VERBOSE = [ ${ARGS_VERBOSE} ]";
+		echo "ARGS_DEBUG_ENABLED = [ ${ARGS_DEBUG_ENABLED} ]";
 	fi;
 
 	# ------------------------------------------------------------

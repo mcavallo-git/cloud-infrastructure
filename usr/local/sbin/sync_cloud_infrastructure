@@ -113,7 +113,6 @@ else
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
 
-
 	ARGS=("$@");
 	ARGS_COUNT=${#ARGS[@]};
 	ARGS_CHECK_WSL=0;
@@ -165,8 +164,23 @@ else
 				fi;
 			fi;
 
+			# Use "--all" inline-arg. to sync all modules
+			if [ "${EACH_ARG}" == "--all" ]; then
+				ARGS_CHECK_WSL=1;
+				ARGS_CRONJOB="SYNC";
+				ARGS_DEBUG_MODE=1;
+				ARGS_SYNC_DDNS=1;
+				ARGS_SYNC_NGINX=1;
+				ARGS_SYNC_SSH_CONFIG=1;
+				ARGS_SYNC_UFW=1;
+			fi;
+
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
 				ARGS_CHECK_WSL=1; # Parse WSL-Check calls
+			fi;
+
+			if [ "${EACH_ARG}" == "--debug" ] || [ "${EACH_ARG}" == "--verbose" ]; then
+				ARGS_DEBUG_MODE=1; # Parse Debug/Verbose Calls
 			fi;
 
 			if [ "${EACH_ARG}" == "--ddns" ]; then
@@ -185,9 +199,6 @@ else
 				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
 
-			if [ "${EACH_ARG}" == "--debug" ] || [ "${EACH_ARG}" == "--verbose" ]; then
-				ARGS_DEBUG_MODE=1; # Parse Debug/Verbose Calls
-			fi;
 
 		fi;
 

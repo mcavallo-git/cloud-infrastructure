@@ -425,17 +425,30 @@ else
 			echo " |";
 			read -p " |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+				
 				# Backup & Update the sshd_config (SSH Server) file
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
-				SSHD_CONFIG_MFA_ENABLED="${SSHD_CONFIG_LIVE}.mfa";
-				SSHD_CONFIG_MFA_DISABLED="${SSHD_CONFIG_LIVE}.no_mfa";
-				echo -e "\n""Info: Updating \"${SSHD_CONFIG_MFA_DISABLED}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				BENCHMARK_START=$(date +'%s.%N');
+				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa";
+				SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa";
 
+				# Detect MFA Install(s)
+				MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
+				MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
+				if [ -f "${MFA_CONFIG_PAM_DUO}" ] || [ -f "${MFA_CONFIG_LOGIN_DUO}" ]; then
+					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_MFA}";
+				else
+					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
+				fi;
+
+				echo -e "\n""Info: Updating \"${SSHD_CONFIG_LIVE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				echo "  |-> Using file \"${SSHD_CONFIG_REPLACEMENT}\"";
+				BENCHMARK_START=$(date +'%s.%N');
+				
+				# Backup & Update the sshd_config (SSH Server) file
 				mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
-					&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_MFA_DISABLED}" -O "${SSHD_CONFIG_MFA_DISABLED}" -q \
-					&& chmod 0644 "${SSHD_CONFIG_MFA_DISABLED}" \
-					&& cp -f "${SSHD_CONFIG_MFA_DISABLED}" "${SSHD_CONFIG_LIVE}" \
+					&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_REPLACEMENT}" -O "${SSHD_CONFIG_REPLACEMENT}" -q \
+					&& chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
+					&& cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
 					&& RESTART_SERVICE_SSH=1;
 
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);

@@ -265,31 +265,35 @@ else
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		# echo -e "\n""Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";
 		echo -e "\n""Info: Checking for local repository files within user [ $(whoami) ]'s home-directory";
+		BENCHMARK_START=$(date +'%s.%N');
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		SOURCE_DIR_ERRS=$?;
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
 			echo "  |→ Using active-user's repo-files from [ ${DIR_REPO_BASE} ]";
-
 		else 
-		
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
 				echo -e "\n""Info: Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
+				BENCHMARK_START=$(date +'%s.%N');
 				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
 				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
 				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 				SOURCE_DIR_ERRS=$?;
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
 					echo "  |→ Using sudo-user's repo-files from [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;
-
 		fi;
+
 
 	else
 		# Running in WSL - Create link to repo-manuals
@@ -313,6 +317,7 @@ else
 
 	fi;
 
+	# ------------------------------------------------------------
 	if [ -z "${DIR_REPO_BASE}" ]; then
 		# Error-out if any required variable(s) are empty/unset
 		EXIT_CODE=1;
@@ -344,10 +349,12 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
 		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "  |→ Sync complete";
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -357,10 +364,12 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
 		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "  |→ Sync complete";
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -370,10 +379,12 @@ else
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0644";
 		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-		echo "  |→ Sync complete";
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -390,10 +401,12 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "  |→ Sync complete";
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 				# ------------------------------------------------------------
 				# --cron sync   -->   /etc/cron.d/CRON_update_dns_config
@@ -404,10 +417,12 @@ else
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
 					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-					echo "  |→ Sync complete";
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 				else
 					echo "Skipped DNS-Server Sync";
 				fi;
@@ -421,10 +436,12 @@ else
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
 					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-					echo "  |→ Sync complete";
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 				else
 					echo "Skipped Automatic Updates";
 				fi;
@@ -438,10 +455,12 @@ else
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
 					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-					echo "  |→ Sync complete";
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 				fi;
 
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
@@ -452,10 +471,13 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "  |→ Sync complete";
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 				# ------------------------------------------------------------
 				# --cron jenkins   -->   /etc/cron.d/CRON_jenkins_log_cleanup
 				# ------------------------------------------------------------
@@ -463,10 +485,13 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "  |→ Sync complete";
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 				# ------------------------------------------------------------
 				# --cron sync   -->    /etc/cron.d/CRON_jenkins_warfile_update
 				# ------------------------------------------------------------
@@ -474,10 +499,14 @@ else
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
 				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				echo "  |→ Sync complete";
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
 				# ------------------------------------------------------------
 				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)
@@ -498,7 +527,6 @@ else
 				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
 				rm -fv "${DESTINATION_PATH}";
 			fi;
-			echo "";
 		fi;
 
 
@@ -531,6 +559,7 @@ else
 			fi;
 		done;
 		echo -e "\n""Info: Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+		BENCHMARK_START=$(date +'%s.%N');
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
@@ -561,6 +590,8 @@ else
 					fi;
 				done;
 			fi;
+			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+			echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 		done;
 
 
@@ -573,26 +604,44 @@ else
 			echo " |    To avoid being locked-out, you should open a new SSH connection (on the side)";
 			echo " |    Please do this now, then come back to this terminal to continue";
 			echo " |";
-			read -p " |-->  Are you sure you want to continue? (y/n)   " -t 20 -r;
+			read -p " |-->  Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 				# Backup & Update the sshd_config (SSH Server) file
-				mv "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.${START_TIMESTAMP}.bak" \
-				&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/ssh/sshd_config.no_mfa" -O "/etc/ssh/sshd_config.no_mfa" -q \
-				&& chmod 0644 "/etc/ssh/sshd_config.no_mfa" \
-				&& cp -f "/etc/ssh/sshd_config.no_mfa" "/etc/ssh/sshd_config" \
-				&& RESTART_SERVICE_SSH=1;
+				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
+				SSHD_CONFIG_MFA_ENABLED="${SSHD_CONFIG_LIVE}.mfa";
+				SSHD_CONFIG_MFA_DISABLED="${SSHD_CONFIG_LIVE}.no_mfa";
+				echo -e "\n""Info: Updating \"${SSHD_CONFIG_MFA_DISABLED}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
+
+				mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
+					&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_MFA_DISABLED}" -O "${SSHD_CONFIG_MFA_DISABLED}" -q \
+					&& chmod 0644 "${SSHD_CONFIG_MFA_DISABLED}" \
+					&& cp -f "${SSHD_CONFIG_MFA_DISABLED}" "${SSHD_CONFIG_LIVE}" \
+					&& RESTART_SERVICE_SSH=1;
+
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				
 			else
 				echo "Skipped SSH-Config Update";
 			fi;
 		fi;
 
 		# ------------------------------------------------------------
-		# Sync DDNS Hostname(s)
+		# Sync cronjob trigger to call script which updates a target DNS-Provider with current WAN IP
 		if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
+			CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
+			echo -e "\n""Info: Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository";
+			BENCHMARK_START=$(date +'%s.%N');
+
 			/usr/local/bin/ddns_setup \
-			&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/etc/cron.d/CRON_ddns_updater" -O "/etc/cron.d/CRON_ddns_updater" -q \
-			&& chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
-			&& RESTART_SERVICE_CRON=1;
+				&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_UPDATE_DNS_A_RECORDS}" -O "/etc/cron.d/CRON_ddns_updater" -q \
+				&& chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
+				&& RESTART_SERVICE_CRON=1;
+
+			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+			echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 		fi;
 
 		# ------------------------------------------------------------
@@ -621,18 +670,30 @@ else
 					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
 				fi
 				if [ ${UFW_ENABLED} -eq 0 ]; then
+
 					# Sync UFW Whitelisted Host(s)
 					DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";
+					echo -e "\n""Info: Updating \"${DDNS_UFW_HOSTS_WHITELIST}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
 					if [ ! -d "$(dirname ${DDNS_UFW_HOSTS_WHITELIST})" ]; then
 						mkdir -p "${DDNS_UFW_HOSTS_WHITELIST}";
 					fi;
-					CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
-						&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
 						&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
-						&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
-						&& RESTART_SERVICE_CRON=1 \
 						&& RESTART_SERVICE_SSH=1;
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+					# Sync Cronjob Automation:  UFW DDNS Updates
+					CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
+					echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+						&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
+						&& RESTART_SERVICE_CRON=1;
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 				fi;
 			fi;
 		fi;
@@ -647,6 +708,7 @@ else
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 			FILE_PERMS="0644"; DIR_PERMS="0755";
 			echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+			BENCHMARK_START=$(date +'%s.%N');
 			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -665,8 +727,9 @@ else
 					echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
 				fi;
 			done;
-			echo "  |→ Sync complete";
 			RESTART_SERVICE_NGINX=1;
+			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+			echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 		fi;
 		
 		# ------------------------------------------------------------

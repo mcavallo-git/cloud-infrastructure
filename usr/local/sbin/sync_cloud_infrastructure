@@ -72,7 +72,7 @@ else
 
 	if [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-		echo "Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
+		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
 		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure;
 		exit 0;
 	fi;
@@ -186,7 +186,6 @@ else
 		echo "ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
 		echo "ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
 		echo "ARGS_VERBOSE = [ ${ARGS_VERBOSE} ]";
-		echo "";
 	fi;
 
 	# ------------------------------------------------------------
@@ -199,7 +198,7 @@ else
 	# ------------------------------------------------------------
 	# Pull remote repository
 
-	echo "Info: Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
+	echo -e "\n""Info: Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
 	echo "  |→ Source (URL):        ${GIT_SOURCE_REPO_URL}";
 	echo "  |→ Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
 
@@ -217,7 +216,7 @@ else
 
 	# ------------------------------------------------------------
 	# Set ownership for git-repo files as-intended
-	echo "Info: Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
+	echo -e "\n""Info: Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
 	BENCHMARK_START=$(date +'%s.%N');
 	# find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
 	find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
@@ -225,7 +224,7 @@ else
 	echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 	# Set ownership for git-repo directories as-intended
-	echo "Info: Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
+	echo -e "\n""Info: Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
 	BENCHMARK_START=$(date +'%s.%N');
 	# find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
 	find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
@@ -237,14 +236,14 @@ else
 	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
 		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
 		if [ -n "${WSL_CHECK_EXISTS}" ]; then
-			echo "Info: Checking for Windows Subsystem for Linux (WSL) Environment";
+			echo -e "\n""Info: Checking for Windows Subsystem for Linux (WSL) Environment";
 			WIN32_USERNAME=$(wsl_get_windows_username);
 			WIN32_USER_ERRORS="$?";
 		fi;
 		
 		if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 			#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-			echo "Info: Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+			echo -e "\n""Info: Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
 			WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
 			WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 			if [ ! -n "${WIN32_USR_LOCAL}" ]; then
@@ -261,8 +260,8 @@ else
 	# ------------------------------------------------------------
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
-		# echo "Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";
-		echo "Info: Checking for local repository files within user [ $(whoami) ]'s home-directory";
+		# echo -e "\n""Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";
+		echo -e "\n""Info: Checking for local repository files within user [ $(whoami) ]'s home-directory";
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
@@ -276,7 +275,7 @@ else
 		
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-				echo "Info: Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
+				echo -e "\n""Info: Checking for local repository files within user [ ${SUDO_USER} ]'s home-directory";
 				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
 				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
@@ -341,7 +340,7 @@ else
 		DESTINATION_PATH="/usr/local/bin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
-		echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -354,7 +353,7 @@ else
 		DESTINATION_PATH="/usr/local/sbin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
-		echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -367,7 +366,7 @@ else
 		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0644";
-		echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -387,7 +386,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -401,7 +400,7 @@ else
 				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
-					echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -418,7 +417,7 @@ else
 				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
-					echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -435,7 +434,7 @@ else
 					DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
-					echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 					rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -449,7 +448,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -460,7 +459,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -471,7 +470,7 @@ else
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -528,7 +527,7 @@ else
 				USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
 			fi;
 		done;
-		echo "Info: Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+		echo -e "\n""Info: Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
@@ -598,7 +597,7 @@ else
 		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
 			# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
 			if [ "$(which ufw)" == "" ]; then
-				echo "Info: Skipped UFW sync (incompatible Linux distro)";
+				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
 			else
 				# Check UFW Enabled/Disabled Status
 				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1);
@@ -641,7 +640,7 @@ else
 			DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 			FILE_PERMS="0644"; DIR_PERMS="0755";
-			echo "Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+			echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
@@ -735,7 +734,7 @@ else
 	# ------------------------------------------------------------
 	# Show Runtime Statistics
 	SCRIPT_DELTA=$(echo "$(date +'%s.%N') - ${START_SECONDS_NANOSECONDS}" | bc);
-	echo "Info: End of \"sync_cloud_infrastructure\" runtime";
+	echo -e "\n""Info: End of \"sync_cloud_infrastructure\" runtime";
 	echo "  |→ Net Duration: [ ${SCRIPT_DELTA}s ]";
 
 

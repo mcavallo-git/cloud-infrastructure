@@ -64,10 +64,15 @@ else
 		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
 		if [ -z "${rule}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✓ Creating Rule: ${proto}/${port} ALLOW IN ${ip}";
+			echo "Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+			echo "  |--> Call: [ ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
 			ufw allow proto ${proto} from ${ip} to any port ${port};
 		else
-			test ${DEBUG_MODE} -eq 1 && echo "Info: Rule already exists: ${proto}/${port} ALLOW IN ${ip}";
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "Debug: Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
+				echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+			fi;
 		fi;
 	}
 
@@ -81,11 +86,16 @@ else
 		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
 		if [ -n "${rule}" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | ✘ Deleting Rule: ${proto}/${port} ALLOW IN ${ip}";
+			echo "Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+			echo "  |--> Call: [ ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
 			ufw delete allow proto ${proto} from ${ip} to any port ${port};
 			# ex) ufw allow proto tcp from any to any port 80,443
 		else
-			test ${DEBUG_MODE} -eq 1 && echo "Info: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "Debug: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
+				echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+			fi;
 		fi;
 	}
 
@@ -102,11 +112,13 @@ else
 			WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
 
 
-			echo "------------------------------------------------------------";
-			echo "EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-			echo "WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
-			echo "WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-			echo "WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "------------------------------------------------------------";
+				echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+				echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+				echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+				echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+			fi;
 
 			CURRENT_RESOLVED_IPv4="";
 			OLD_RESOLVED_IPV4="";
@@ -133,8 +145,10 @@ else
 				fi;
 			fi;
 
-echo "CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
-echo "OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
+				echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
+			fi;
 
 			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
 

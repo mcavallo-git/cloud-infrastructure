@@ -103,7 +103,7 @@ else
 				CURRENT_RESOLVED_IPv4=$(dig +short $host | tail -n 1);
 				OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
 				# Remove old IPv4 rule(s)
-				if [ -z ${ip} ]; then
+				if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
 					if [ -n "${OLD_RESOLVED_IPV4}" ]; then
 						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 					fi;
@@ -118,7 +118,7 @@ else
 				fi;
 			fi;
 
-			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${ip};
+			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
 
 			if [ -f ${HOSTS_RESOLVED} ]; then
 				sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};

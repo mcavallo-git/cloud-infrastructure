@@ -127,6 +127,7 @@ else
 	RESTART_SERVICE_CRON=0;
 	RESTART_SERVICE_NGINX=0;
 	RESTART_SERVICE_SSH=0;
+	RESTART_SERVICE_UFW=0;
 
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$ARGS_COUNT;i++ )); do
@@ -471,6 +472,7 @@ else
 					fi;
 					wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${DDNS_UFW_HOSTS_WHITELIST}" -O "${DDNS_UFW_HOSTS_WHITELIST}" -q \
 						&& chmod 0644 "${DDNS_UFW_HOSTS_WHITELIST}" \
+						&& RESTART_SERVICE_UFW=1 \
 						&& RESTART_SERVICE_SSH=1;
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
@@ -790,6 +792,7 @@ else
 			fi;
 		fi;
 
+
 		# ------------------------------------------------------------
 		# Restart Service (if needed)  -->  nginx
 		# ------------------------------------------------------------
@@ -802,6 +805,7 @@ else
 				/usr/local/sbin/reload_nginx;
 			fi;
 		fi;
+
 
 		# ------------------------------------------------------------
 		# Restart Service (if needed)  -->  ssh
@@ -816,6 +820,22 @@ else
 				/usr/sbin/service "${SERVICE_NAME}" status;
 			fi;
 		fi;
+
+
+		# ------------------------------------------------------------
+		# Restart Service (if needed)  -->  ufw
+		# ------------------------------------------------------------
+		if [ ${RESTART_SERVICE_UFW} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			SERVICE_NAME="ufw";
+			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
+			if [ -z "${SERVICE_MATCHES}" ]; then
+				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+			else
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status;
+			fi;
+		fi;
+
 
 		# ------------------------------------------------------------
 		# Cleanup log files outside of the retention-policy's max-age

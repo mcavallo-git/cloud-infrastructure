@@ -598,7 +598,7 @@ else
 			fi;
 		done;
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		echo "  |";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 

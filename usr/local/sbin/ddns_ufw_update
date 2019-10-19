@@ -64,7 +64,7 @@ else
 		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
 		if [ -z "${rule}" ]; then
-			echo "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 			echo "  |--> Call: [ ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
 			ufw allow proto ${proto} from ${ip} to any port ${port};
@@ -86,7 +86,7 @@ else
 		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 		local rule=$(ufw status numbered | grep ${regex});
 		if [ -n "${rule}" ]; then
-			echo "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 			echo "  |--> Call: [ ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
 			ufw delete allow proto ${proto} from ${ip} to any port ${port};
@@ -113,7 +113,7 @@ else
 
 
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "\n""------------------------------------------------------------";
+				echo -e "\n""------------------------------------------------------------";
 				echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
 				echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
 				echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";

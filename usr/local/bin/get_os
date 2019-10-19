@@ -135,7 +135,7 @@ fi;
 
 THIS_RELEASE="UNKNOWN";
 if [ -n "$(which lsb_release)" ]; then
-	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)"; ]; then
+	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
 		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	fi;
 fi;

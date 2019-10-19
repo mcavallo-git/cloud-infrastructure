@@ -472,7 +472,7 @@ else
 				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
 				fi;
-				if [ ${UFW_ENABLED} -eq 0 ]; then
+				if [ ${UFW_ENABLED} -eq 1 ]; then
 
 					# Sync UFW Whitelisted Host(s)
 					DDNS_UFW_HOSTS_WHITELIST="/etc/ddns_ufw_update/hosts_whitelist";

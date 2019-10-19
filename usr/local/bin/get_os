@@ -141,9 +141,9 @@ if [ -n "$(which lsb_release)" ]; then
 fi;
 
 
-if [ "${THIS_DISTRO}" != "UNKNOWN" ]
+if [ "${THIS_DISTRO}" != "UNKNOWN" ]; then
 	COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE}, ${THIS_DISTRO}";
-	if [ "${THIS_RELEASE}" != "UNKNOWN" ]
+	if [ "${THIS_RELEASE}" != "UNKNOWN" ]; then
 			COMBINED_OS_DISTRO_RELEASE="${COMBINED_OS_DISTRO_RELEASE} ${THIS_RELEASE}";
 		fi;
 	fi;

@@ -773,7 +773,7 @@ else
 			DIFFIE_HELLMAN_PARAMETERS="/etc/ssl/certs/dhparam.pem";
 			if [ ! -f "${DIFFIE_HELLMAN_PARAMETERS}" ]; then
 				echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DIFFIE_HELLMAN_PARAMETERS}\"...";
-				DIFFIE_HELLMAN_BITS=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048-bit -MCavallo, 2019-10-19_21-51-17
+				DIFFIE_HELLMAN_BITS=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048-bit
 				openssl dhparam -out "${DIFFIE_HELLMAN_PARAMETERS}" ${DIFFIE_HELLMAN_BITS};
 			fi;
 			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do

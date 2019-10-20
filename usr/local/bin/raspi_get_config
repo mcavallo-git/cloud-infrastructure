@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
-if [ "${RaspberryPi_Check}" -eq "BCM2835" ]; then
+if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 	strings /boot/start.elf |grep -Ei '^[a-z0-9_]{6,32}$' |sort -u |xargs -i vcgencmd get_config {} |grep =
 fi;
 

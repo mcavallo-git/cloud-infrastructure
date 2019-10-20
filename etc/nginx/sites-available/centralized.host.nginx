@@ -66,12 +66,6 @@ server {
 	include "/etc/nginx/nginx_error_locations.conf";
 }
 
-
-# ------------------------------------------------------------
-### Enable nginx host
-#
-# DN="centralized.host"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
-#
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
@@ -81,6 +75,11 @@ server {
 # -d git.${DN} \
 # -d www.${DN} \
 # ;
+#
+# ------------------------------------------------------------
+### Enable nginx host
+#
+# DN="centralized.host"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
 # ------------------------------------------------------------
 ###	Debug -> ensure nginx is routing as-intended

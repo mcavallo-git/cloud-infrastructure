@@ -573,6 +573,7 @@ else
 				else
 					echo ""; read -p "Setup Automatic Updates (every Sunday @ 04:10 AM) via \"update_system\"? (y/n)   " -t 20 -r; # Do not perform this sync unless user opts-in
 				fi;
+
 				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 					FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -605,6 +606,7 @@ else
 				fi;
 
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
+
 				#
 				# /etc/cron.d/CRON_jenkins_export_config
 				#
@@ -647,9 +649,8 @@ else
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
-
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
-				
+
 				#
 				# --cron remove
 				#   |--> Removes any script matching /etc/cron.d/CRON_*  (except CRON_sync_cloud_infrastructure)
@@ -673,14 +674,7 @@ else
 				fi;
 
 			fi;
-		fi;
 
-
-		# ------------------------------------------------------------
-		# /etc/letsencrypt/renewal-hooks/deploy/reload_nginx
-		# ------------------------------------------------------------
-		if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
-			ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
 		fi;
 
 
@@ -764,9 +758,10 @@ else
 		# ------------------------------------------------------------
 		# Sync/Update the current device's nginx configuration & associated dependencies
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
-			# ------------------------------------------------------------
+
+			#
 			# /etc/nginx
-			# ------------------------------------------------------------
+			#
 			DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 			FILE_PERMS="0644"; DIR_PERMS="0755";
@@ -781,6 +776,8 @@ else
 				echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
 				openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
 			fi;
+
+			# Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match
 			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
 				Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
 				Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
@@ -796,6 +793,12 @@ else
 					echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
 				fi;
 			done;
+
+			# Setup certbot such that it reloads NGINX whenever a Let's Encrypt HTTPS certificate is renewed
+			if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
+				ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
+			fi;
+
 			RESTART_SERVICE_NGINX=1;
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";

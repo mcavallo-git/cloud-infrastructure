@@ -69,7 +69,7 @@ else
 				EACH_ARG="--hostname";
 			fi;
 
-			if [ "${EACH_ARG}" == "--hostname" ]; then
+			if [ "${EACH_ARG}" == "--name" ] || [ "${EACH_ARG}" == "--hostname" ]; then
 				if [ "${ARGS_HOSTNAME_DEFINED}" == "1" ]; then
 					echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Inline parameters contain more than one value for hostname. Please call again using one, single value";
 					exit 1;

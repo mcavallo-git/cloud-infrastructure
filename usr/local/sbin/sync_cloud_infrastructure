@@ -418,12 +418,12 @@ else
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
 			echo -e "\n""!!! Warning !!!";
-			echo " |";
-			echo " |--> Update to SSH Configuration Requested";
-			echo " |";
-			echo " |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
-			echo " |";
-			read -p " |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+			echo "  |";
+			echo "  |--> Update to SSH Configuration Requested";
+			echo "  |";
+			echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+			echo "  |";
+			read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 				
 				# Backup & Update the sshd_config (SSH Server) file
@@ -472,10 +472,10 @@ else
 				if [ ${UFW_ENABLED} -eq 0 ]; then
 					# Prompt for confirmation before auto-enabling UFW
 					echo -e "\n""!!! Warning !!!";
-					echo " |";
-					echo " |--> UFW sync requested, however UFW is currently disabled";
-					echo " |";
-					read -p " |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
+					echo "  |";
+					echo "  |--> UFW sync requested, however UFW is currently disabled";
+					echo "  |";
+					read -p "  |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						ufw enable;
 					fi;
@@ -605,9 +605,9 @@ else
 				fi;
 
 			elif [ "${ARGS_CRONJOB}" == "JENKINS" ]; then
-				# ------------------------------------------------------------
-				# --cron sync   -->    /etc/cron.d/CRON_jenkins_export_config
-				# ------------------------------------------------------------
+				#
+				# /etc/cron.d/CRON_jenkins_export_config
+				#
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -619,9 +619,9 @@ else
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
-				# ------------------------------------------------------------
-				# --cron jenkins   -->   /etc/cron.d/CRON_jenkins_log_cleanup
-				# ------------------------------------------------------------
+				#
+				# /etc/cron.d/CRON_jenkins_log_cleanup
+				#
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -633,9 +633,9 @@ else
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
-				# ------------------------------------------------------------
-				# --cron sync   -->    /etc/cron.d/CRON_jenkins_warfile_update
-				# ------------------------------------------------------------
+				#
+				# /etc/cron.d/CRON_jenkins_warfile_update
+				#
 				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
 				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 				FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -649,24 +649,29 @@ else
 
 
 			elif [ "${ARGS_CRONJOB}" == "REMOVE" ]; then
-				# ------------------------------------------------------------
-				# --cron remove   -->    /etc/cron.d/CRON_... (REMOVE)
-				# ------------------------------------------------------------
-				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
-				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
-				rm -fv "${DESTINATION_PATH}";
-				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
-				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
-				rm -fv "${DESTINATION_PATH}";
-				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
-				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
-				rm -fv "${DESTINATION_PATH}";
-				DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
-				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
-				rm -fv "${DESTINATION_PATH}";
-				DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
-				echo -e "\nRemoving \"${DESTINATION_PATH}\"...\n";
-				rm -fv "${DESTINATION_PATH}";
+				
+				#
+				# --cron remove
+				#   |--> Removes any script matching /etc/cron.d/CRON_*  (except CRON_sync_cloud_infrastructure)
+				#
+				LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>/dev/null;);
+				COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
+				if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
+					echo -e "\n""Info: Skipping removal of cron sync-triggers (No scripts found matching \"/etc/cron.d/CRON_*\")";
+				else
+					echo -e "\n""Info: Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
+					for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
+						echo "   |";
+						read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\"? (y/n)   " -t 20 -r;
+						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+							echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";
+							rm -fv "${EACH_CRON_TRIGGER}";
+						else
+							echo "  |----> Skipped - Leaving \"${EACH_CRON_TRIGGER}\" unchanged/unaffected";
+						fi;
+					done;
+				fi;
+
 			fi;
 		fi;
 

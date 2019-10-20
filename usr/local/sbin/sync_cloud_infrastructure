@@ -816,7 +816,7 @@ else
 					read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\"? (y/n)   " -t 20 -r;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";
-						rm -fv "${EACH_CRON_TRIGGER}";
+						rm -f "${EACH_CRON_TRIGGER}";
 					else
 						echo "  |----> Skipped - Leaving \"${EACH_CRON_TRIGGER}\" unchanged/unaffected";
 					fi;

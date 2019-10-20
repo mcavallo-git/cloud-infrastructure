@@ -15,8 +15,9 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git; # Redirect to github
+		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
+		# return 302 https://github.com/mcavallo-git; # GitHub
+		return 302 https://linkedin.com/in/matt-cavallo; # LinkedIn
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -96,8 +97,8 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
+		return 302 https://github.com/mcavallo-git/Coding; # GitHub
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -120,7 +121,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		return 302 https://linkedin.com/in/matt-cavallo;
+		return 302 https://linkedin.com/in/matt-cavallo; # LinkedIn
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -143,7 +144,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		return 302 https://github.com/mcavallo-git/cloud-infrastructure#sync_cloud_infrastructure; # Redirect to github
+		return 302 https://github.com/mcavallo-git/cloud-infrastructure#sync_cloud_infrastructure; # GitHub
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -258,8 +259,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git; # Redirect to github
+		return 302 https://mcavallo.com; # Remove subdomain
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

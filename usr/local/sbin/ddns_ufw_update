@@ -53,12 +53,12 @@ else
 	#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 	#        |--> Example:   tcp:22:demo.example.com
 	#
-	if [ -v ACTIVE_WHITELIST_FILES ]; then unset ACTIVE_WHITELIST_FILES; fi; # Re-instantiate bash array (if-set) via unset + declare
-	if [ -v ACTIVE_WHITELIST_FILES[@] ]; then unset ACTIVE_WHITELIST_FILES; fi; # Re-instantiate bash array (if-set) via unset + declare
-	declare -A ACTIVE_WHITELIST_FILES;
-	ACTIVE_WHITELIST_FILES+=(["sshd"]="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts");
-	ACTIVE_WHITELIST_FILES+=(["nginx"]="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts");
-	ACTIVE_WHITELIST_FILES+=(["jenkins"]="${DIRNAME_LOCAL_CONFIG}/whitelist-jenkins.hosts");
+	if [ -v RUNTIME_SERVICE_USERS ]; then unset RUNTIME_SERVICE_USERS; fi; # Re-instantiate bash array (if-set) via unset + declare
+	if [ -v RUNTIME_SERVICE_USERS[@] ]; then unset RUNTIME_SERVICE_USERS; fi; # Re-instantiate bash array (if-set) via unset + declare
+	declare -A RUNTIME_SERVICE_USERS;
+	RUNTIME_SERVICE_USERS+=(["sshd"]="root");
+	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");
+	RUNTIME_SERVICE_USERS+=(["jenkins"]="jenkins");
 
 	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
@@ -165,17 +165,18 @@ else
 
 	# ------------------------------------------------------------
 	# Whitelisting by-Service
-	#   |--> Determine which services are installed on this
-	#        machine and whitelist them in UFW, accordingly
 	#
-	for EACH_SERVICE in "${!ACTIVE_WHITELIST_FILES[@]}"; do
-		EACH_HOSTS_FILE="${ACTIVE_WHITELIST_FILES[${EACH_SERVICE}]}";
-		EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
-		if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
-			echo -n "" > "${EACH_RESOLVED_FILE}";
-		fi;
+	for EACH_SERVICE in "${!RUNTIME_SERVICE_USERS[@]}"; do
+		# File containing hosts to allow through UFW
+		#  |--> All lines in given whitelist file must be in a specific format/syntax
+		#        |
+		#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
+		#        |--> Example:   tcp:22:demo.example.com
+		#
+		EACH_SERVICE_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE}]}";
 
 		# Only whitelist services which are found to exist, locally
+		pgrep -u jenkins java
 		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
 		if [ ${SERVICE_PROCESSES} -eq 0 ]; then
 			# Service does NOT exist locally - do NOT whitelist associated ports/hosts
@@ -183,12 +184,19 @@ else
 
 		else
 			# Service DOES exist locally - DO whitelist associated ports/hosts
+			EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.hosts";
 			echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
 			echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
 
 			# Iterate-over each line in the whitelist-file
 			sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 				if [ -n "${EACH_WHITELIST_LINE}" ]; then
+
+					# Define the location of the file to output resolved ipv4's to
+					EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
+					if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
+						echo -n "" > "${EACH_RESOLVED_FILE}";
+					fi;
 
 					if [ ${DEBUG_MODE} -eq 1 ]; then
 						echo -e "\n""------------------------------------------------------------";

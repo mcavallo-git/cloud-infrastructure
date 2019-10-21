@@ -58,6 +58,12 @@ else
 	# Output file to hold the resolved hostnames
 	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
 
+	# Defaults for UFW (out-of-the-box)
+	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
+
+	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
+	UFW_CONFIG_FILEPATH="/etc/default/ufw";
+
 	# ------------------------------------------------------------
 	# Function to add a rule to UFW
 	add_rule() {
@@ -129,8 +135,33 @@ else
 
 	# ------------------------------------------------------------
 	# Main Runtime
-	#   |--> Iterate through the whitelisted hostnames (found in the whitelist-file) one-by-one
 	#
+	
+	# Set UFW Defaults --> Incoming Requests
+	CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+	DESIRED_DEFAULT_INPUT_POLICY="DROP";
+	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+		ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
+		# sed --in-place --regexp-extended --expression="/^DEFAULT_INPUT_POLICY/c\DEFAULT_INPUT_POLICY=\"${DESIRED_DEFAULT_INPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+	fi;
+
+	# Set UFW Defaults --> Outgoing Requests
+	CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+	DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
+	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
+		ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
+		# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+	fi;
+
+	# Set UFW Defaults --> ROuted Requests
+	CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+	DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
+	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+		# ufw default skip routed;
+		sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+	fi;
+
+	# Iterate-over each line in the whitelisted hostnames file
 	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 		if [ -n "${EACH_WHITELIST_LINE}" ]; then
 

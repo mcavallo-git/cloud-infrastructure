@@ -58,7 +58,10 @@ server {
 #==--  jenkins.centralized.host
 #
 server {
-	listen 443 ssl http2 default_server;
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
 	server_name jenkins.centralized.host;
 	ssl_certificate "/etc/letsencrypt/live/centralized.host/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/centralized.host/privkey.pem";

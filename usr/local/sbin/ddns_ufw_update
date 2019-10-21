@@ -66,7 +66,7 @@ else
 	# ACTIVE_WHITELIST_FILES+=(["all"]="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist");
 
 	# Output file to hold the resolved hostnames
-	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
+	# EACH_RESOLVED_FILE="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
 
 	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
@@ -177,7 +177,11 @@ else
 	#        machine and whitelist them in UFW, accordingly
 	#
 	for EACH_SERVICE in "${!ACTIVE_WHITELIST_FILES[@]}"; do
-		EACH_WHITELIST_FILE="${ACTIVE_WHITELIST_FILES[${EACH_SERVICE}]}";
+		EACH_HOSTS_FILE="${ACTIVE_WHITELIST_FILES[${EACH_SERVICE}]}";
+		EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
+		if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
+			echo -n "" > "${EACH_RESOLVED_FILE}";
+		fi;
 
 		# Only whitelist services which are found to exist, locally
 		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
@@ -188,10 +192,10 @@ else
 		else
 			# Service DOES exist locally - DO whitelist associated ports/hosts
 			echo "Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
-			echo "  |-> Using whitelist-file \"${EACH_WHITELIST_FILE}\"";
+			echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
 
 			# Iterate-over each line in the whitelist-file
-			sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
+			sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 				if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
 					if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -217,7 +221,7 @@ else
 					else
 						# Determine current & previous IPv4(s) for each hostname
 						CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
-						OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
+						OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
 						# Remove old IPv4 rule(s)
 						if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
 							if [ -n "${OLD_RESOLVED_IPV4}" ]; then
@@ -241,11 +245,11 @@ else
 
 					add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
 
-					if [ -f ${HOSTS_RESOLVED} ]; then
-						sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};
+					if [ -f ${EACH_RESOLVED_FILE} ]; then
+						sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
 					fi;
 
-					echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${HOSTS_RESOLVED};
+					echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
 
 				fi;
 			done;

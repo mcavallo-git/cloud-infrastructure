@@ -119,7 +119,11 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="centralized.host"; certbot --nginx -d ${DN} -d jenkins.${DN} -d www.${DN};
+# DN="centralized.host"; \
+# certbot --nginx \
+# -d ${DN} \
+# -d jenkins.${DN} \
+# -d www.${DN};
 #
 # ------------------------------------------------------------
 ### Enable nginx host

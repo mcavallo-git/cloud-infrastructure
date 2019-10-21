@@ -34,6 +34,8 @@ else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
 	
+	EXIT_CODE=1;
+
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
@@ -42,21 +44,59 @@ else
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
+	SERVICE_NAME="jenkins"; \
+	SERVICE_MATCHES=$(service --status-all 2>/dev/null | grep 'jenkins'); \
+
 	# ------------------------------------------------------------
-	# Prep & Install Jenkins
-	JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
-	wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
+	# Determine whether-or-not Jenkins is already installed
+	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
+
+		# Jenkins service not detected --> Prep & Install Jenkins
+		JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
+		wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
+		
+		JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
+		JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
+		if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
+			echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
+		fi;
+		
+		# Install Jenkins
+		apt-get -y update;
+		apt-get -y install "jenkins";
 	
-	JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
-	JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
-	if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
-		echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
 	fi;
-	
-	# Install Jenkins
-	apt-get -y update;
-	apt-get -y install "jenkins";
-	# ------------------------------------------------------------
+
+	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
+		# Jenkins-Service STILL not detected after install-attempt
+		EXIT_CODE=1;
+
+		echo "Error - Jenkins service not detected after install attempt";
+		echo "  |--> Exiting...";
+
+
+	else
+		EXIT_CODE=0;
+		
+		# ------------------------------------------------------------
+		# Show the status of the Jenkins-Service
+		echo "";
+		echo "Show Jenkins' Service-Status";
+		echo "  |--> Calling  [ service jenkins status; ]  ...";
+		echo "";
+		service jenkins status;
+
+		# ------------------------------------------------------------
+		# Show Jenkins' Ports which are in-use
+		echo "";
+		echo "Show Jenkins' Ports which are in-use";
+		echo "  |--> Calling  [ ps aux | grep 'jenkins'; ]  ...";
+		echo "";
+		ps aux | grep 'jenkins';
+
+	fi;
+
+	exit ${EXIT_CODE};
 
 fi;
 

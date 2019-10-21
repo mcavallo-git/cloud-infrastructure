@@ -57,21 +57,22 @@ else
 	# if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 
 		# Install Java Development Kit (Jenkins Pre-Requisite)
-		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JDK}\/" | wc -l)" != "0" ]; then
+		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JDK}\/" | wc -l) -eq 0 ]; then
 			echo -e "\n""Info: Installing Java Development Kit";
 			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JDK}\"; ]  ...""\n";
 			apt-get -y update && apt-get -y install "${APT_PKG_JDK}";
 		fi;
 
 		# Install Java Runtime Environment (Jenkins Pre-Requisite)
-		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JRE}\/" | wc -l)" != "0" ]; then
+		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JRE}\/" | wc -l) -eq 0 ]; then
 			echo -e "\n""Info: Installing Java Runtime Environment";
 			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JRE}\"; ]  ...""\n";
 			apt-get -y update && apt-get -y install "${APT_PKG_JRE}";
 		fi;
 
 		# Install Jenkins
-		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JENKINS}\/" | wc -l)" != "0" ]; then
+		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -eq 0 ]; then
+
 			# Download Jenkins' GnuPG Public-Key (to match & verify jenkins' download/repository against)
 			JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
 			wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;

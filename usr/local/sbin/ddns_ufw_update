@@ -71,7 +71,7 @@ else
 		local port=$2;
 		local ip=$3;
 		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
-		local rule=$(ufw status numbered | grep ${regex});
+		local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug: -> IN FUNCTION [ add_rule()  ]";
@@ -86,8 +86,8 @@ else
 		if [ -z "${rule}" ]; then
 			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
-			echo "  |--> Call: [ ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
-			ufw allow proto ${proto} from ${ip} to any port ${port};
+			echo "  |--> Call: [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
+			/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
 		else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug: Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
@@ -119,9 +119,9 @@ else
 		if [ -n "${rule}" ]; then
 			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
-			echo "  |--> Call: [ ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
-			ufw delete allow proto ${proto} from ${ip} to any port ${port};
-			# ex) ufw allow proto tcp from any to any port 80,443
+			echo "  |--> Call: [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
+			/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
+			# ex) /usr/sbin/ufw allow proto tcp from any to any port 80,443
 
 		else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -141,7 +141,7 @@ else
 	CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
 	DESIRED_DEFAULT_INPUT_POLICY="DROP";
 	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
-		ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
+		/usr/sbin/ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
 		# sed --in-place --regexp-extended --expression="/^DEFAULT_INPUT_POLICY/c\DEFAULT_INPUT_POLICY=\"${DESIRED_DEFAULT_INPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 	fi;
 
@@ -149,7 +149,7 @@ else
 	CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
 	DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
 	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
-		ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
+		/usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
 		# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 	fi;
 
@@ -157,7 +157,7 @@ else
 	CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
 	DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
 	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
-		# ufw default skip routed;
+		# /usr/sbin/ufw default skip routed;
 		sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 	fi;
 
@@ -228,6 +228,14 @@ else
 	find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
 	find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
 
+	# ------------------------------------------------------------
+	# Cleanup log files outside of the retention-policy's max-age
+	# ------------------------------------------------------------
+	DIRECTORY_TO_CLEAN="${LOGDIR}/";
+	MAX_RETENTION_DAYS=3;
+	if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
+		find ${DIRECTORY_TO_CLEAN} -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
+	fi;
 
 fi;
 

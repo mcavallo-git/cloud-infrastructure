@@ -173,12 +173,18 @@ else
 		#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 		#        |--> Example:   tcp:22:demo.example.com
 		#
-		EACH_SERVICE_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE}]}";
+		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE}]}";
 
 		# Only whitelist services which are found to exist, locally
-		pgrep -u jenkins java
-		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
-		if [ ${SERVICE_PROCESSES} -eq 0 ]; then
+		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}";);
+		MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -p "${MATCHED_PROCS_PGREP}" | wc -l;);
+
+		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
+			echo "MATCHED_PROCS_PS = [ ${MATCHED_PROCS_PS} ]";
+		fi;
+
+		if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
 			# Service does NOT exist locally - do NOT whitelist associated ports/hosts
 			echo -e "\n""Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
 

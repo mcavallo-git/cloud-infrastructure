@@ -187,11 +187,11 @@ else
 		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
 		if [ ${SERVICE_PROCESSES} -eq 0 ]; then
 			# Service does NOT exist locally - do NOT whitelist associated ports/hosts
-			echo "Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
+			echo -e "\n""Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
 
 		else
 			# Service DOES exist locally - DO whitelist associated ports/hosts
-			echo "Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
+			echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
 			echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
 
 			# Iterate-over each line in the whitelist-file

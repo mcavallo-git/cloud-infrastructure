@@ -54,6 +54,16 @@ else
 	#        |--> Example:   tcp:22:demo.example.com
 	#
 	HOSTS_WHITELIST="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist";
+	HOSTS_WHITELIST_SSH="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts";
+	HOSTS_WHITELIST_NGINX="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts";
+
+	# Re-instantiate bash array (if-set) via unset + declare
+	if [ -v ACTIVE_WHITELIST_FILES ]; then unset ACTIVE_WHITELIST_FILES; fi;
+	if [ -v ACTIVE_WHITELIST_FILES[@] ]; then unset ACTIVE_WHITELIST_FILES; fi;
+	declare -A ACTIVE_WHITELIST_FILES;
+	# ACTIVE_WHITELIST_FILES+=(["all"]="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist");
+	ACTIVE_WHITELIST_FILES+=(["sshd"]="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts");
+	ACTIVE_WHITELIST_FILES+=(["nginx"]="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts");
 
 	# Output file to hold the resolved hostnames
 	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
@@ -161,64 +171,80 @@ else
 		sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 	fi;
 
-	# Iterate-over each line in the whitelisted hostnames file
-	sed '/^[[:space:]]*$/d' ${HOSTS_WHITELIST} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
-		if [ -n "${EACH_WHITELIST_LINE}" ]; then
+	# ------------------------------------------------------------
+	# Whitelisting by-Service
+	#   |--> Determine which services are installed on this
+	#        machine and whitelist them in UFW, accordingly
+	#
+	for EACH_SERVICE in "${!ACTIVE_WHITELIST_FILES[@]}"; do
+		EACH_WHITELIST_FILE="${ACTIVE_WHITELIST_FILES[${EACH_SERVICE}]}";
 
-			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo -e "\n""------------------------------------------------------------";
-			fi;
+		# Only whitelist services which are found to exist, locally
+		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
+		if [ ${SERVICE_PROCESSES} -ne 0 ]; then
+			
+			# Iterate-over each line in the whitelist-file
+			sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
+				if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
-			WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
-			WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
-			WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
-
-			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-				echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
-				echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-				echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
-			fi;
-
-			CURRENT_RESOLVED_IPv4="";
-			OLD_RESOLVED_IPV4="";
-			if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
-				# Allow "Any" host to be used
-				CURRENT_RESOLVED_IPv4="any";
-			else
-				# Determine current & previous IPv4(s) for each hostname
-				CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
-				OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
-				# Remove old IPv4 rule(s)
-				if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
-					if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+					if [ ${DEBUG_MODE} -eq 1 ]; then
+						echo -e "\n""------------------------------------------------------------";
 					fi;
-					echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
-					# exit 1;
-				fi;
-				# Remove old whitelist-rule(s)
-				if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-					if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
-						delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+
+					WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
+					WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
+					WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
+
+					if [ ${DEBUG_MODE} -eq 1 ]; then
+						echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+						echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+						echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+						echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
 					fi;
+
+					CURRENT_RESOLVED_IPv4="";
+					OLD_RESOLVED_IPV4="";
+					if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
+						# Allow "Any" host to be used
+						CURRENT_RESOLVED_IPv4="any";
+					else
+						# Determine current & previous IPv4(s) for each hostname
+						CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
+						OLD_RESOLVED_IPV4=$(cat ${HOSTS_RESOLVED} | grep ${WHITELIST_HOST} | cut -d: -f2);
+						# Remove old IPv4 rule(s)
+						if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
+							if [ -n "${OLD_RESOLVED_IPV4}" ]; then
+								delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+							fi;
+							echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
+							# exit 1;
+						fi;
+						# Remove old whitelist-rule(s)
+						if [ -n "${OLD_RESOLVED_IPV4}" ]; then
+							if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
+								delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+							fi;
+						fi;
+					fi;
+
+					if [ ${DEBUG_MODE} -eq 1 ]; then
+						echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
+						echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
+					fi;
+
+					add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
+
+					if [ -f ${HOSTS_RESOLVED} ]; then
+						sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};
+					fi;
+
+					echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${HOSTS_RESOLVED};
+
 				fi;
-			fi;
-
-			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
-				echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
-			fi;
-
-			add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
-
-			if [ -f ${HOSTS_RESOLVED} ]; then
-				sed -i.bak /^${WHITELIST_HOST}*/d ${HOSTS_RESOLVED};
-			fi;
-
-			echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${HOSTS_RESOLVED};
+			done;
 
 		fi;
+
 	done;
 
 

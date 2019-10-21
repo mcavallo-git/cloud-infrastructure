@@ -246,7 +246,7 @@ else
 								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
 								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
 									# IPv4 resolved successfully - Add whitelist rule for NGINX
-									echo "${CURRENT_RESOLVED_IPv4}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
+									echo "allow ${CURRENT_RESOLVED_IPv4}; # ${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
 								else
 									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
 									if [ -n "${OLD_RESOLVED_IPV4}" ]; then

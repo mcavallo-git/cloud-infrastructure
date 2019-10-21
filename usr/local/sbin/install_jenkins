@@ -52,8 +52,9 @@ else
 	SERVICE_MATCHES=$(service --status-all 2>/dev/null | grep 'jenkins'); \
 
 	# ------------------------------------------------------------
-	# Determine if Jenkins is already installed (as a local service)
-	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
+	# Determine if Jenkins is already installed
+	if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JENKINS}\/" | wc -l)" != "0" ]; then
+	# if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 
 		# Install Java Development Kit (Jenkins Pre-Requisite)
 		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JDK}\/" | wc -l)" != "0" ]; then

@@ -65,7 +65,9 @@ else
 		echo -e "\n""Info: Installing Jenkins";
 		echo "  |--> Calling  [ apt-get -y update && apt-get -y install 'jenkins'; ]  ...";
 		apt-get -y update && apt-get -y install 'jenkins';
-	
+	else
+		# Jenkins is already installed
+		echo -e "\n""Info: Jenkins already installed";
 	fi;
 
 	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then

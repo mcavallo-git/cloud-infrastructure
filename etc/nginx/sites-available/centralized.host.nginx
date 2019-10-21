@@ -66,11 +66,13 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/centralized.host/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/centralized.host/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/centralized.host/chain.pem";
-	root /var/lib/jenkins; # Webroot location for Jenkins service
-	index index.php index.html index.htm; # Webroot files to grab first
+
+	# root /var/lib/jenkins; # Webroot location for Jenkins service
+	# index index.php index.html index.htm; # Webroot files to grab first
 
 	# Jenkins Management-Access
 	location / {
+		access_log "/var/log/nginx/jenkins-verbose.log" api;
 		include "/etc/nginx/nginx_error_locations.conf";
 		include "/etc/nginx/nginx_proxy_pass_headers.conf";
 		include "/etc/nginx/conf.ddns/*"; # CIDR - Programmer DDNS
@@ -83,6 +85,7 @@ server {
 	# Github Web-Hook Trigger (Jenkins-Job)
 	#        ~ [case-sensitive regex]
 	location ~ ^/(generic-webhook-trigger/invoke|safeRestart) {
+		access_log "/var/log/nginx/jenkins-verbose.log" api;
 		access_log "/var/log/nginx/webhook.log" thin;
 		include "/etc/nginx/nginx_error_locations.conf";
 		include "/etc/nginx/conf.vendor/github.webhooks.conf"; # CIDR - Github

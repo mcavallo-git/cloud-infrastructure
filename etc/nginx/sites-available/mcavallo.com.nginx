@@ -266,14 +266,9 @@ server {
 
 
 # ------------------------------------------------------------
-### Enable nginx host
-#
-# DN="mcavallo.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
-#
-# ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="mcavallo.com";
+# DN="mcavallo.com"; \
 # certbot --nginx \
 # -d ${DN} \
 # -d cashapp.${DN} \
@@ -287,6 +282,12 @@ server {
 # -d windows.${DN} \
 # -d www.${DN} \
 # ;
+# 
+# ------------------------------------------------------------
+### Enable nginx host
+#
+# DN="mcavallo.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
 #
 # ------------------------------------------------------------
 ###	Debug -> ensure nginx is routing as-intended

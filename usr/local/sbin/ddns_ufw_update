@@ -245,13 +245,13 @@ else
 								CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
 								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
 								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
-									# Add whitelist rule for NGINX
+									# IPv4 resolved successfully - Add whitelist rule for NGINX
 									echo "${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
-									# IPv4 resolved successfully - Remove old IPv4 rule(s)
+								else
+									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
 									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
 										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 									fi;
-								else
 									echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
 									# exit 1;
 								fi;

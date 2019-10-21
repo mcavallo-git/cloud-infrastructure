@@ -63,7 +63,7 @@ else
 
 		# Install Jenkins
 		echo -e "\n""Info: Installing Jenkins";
-		echo "  |--> Calling  [ apt-get -y update && apt-get -y install 'jenkins'; ]  ...";
+		echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install 'jenkins'; ]  ...""\n";
 		apt-get -y update && apt-get -y install 'jenkins';
 	else
 		# Jenkins is already installed
@@ -81,13 +81,13 @@ else
 		# ------------------------------------------------------------
 		# Show the status of the Jenkins-Service
 		echo -e "\n""Info: Show Jenkins' Service-Status";
-		echo "  |--> Calling  [ service jenkins status; ]  ...";
+		echo -e "  |--> Calling  [ service jenkins status; ]  ...""\n";
 		service jenkins status;
 
 		# ------------------------------------------------------------
 		# Show Jenkins' Ports which are in-use
 		echo -e "\n""Info: Show Jenkins' Ports which are in-use";
-		echo "  |--> Calling  [ ps aux | grep 'jenkins'; ]  ...";
+		echo -e "  |--> Calling  [ ps aux | grep 'jenkins'; ]  ...""\n";
 		ps aux | grep 'jenkins';
 
 	fi;

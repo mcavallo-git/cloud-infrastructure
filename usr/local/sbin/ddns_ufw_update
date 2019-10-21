@@ -180,8 +180,8 @@ else
 
 		# Only whitelist services which are found to exist, locally
 		test ${DEBUG_MODE} -eq 1 && echo "MATCHED_PROCS_PGREP Call = [ pgrep -u \"${EACH_RUNTIME_USER}\" \"${EACH_SERVICE}\"; ]";
-		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}";);
-		MATCHED_PROCS_PGREP_TRIMMED="$(echo -e "${MATCHED_PROCS_PGREP}" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}" 2>/dev/null;);
+		MATCHED_PROCS_PGREP_TRIMMED="$(echo -e "${MATCHED_PROCS_PGREP}" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' 2>/dev/null;)";
 
 		if [ -n "${MATCHED_PROCS_PGREP_TRIMMED}" ]; then
 

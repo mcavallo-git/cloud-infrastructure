@@ -251,6 +251,7 @@ else
 									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
 										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 									fi;
+								else
 									echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
 									# exit 1;
 								fi;

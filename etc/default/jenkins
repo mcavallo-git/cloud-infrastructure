@@ -1,0 +1,162 @@
+# ------------------------------------------------------------
+#
+# Jenkins Server-Config
+#   |
+#   |--> Filepath:   /etc/default/jenkins
+#   
+# ------------------------------------------------------------
+
+# JAVA_ARGS & JENKINS_ARGS are picked up by the Jenkins service-instantiator @ "/etc/init.d/jenkins" and passed directly to the java & jenkins runtimes, respectively
+JENKINS_ARGS="";
+JAVA_ARGS="";
+
+# pulled in from the init script; makes things easier.
+NAME="jenkins";
+
+JENKINS_USER="${NAME}"; # Jenkins' Runtime-User
+JENKINS_GROUP="${NAME}"; # Jenkins' Runtime-Group
+
+# Whether to enable web access logging or not.
+# Set to "yes" to enable logging to /var/log/$NAME/access_log
+JENKINS_ENABLE_ACCESS_LOG="yes";
+
+# Jenkins' Home-Directory
+JENKINS_HOME="/var/lib/${NAME}";
+
+# location of the jenkins war file
+JENKINS_WAR="/usr/share/${NAME}/${NAME}.war";
+
+# Log-location.  this may be a syslog facility.priority
+JENKINS_LOG="/var/log/${NAME}/${NAME}.log";
+
+# ------------------------------------------------------------
+
+TOTAL_MEMORY_IN_BYTES=$(free | grep 'Mem:' | awk '{print $2}');
+THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} * 3 / 4" | bc);
+# HALF_OF_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} / 2" | bc);
+# ONE_QUARTER_OF_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} / 4" | bc);
+
+JAVA_REQUIRED_MEMORY_LCD=1024;
+XMX_SLICE_OFF_MODIFIER=$(echo "${THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES} % ( ${JAVA_REQUIRED_MEMORY_LCD} * 2 )" | bc;);
+XMX__MAX_MEMORY_POOL=$(echo "${THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES} - ${XMX_SLICE_OFF_MODIFIER}" | bc;);
+XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
+
+echo "XMX__MAX_MEMORY_POOL = [ ${XMX__MAX_MEMORY_POOL} ]"
+echo "XMS__INITIAL_HEAP_MEMORY = [ ${XMS__INITIAL_HEAP_MEMORY} ]"
+
+# ------------------------------------------------------------
+
+# Location of java runtime
+JAVA="/usr/bin/java";
+
+CURRENT_JAVA_PROPERTIES=$(jps -lvm);
+
+# Heap-size Min (Xms) and Max (Xmx) - Set them equal to the same-value to avoid dynamic re-sizing of the heap
+#  |-->  https://docs.oracle.com/cd/E19900-01/819-4742/abeik/index.html
+# JAVA_ARGS="-Xmx2g";
+# JAVA_ARGS="-Xms1g -Xmx1g";
+JAVA_ARGS="-Xms${XMS__INITIAL_HEAP_MEMORY} -Xmx${XMX__MAX_MEMORY_POOL}";
+
+#
+# -XX:+AlwaysPreTouch
+#  |
+#  |--> Enables touching of every page on the Java heap during JVM initialization.
+#  |--> This gets all pages into the memory before entering the main() method.
+#  |--> The option can be used in testing to simulate a long-running system with all virtual memory mapped to physical memory.
+#  |--> By default, this option is disabled and all pages are committed as JVM heap space fills.
+#
+# JAVA_ARGS="${JAVA_ARGS} -XX:+AlwaysPreTouch";
+
+# G1 GC settings
+#  |-->  https://jenkins.io/blog/2016/11/21/gc-tuning/
+# JAVA_ARGS="${JAVA_ARGS} -XX:+UseG1GC";
+# JAVA_ARGS="${JAVA_ARGS} -XX:+ExplicitGCInvokesConcurrent";
+# JAVA_ARGS="${JAVA_ARGS} -XX:+ParallelRefProcEnabled";
+# JAVA_ARGS="${JAVA_ARGS} -XX:+UseStringDeduplication";
+# JAVA_ARGS="${JAVA_ARGS} -XX:+UnlockExperimentalVMOptions";
+# JAVA_ARGS="${JAVA_ARGS} -XX:G1NewSizePercent=20";
+# JAVA_ARGS="${JAVA_ARGS} -XX:+UnlockDiagnosticVMOptions";
+# JAVA_ARGS="${JAVA_ARGS} -XX:G1SummarizeRSetStatsPeriod=1";
+
+# JAVA_ARGS="${JAVA_ARGS} -XX:MaxNewSize=1536m"; # DEPRECATED
+# JAVA_ARGS="${JAVA_ARGS} -XX:NewSize=1536m"; # DEPRECATED
+# JAVA_ARGS="${JAVA_ARGS} -XX:MaxPermSize=768m"; # DEPRECATED
+# JAVA_ARGS="${JAVA_ARGS} -XX:PermSize=768m"; # DEPRECATED
+
+# Allow graphs etc. to work even when an X server is present
+JAVA_ARGS="${JAVA_ARGS} -Djava.awt.headless=true";
+
+# Make jenkins listen on IPv4 address
+JAVA_ARGS="${JAVA_ARGS} -Djava.net.preferIPv4Stack=true";
+
+# Explicit Garbage Collection (added 2019-08-21_12-56-38 by MCavallo)
+#  |-->  https://docs.oracle.com/en/java/javase/11/gctuning/other-considerations.html
+#
+# JAVA_ARGS="${JAVA_ARGS} -Dsun.rmi.dgc.client.gcInterval=3600000";
+# JAVA_ARGS="${JAVA_ARGS} -Dsun.rmi.dgc.server.gcInterval=3600000";
+
+# [Debian/Ubuntu] based distributions (if file is in /etc/default/...)
+# JAVA_ARGS="${JAVA_ARGS}";
+
+# [RedHat Linux] based distributions (if file is in /etc/default/...)
+JENKINS_JAVA_OPTIONS="${JAVA_ARGS}";
+
+PIDFILE="/var/run/${NAME}/${NAME}.pid";
+
+# set this to false if you don't want Jenkins to run by itself
+# in this set up, you are expected to provide a servlet container
+# to host jenkins.
+RUN_STANDALONE="true";
+
+# OS LIMITS SETUP
+#   comment this out to observe /etc/security/limits.conf
+#   this is on by default because http://github.com/jenkinsci/jenkins/commit/2fb288474e980d0e7ff9c4a3b768874835a3e92e
+#   reported that Ubuntu's PAM configuration doesn't include pam_limits.so, and as a result the # of file
+#   descriptors are forced to 1024 regardless of /etc/security/limits.conf
+MAXOPENFILES=8192;
+
+# set the umask to control permission bits of files that Jenkins creates.
+#   027 makes files read-only for group and inaccessible for others, which some security sensitive users
+#   might consider benefitial, especially if Jenkins runs in a box that's used for multiple purposes.
+#   Beware that 027 permission would interfere with sudo scripts that run on the master (JENKINS-25065.)
+#
+#   Note also that the particularly sensitive part of $JENKINS_HOME (such as credentials) are always
+#   written without 'others' access. So the umask values only affect job configuration, build records,
+#   that sort of things.
+#
+#   If commented out, the value from the OS is inherited,  which is normally 022 (as of Ubuntu 12.04,
+#   by default umask comes from pam_umask(8) and /etc/login.defs
+# UMASK=027
+
+# port for HTTP connector (default 8080; disable with -1)
+HTTP_PORT=8080;
+
+# servlet context, important if you want to use apache proxying
+PREFIX="/${NAME}";
+
+# arguments to pass to jenkins.
+# --javahome=$JAVA_HOME
+# --httpListenAddress=$HTTP_HOST (default 0.0.0.0)
+# --httpPort=$HTTP_PORT (default 8080; disable with -1)
+# --httpsPort=$HTTP_PORT
+# --argumentsRealm.passwd.$ADMIN_USER=[password]
+# --argumentsRealm.roles.$ADMIN_USER=admin
+# --webroot=~/.jenkins/war
+# --prefix=$PREFIX
+
+JENKINS_ARGS="${JENKINS_ARGS} --webroot=/var/cache/${NAME}/war --httpPort=${HTTP_PORT}";
+
+
+# Trim leading/trailing whitespace
+
+JAVA_ARGS="$(echo -e "${JAVA_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+
+JENKINS_ARGS="$(echo -e "${JENKINS_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+
+# ------------------------------------------------------------
+#
+#	Citation(s)
+#
+#		jenkins.io  |  "Tuning Jenkins GC For Responsiveness and Stability with Large Instances"  |  https://jenkins.io/blog/2016/11/21/gc-tuning/
+#
+# ------------------------------------------------------------

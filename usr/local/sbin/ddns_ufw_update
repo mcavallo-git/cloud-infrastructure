@@ -50,23 +50,15 @@ else
 	# File containing hosts to allow through UFW
 	#  |--> All lines in given whitelist file must be in a specific format/syntax
 	#        |
-	#        |--> Syntax:    TCP/UDP:PORT:SUBDOMAIN.DOMAIN.TLD
+	#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 	#        |--> Example:   tcp:22:demo.example.com
 	#
-	HOSTS_WHITELIST="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist";
-	HOSTS_WHITELIST_SSH="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts";
-	HOSTS_WHITELIST_NGINX="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts";
-
-	# Re-instantiate bash array (if-set) via unset + declare
-	if [ -v ACTIVE_WHITELIST_FILES ]; then unset ACTIVE_WHITELIST_FILES; fi;
-	if [ -v ACTIVE_WHITELIST_FILES[@] ]; then unset ACTIVE_WHITELIST_FILES; fi;
+	if [ -v ACTIVE_WHITELIST_FILES ]; then unset ACTIVE_WHITELIST_FILES; fi; # Re-instantiate bash array (if-set) via unset + declare
+	if [ -v ACTIVE_WHITELIST_FILES[@] ]; then unset ACTIVE_WHITELIST_FILES; fi; # Re-instantiate bash array (if-set) via unset + declare
 	declare -A ACTIVE_WHITELIST_FILES;
 	ACTIVE_WHITELIST_FILES+=(["sshd"]="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts");
 	ACTIVE_WHITELIST_FILES+=(["nginx"]="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts");
-	# ACTIVE_WHITELIST_FILES+=(["all"]="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist");
-
-	# Output file to hold the resolved hostnames
-	# EACH_RESOLVED_FILE="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
+	ACTIVE_WHITELIST_FILES+=(["jenkins"]="${DIRNAME_LOCAL_CONFIG}/whitelist-jenkins.hosts");
 
 	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";

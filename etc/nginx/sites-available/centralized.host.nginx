@@ -71,8 +71,9 @@ server {
 		include "/etc/nginx/nginx_error_locations.conf";
 		include "/etc/nginx/nginx_proxy_pass_headers.conf";
 		include "/etc/nginx/conf.ddns/*"; # CIDR - Programmer DDNS
-		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
+		deny all; # Deny all non-allowed IPs
 		proxy_pass http://upstream_jenkins_http;
+		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
 		# add_header 'X-SSH-Endpoint' 'jenkins.centralized.host:50022' always; # workaround for https://issues.jenkins-ci.org/browse/JENKINS-45651
 	}
 
@@ -81,12 +82,13 @@ server {
 	location ~ ^/(generic-webhook-trigger/invoke|safeRestart) {
 		access_log "/var/log/nginx/webhook.log" thin;
 		include "/etc/nginx/nginx_error_locations.conf";
-		include "/etc/nginx/nginx_proxy_pass_headers.conf";
 		include "/etc/nginx/conf.vendor/github.webhooks.conf"; # CIDR - Github
 		include "/etc/nginx/conf.vendor/uptime_robot.conf"; # CIDR - Uptime-Robot
 		include "/etc/nginx/conf.ddns/*"; # CIDR - Programmer DDNS
-		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
+		deny all; # Deny all non-allowed IPs
 		proxy_pass http://upstream_jenkins_http;
+		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
+		include "/etc/nginx/nginx_proxy_pass_headers.conf";
 	}
 
 	location /branding {

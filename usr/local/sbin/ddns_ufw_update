@@ -61,6 +61,9 @@ else
 	RUNTIME_SERVICE_USERS+=(["java"]="jenkins");
 
 	# Defaults for UFW (out-of-the-box)
+	NGINX_CONF_DDNS="/etc/nginx/conf.ddns";
+
+	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
 
 	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
@@ -241,8 +244,10 @@ else
 								# Determine current & previous IPv4(s) for each hostname
 								CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
 								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
-								# Remove old IPv4 rule(s)
-								if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
+								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
+									# Add whitelist rule for NGINX
+									echo "${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
+									# IPv4 resolved successfully - Remove old IPv4 rule(s)
 									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
 										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 									fi;

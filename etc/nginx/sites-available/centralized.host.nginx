@@ -147,6 +147,10 @@ server {
 ###   |--> Deletes LetsEncrypt Files
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
-# FQDN="centralized.host"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
+# FQDN="centralized.host"; \
+# certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; \
+# certbot delete --cert-name "${FQDN}"; \
+# find "/etc/letsencrypt/" -name "*${FQDN}*"; \
+# unlink "/etc/nginx/sites-enabled/${FQDN}";
 #
 # ------------------------------------------------------------

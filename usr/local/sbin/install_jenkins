@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_jenkins" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jenkins" -O "/usr/local/sbin/install_jenkins" -q && chmod 0755 "/usr/local/sbin/install_jenkins" && /usr/local/sbin/install_jenkins --all;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Instantiate runtime variables
+	
+	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+
+	# ------------------------------------------------------------
+	# Prep & Install Jenkins
+	JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
+	wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
+	
+	JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
+	JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
+	if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
+		echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
+	fi;
+	
+	# Install Jenkins
+	apt-get -y update;
+	apt-get -y install "jenkins";
+	# ------------------------------------------------------------
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   jenkins.io  |  "Jenkins | Build great things at any scale"  |  https://jenkins.io
+#
+#   digitalocean.com  |  "How To Install Jenkins on Ubuntu 16.04"  |  https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-16-04
+#
+# ------------------------------------------------------------

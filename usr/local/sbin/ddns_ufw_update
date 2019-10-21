@@ -176,7 +176,10 @@ else
 		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE}]}";
 
 		# Only whitelist services which are found to exist, locally
+		test ${DEBUG_MODE} -eq 1 && echo "MATCHED_PROCS_PGREP Call = [ pgrep -u \"${EACH_RUNTIME_USER}\" \"${EACH_SERVICE}\"; ]";
 		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}";);
+
+		test ${DEBUG_MODE} -eq 1 && "MATCHED_PROCS_PS Call = [ ps --format \"pid,fname,user,%cpu,%mem,maj_flt,cmd\" --no-headers -p \"${MATCHED_PROCS_PGREP}\" | wc -l; ]";
 		MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -p "${MATCHED_PROCS_PGREP}" | wc -l;);
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then

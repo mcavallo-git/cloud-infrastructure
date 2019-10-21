@@ -87,6 +87,8 @@ else
 		echo -e "\n""Info: Removing Jenkins' Service";
 		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+			echo "  |--> Calling [ apt-get purge \"jenkins\" ]...";
+			apt-get -y purge "jenkins";
 			echo "  |--> Calling [ systemctl stop \"jenkins\"; ]...";
 			systemctl stop "jenkins";
 			echo "  |--> Calling [ update-rc.d \"jenkins\" remove -f; ]...";

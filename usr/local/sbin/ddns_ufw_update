@@ -180,89 +180,93 @@ else
 		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}";);
 		MATCHED_PROCS_PGREP_TRIMMED="$(echo -e "${MATCHED_PROCS_PGREP}" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 
-		test ${DEBUG_MODE} -eq 1 && "MATCHED_PROCS_PS Call = [ ps --format \"pid,fname,user,%cpu,%mem,maj_flt,cmd\" --no-headers -p \"${MATCHED_PROCS_PGREP_TRIMMED}\" | wc -l; ]";
-		MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -p "${MATCHED_PROCS_PGREP_TRIMMED}" | wc -l;);
+		if [ -n "${MATCHED_PROCS_PGREP_TRIMMED}" ]; then
 
-		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
-			echo "MATCHED_PROCS_PS = [ ${MATCHED_PROCS_PS} ]";
-		fi;
+			test ${DEBUG_MODE} -eq 1 && "MATCHED_PROCS_PS Call = [ ps --format \"pid,fname,user,%cpu,%mem,maj_flt,cmd\" --no-headers -p \"${MATCHED_PROCS_PGREP_TRIMMED}\" | wc -l; ]";
+			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -p "${MATCHED_PROCS_PGREP_TRIMMED}" | wc -l;);
 
-		if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
-			# Service does NOT exist locally - do NOT whitelist associated ports/hosts
-			echo -e "\n""Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
+				echo "MATCHED_PROCS_PS = [ ${MATCHED_PROCS_PS} ]";
+			fi;
 
-		else
-			# Service DOES exist locally - DO whitelist associated ports/hosts
-			EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.hosts";
-			echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
-			echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
+			if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
+				# Service does NOT exist locally - do NOT whitelist associated ports/hosts
+				echo -e "\n""Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
 
-			# Iterate-over each line in the whitelist-file
-			sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
-				if [ -n "${EACH_WHITELIST_LINE}" ]; then
+			else
+				# Service DOES exist locally - DO whitelist associated ports/hosts
+				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.hosts";
+				echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
+				echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
 
-					# Define the location of the file to output resolved ipv4's to
-					EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
-					if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
-						echo -n "" > "${EACH_RESOLVED_FILE}";
-					fi;
+				# Iterate-over each line in the whitelist-file
+				sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
+					if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
-					if [ ${DEBUG_MODE} -eq 1 ]; then
-						echo -e "\n""------------------------------------------------------------";
-					fi;
+						# Define the location of the file to output resolved ipv4's to
+						EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
+						if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
+							echo -n "" > "${EACH_RESOLVED_FILE}";
+						fi;
 
-					WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
-					WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
-					WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
+						if [ ${DEBUG_MODE} -eq 1 ]; then
+							echo -e "\n""------------------------------------------------------------";
+						fi;
 
-					if [ ${DEBUG_MODE} -eq 1 ]; then
-						echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-						echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
-						echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-						echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
-					fi;
+						WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
+						WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
+						WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
 
-					CURRENT_RESOLVED_IPv4="";
-					OLD_RESOLVED_IPV4="";
-					if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
-						# Allow "Any" host to be used
-						CURRENT_RESOLVED_IPv4="any";
-					else
-						# Determine current & previous IPv4(s) for each hostname
-						CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
-						OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
-						# Remove old IPv4 rule(s)
-						if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
+						if [ ${DEBUG_MODE} -eq 1 ]; then
+							echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+							echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+							echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+							echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+						fi;
+
+						CURRENT_RESOLVED_IPv4="";
+						OLD_RESOLVED_IPV4="";
+						if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
+							# Allow "Any" host to be used
+							CURRENT_RESOLVED_IPv4="any";
+						else
+							# Determine current & previous IPv4(s) for each hostname
+							CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
+							OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
+							# Remove old IPv4 rule(s)
+							if [ -z ${CURRENT_RESOLVED_IPv4} ]; then
+								if [ -n "${OLD_RESOLVED_IPV4}" ]; then
+									delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+								fi;
+								echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
+								# exit 1;
+							fi;
+							# Remove old whitelist-rule(s)
 							if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-								delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-							fi;
-							echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
-							# exit 1;
-						fi;
-						# Remove old whitelist-rule(s)
-						if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-							if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
-								delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+								if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
+									delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+								fi;
 							fi;
 						fi;
+
+						if [ ${DEBUG_MODE} -eq 1 ]; then
+							echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
+							echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
+						fi;
+
+						add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
+
+						if [ -f ${EACH_RESOLVED_FILE} ]; then
+							sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+						fi;
+
+						echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+
 					fi;
+				done;
 
-					if [ ${DEBUG_MODE} -eq 1 ]; then
-						echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
-						echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
-					fi;
-
-					add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
-
-					if [ -f ${EACH_RESOLVED_FILE} ]; then
-						sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-					fi;
-
-					echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
-
-				fi;
-			done;
+			fi;
 
 		fi;
 

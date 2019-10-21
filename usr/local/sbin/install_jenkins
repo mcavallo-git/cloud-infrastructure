@@ -117,6 +117,15 @@ else
 
 	fi;
 
+	if [ -f "/etc/default/jenkins" ]; then
+		echo -e "\n""Info: Downloading Jenkins-Config from source-repository";
+		echo -e "  |--> Check filepath \"/etc/default/jenkins\" for updated confit (referenced by jenkins at service start / restart time)""\n";
+		mv "/etc/default/jenkins" "/etc/default/jenkins.${START_TIMESTAMP}.bak";
+		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins" -O "/etc/default/jenkins" -q;
+		chmod 0644 "/etc/default/jenkins";
+	fi;
+
+
 	exit ${EXIT_CODE};
 
 fi;

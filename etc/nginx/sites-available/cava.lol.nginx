@@ -217,9 +217,10 @@ server {
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
-#
+
+
 # ------------------------------------------------------------
-### Enable nginx host
+### Enable NGINX host
 #
 # DN="cava.lol"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
@@ -240,7 +241,12 @@ server {
 # ;
 #
 # ------------------------------------------------------------
-###	Debug -> ensure nginx is routing as-intended
+### Rebuild NGINX host (to undo any changes certbot made)
+#
+# DN="cava.lol"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
+# ------------------------------------------------------------
+###	Debug -> Ensure NGINX is routing as-intended
 #
 # http://cava.lol
 # http://cashapp.cava.lol

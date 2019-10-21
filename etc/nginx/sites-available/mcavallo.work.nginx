@@ -68,6 +68,11 @@ server {
 
 
 # ------------------------------------------------------------
+### Enable NGINX host
+#
+# DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
+# ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
 # DN="mcavallo.work"; \
@@ -78,13 +83,12 @@ server {
 # ;
 #
 # ------------------------------------------------------------
-### Enable nginx host
+### Rebuild NGINX host (to undo any changes certbot made)
 #
 # DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
-#
 # ------------------------------------------------------------
-###	Debug -> ensure nginx is routing as-intended
+###	Debug -> Ensure NGINX is routing as-intended
 #
 # http://mcavallo.work
 # http://git.mcavallo.work

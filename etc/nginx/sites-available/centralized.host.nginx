@@ -13,9 +13,11 @@ upstream upstream_jenkins_http {
 #
 server {
 	listen 80;
-	listen 443 ssl http2;
+	listen 443 ssl;
+	# listen 443 ssl http2;
 	listen [::]:80;
-	listen [::]:443 ssl http2;
+	listen [::]:443 ssl;
+	# listen [::]:443 ssl http2;
 	server_name centralized.host;
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
@@ -36,9 +38,11 @@ server {
 #
 server {
 	listen 80;
-	listen 443 ssl http2;
+	listen 443 ssl;
+	# listen 443 ssl http2;
 	listen [::]:80;
-	listen [::]:443 ssl http2;
+	listen [::]:443 ssl;
+	# listen [::]:443 ssl http2;
 	server_name www.centralized.host;
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
@@ -59,9 +63,11 @@ server {
 #
 server {
 	listen 80;
-	listen 443 ssl http2;
+	listen 443 ssl;
+	# listen 443 ssl http2;
 	listen [::]:80;
-	listen [::]:443 ssl http2;
+	listen [::]:443 ssl;
+	# listen [::]:443 ssl http2;
 	server_name jenkins.centralized.host;
 	ssl_certificate "/etc/letsencrypt/live/centralized.host/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/centralized.host/privkey.pem";

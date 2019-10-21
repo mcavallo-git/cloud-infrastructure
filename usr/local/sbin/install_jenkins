@@ -48,7 +48,7 @@ else
 	SERVICE_MATCHES=$(service --status-all 2>/dev/null | grep 'jenkins'); \
 
 	# ------------------------------------------------------------
-	# Determine whether-or-not Jenkins is already installed
+	# Determine if Jenkins is already installed (as a local service)
 	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 
 		# Jenkins service not detected --> Prep & Install Jenkins
@@ -60,38 +60,32 @@ else
 		if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
 			echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
 		fi;
-		
+
 		# Install Jenkins
-		apt-get -y update;
-		apt-get -y install "jenkins";
+		echo -e "\n""Info: Installing Jenkins";
+		echo "  |--> Calling  [ apt-get -y update && apt-get -y install 'jenkins'; ]  ...";
+		apt-get -y update && apt-get -y install 'jenkins';
 	
 	fi;
 
 	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 		# Jenkins-Service STILL not detected after install-attempt
 		EXIT_CODE=1;
-
-		echo "Error - Jenkins service not detected after install attempt";
-		echo "  |--> Exiting...";
-
+		echo -e "\n""Error: Jenkins service not detected after install attempt";
 
 	else
 		EXIT_CODE=0;
 		
 		# ------------------------------------------------------------
 		# Show the status of the Jenkins-Service
-		echo "";
-		echo "Show Jenkins' Service-Status";
+		echo -e "\n""Info: Show Jenkins' Service-Status";
 		echo "  |--> Calling  [ service jenkins status; ]  ...";
-		echo "";
 		service jenkins status;
 
 		# ------------------------------------------------------------
 		# Show Jenkins' Ports which are in-use
-		echo "";
-		echo "Show Jenkins' Ports which are in-use";
+		echo -e "\n""Info: Show Jenkins' Ports which are in-use";
 		echo "  |--> Calling  [ ps aux | grep 'jenkins'; ]  ...";
-		echo "";
 		ps aux | grep 'jenkins';
 
 	fi;

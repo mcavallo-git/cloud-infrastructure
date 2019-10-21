@@ -36,6 +36,10 @@ else
 	
 	EXIT_CODE=1;
 
+	APT_PKG_JDK="default-jdk-headless";
+	APT_PKG_JRE="default-jre-headless";
+	APT_PKG_JENKINS="jenkins";
+
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
@@ -51,23 +55,42 @@ else
 	# Determine if Jenkins is already installed (as a local service)
 	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 
-		# Jenkins service not detected --> Prep & Install Jenkins
-		JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
-		wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
-		
-		JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
-		JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
-		if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
-			echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
+		# Install Java Development Kit (Jenkins Pre-Requisite)
+		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JDK}\/" | wc -l)" != "0" ]; then
+			echo -e "\n""Info: Installing Java Development Kit";
+			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JDK}\"; ]  ...""\n";
+			apt-get -y update && apt-get -y install "${APT_PKG_JDK}";
+		fi;
+
+		# Install Java Runtime Environment (Jenkins Pre-Requisite)
+		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JRE}\/" | wc -l)" != "0" ]; then
+			echo -e "\n""Info: Installing Java Runtime Environment";
+			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JRE}\"; ]  ...""\n";
+			apt-get -y update && apt-get -y install "${APT_PKG_JRE}";
 		fi;
 
 		# Install Jenkins
-		echo -e "\n""Info: Installing Jenkins";
-		echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install 'jenkins'; ]  ...""\n";
-		apt-get -y update && apt-get -y install 'jenkins';
+		if [ "$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${APT_PKG_JENKINS}\/" | wc -l)" != "0" ]; then
+			# Download Jenkins' GnuPG Public-Key (to match & verify jenkins' download/repository against)
+			JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
+			wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
+			# Setup Jenkins' package repository in APT
+			JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
+			JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
+			if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
+				echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
+			fi;
+			# Install the Jenkins package from newly added package-repo
+			echo -e "\n""Info: Installing Jenkins";
+			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JENKINS}\"; ]  ...""\n";
+			apt-get -y update && apt-get -y install "${APT_PKG_JENKINS}";
+
+		fi;
+
 	else
 		# Jenkins is already installed
 		echo -e "\n""Info: Jenkins already installed";
+
 	fi;
 
 	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then

@@ -45,11 +45,61 @@ server {
 
 
 # ------------------------------------------------------------
+#
+#==--  jenkins.centralized.host
+#
+server {
+	listen 443 ssl http2 default_server;
+	server_name jenkins.centralized.host;
+	ssl_certificate "/etc/letsencrypt/live/centralized.host/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/centralized.host/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/centralized.host/chain.pem";
+	root /var/lib/jenkins; # Webroot location for Jenkins service
+	index index.php index.html index.htm; # Webroot files to grab first
+
+	# Jenkins Management-Access
+	location / {
+		include "/etc/nginx/nginx_error_locations.conf";
+		include "/etc/nginx/nginx_proxy_pass_headers.conf";
+		include "/etc/nginx/conf.ddns/*"; # CIDR - Programmer DDNS
+		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
+		proxy_pass http://upstream_jenkins_http;
+		# add_header 'X-SSH-Endpoint' 'jenkins.centralized.host:50022' always; # workaround for https://issues.jenkins-ci.org/browse/JENKINS-45651
+	}
+
+	# Github Web-Hook Trigger (Jenkins-Job)
+	#        ~ [case-sensitive regex]
+	location ~ ^/(generic-webhook-trigger/invoke|safeRestart) {
+		access_log "/var/log/nginx/webhook.log" thin;
+		include "/etc/nginx/nginx_error_locations.conf";
+		include "/etc/nginx/nginx_proxy_pass_headers.conf";
+		include "/etc/nginx/conf.vendor/github.webhooks.conf"; # CIDR - Github
+		include "/etc/nginx/conf.vendor/uptime_robot.conf"; # CIDR - Uptime-Robot
+		include "/etc/nginx/conf.ddns/*"; # CIDR - Programmer DDNS
+		proxy_redirect http://127.0.0.1:8080 https://jenkins.centralized.host;
+		proxy_pass http://upstream_jenkins_http;
+	}
+
+	location /branding {
+		include "/etc/nginx/nginx_error_locations.conf";
+		try_files $uri =404;
+	}
+
+	#        ~* [case-insensitive regex]
+	location ~* ^/(safe)?restart {
+		return 302 https://$host/safeRestart;
+	}
+	if ($scheme != "https") { return 301 https://$host$request_uri; }
+	include "/etc/nginx/nginx_error_locations.conf";
+}
+
+# ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
 # DN="centralized.host"; \
 # certbot --nginx \
 # -d ${DN} \
+# -d jenkins.${DN} \
 # -d www.${DN} \
 # ;
 #
@@ -62,9 +112,11 @@ server {
 ###	Debug -> ensure nginx is routing as-intended
 #
 # http://centralized.host
+# http://jenkins.centralized.host
 # http://www.centralized.host
 #
 # https://centralized.host
+# https://jenkins.centralized.host
 # https://www.centralized.host
 #
 # ------------------------------------------------------------

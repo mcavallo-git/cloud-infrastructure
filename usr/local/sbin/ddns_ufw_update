@@ -61,9 +61,9 @@ else
 	if [ -v ACTIVE_WHITELIST_FILES ]; then unset ACTIVE_WHITELIST_FILES; fi;
 	if [ -v ACTIVE_WHITELIST_FILES[@] ]; then unset ACTIVE_WHITELIST_FILES; fi;
 	declare -A ACTIVE_WHITELIST_FILES;
-	# ACTIVE_WHITELIST_FILES+=(["all"]="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist");
 	ACTIVE_WHITELIST_FILES+=(["sshd"]="${DIRNAME_LOCAL_CONFIG}/whitelist-ssh.hosts");
 	ACTIVE_WHITELIST_FILES+=(["nginx"]="${DIRNAME_LOCAL_CONFIG}/whitelist-nginx.hosts");
+	# ACTIVE_WHITELIST_FILES+=(["all"]="${DIRNAME_LOCAL_CONFIG}/hosts_whitelist");
 
 	# Output file to hold the resolved hostnames
 	HOSTS_RESOLVED="${DIRNAME_LOCAL_CONFIG}/hosts_resolved";
@@ -181,8 +181,15 @@ else
 
 		# Only whitelist services which are found to exist, locally
 		SERVICE_PROCESSES=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -C "${EACH_SERVICE}" | wc -l;);
-		if [ ${SERVICE_PROCESSES} -ne 0 ]; then
-			
+		if [ ${SERVICE_PROCESSES} -eq 0 ]; then
+			# Service does NOT exist locally - do NOT whitelist associated ports/hosts
+			echo "Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
+
+		else
+			# Service DOES exist locally - DO whitelist associated ports/hosts
+			echo "Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
+			echo "  |-> Using whitelist-file \"${EACH_WHITELIST_FILE}\"";
+
 			# Iterate-over each line in the whitelist-file
 			sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 				if [ -n "${EACH_WHITELIST_LINE}" ]; then

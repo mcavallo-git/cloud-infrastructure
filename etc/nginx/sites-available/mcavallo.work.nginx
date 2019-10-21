@@ -68,19 +68,20 @@ server {
 
 
 # ------------------------------------------------------------
-### Enable nginx host
-#
-# DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
-#
-# ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="mcavallo.work";
+# DN="mcavallo.work"; \
 # certbot --nginx \
 # -d ${DN} \
 # -d git.${DN} \
 # -d www.${DN} \
 # ;
+#
+# ------------------------------------------------------------
+### Enable nginx host
+#
+# DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
 #
 # ------------------------------------------------------------
 ###	Debug -> ensure nginx is routing as-intended

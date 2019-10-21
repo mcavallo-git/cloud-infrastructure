@@ -51,7 +51,7 @@ else
 	# ------------------------------------------------------------
 	# Remove Jenkins' Apt-Package
 	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -gt 0 ]; then
-		echo -e "\n""Info: Removing Jenkins' apt-package(s)";
+		echo -e "\n""Info: Removing Jenkins' Apt-Package";
 		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ apt-get remove -y jenkins; ]...";

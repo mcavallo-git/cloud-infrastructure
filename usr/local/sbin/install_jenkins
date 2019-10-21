@@ -110,8 +110,8 @@ else
 		# ------------------------------------------------------------
 		# Show Jenkins' Ports which are in-use
 		echo -e "\n""Info: Showing Jenkins' Ports which are in-use";
-		echo -e "  |--> Calling  [ ps aux | grep 'jenkins'; ]  ...""\n";
-		ps aux | grep 'jenkins';
+		echo -e "  |--> Calling  [ ps aux | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
+		ps aux | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 
 		echo "";
 

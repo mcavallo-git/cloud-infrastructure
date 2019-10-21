@@ -1,0 +1,105 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/uninstall_jenkins" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_jenkins" -O "/usr/local/sbin/uninstall_jenkins" -q && chmod 0755 "/usr/local/sbin/uninstall_jenkins" && /usr/local/sbin/uninstall_jenkins;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Instantiate runtime variables
+	
+	EXIT_CODE=1;
+
+	APT_PKG_JDK="default-jdk-headless";
+	APT_PKG_JRE="default-jre-headless";
+	APT_PKG_JENKINS="jenkins";
+
+	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+
+	# ------------------------------------------------------------
+	# Remove Jenkins' Apt-Package
+	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -gt 0 ]; then
+		# Remove Jenkins' apt-package install
+		echo -e "\n""Info: Removing Jenkins' apt-package(s)";
+		echo "  |--> Calling [ apt-get remove -y jenkins; ]...";
+		apt-get remove -y jenkins;
+	fi;
+
+	# ------------------------------------------------------------
+	# Remove Jenkins' Runtime-User
+	if [ -n "$(getent passwd 'jenkins';)" ]; then
+		echo "  |--> Calling [ userdel jenkins --force --remove; ]...";
+		userdel jenkins --force --remove;
+	fi;
+
+	# ------------------------------------------------------------
+	# Remove Jenkins' Runtime-Group
+	if [ -n "$(getent group 'jenkins';)" ]; then
+		echo "  |--> Calling [ groupdel jenkins; ]...";
+		groupdel jenkins;
+	fi;
+
+	# ------------------------------------------------------------
+	# Remove Jenkins' Service
+	if [ $(service --status-all 2>/dev/null | grep 'jenkins' | wc -l) -gt 0 ]; then
+		echo -e "\n""Info: Removing Jenkins' service";
+
+		echo "  |--> Calling [ systemctl stop \"jenkins\"; ]...";
+		systemctl stop "jenkins";
+
+		echo "  |--> Calling [ update-rc.d \"jenkins\" remove -f; ]...";
+		update-rc.d "jenkins" remove -f;
+
+		echo "  |--> Calling [ systemctl daemon-reload; ]...";
+		systemctl daemon-reload;
+
+		echo "  |--> Calling [ systemctl reset-failed; ]...";
+		systemctl reset-failed;
+	fi;
+	
+	# ------------------------------------------------------------
+
+	exit ${EXIT_CODE};
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   jenkins.io  |  "Jenkins | Build great things at any scale"  |  https://jenkins.io
+#
+#   digitalocean.com  |  "How To Install Jenkins on Ubuntu 16.04"  |  https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-16-04
+#
+# ------------------------------------------------------------

@@ -86,7 +86,7 @@ else
 
 		# If rule doesn't exist, then add (allow) it to UFW's ruleset
 		if [ -z "${rule}" ]; then
-			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo -e "\n""Info: Adding Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 			echo "  |--> Call: [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
 			/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
@@ -119,7 +119,7 @@ else
 
 		# If rule exists, then remove (delete) it from UFW's ruleset
 		if [ -n "${rule}" ]; then
-			echo -e "\n""Info: Deleting rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+			echo -e "\n""Info: Deleting Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 			echo "  |--> Call: [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
 			/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};

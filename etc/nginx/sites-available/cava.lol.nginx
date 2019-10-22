@@ -8,7 +8,7 @@ server {
 	listen [::]:80;
 	listen [::]:443 ssl http2;
 	# server_name cava.lol;
-	server_name ~^(?<name>\w+)?\.cava\.lol$;
+	server_name ~^(?<subdomain>\w+)?\.cava\.lol$;
 
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
@@ -18,7 +18,7 @@ server {
 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
 	location / {
 		# return 302 https://mcavallo.com;
-		return 302 https://$name.mcavallo.com;
+		return 302 https://$subdomain.mcavallo.com;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

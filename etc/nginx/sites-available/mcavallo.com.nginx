@@ -215,6 +215,15 @@ server {
 	location / {
 		return 302 https://cv.mcavallo.com;
 	}
+	location /sh {
+		# return 200 'gangnam style!';
+		return 200 'wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --all;';
+		add_header Content-Type text/plain;
+	}
+	location /ps {
+		return 200 '<#>Sync PowerShell Scripts: Copy-Paste this code into a PowerShell terminal, then Run it<#> Set-ExecutionPolicy -ExecutionPolicy "RemoteSigned"; $GithubOwner="mcavallo-git"; $GithubRepo="Coding"; Write-Host "Task - Sync local git repository to origin `"https://github.com/${GithubOwner}/${GithubRepo}.git`"..." -ForegroundColor Green; If (Test-Path "${HOME}/${GithubRepo}") { Set-Location "${HOME}/${GithubRepo}"; git reset --hard "origin/master"; git pull; } Else { Set-Location "${HOME}"; git clone "https://github.com/${GithubOwner}/${GithubRepo}.git"; } . "${HOME}/${GithubRepo}/powershell/_WindowsPowerShell/Modules/ImportModules.ps1"; Write-Host "`nPass - PowerShell Modules Synchronized`n" -ForegroundColor Cyan;';
+		add_header Content-Type text/plain;
+	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
 
@@ -351,5 +360,11 @@ server {
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
 # FQDN="mcavallo.com"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
+#
+# ------------------------------------------------------------
+
+# Citation(s)
+#
+#   serverfault.com  |  "Reply with 200 from Nginx config without serving a file"  |  https://serverfault.com/a/491817
 #
 # ------------------------------------------------------------

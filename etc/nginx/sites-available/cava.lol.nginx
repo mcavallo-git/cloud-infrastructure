@@ -26,49 +26,31 @@ server {
 #
 # DN="cava.lol"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
+#
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="cava.lol";
+# DN="cava.lol"; \
 # certbot --nginx \
 # -d ${DN} \
 # -d cashapp.${DN} \
 # -d cv.${DN} \
 # -d git.${DN} \
 # -d linkedin.${DN} \
+# -d linux.${DN} \
 # -d paypal.${DN} \
 # -d resume.${DN} \
 # -d venmo.${DN} \
+# -d windows.${DN} \
 # -d www.${DN} \
 # ;
+#
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)
 #
 # DN="cava.lol"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
-# ------------------------------------------------------------
-###	Debug -> Ensure NGINX is routing as-intended
-#
-# http://cava.lol
-# http://cashapp.cava.lol
-# http://cv.cava.lol
-# http://git.cava.lol
-# http://linkedin.cava.lol
-# http://paypal.cava.lol
-# http://resume.cava.lol
-# http://venmo.cava.lol
-# http://www.cava.lol
-#
-# https://cava.lol
-# https://cashapp.cava.lol
-# https://cv.cava.lol
-# https://git.cava.lol
-# https://linkedin.cava.lol
-# https://paypal.cava.lol
-# https://resume.cava.lol
-# https://venmo.cava.lol
-# https://www.cava.lol
 #
 # ------------------------------------------------------------
 ### Remove Domain & Cert
@@ -78,9 +60,7 @@ server {
 #
 # FQDN="cava.lol"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
 #
-# ------------------------------------------------------------
-
-
+#
 # ------------------------------------------------------------
 # Citation(s)
 #

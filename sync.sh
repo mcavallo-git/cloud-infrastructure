@@ -1,1 +1,1 @@
-curl "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" > ~/sync_cloud_infrastructure; chmod 0700 ~/sync_cloud_infrastructure; ~/sync_cloud_infrastructure;
+curl "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" > /tmp/sync_cloud_infrastructure; chmod 0700 /tmp/sync_cloud_infrastructure; /tmp/sync_cloud_infrastructure;

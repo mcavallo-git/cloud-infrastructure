@@ -213,16 +213,17 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		return 302 https://cv.mcavallo.com;
+		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 	}
 	location /sh {
-		# return 200 'gangnam style!';
-		return 200 'wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;';
-		add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;;
+		# return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;;
+		# add_header Content-Type text/plain;
 	}
 	location /ps {
-		return 200 'https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1';
-		add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
+		# return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
+		# add_header Content-Type text/plain;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -305,21 +306,21 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="mcavallo.com"; \
-# certbot --nginx \
-# -d ${DN} \
-# -d cashapp.${DN} \
-# -d cv.${DN} \
-# -d git.${DN} \
-# -d linkedin.${DN} \
-# -d linux.${DN} \
-# -d paypal.${DN} \
-# -d resume.${DN} \
-# -d sync.${DN} \
-# -d venmo.${DN} \
-# -d windows.${DN} \
-# -d www.${DN} \
-# ;
+DN="mcavallo.com"; \
+certbot --nginx \
+-d ${DN} \
+-d cashapp.${DN} \
+-d cv.${DN} \
+-d git.${DN} \
+-d linkedin.${DN} \
+-d linux.${DN} \
+-d paypal.${DN} \
+-d resume.${DN} \
+-d sync.${DN} \
+-d venmo.${DN} \
+-d windows.${DN} \
+-d www.${DN} \
+;
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)

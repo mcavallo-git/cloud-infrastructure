@@ -7,7 +7,9 @@ server {
 	listen 443 ssl http2;
 	listen [::]:80;
 	listen [::]:443 ssl http2;
-	server_name cava.lol;
+	# server_name cava.lol;
+	server_name ~^(?<name>\w+)?\.cava\.lol$;
+
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
@@ -15,208 +17,206 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
 	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+		# return 302 https://mcavallo.com;
+		return 302 https://$name.mcavallo.com;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
 
 
-# ------------------------------------------------------------
-#
-#==--  www.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name www.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  www.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name www.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://www.mcavallo.com;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  git.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name git.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # Redirect to github
-		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  git.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name git.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://git.mcavallo.com;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  resume.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name resume.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		return 302 https://cv.cava.lol;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  resume.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name resume.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://cv.mcavallo.com;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  cv.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name cv.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	root /var/www/html/wordpress; # webroot
-	index index.php;
-	location / {
-		try_files $uri $uri/ /index.php?$args;
-	}
-	location ~* \.php$ { #  *.php requests
-		try_files $uri $uri/ /index.php?$args;
-		fastcgi_read_timeout 120;
-		fastcgi_index   index.php;
-		include         fastcgi_params;
-		fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-		fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
-		fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  cv.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name cv.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	root /var/www/html/wordpress; # webroot
+# 	index index.php;
+# 	location / {
+# 		try_files $uri $uri/ /index.php?$args;
+# 	}
+# 	location ~* \.php$ { #  *.php requests
+# 		try_files $uri $uri/ /index.php?$args;
+# 		fastcgi_read_timeout 120;
+# 		fastcgi_index   index.php;
+# 		include         fastcgi_params;
+# 		fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+# 		fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+# 		fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  paypal.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name paypal.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		return 302 https://www.paypal.me/cavalol; # Note: https://paypal.me/cavalol/25 will request $25
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  paypal.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name paypal.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://www.paypal.me/cavalol; # Note: https://paypal.me/cavalol/25 will request $25
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  cashapp.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name cashapp.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		return 302 https://cash.me/mcavallo;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  cashapp.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name cashapp.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://cash.me/mcavallo;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  venmo.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name venmo.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		return 302 https://venmo.com/cavalol;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  venmo.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name venmo.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://venmo.com/cavalol;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
-# ------------------------------------------------------------
-#
-#==--  linkedin.cava.lol
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name linkedin.cava.lol;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
-	location / {
-		return 302 https://linkedin.com/in/matt-cavallo;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
+# # ------------------------------------------------------------
+# #
+# #==--  linkedin.cava.lol
+# #
+# server {
+# 	listen 80;
+# 	listen 443 ssl http2;
+# 	listen [::]:80;
+# 	listen [::]:443 ssl http2;
+# 	server_name linkedin.cava.lol;
+# 	if ($scheme != "https") {
+# 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+# 	}
+# 	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+# 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+# 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
+# 	location / {
+# 		return 302 https://linkedin.com/in/matt-cavallo;
+# 	}
+# 	include "/etc/nginx/nginx_error_locations.conf";
+# }
 
 
 # ------------------------------------------------------------
@@ -275,5 +275,13 @@ server {
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
 # FQDN="cava.lol"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
+#
+# ------------------------------------------------------------
+
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   stackoverflow.com  |  "How to get subdomain of URL in NGINX"  |  https://stackoverflow.com/a/39563133
 #
 # ------------------------------------------------------------

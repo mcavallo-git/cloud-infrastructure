@@ -224,6 +224,7 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
 		# return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
 		# add_header Content-Type text/plain;
+		# Invoke-RestMethod -Uri "https://sync.mcavallo.com/ps"
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

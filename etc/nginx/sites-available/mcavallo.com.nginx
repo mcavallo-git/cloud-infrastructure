@@ -216,15 +216,17 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 	}
 	location /sh {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
-		# return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
-		# add_header Content-Type text/plain;
+		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
+		return 200 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
+		add_header Content-Type text/plain;
 	}
 	location /ps {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
-		# return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
-		# add_header Content-Type text/plain;
-		# Invoke-RestMethod -Uri "https://sync.mcavallo.com/ps"
+		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		return 200 'https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1'
+		add_header Content-Type text/plain;
+		# PowerShell -Command (Invoke-RestMethod https://sync.mcavallo.com/ps) -Verb RunAs
+		# Start-Process PowerShell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $PSCommandArgs" -Verb RunAs;
+		# Start-Process PowerShell.exe ("$(Invoke-RestMethod https://sync.mcavallo.com/ps; start-sleep 60;)") -Verb RunAs;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

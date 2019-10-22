@@ -226,7 +226,8 @@ server {
 	}
 	location /ps {
 		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
-		return 200 'Set-ExecutionPolicy "RemoteSigned" -Force; Write-Host "Task - Sync local git repository to origin `"https://github.com/mcavallo-git/Coding.git`"..." -ForegroundColor Green; If (Test-Path "~/Coding") { Set-Location "~/Coding"; git reset --hard "origin/master"; git pull; } Else { Set-Location "~"; git clone "https://github.com/mcavallo-git/Coding.git"; } . "~/Coding/powershell/_WindowsPowerShell/Modules/ImportModules.ps1"; Write-Host "`nPass - PowerShell Modules Synchronized`n" -ForegroundColor Cyan;';
+		return 200 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		# return 200 'Set-ExecutionPolicy "RemoteSigned" -Force; Write-Host "Task - Sync local git repository to origin `"https://github.com/mcavallo-git/Coding.git`"..." -ForegroundColor Green; If (Test-Path "~/Coding") { Set-Location "~/Coding"; git reset --hard "origin/master"; git pull; } Else { Set-Location "~"; git clone "https://github.com/mcavallo-git/Coding.git"; } . "~/Coding/powershell/_WindowsPowerShell/Modules/ImportModules.ps1"; Write-Host "`nPass - PowerShell Modules Synchronized`n" -ForegroundColor Cyan;';
 		add_header Content-Type text/plain;
 		#
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString('https://sync.mcavallo.com/ps') -Verb RunAs;

@@ -218,7 +218,8 @@ server {
 	location /sh {
 		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 		# return 200 'sudo wget -O "/usr/local/sbin/sync_cloud_infrastructure" -q "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure"; sudo chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure"; sudo /usr/local/sbin/sync_cloud_infrastructure --all;';
-		return 200 'curl "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" >> "~/sync_cloud_infrastructure" && bash --rcfile "~/sync_cloud_infrastructure";';
+		return 200 'curl "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" > "~/sync_cloud_infrastructure";
+bash --rcfile "~/sync_cloud_infrastructure";';
 		add_header Content-Type text/plain;
 		#
 		# RUN_CURL=$(curl 'https://sync.mcavallo.com/sh') && ${RUN_CURL}  

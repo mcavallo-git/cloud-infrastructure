@@ -216,12 +216,12 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 	}
 	location /sh {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;;
-		# return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
+		# return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 		# add_header Content-Type text/plain;
 	}
 	location /ps {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
 		# return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1
 		# add_header Content-Type text/plain;
 	}

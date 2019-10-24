@@ -62,13 +62,17 @@ XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
 # Location of java runtime
 JAVA="/usr/bin/java";
 
-CURRENT_JAVA_PROPERTIES=$(jps -lvm);
+# CURRENT_JAVA_PROPERTIES=$(jps -lvm);
+
+XMS__INITIAL_HEAP_MEMORY="${XMS__INITIAL_HEAP_MEMORY}m";
+XMX__MAX_MEMORY_POOL="${XMX__MAX_MEMORY_POOL}m";
 
 # Heap-size Min (Xms) and Max (Xmx) - Set them equal to the same-value to avoid dynamic re-sizing of the heap
 #  |-->  https://docs.oracle.com/cd/E19900-01/819-4742/abeik/index.html
 # JAVA_ARGS="-Xmx2g";
 # JAVA_ARGS="-Xms1g -Xmx1g";
 # JAVA_ARGS="-Xms1073741824‬ -Xmx1073741824‬";
+JAVA_ARGS="-Xms${XMS__INITIAL_HEAP_MEMORY} -Xmx${XMX__MAX_MEMORY_POOL}";
 JAVA_ARGS="-Xms${XMS__INITIAL_HEAP_MEMORY} -Xmx${XMX__MAX_MEMORY_POOL}";
 
 #

@@ -24,6 +24,12 @@ else
 
 	# ------------------------------------------------------------
 
+	exit 1;
+
+	# DISABLED AS-OF 2019-10-24_05-12-02 (unused)
+
+	# ------------------------------------------------------------
+
 	START_TIMESTAMP="$(date +'%Y-%m-%d_%H-%M-%S')";
 
 	USERNAME_JENKINS="jenkins";
@@ -36,8 +42,6 @@ else
 	if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
 		JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
 	fi;
-
-	
 
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 

@@ -35,7 +35,7 @@ JENKINS_HARDWARE_REQUIRED_MEMORY="1073741824‬";
 
 TOTAL_MEMORY_IN_BYTES=$(free | grep 'Mem:' | awk '{print $2}');
 
-if (("${TOTAL_MEMORY_IN_BYTES}" > "${JENKINS_HARDWARE_REQUIRED_MEMORY}")); then
+if [ ${TOTAL_MEMORY_IN_BYTES} -gt ${JENKINS_HARDWARE_REQUIRED_MEMORY} ]; then
 
 THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} * 3 / 4" | bc);
 # HALF_OF_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} / 2" | bc);
@@ -170,8 +170,8 @@ JENKINS_ARGS="$(echo -e "${JENKINS_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:
 #
 # ------------------------------------------------------------
 #
-#	Citation(s)
+# Citation(s)
 #
-#		jenkins.io  |  "Tuning Jenkins GC For Responsiveness and Stability with Large Instances"  |  https://jenkins.io/blog/2016/11/21/gc-tuning/
+#   jenkins.io  |  "Tuning Jenkins GC For Responsiveness and Stability with Large Instances"  |  https://jenkins.io/blog/2016/11/21/gc-tuning/
 #
 # ------------------------------------------------------------

@@ -112,7 +112,6 @@ server {
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
 		return 302 https://github.com/mcavallo-git/repositories
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

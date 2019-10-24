@@ -109,6 +109,31 @@ server {
 	}
 
 	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/headshot.svg {
+		return 302 https://$host/images/svg/headshot.png;
+	}
+	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/headshot.png {
+		return 302 https://$host/images/svg/headshot.png;
+	}
+	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/title.svg {
+		return 302 https://$host/images/svg/title.png;
+	}
+	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/title.png {
+		return 302 https://$host/images/svg/title.png;
+	}
+	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/jenkins.svg {
+		return 302 https://$host/images/svg/jenkins.ron-burgundy.svg;
+	}
+	#        ~* [case-insensitive regex]
+	location ~* ^.*/images/jenkins.png {
+		return 302 https://$host/images/svg/jenkins.ron-burgundy.png;
+	}
+
+	#        ~* [case-insensitive regex]
 	location ~* ^/(safe)?restart {
 		return 302 https://$host/safeRestart;
 	}

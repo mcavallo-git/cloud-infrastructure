@@ -36,13 +36,17 @@ THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} * 3 / 4" |
 # HALF_OF_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} / 2" | bc);
 # ONE_QUARTER_OF_TOTAL_MEMORY_IN_BYTES=$(echo "${TOTAL_MEMORY_IN_BYTES} / 4" | bc);
 
+JENKINS_HARDWARE_REQD_XMX=1073741824‬;
+
 JAVA_REQUIRED_MEMORY_LCD=1024;
+
 XMX_SLICE_OFF_MODIFIER=$(echo "${THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES} % ( ${JAVA_REQUIRED_MEMORY_LCD} * 2 )" | bc;);
 XMX__MAX_MEMORY_POOL=$(echo "${THREE_QUARTERS_TOTAL_MEMORY_IN_BYTES} - ${XMX_SLICE_OFF_MODIFIER}" | bc;);
-XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
+if [ $(echo "${XMX__MAX_MEMORY_POOL} < ${JENKINS_HARDWARE_REQD_XMX}" | bc;) -eq 1 ]; then
+	XMX__MAX_MEMORY_POOL=${JENKINS_HARDWARE_REQD_XMX};
+fi;
 
-# echo "XMX__MAX_MEMORY_POOL = [ ${XMX__MAX_MEMORY_POOL} ]"
-# echo "XMS__INITIAL_HEAP_MEMORY = [ ${XMS__INITIAL_HEAP_MEMORY} ]"
+XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
 
 # ------------------------------------------------------------
 
@@ -154,6 +158,11 @@ JAVA_ARGS="$(echo -e "${JAVA_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:
 
 JENKINS_ARGS="$(echo -e "${JENKINS_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 
+# ------------------------------------------------------------
+# TEST VARS:
+#
+#   source /etc/default/jenkins && echo "\${JAVA_ARGS} = [${JAVA_ARGS}]"
+#
 # ------------------------------------------------------------
 #
 #	Citation(s)

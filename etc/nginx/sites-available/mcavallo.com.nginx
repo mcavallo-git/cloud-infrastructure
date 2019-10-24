@@ -16,6 +16,9 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+	location / {
+		return 302 https://github.com/mcavallo-git/Coding#workstation-installs
+	}
 	location /coding {
 		return 302 https://github.com/mcavallo-git/coding;
 	}
@@ -27,9 +30,6 @@ server {
 	}
 	location /repos {
 		return 302 https://github.com/mcavallo-git/repositories;
-	}
-	location / {
-		return 302 https://github.com/mcavallo-git/Coding/tree/master/windows#workstation-installs;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -287,7 +287,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		return 302 https://github.com/mcavallo-git/Coding/tree/master/windows#workstation-installs;
+		return 302 https://github.com/mcavallo-git/Coding#workstation-installs
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

@@ -387,8 +387,9 @@ else
 		EXIT_CODE=0;
 
 		# ------------------------------------------------------------
+		#
 		# /usr/local/bin
-		# ------------------------------------------------------------
+		#
 		DESTINATION_PATH="/usr/local/bin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
@@ -402,8 +403,9 @@ else
 
 
 		# ------------------------------------------------------------
+		#
 		# /usr/local/sbin
-		# ------------------------------------------------------------
+		#
 		DESTINATION_PATH="/usr/local/sbin";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0755"; DIR_PERMS="0755";
@@ -417,8 +419,9 @@ else
 
 
 		# ------------------------------------------------------------
+		#
 		# /etc/profile.d/bash_history_logging.sh
-		# ------------------------------------------------------------
+		#
 		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -431,8 +434,9 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 		# ------------------------------------------------------------
+		#
 		# /etc/ddns_ufw_update
-		# ------------------------------------------------------------
+		#
 		DESTINATION_PATH="/etc/ddns_ufw_update";
 		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 		FILE_PERMS="0644"; DIR_PERMS="0755";
@@ -446,7 +450,9 @@ else
 
 
 		# ------------------------------------------------------------
-		# Update SSH Configuration
+		#
+		# /etc/ssh/sshd_config
+		#
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
 			echo -e "\n""!!! Warning !!!";
@@ -544,12 +550,14 @@ else
 
 
 		# ------------------------------------------------------------
+		#
 		# /etc/cron.d/...
-		# ------------------------------------------------------------
+		#
 		if [ "${ARGS_CRONJOB}" == "SYNC" ]; then
 			RESTART_SERVICE_CRON=1;
 			if [ "${ARGS_CRONJOB}" == "SYNC" ]; then
 
+				# ------------------------------------------------------------
 				#
 				# /etc/cron.d/CRON_sync_cloud_infrastructure
 				#
@@ -564,6 +572,7 @@ else
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
+				# ------------------------------------------------------------
 				#
 				# /etc/cron.d/CRON_update_dns_config
 				#
@@ -589,6 +598,7 @@ else
 					fi;
 				fi;
 
+				# ------------------------------------------------------------
 				#
 				# /etc/cron.d/CRON_update_system
 				#
@@ -615,6 +625,7 @@ else
 					fi;
 				fi;
 
+				# ------------------------------------------------------------
 				#
 				# /etc/cron.d/CRON_raspi_hw_monitor
 				#
@@ -640,8 +651,9 @@ else
 
 
 		# ------------------------------------------------------------
-		# Configurations, User-Home Directories
-		# ------------------------------------------------------------
+		#
+		# ${HOME}/.
+		#
 
 		# Get list of files to Copy into Home-Dirs
 		COPY_FROM_SOURCE="${DIR_REPO_BASE}/root";
@@ -732,6 +744,7 @@ else
 
 			else
 
+				# ------------------------------------------------------------
 				#
 				# /var/cache/jenkins/war
 				#
@@ -746,8 +759,25 @@ else
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
+				# ------------------------------------------------------------
+				#
+				# /var/cache/jenkins/war
+				#
+				DESTINATION_PATH="/etc/default/jenkins";
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0755";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
+				rsync --archive --inplace --checksum --quiet --chown="jenkins:jenkins" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+
 				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
 
+					# ------------------------------------------------------------
 					#
 					# /etc/cron.d/CRON_jenkins_export_config
 					#
@@ -761,6 +791,8 @@ else
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+					# ------------------------------------------------------------
 					#
 					# /etc/cron.d/CRON_jenkins_log_cleanup
 					#
@@ -774,6 +806,8 @@ else
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+					# ------------------------------------------------------------
 					#
 					# /etc/cron.d/CRON_jenkins_warfile_update
 					#
@@ -787,6 +821,7 @@ else
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 				fi;
 				
 				RESTART_SERVICE_JENKINS=1;

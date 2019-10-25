@@ -57,7 +57,7 @@ RETURNED_OS="Unknown";
 #
 if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]]; then
 	if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
-		THIS_OS_TYPE='WSL (Windows Subsystem for Linux)';
+		THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
 	else
 		THIS_OS_TYPE='Linux';
 	fi;

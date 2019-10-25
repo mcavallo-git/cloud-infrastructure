@@ -57,12 +57,15 @@ else
 				if [ -n "${EDIT_ACTION}" ]; then
 					# Error - Multiple add/remove actions defined
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
-				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]; then
-					EDIT_ACTION="ALLOW"; # Add user as a sudoer
-				elif [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
-					EDIT_ACTION="REVOKE"; # Remove user from sudoers
+				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]  || [ "${EACH_ARG}" == "--add" ]; then
+					# Add user as a sudoer
+					EDIT_ACTION="ALLOW";
+				elif [ "${EACH_ARG}" == "--deny" ]  || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
+					# Remove user from sudoers
+					EDIT_ACTION="REVOKE";
 				else
-					EDIT_ACTION=""; # Show user's sudoer-status
+					# Show user's sudoer-status
+					EDIT_ACTION="";
 				fi;
 			fi;
 

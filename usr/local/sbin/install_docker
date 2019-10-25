@@ -23,15 +23,43 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 	exit 1;
 else
 	# ------------------------------------------------------------
+	if [ "$(which get_os)" != "" ] && [ "$(get_os)" == *"Microsoft"* ]; then
+		# WSL Docker Installation
 
-	wget -qO- "https://get.docker.com/" | sh;
+		# Update the source listing
+		apt-get -y update;
+
+		# Ensure that you have the binaries needed to fetch repo listing
+		apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common;
+
+		# Fetch the repository listing from docker's site & add it
+		curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -;
+		add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
+
+		# Update source listing now that we've added Docker's repo
+		apt-get -y update;
+
+		# apt-get install docker-ce=17.09.0~ce-0~ubuntu;
+		apt-get install -y docker-ce;
+
+		if [ -v SUDO_USER ]; then
+			usermod -aG docker $SUDO_USER;
+		else
+			usermod -aG docker $USER;
+		fi;
+
+	else
+		# NON-WSL Docker Installation
+
+		wget -qO- "https://get.docker.com/" | sh;
+	
+	fi;
 
 fi;
-
 
 # ------------------------------------------------------------
 # Citation(s)
 #
-#   unix.stackexchange.com  |  "Why does process substitution result in a file called /dev/fd/63 which is a pipe?"  |  https://unix.stackexchange.com/a/156088
+#   medium.com  |  "Docker Running Seamlessly in Windows Subsystem Linux"  |  https://medium.com/faun/docker-running-seamlessly-in-windows-subsystem-linux-6ef8412377aa
 #
 # ------------------------------------------------------------

@@ -42,10 +42,12 @@ else
 		apt-get -y install docker-ce=17.09.0~ce-0~ubuntu;
 
 		if [ -v SUDO_USER ]; then
-			usermod -aG docker $SUDO_USER;
-		else
-			usermod -aG docker $USER;
+			usermod -aG docker "${SUDO_USER}";
 		fi;
+		usermod -aG docker "${USER}";
+
+		cgroupfs-mount;
+		service docker start;
 
 	else # ------------------------------------------------------------
 		# NON-WSL Docker Installation

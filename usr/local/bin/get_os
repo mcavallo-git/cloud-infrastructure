@@ -98,7 +98,7 @@ THIS_KERNEL_NAME="$(uname -s;)";
 IS_WINDOWS=$(if [ "${THIS_OS_TYPE}" == "Windows" ]; then echo 1; else echo 0; fi;);
 IS_LINUX=$(if [ "${THIS_OS_TYPE}" == "Linux" ]; then echo 1; else echo 0; fi;);
 IS_MAC=$(if [ "${THIS_OS_TYPE}" == "Macintosh" ]; then echo 1; else echo 0; fi;);
-IS_WSL=$(if [ "${THIS_OS_TYPE}" == "WSL (Windows Subsystem for Linux)" ]; then echo 1; else echo 0; fi;);
+IS_WSL=$(if [ "${THIS_OS_TYPE}" == "WSL (Microsoft Windows Subsystem for Linux)" ]; then echo 1; else echo 0; fi;);
 
 IS_CYGWIN=$(if [[ $(uname -s | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "cygwin" ]; then echo 1; else echo 0; fi;);
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);

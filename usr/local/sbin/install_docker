@@ -40,7 +40,7 @@ else
 		apt-get -y update;
 
 		# apt-get install docker-ce=17.09.0~ce-0~ubuntu;
-		apt-get install -y docker-ce;
+		apt-get -y install docker-ce;
 
 		if [ -v SUDO_USER ]; then
 			usermod -aG docker $SUDO_USER;

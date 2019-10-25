@@ -38,8 +38,8 @@ else
 		# Update source listing now that we've added Docker's repo
 		apt-get -y update;
 
-		# apt-get install docker-ce=17.09.0~ce-0~ubuntu;
-		apt-get -y install docker-ce;
+		# Install the version of docker which is known to be compatible with WSL
+		apt-get -y install docker-ce=17.09.0~ce-0~ubuntu;
 
 		if [ -v SUDO_USER ]; then
 			usermod -aG docker $SUDO_USER;

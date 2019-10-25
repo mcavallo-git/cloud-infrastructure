@@ -24,8 +24,7 @@ else
 	# ------------------------------------------------------------
 	if [[ "$(which get_os)" != "" && "$(get_os)" == *"Microsoft"* ]]; then
 		# WSL Docker Installation
-		echo "wsl";
-		exit 0;
+
 		# Update the source listing
 		apt-get -y update;
 
@@ -50,8 +49,6 @@ else
 
 	else # ------------------------------------------------------------
 		# NON-WSL Docker Installation
-		echo "non-wsl";
-		exit 0;
 
 		wget -qO- "https://get.docker.com/" | sh;
 	

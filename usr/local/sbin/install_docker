@@ -40,6 +40,7 @@ else
 
 		# Install the version of docker which is known to be compatible with WSL
 		apt-get -y install docker-ce=17.09.0~ce-0~ubuntu;
+		# apt-get -y install docker-ce=17.09.0~ce-0~ubuntu;
 
 		if [ -v SUDO_USER ]; then
 			usermod -aG docker "${SUDO_USER}";
@@ -61,6 +62,8 @@ fi;
 
 # ------------------------------------------------------------
 # Citation(s)
+#
+#   medium.com  |  "Installing the Docker client on Windows Subsystem for Linux (Ubuntu)"  |  https://medium.com/@sebagomez/installing-the-docker-client-on-ubuntus-windows-subsystem-for-linux-612b392a44c4
 #
 #   medium.com  |  "Docker Running Seamlessly in Windows Subsystem Linux"  |  https://medium.com/faun/docker-running-seamlessly-in-windows-subsystem-linux-6ef8412377aa
 #

@@ -102,7 +102,7 @@ else
 		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q;
 		
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
 		"/usr/local/sbin/sync_cloud_infrastructure"

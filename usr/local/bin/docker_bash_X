@@ -31,7 +31,9 @@ if [ -n "$0" ]; then
 			E1="LINES=$(tput lines)";
 			E2="COLUMNS=$(tput cols)";
 			CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
-echo "CONTAINER_ID = [ ${CONTAINER_ID} ]";
+			DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+			echo "";
+			echo "Bashing into Docker Image \"${DOCKER_IMAGE}\" with Container ID \"${CONTAINER_ID}\"";
 			# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
 			docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
 		else

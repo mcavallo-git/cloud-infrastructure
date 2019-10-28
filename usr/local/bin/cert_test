@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/cert_test" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+if [ -n "${1}" ]; then
+	openssl s_client -connect "${1}":443 -servername "${1}"
+	exit 0;
+else
+	echo "Error: Please specify a hostname to test, e.g.:  cert_test example.com"
+	exit 1;
+fi;
+
+
+# ------------------------------------------------------------

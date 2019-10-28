@@ -683,7 +683,7 @@ else
 					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
 					USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|--→ ${EACH_SSH_USER}");
 					# Only copy files to SSH-Enabled user home-directories (plus root)
-					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
+					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "${DIR_USER_HOME}/.bash_history" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
 						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
 						if [ -d "${SRC_FULLPATH}" ] && [ -f "${SRC_FULLPATH}/"* ]; then
 							# Directories containing at least one file

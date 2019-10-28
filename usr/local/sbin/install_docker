@@ -46,9 +46,19 @@ else
 		# Update source listing now that we've added Docker's repo
 		apt-get -y update;
 
-		# Install docker (community edition), as well as python & python-pip (required for docker-compose install)
+		# Install docker (community edition)
 		apt-get -y install \
 			docker-ce \
+		;
+
+		# Add user(s) to the docker usergroup
+		if [ -v SUDO_USER ]; then
+			usermod -aG docker "${SUDO_USER}";
+		fi;
+		usermod -aG docker "${USER}";
+
+		# Install python & python-pip (required for docker-compose install)
+		apt-get -y install \
 			python \
 			python-pip \
 		;
@@ -58,14 +68,16 @@ else
 			docker-compose \
 		;
 
-		if [ -v SUDO_USER ]; then
-			usermod -aG docker "${SUDO_USER}";
-		fi;
-		usermod -aG docker "${USER}";
-
 		### If the drive is not currently mounted, mount it
 		# cgroupfs-mount;
 		# service docker start;
+
+		echo -e "[automount]""\n""root = /""\n""options = \"metadata\"" > "/etc/wsl.conf";
+		
+		echo "";
+		echo " ! ! ! SYSTEM REBOOT REQUIRED ! ! ! ";
+		echo "";
+
 
 	else # ------------------------------------------------------------
 		# NON-WSL Docker Installation

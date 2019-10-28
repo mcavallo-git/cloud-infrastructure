@@ -105,7 +105,7 @@ else
 		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
-		"/usr/local/sbin/sync_cloud_infrastructure"
+		"/usr/local/sbin/sync_cloud_infrastructure" $@;
 		exit 0;
 	fi;
 

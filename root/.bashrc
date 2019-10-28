@@ -59,6 +59,12 @@ fi
 
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'; # colored GCC warnings and errors
 
+if [ -d "/mnt/c/windows" ]; then
+	if [ -f "/usr/sbin/docker" ]; then
+		export DOCKER_HOST="tcp://localhost:2375";
+	fi;
+fi;
+
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
@@ -167,6 +173,7 @@ if [ -n "${PROMPT_COMMAND}" ]; then
 else
 	PERSISTENT_CMD=""; # PROMPT_COMMAND not set, already
 fi;
+
 export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
 
 bash_prompt;

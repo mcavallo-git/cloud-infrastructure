@@ -23,6 +23,8 @@ if [ -n "$0" ]; then
 		EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
 		echo "  ${EACH_KEY}		-  ${EACH_DOCKER_IMAGE}";
 	done;
+	echo "------------------------------------------------------------";
+	echo "";
 
 	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
 	if [ -n "${REPLY}" ]; then

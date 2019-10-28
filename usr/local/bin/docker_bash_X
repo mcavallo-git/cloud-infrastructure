@@ -37,7 +37,9 @@ if [ -n "$0" ]; then
 			clear;
 			echo "";
 			echo "------------------------------------------------------------";
-			echo "Bashing into Docker Image \"${DOCKER_IMAGE}\" with Container ID \"${CONTAINER_ID}\"";
+			echo "| Bashing into Docker Container";
+			echo "|  |--> Container-ID: \"${CONTAINER_ID}\"";
+			echo "|  |--> Image-Name:   \"${DOCKER_IMAGE}\"";
 			echo "------------------------------------------------------------";
 			echo "";
 			# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";

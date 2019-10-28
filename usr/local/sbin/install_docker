@@ -46,12 +46,16 @@ else
 		# Update source listing now that we've added Docker's repo
 		apt-get -y update;
 
-exit 0;
 
 		# Install docker (community edition)
-		apt-get -y install \
-			docker-ce \
-		;
+		apt-get -y install "docker-ce=17.09.0~ce-0~ubuntu";
+		apt-cache show "docker-ce=17.09.0~ce-0~ubuntu" 2>"/dev/null"; PACKAGE_ERRORS=$?;
+
+		if [ ${PACKAGE_ERRORS} -gt 0 ]; then
+			echo "Error - Please use WSL Ubuntu 16.04 LTS & re-run this script"; 
+			exit 1;
+		fi;
+
 
 		# Add user(s) to the docker usergroup
 		if [ -v SUDO_USER ]; then
@@ -92,6 +96,8 @@ fi;
 
 # ------------------------------------------------------------
 # Citation(s)
+#
+#   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce-1
 #
 #   nickjanetakis.com  |  "Setting Up Docker for Windows and WSL to Work Flawlessly"  |  https://nickjanetakis.com/blog/setting-up-docker-for-windows-and-wsl-to-work-flawlessly
 #

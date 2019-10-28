@@ -47,16 +47,15 @@ if [ -n "$0" ]; then
 				# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
 				docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
 			else
-				echo "Invalid Selection:  \"${REPLY}\"";
+				echo "Error: Invalid Selection of \"${REPLY}\"";
 			fi;
 		else
+			echo "";
 			echo "Response timed out after ${MAX_READ_WAIT}s";
 		fi;
 
 	else
-		echo "";
-		echo "No Containers found to be running - Please start a container then rerun ${0}";
-		echo "";
+		echo "Error: No Containers found to be running - Please start a container then rerun ${0}";
 
 	fi;
 

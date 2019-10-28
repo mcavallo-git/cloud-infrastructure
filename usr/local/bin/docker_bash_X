@@ -27,6 +27,7 @@ if [ -n "$0" ]; then
 	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
 	if [ -n "${REPLY}" ]; then
 		USER_SELECTION_KEY=$((0+"${REPLY}"));
+echo "USER_SELECTION_KEY = [ ${USER_SELECTION_KEY} ]";
 		if [ -n "${EACH_CONTAINER_ID[${USER_SELECTION_KEY}]}" ]; then
 			E1="LINES=$(tput lines)";
 			E2="COLUMNS=$(tput cols)";

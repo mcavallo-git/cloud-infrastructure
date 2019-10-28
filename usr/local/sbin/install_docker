@@ -39,6 +39,8 @@ else
 
 		# Fetch the repository listing from docker's site & add it
 		curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -;
+
+		# Add the `stable` channel's Docker upstream repository.
 		add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
 
 		# Update source listing now that we've added Docker's repo

@@ -478,7 +478,9 @@ else
 fi;
 
 # ------------------------------------------------------------
-# [ SYSTEM ] && [ GLOBAL ] Git Configs
+# [ SYSTEM ] Git Configs
+#      +
+# [ GLOBAL ] Git Configs
 
 ###  Download the "git_config_all" script, which will scour the current drive for all git exe's, then
 ###  perform config-updates on each exe's global & system config-files with the values given (below)
@@ -493,9 +495,12 @@ if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # Unsets
+KEY="core.sshCommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="push.gpgsign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="user.email";                    "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="user.name";                     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 
 rm -f "${GIT_CONFIG_ALL_LOCAL}";
@@ -507,23 +512,24 @@ fi;
 #    |
 #    |--> User-specific, e.g. Private Values
 #
-
+#
 # Strings
-KEY="user.name";        VAL="${GLOBAL_COMMIT_NAME}";                   git config --global --unset "${KEY}" "${VAL}";
-KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --unset "${KEY}" "${VAL}";
-KEY="core.sshCommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"";     git config --global --unset "${KEY}" "${VAL}";
-KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --unset "${KEY}" "${VAL}";
+# KEY="user.name";        VAL="${GLOBAL_COMMIT_NAME}";                   git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="core.sshCommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"";     git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
 # Booleans
-KEY="commit.gpgsign";   VAL="true";                                    git config --global --unset --bool "${KEY}" "${VAL}";
-
+# KEY="commit.gpgsign";   VAL="true";                                    git config --global --replace-all --bool "${KEY}" "${VAL}";
+#
 # [ GLOBAL ] Git Config, List Values
-echo "";
-echo "[ GLOBAL ] Git-Config Updated:";
-if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "0" ]; then
-	echo "------------------------------------------------------------";
-	echo "$(git config --global --list;)";
-	echo "------------------------------------------------------------";
-fi;
+# echo "";
+# echo "[ GLOBAL ] Git-Config Updated:";
+# if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "0" ]; then
+# 	echo "------------------------------------------------------------";
+# 	echo "$(git config --global --list;)";
+# 	echo "------------------------------------------------------------";
+# fi;
+
 
 # ------------------------------------------------------------
 # Repositories  :::  Personal

@@ -27,11 +27,10 @@ if [ -n "$0" ]; then
 	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
 	if [ -n "${REPLY}" ]; then
 		USER_SELECTION_KEY=$((0+"${REPLY}"));
-echo "USER_SELECTION_KEY = [ ${USER_SELECTION_KEY} ]";
-		if [ -n "${EACH_CONTAINER_ID[${USER_SELECTION_KEY}]}" ]; then
+		if [ -n "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
 			E1="LINES=$(tput lines)";
 			E2="COLUMNS=$(tput cols)";
-			docker exec -e "${E1}" -e "${E2}" -it "${EACH_CONTAINER_ID[${REPLY}]}" script -q -c "/bin/bash" "/dev/null";
+			docker exec -e "${E1}" -e "${E2}" -it "${ARR_CONTAINER_IDS[${REPLY}]}" script -q -c "/bin/bash" "/dev/null";
 		else
 			echo "Invalid Selection:  \"${REPLY}\"";
 		fi;

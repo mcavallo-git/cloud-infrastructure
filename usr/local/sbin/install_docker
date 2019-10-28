@@ -32,6 +32,11 @@ else
 			"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
 		fi;
 
+		# if [ -v SUDO_USER ]; then
+		# 	usermod -aG docker "${SUDO_USER}";
+		# fi;
+		# usermod -aG docker "${USER}";
+
 		# Redirect Bash calls to Windows docker-host
 		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
 		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "/usr/bin/docker-compose";

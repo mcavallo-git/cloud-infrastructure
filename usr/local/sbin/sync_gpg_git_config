@@ -46,11 +46,13 @@ fi;
 
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
-PERSONAL_PUBLIC_REPOS=(); # Github personal public repos
+PERSONAL_PUBLIC_REPOS=(); # Remote Public Repos (Personal)
 
-PERSONAL_PRIVATE_REPOS=(); # Github personal private repos
+PERSONAL_PRIVATE_REPOS=(); # Remote Private Repos (Personal)
 
-WORK_PRIVATE_REPOS=(); # Github work private repos
+WORK_PUBLIC_REPOS=(); # Remote Public Repos (Work)
+
+WORK_PRIVATE_REPOS=(); # Remote Private Repos (Work)
 
 REPOS_DIR=""; # Git Repo(s) Directory
 
@@ -618,6 +620,7 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 	done;
 fi;
 
+
 # ------------------------------------------------------------
 # Repositories  :::  Work
 # ------------------------------------------------------------
@@ -635,6 +638,40 @@ else
 	sleep 60;
 	exit 1;
 fi;
+
+
+#	------------------------------------------------------------
+#		GIT REPOS
+#		 |--> WORK, PUBLIC
+#
+WORK_PUBLIC_REPOS_NO_DUPES=($(echo "${WORK_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
+	if [ -d "${REPOS_DIR}/${REPO}" ]; then
+		cd "${REPOS_DIR}/${REPO}";
+		GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+		GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+		GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
+		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
+		# Strings
+		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+		if [ -z "${GPG_KEY_ID}" ]; then
+			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+		else
+			# Strings (GPG)
+			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			# Unsets
+			KEY="gpg.program";                                                git config --local --unset "${KEY}";
+			KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
+			KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
+		fi;
+		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
+			echo "------------------------------------------------------------";
+			echo "$(git config --local --list --show-origin)";
+			echo "------------------------------------------------------------";
+		fi;
+	fi;
+done;
+
 
 #	------------------------------------------------------------
 #		GIT REPOS
@@ -670,38 +707,6 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 	fi;
 done;
 
-#	------------------------------------------------------------
-#		GIT REPOS
-#		 |--> WORK, PUBLIC
-#
-if [ -f "${GIT_SSH_WORK}" ] && [ ! -f "${GIT_SSH_PERSONAL}" ]; then
-	# (Repositories which exist in both environments)
-	REPO="wide-github";
-	if [ -d "${REPOS_DIR}/${REPO}" ]; then
-		cd "${REPOS_DIR}/${REPO}";
-		GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-		GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
-		GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
-		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
-		# Strings
-		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
-		if [ -z "${GPG_KEY_ID}" ]; then
-			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
-		else
-			# Strings (GPG)
-			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
-			# Unsets
-			KEY="gpg.program";                                                git config --local --unset "${KEY}";
-			KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
-		fi;
-		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-			echo "------------------------------------------------------------";
-			echo "$(git config --local --list --show-origin)";
-			echo "------------------------------------------------------------";
-		fi;
-	fi;
-fi;
 
 # ------------------------------------------------------------
 

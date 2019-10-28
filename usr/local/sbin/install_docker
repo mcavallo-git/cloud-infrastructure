@@ -23,8 +23,9 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 else
 	# ------------------------------------------------------------
 	if [[ "$(which get_os)" != "" && "$(get_os)" == *"Microsoft"* ]]; then
+		#
 		# WSL Docker Installation
-
+		#
 		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
 
 		#
@@ -100,6 +101,8 @@ fi;
 
 # ------------------------------------------------------------
 # Citation(s)
+#
+#   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://stackoverflow.com/a/48008676
 #
 #   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce-1
 #

@@ -34,16 +34,11 @@ else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
 	
-	# As a docker (see "/usr/local/bin/create_docker_jenkins")
-	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
-
-	EXIT_CODE=1;
-
-	APT_PKG_JDK="default-jdk-headless";
-	APT_PKG_JRE="default-jre-headless";
-	APT_PKG_JENKINS="jenkins";
-
-	java -jar jenkins-cli.jar -s http://127.0.0.1:8080/ install-plugin <name>
+	if [ -n "$1" ]; then
+		java -jar jenkins-cli.jar -s http://127.0.0.1:8080/ install-plugin "$1";
+	else
+		echo "Error: Please include plugin name as first parameter (\$1)";
+	fi;
 
 
 	# NOTE: MUST RUN AS [root]

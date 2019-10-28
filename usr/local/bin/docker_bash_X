@@ -17,11 +17,12 @@ if [ -n "$0" ]; then
 	done;
 
 	echo "";
+	echo "Found the following dockers, locally:";
 	echo "------------------------------------------------------------";
 	for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
 		EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
 		EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-		echo "  ${EACH_KEY}		-  ${EACH_DOCKER_IMAGE}";
+		echo "	${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
 	done;
 	echo "------------------------------------------------------------";
 	echo "";

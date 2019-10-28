@@ -29,7 +29,13 @@ else
 		apt-get -y update;
 
 		# Ensure that you have the binaries needed to fetch repo listing
-		apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common;
+		apt-get -y install \
+			apt-transport-https \
+			ca-certificates \
+			curl \
+			gnupg2 \
+			software-properties-common \
+		;
 
 		# Fetch the repository listing from docker's site & add it
 		curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -;
@@ -38,18 +44,26 @@ else
 		# Update source listing now that we've added Docker's repo
 		apt-get -y update;
 
-		# Install the version of docker which is known to be compatible with WSL
-		apt-get -y install docker-ce;
-		# apt-get -y install docker-ce=17.09.0~ce-0~ubuntu;
+		# Install docker (community edition), as well as python & python-pip (required for docker-compose install)
+		apt-get -y install \
+			docker-ce \
+			python \
+			python-pip \
+		;
+
+		# Install docker (community edition) & docker-compose
+		pip install \
+			docker-compose \
+		;
 
 		if [ -v SUDO_USER ]; then
 			usermod -aG docker "${SUDO_USER}";
 		fi;
 		usermod -aG docker "${USER}";
 
-		cgroupfs-mount;
-
-		service docker start;
+		### If the drive is not currently mounted, mount it
+		# cgroupfs-mount;
+		# service docker start;
 
 	else # ------------------------------------------------------------
 		# NON-WSL Docker Installation

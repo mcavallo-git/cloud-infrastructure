@@ -25,66 +25,69 @@ else
 	if [[ "$(which get_os)" != "" && "$(get_os)" == *"Microsoft"* ]]; then
 		# WSL Docker Installation
 
-		# Update the source listing
-		apt-get -y update;
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
 
-		# Ensure that you have the binaries needed to fetch repo listing
-		apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common ;
-
-		if [ $(echo "$(lsb_release -rs) > 18.00" | bc) -eq 1 ]; then
-			wget "https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_17.09.0~ce-0~ubuntu_amd64.deb" -P /tmp/
-			sudo dpkg -i /tmp/docker-ce_17.09.0~ce-0~ubuntu_amd64.deb
-			sudo apt -y -f install
-
-		elif [ $(echo "$(lsb_release -rs) > 16.00" | bc) -eq 1 ]; then
-			
-			# Fetch the repository listing from docker's site & add it
-			curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -;
-			# Add the `stable` channel's Docker upstream repository.
-			add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
-			# Update source listing now that we've added Docker's repo
-			apt-get -y update;
-			# Install docker (community edition)
-			apt-get -y install "docker-ce=17.09.0~ce-0~ubuntu";
-			apt-cache show "docker-ce=17.09.0~ce-0~ubuntu" 2>"/dev/null"; PACKAGE_ERRORS=$?;
-			if [ ${PACKAGE_ERRORS} -gt 0 ]; then
-				echo "Error - Please use WSL Ubuntu 16.04 LTS & re-run this script"; 
-				exit 1;
-			fi;
-
-		else
-
-			echo "Error - Unhandled OS: $(get_os)";
-			exit 1;
-
-		fi;
-
-		# Add user(s) to the docker usergroup
-		if [ -v SUDO_USER ]; then
-			usermod -aG docker "${SUDO_USER}";
-		fi;
-		usermod -aG docker "${USER}";
-
-		# Install python & python-pip (required for docker-compose install)
-		# apt-get -y install \
-		# 	python \
-		# 	python-pip \
-		# ;
-
-		# Install docker (community edition) & docker-compose
-		# pip install \
-		# 	docker-compose \
-		# ;
-
-		# echo -e "[automount]""\n""root = /""\n""options = \"metadata\"" > "/etc/wsl.conf";
-		# echo -e "\n"" ! ! ! SYSTEM REBOOT REQUIRED ! ! ! ""\n";
-
-
-		### If the drive is not currently mounted, mount it
-		apt-get -y install cgroupfs-mount;
-		cgroupfs-mount;
-		service docker start;
-		docker run --network host hello-world
+		#
+		# # Update the source listing
+		# apt-get -y update;
+		#
+		# # Ensure that you have the binaries needed to fetch repo listing
+		# apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common ;
+		#
+		# if [ $(echo "$(lsb_release -rs) > 18.00" | bc) -eq 1 ]; then
+		# 	wget "https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_17.09.0~ce-0~ubuntu_amd64.deb" -P /tmp/
+		# 	sudo dpkg -i /tmp/docker-ce_17.09.0~ce-0~ubuntu_amd64.deb
+		# 	sudo apt -y -f install
+		#
+		# elif [ $(echo "$(lsb_release -rs) > 16.00" | bc) -eq 1 ]; then
+		#
+		# 	# Fetch the repository listing from docker's site & add it
+		# 	curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -;
+		# 	# Add the `stable` channel's Docker upstream repository.
+		# 	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
+		# 	# Update source listing now that we've added Docker's repo
+		# 	apt-get -y update;
+		# 	# Install docker (community edition)
+		# 	apt-get -y install "docker-ce=17.09.0~ce-0~ubuntu";
+		# 	apt-cache show "docker-ce=17.09.0~ce-0~ubuntu" 2>"/dev/null"; PACKAGE_ERRORS=$?;
+		# 	if [ ${PACKAGE_ERRORS} -gt 0 ]; then
+		# 		echo "Error - Please use WSL Ubuntu 16.04 LTS & re-run this script"; 
+		# 		exit 1;
+		# 	fi;
+		#
+		# else
+		#
+		# 	echo "Error - Unhandled OS: $(get_os)";
+		# 	exit 1;
+		#
+		# fi;
+		#
+		# # Add user(s) to the docker usergroup
+		# if [ -v SUDO_USER ]; then
+		# 	usermod -aG docker "${SUDO_USER}";
+		# fi;
+		# usermod -aG docker "${USER}";
+		#
+		# # Install python & python-pip (required for docker-compose install)
+		# # apt-get -y install \
+		# # 	python \
+		# # 	python-pip \
+		# # ;
+		#
+		# # Install docker (community edition) & docker-compose
+		# # pip install \
+		# # 	docker-compose \
+		# # ;
+		#
+		# # echo -e "[automount]""\n""root = /""\n""options = \"metadata\"" > "/etc/wsl.conf";
+		# # echo -e "\n"" ! ! ! SYSTEM REBOOT REQUIRED ! ! ! ""\n";
+		#
+		#
+		# ### If the drive is not currently mounted, mount it
+		# apt-get -y install cgroupfs-mount;
+		# cgroupfs-mount;
+		# service docker start;
+		# docker run --network host hello-world
 
 	else # ------------------------------------------------------------
 		# NON-WSL Docker Installation

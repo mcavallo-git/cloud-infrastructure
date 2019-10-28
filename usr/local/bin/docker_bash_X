@@ -25,14 +25,17 @@ if [ -n "$0" ]; then
 	done;
 
 	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
-	if [ -n "${REPLY}" ] && [ -n "${EACH_CONTAINER_ID[${REPLY}]}" ]; then
-		E1="LINES=$(tput lines)";
-		E2="COLUMNS=$(tput cols)";
-		docker exec -e "${E1}" -e "${E2}" -it "${EACH_CONTAINER_ID[${REPLY}]}" script -q -c "/bin/bash" "/dev/null";
-	elif [ -z "${REPLY}" ]; then
-		echo "Response timed out after ${MAX_READ_WAIT}s";
+	if [ -n "${REPLY}" ]; then
+		USER_SELECTION_KEY=$((0+"${REPLY}"));
+		if [ -n "${EACH_CONTAINER_ID[${USER_SELECTION_KEY}]}" ]; then
+			E1="LINES=$(tput lines)";
+			E2="COLUMNS=$(tput cols)";
+			docker exec -e "${E1}" -e "${E2}" -it "${EACH_CONTAINER_ID[${REPLY}]}" script -q -c "/bin/bash" "/dev/null";
+		else
+			echo "Invalid Selection:  \"${REPLY}\"";
+		fi;
 	else
-		echo "Invalid Selection:  \"${REPLY}\"";
+		echo "Response timed out after ${MAX_READ_WAIT}s";
 	fi;
 
 	# docker exec -e "${E1}" -e "${E2}" -it "www.boneal.net" script -q -c "/bin/bash" "/dev/null";

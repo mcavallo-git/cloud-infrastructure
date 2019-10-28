@@ -493,9 +493,9 @@ if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # Unsets
-KEY="commit.gpgSign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="push.gpgSign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="push.gpgsign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 
 rm -f "${GIT_CONFIG_ALL_LOCAL}";
@@ -514,7 +514,7 @@ KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git confi
 KEY="core.sshCommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"";     git config --global --replace-all "${KEY}" "${VAL}";
 KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
 # Booleans
-KEY="commit.gpgSign";   VAL="true";                                    git config --global --replace-all --bool "${KEY}" "${VAL}";
+KEY="commit.gpgsign";   VAL="true";                                    git config --global --replace-all --bool "${KEY}" "${VAL}";
 
 # [ GLOBAL ] Git Config, List Values
 echo "";
@@ -573,8 +573,8 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets
 			KEY="gpg.program";                                                git config --local --unset "${KEY}";
-			KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
+			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
@@ -608,8 +608,8 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 				KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 				# Unsets
 				KEY="gpg.program";                                                git config --local --unset "${KEY}";
-				KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
-				KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
+				KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+				KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 			fi;
 			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 				echo "------------------------------------------------------------";
@@ -661,8 +661,8 @@ for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets
 			KEY="gpg.program";                                                git config --local --unset "${KEY}";
-			KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
+			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
@@ -696,8 +696,8 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
 			# Unsets
 			KEY="gpg.program";                                                git config --local --unset "${KEY}";
-			KEY="push.gpgSign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgSign";                                             git config --local --unset "${KEY}";
+			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";

@@ -32,7 +32,8 @@ if [ -n "$0" ]; then
 			E2="COLUMNS=$(tput cols)";
 			CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
 echo "CONTAINER_ID = [ ${CONTAINER_ID} ]";
-			docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
+			# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
+			docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
 		else
 			echo "Invalid Selection:  \"${REPLY}\"";
 		fi;

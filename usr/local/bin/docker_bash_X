@@ -24,12 +24,13 @@ if [ -n "$0" ]; then
 		echo "  ${EACH_KEY}		-  ${EACH_DOCKER_IMAGE}";
 	done;
 
-
-	read -p "Select which container to bash into:    " -t 20 -r;
+	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
 	if [ -n "${REPLY}" ] && [ -n "${EACH_CONTAINER_ID[${REPLY}]}" ]; then
 		E1="LINES=$(tput lines)";
 		E2="COLUMNS=$(tput cols)";
 		docker exec -e "${E1}" -e "${E2}" -it "${EACH_CONTAINER_ID[${REPLY}]}" script -q -c "/bin/bash" "/dev/null";
+	elif [ -z "${REPLY}" ]; then
+		echo "Response timed out after ${MAX_READ_WAIT}s";
 	else
 		echo "Invalid Selection:  \"${REPLY}\"";
 	fi;

@@ -16,39 +16,48 @@ if [ -n "$0" ]; then
 		ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
 	done;
 
-	echo "";
-	echo "Found the following dockers, locally:";
-	echo "------------------------------------------------------------";
-	for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-		EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-		EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-		echo "	${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
-	done;
-	echo "------------------------------------------------------------";
-	echo "";
+	if [ ${CHOICE_KEY} -gt 0 ]; then
+		
+		echo "";
+		echo "Found the following dockers, locally:";
+		echo "------------------------------------------------------------";
+		for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+			EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+			EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+			echo "	${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+		done;
+		echo "------------------------------------------------------------";
+		echo "";
 
-	MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
-	if [ -n "${REPLY}" ]; then
-		USER_SELECTION_KEY=$((0+"${REPLY}"));
-		if [ -n "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
-			E1="LINES=$(tput lines)";
-			E2="COLUMNS=$(tput cols)";
-			CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
-			DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
-			echo "";
-			echo "------------------------------------------------------------";
-			echo "| Bashing into Docker Container";
-			echo "|  |--> Container-ID: \"${CONTAINER_ID}\"";
-			echo "|  |--> Image-Name:   \"${DOCKER_IMAGE}\"";
-			echo "------------------------------------------------------------";
-			echo "";
-			# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
-			docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+		MAX_READ_WAIT=20; read -p "Select which container to bash into:    " -t ${MAX_READ_WAIT} -r;
+		if [ -n "${REPLY}" ]; then
+			USER_SELECTION_KEY=$((0+"${REPLY}"));
+			if [ -n "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
+				E1="LINES=$(tput lines)";
+				E2="COLUMNS=$(tput cols)";
+				CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
+				DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+				echo "";
+				echo "------------------------------------------------------------";
+				echo "| Bashing into Docker Container";
+				echo "|  |--> Container-ID: \"${CONTAINER_ID}\"";
+				echo "|  |--> Image-Name:   \"${DOCKER_IMAGE}\"";
+				echo "------------------------------------------------------------";
+				echo "";
+				# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
+				docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+			else
+				echo "Invalid Selection:  \"${REPLY}\"";
+			fi;
 		else
-			echo "Invalid Selection:  \"${REPLY}\"";
+			echo "Response timed out after ${MAX_READ_WAIT}s";
 		fi;
+
 	else
-		echo "Response timed out after ${MAX_READ_WAIT}s";
+		echo "";
+		echo "No Containers found to be running - Please start a container then rerun ${0}";
+		echo "";
+
 	fi;
 
 else 

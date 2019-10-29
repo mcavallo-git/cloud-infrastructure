@@ -8,64 +8,66 @@ if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
 	echo "Error: No docker images found to match \"${IMAGE_NAME}\"";
 	exit 1;
 else
-	DOCKER_IMAGE_TAGS=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
+	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
 	MENU_LENGTH=10;
 	if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then
 		MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
 	fi;
-	IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS}" | tail -n ${MENU_LENGTH});
+	IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
 	echo "IMAGES_MENU_OPTIONS:";
 	echo "${IMAGES_MENU_OPTIONS}";
-fi;
 
-exit 0;
+	exit 0;
 
-# docker_name="jenkins_$(date +'%s')";
-# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
-# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
-# printf "    ===--  Started Docker:  ${docker_name}...\n"
-# printf "    ===--    Bashing Into:  ${docker_name}...\n"
-# docker exec -i -t ${docker_name} /bin/bash;
+	# docker_name="jenkins_$(date +'%s')";
+	# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+	# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+	# printf "    ===--  Started Docker:  ${docker_name}...\n"
+	# printf "    ===--    Bashing Into:  ${docker_name}...\n"
+	# docker exec -i -t ${docker_name} /bin/bash;
 
-unset ARR_OPTIONS_MENU; declare -A ARR_OPTIONS_MENU; # Re-instantiate bash array
-ARR_OPTIONS_MENU+=([1]="Val One");
-ARR_OPTIONS_MENU+=([2]="Val Two");
+	unset ARR_OPTIONS_MENU; declare -A ARR_OPTIONS_MENU; # Re-instantiate bash array
+	ARR_OPTIONS_MENU+=([1]="Val One");
+	ARR_OPTIONS_MENU+=([2]="Val Two");
 
-CHOICE_KEY=0;
-for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
-	CHOICE_KEY=$((CHOICE_KEY+1));
-	EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
-	ARR_OPTIONS_MENU+=(["${CHOICE_KEY}"]="${EACH_CONTAINER_ID}");
-	ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
-done;
-
-if [ ${CHOICE_KEY} -le 0 ]; then
-	echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
-else
-	echo "Found the following dockers, locally:";
-	for EACH_KEY in "${!ARR_OPTIONS_MENU[@]}"; do
-		EACH_CONTAINER_ID="${ARR_OPTIONS_MENU[${EACH_KEY}]}";
-		EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-		echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+	CHOICE_KEY=0;
+	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
+		CHOICE_KEY=$((CHOICE_KEY+1));
+		EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_TAG}");
+		ARR_OPTIONS_MENU+=(["${CHOICE_KEY}"]="${EACH_TAG}");
+		ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
 	done;
 
-	MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
-	if [ -z "${REPLY}" ]; then
-		echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+	if [ ${CHOICE_KEY} -le 0 ]; then
+		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
 	else
-		USER_SELECTION_KEY=$((0+"${REPLY}"));
-		if [ -z "${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}" ]; then
-			echo "Error: Invalid Selection of \"${REPLY}\"";
+		echo "Found the following dockers, locally:";
+		for EACH_KEY in "${!ARR_OPTIONS_MENU[@]}"; do
+			EACH_TAG="${ARR_OPTIONS_MENU[${EACH_KEY}]}";
+			EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+			echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_TAG})";
+		done;
+
+		MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
+		if [ -z "${REPLY}" ]; then
+			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
 		else
-			E1="LINES=$(tput lines)";
-			E2="COLUMNS=$(tput cols)";
-			CONTAINER_ID="${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}";
-			DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
-			echo "        |----> ID: \"${CONTAINER_ID}\"";
-			echo "        |-> Image: \"${DOCKER_IMAGE}\"";
-			docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+			USER_SELECTION_KEY=$((0+"${REPLY}"));
+			if [ -z "${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}" ]; then
+				echo "Error: Invalid Selection of \"${REPLY}\"";
+			else
+				E1="LINES=$(tput lines)";
+				E2="COLUMNS=$(tput cols)";
+				CONTAINER_ID="${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}";
+				DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+				echo "        |----> ID: \"${CONTAINER_ID}\"";
+				echo "        |-> Image: \"${DOCKER_IMAGE}\"";
+				docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+			fi;
 		fi;
 	fi;
+
+
 fi;
 
 

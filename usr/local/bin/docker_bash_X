@@ -6,8 +6,8 @@ if [ -n "$0" ]; then
 
 	else
 
-		test -v ARR_CONTAINER_IDS && unset ARR_CONTAINER_IDS; # Re-instantiate bash array via unset + declare
-		test -v ARR_CONTAINER_IDS[@] && unset ARR_CONTAINER_IDS;
+		test -v ARR_CONTAINER_IDS && unset ARR_CONTAINER_IDS; test -v ARR_CONTAINER_IDS[@] && unset ARR_CONTAINER_IDS; # Re-instantiate bash array
+		test -v ARR_DOCKER_IMAGES && unset ARR_DOCKER_IMAGES; test -v ARR_DOCKER_IMAGES[@] && unset ARR_DOCKER_IMAGES; # Re-instantiate bash array
 		declare -A ARR_CONTAINER_IDS;
 		declare -A ARR_DOCKER_IMAGES;
 

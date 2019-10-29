@@ -2,10 +2,6 @@
 
 # docker exec -i -t ${docker_name} -p 127.0.0.1:80:8080 /bin/bash;
 
-tput cols
-
-tput lines
-
 IMAGE_NAME="jenkinsci/blueocean";
 DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
 if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
@@ -14,8 +10,8 @@ if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
 else
 	DOCKER_IMAGE_TAGS=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
 	MENU_LENGTH=10;
-	if [ -n "$(which bc)" ] && [ -v LINES ]; then
-		MENU_LENGTH=$(echo "${LINES} / 2" | bc);
+	if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then
+		MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
 	fi;
 	IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS}" | tail -n ${MENU_LENGTH});
 	echo "IMAGES_MENU_OPTIONS:";

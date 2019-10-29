@@ -4,31 +4,20 @@
 #
 # ------------------------------------------------------------
 #
-#
-#
-#
 if [ 0 -eq 1 ]; then
-
-# ------------------------------------------------------------
-# Linux - Download & run this pre-packaged script
 #
+# Linux - Download & run this pre-packaged script
 REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init" && \
 LOCAL_FILE="/usr/local/bin/$(basename ${REPO_FILE})" && \
 sudo wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && \
 sudo chmod 0755 "${LOCAL_FILE}" && \
 sudo chown "root:root" "${LOCAL_FILE}";
-
-# ------------------------------------------------------------
-#	Linux - Run cloud-synced script
 #
+# Linux - Run cloud-synced script
 env REMOTE_HOST="github.com" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="cloud-infrastructure" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" /usr/local/bin/git_init;
-
-# ------------------------------------------------------------
-# Git Bash (Win10)
 #
+# Windows - Git Bash
 env REMOTE_HOST="bitbucket.org" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="bitbucket-public" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" "$HOME/Documents/GitHub/cloud-infrastructure/usr/local/bin/git_init";
-
-
 fi;
 #
 # ------------------------------------------------------------

@@ -233,7 +233,7 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 		add_header Content-Type text/plain;
 		#
-		# curl -s -o '/usr/local/sbin/sync_infrastructure' 'sync.mcavallo.com;'; sudo chmod 0700 '/usr/local/sbin/sync_infrastructure'; sudo '/usr/local/sbin/sync_infrastructure';
+		# curl -s -o '/tmp/sync_cloud_infrastructure' 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure'; sudo chmod 0700 '/tmp/sync_cloud_infrastructure'; sudo '/tmp/sync_cloud_infrastructure';
 		#
 	}
 	location /ps {

@@ -1,71 +1,66 @@
 #!/bin/bash
 if [ -n "$0" ]; then
-	E1="LINES=$(tput lines)";
-	E2="COLUMNS=$(tput cols)";
-	DK_CMD="${0}";
 	
-	if [[ "${DK_CMD}" == "/bash_rfq" ]] || [[ "${DK_CMD}" == "/brfq" ]]; then
-		# www.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "www.boneal.net" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_mdev" ]] || [[ "${DK_CMD}" == "/bmdev" ]]; then
-		# mdev.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "mdev.boneal.net" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_rdev" ]] || [[ "${DK_CMD}" == "/brdev" ]]; then
-		# rdev.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "rdev.boneal.net" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_dev" ]] || [[ "${DK_CMD}" == "/bdev" ]]; then
-		# dev.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "dev.boneal.net" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_phpmyadmin_bnet" ]]; then
-		# bnet.phpmyadmin.boneal.net  -->  Must use Alpine Linux's "/bin/busybox ash" instead of "/bin/bash"
-		docker exec -e "${E1}" -e "${E2}" -it "bnet.phpmyadmin.boneal.net" "/bin/ash";
+	if [ -z "$(which docker)" ]; then
+		echo "Error: command \"docker\" not found";
 
-	elif [[ "${DK_CMD}" == "/bash_phpmyadmin_sg" ]]; then
-		# sg.phpmyadmin.boneal.net  -->  Must use Alpine Linux's "/bin/busybox ash" instead of "/bin/bash"
-		docker exec -e "${E1}" -e "${E2}" -it "sg.phpmyadmin.boneal.net" "/bin/ash";
-
-	elif [[ "${DK_CMD}" == "/bash_dev.bonedge" ]]; then
-		# dev.bonedge.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "dev.bonedge.boneal.net" script -q -c "/bin/bash" "/dev/null";
-
-	elif [[ "${DK_CMD}" == "/bash_qa.bonedge" ]]; then
-		# qa.bonedge.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "qa.bonedge.boneal.net" script -q -c "/bin/bash" "/dev/null";
-
-	elif [[ "${DK_CMD}" == "/bash_uat.bonedge" ]]; then
-		# uat.bonedge.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "uat.bonedge.boneal.net" script -q -c "/bin/bash" "/dev/null";
-
-	elif [[ "${DK_CMD}" == "/bash_prod.bonedge" ]]; then
-		# prod.bonedge.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "prod.bonedge.boneal.net" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_graylog" ]] || [[ "${DK_CMD}" == "/bgraylog" ]]; then
-		# graylog.boneal.net
-		docker exec -e "${E1}" -e "${E2}" -it "graylog" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_sonarqube" ]]; then
-		# sonarqube
-		docker exec -e "${E1}" -e "${E2}" -it "sonarqube" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_sonarscanner" ]]; then
-		# sonarscanner
-		docker exec -e "${E1}" -e "${E2}" -it "sonarscanner" script -q -c "/bin/bash" "/dev/null";
-		
-	elif [[ "${DK_CMD}" == "/bash_postgres" ]]; then
-		# postgres
-		docker exec -e "${E1}" -e "${E2}" -it "postgres" script -q -c "/bin/bash" "/dev/null";
-		
 	else
-		# unhandled bash-target
-		echo "\n\n$ 0: Un-handled Bash Command: \"${0}\"\n\n";
-		exit 1;
-		
+
+		test -v ARR_CONTAINER_IDS && unset ARR_CONTAINER_IDS; # Re-instantiate bash array via unset + declare
+		test -v ARR_CONTAINER_IDS[@] && unset ARR_CONTAINER_IDS;
+		declare -A ARR_CONTAINER_IDS;
+		declare -A ARR_DOCKER_IMAGES;
+
+		DOCKER_CONTAINER_IDS=$(docker ps --format "{{.ID}}");
+
+		CHOICE_KEY=0;
+		for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
+			CHOICE_KEY=$((CHOICE_KEY+1));
+			EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
+			ARR_CONTAINER_IDS+=(["${CHOICE_KEY}"]="${EACH_CONTAINER_ID}");
+			ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
+		done;
+
+		if [ ${CHOICE_KEY} -le 0 ]; then
+			echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
+			
+		else
+			echo "";
+			echo "Found the following dockers, locally:";
+			echo "------------------------------------------------------------";
+			for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+				EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+				EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+				echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+			done;
+			echo "------------------------------------------------------------";
+			echo "";
+
+			MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
+			if [ -z "${REPLY}" ]; then
+				echo "";
+				echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+			else
+				USER_SELECTION_KEY=$((0+"${REPLY}"));
+				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
+					echo "Error: Invalid Selection of \"${REPLY}\"";
+				else
+					E1="LINES=$(tput lines)";
+					E2="COLUMNS=$(tput cols)";
+					CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
+					DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+					echo "        |----> ID: \"${CONTAINER_ID}\"";
+					echo "        |-> Image: \"${DOCKER_IMAGE}\"";
+					echo "";
+					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
+					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+				fi;
+			fi;
+
+		fi;
+
 	fi;
+
 else 
 	echo "\n\n$ 0: Variable is either unset or contains a null value\n\n";
 	exit 1;

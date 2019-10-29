@@ -838,47 +838,54 @@ else
 		# /etc/nginx
 		#
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
+			if [ -z "$(which nginx)" ]; then
+				# NGINX does NOT exist locally
+				echo "Warning: NGINX not installed - skipping nginx update"
 
-			DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
-			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-			FILE_PERMS="0644"; DIR_PERMS="0755";
-			echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-			BENCHMARK_START=$(date +'%s.%N');
-			rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
-			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-			DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
-			DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
-			if [ ! -f "${DH_PARAM_FILEPATH}" ]; then
-				echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
-				openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
-			fi;
-
-			# Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match
-			find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
-				Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
-				Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
-				if [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
-					# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
-					ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-					echo "  |→ Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
-				elif [ -L "${Each_SitesEnabled}" ]; then
-					# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
-					unlink "${Each_SitesEnabled}";
-					# echo "  |→ Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
-				# else
-					# echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+			else
+				# NGINX exists locally
+				DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
+				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+				FILE_PERMS="0644"; DIR_PERMS="0755";
+				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+				BENCHMARK_START=$(date +'%s.%N');
+				rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
+				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+				DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
+				DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
+				if [ ! -f "${DH_PARAM_FILEPATH}" ]; then
+					echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
+					openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
 				fi;
-			done;
 
-			# Setup certbot to reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot
-			if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
-				ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
+				# Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match
+				find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
+					Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
+					Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
+					if [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
+						# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
+						ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
+						echo "  |→ Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
+					elif [ -L "${Each_SitesEnabled}" ]; then
+						# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
+						unlink "${Each_SitesEnabled}";
+						# echo "  |→ Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
+					# else
+						# echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+					fi;
+				done;
+
+				# Setup certbot to reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot
+				if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
+					ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
+				fi;
+
+				RESTART_SERVICE_NGINX=1;
+				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 			fi;
-
-			RESTART_SERVICE_NGINX=1;
-			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
 		fi;
 
@@ -911,6 +918,7 @@ else
 		# ------------------------------------------------------------
 		#   bin-scripts
 		TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/bin/docker_check_installation_status"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		#   sbin-scripts
 		TO_DEL="/usr/local/sbin/jenkins-config-export"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;

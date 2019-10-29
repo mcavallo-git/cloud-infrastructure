@@ -26,10 +26,18 @@ else
 		#
 		# WSL Docker Installation
 		#
-		
+
+		# Redirect Bash calls to Windows docker-host
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "/usr/bin/docker-compose";
+
 		# Download Docker Desktop (if not found locally)
 		if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
+			echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
 			"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
+		else
+			"/usr/bin/docker" --version;
+			"/usr/bin/docker-compose" --version;
 		fi;
 
 		# if [ -v SUDO_USER ]; then

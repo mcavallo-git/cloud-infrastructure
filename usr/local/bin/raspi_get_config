@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+#	Shows all "dtparam=..." instantiated values
+#
+# ------------------------------------------------------------
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then

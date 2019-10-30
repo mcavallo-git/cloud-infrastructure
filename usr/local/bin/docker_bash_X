@@ -38,7 +38,7 @@ if [ -n "$0" ]; then
 			if [ -z "${REPLY}" ]; then
 				echo "";
 				echo "Error: Response timed out after ${MAX_READ_WAIT}s";
-			else
+			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
 				USER_SELECTION_KEY=$((0+"${REPLY}"));
 				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
 					echo "Error: Invalid Selection of \"${REPLY}\"";
@@ -53,6 +53,9 @@ if [ -n "$0" ]; then
 					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
 					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
 				fi;
+			else
+				echo "";
+				echo "Error: Malformed user-input - Please input an integer selection (based on table, above)";
 			fi;
 
 		fi;

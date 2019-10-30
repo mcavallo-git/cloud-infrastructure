@@ -39,7 +39,7 @@ if [ -n "$0" ]; then
 				echo "";
 				echo "Error: Response timed out after ${MAX_READ_WAIT}s";
 			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
-				USER_SELECTION_KEY=$((0+"${REPLY}"));
+				USER_SELECTION_KEY=$((0+${REPLY}));
 				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
 					echo "Error: Invalid Selection of \"${REPLY}\"";
 				else
@@ -55,7 +55,7 @@ if [ -n "$0" ]; then
 				fi;
 			else
 				echo "";
-				echo "Error: Malformed user-input - Please input an integer selection (based on table, above)";
+				echo "Error: Malformed user-input (must be an integer selection from the table, above)";
 			fi;
 
 		fi;

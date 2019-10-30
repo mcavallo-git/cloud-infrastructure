@@ -501,6 +501,11 @@ else
 					echo "  |";
 					read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+						# User declined the config-update
+						echo "Info: Skipped SSH-Config Update (command \"ssh\" not found)";
+
+					else
+						# User accepted/confirmed the config-update
 						echo -e "\n""Info: Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 						echo "  |-> Using config from file \"${SSHD_CONFIG_REPLACEMENT}\"";
 						
@@ -514,9 +519,6 @@ else
 
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-
-					else
-						echo "Info: Skipped SSH-Config Update (command \"ssh\" not found)";
 
 					fi;
 				fi;

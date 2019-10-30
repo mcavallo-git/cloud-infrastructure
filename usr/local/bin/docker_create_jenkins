@@ -22,12 +22,14 @@ else
 	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # Re-instantiate bash array
 
 	EACH_KEY=0;
-	MIN_KEY=$((EACH_KEY+1));
+	# MIN_KEY=$((EACH_KEY+1));
+	MIN_KEY=${EACH_KEY};
 	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
-		EACH_KEY=$((EACH_KEY+1));
 		ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
+		EACH_KEY=$((EACH_KEY+1));
 	done;
-	MAX_KEY=${EACH_KEY};
+	MAX_KEY=$((EACH_KEY-1));
+	# MAX_KEY=${EACH_KEY};
 
 	# MENU_LENGTH=10;
 	# if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then

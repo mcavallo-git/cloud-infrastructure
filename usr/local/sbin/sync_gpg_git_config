@@ -3,19 +3,15 @@
 # LOCAL_SBIN="/usr/local/sbin/sync_gpg_git_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# if [ 0 -eq 1 ]; then
-
-# mkdir -p "${HOME}/.gpg_git" \
-# && curl --silent --output "${HOME}/.gpg_git/sync_gpg_git_config" "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" \
-# && "${HOME}/.gpg_git/sync_gpg_git_config" \
-# && rm -f "${HOME}/.gpg_git/sync_gpg_git_config";
-
-# fi;
+#
 if [ 0 -eq 1 ]; then # To run this script on-the-fly, paste the following command into target environment's terminal:
 
-wget -qO- "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash;
+# wget -qO- "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash;
 
-curl -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash
+curl \
+-H 'Cache-Control: no-cache' \
+-s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config?$(date +'%s.%N')" \
+| bash;
 
 fi;
 # ------------------------------------------------------------

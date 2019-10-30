@@ -470,15 +470,22 @@ else
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
 				SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa";
 				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa";
-				SSHD_CONFIG_PASSWORD_AUTH="${SSHD_CONFIG_LIVE}.password_auth";
+				SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth";
 
-				# Detect MFA Install(s)
-				MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
-				MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
-				if [ -f "${MFA_CONFIG_PAM_DUO}" ] || [ -f "${MFA_CONFIG_LOGIN_DUO}" ]; then
-					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_MFA}";
+				if [ -d "/etc/ssh/authorized_keys" ]; then
+					# At least one SSH-Key exists in the standard directory (/etc/ssh/authorized_keys)
+					MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
+					MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
+					if [ -f "${MFA_CONFIG_PAM_DUO}" ] || [ -f "${MFA_CONFIG_LOGIN_DUO}" ]; then
+						# Duo MFA Installed --> Use it (through PAM) for SSH-Authentication
+						SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_MFA}";
+					else
+						# No MFA, but at least one SSH-Key exists
+						SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
+					fi;
 				else
-					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
+					# No SSH Key(s) exist in standard location (/etc/ssh/authorized_keys) --> Allow passwords for the time-being
+					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
 				echo -e "\n""Info: Updating \"${SSHD_CONFIG_LIVE}\" with changes from \"${GIT_REPO_NAME}\" repository";

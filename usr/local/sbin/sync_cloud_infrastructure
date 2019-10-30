@@ -487,7 +487,7 @@ else
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
-				# dos2unix --quiet "${SSHD_CONFIG_LIVE}";
+				dos2unix --quiet "${SSHD_CONFIG_LIVE}";
 				dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
 					# SSH-Config file already fully up-to-date

@@ -43,16 +43,19 @@ else
 		done;
 
 		ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
-
+		
+		# Let the user determine which tag (image-revision) to build-from
 		MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
 		if [ ${READ_RET_CODE} -gt 128 ]; then
 			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
 			echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
+
 		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 			USER_SELECTION_KEY=$((0+${REPLY}));
 			if [ -z "${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}" ]; then
 				# Error - User-input key not found as an index within the Docker-Image-Tags array
 				echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
+
 			else
 				# Success - User selected a valid tag
 				E1="LINES=$(tput lines)";
@@ -74,7 +77,8 @@ else
 				IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 				echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_PARAMS} ]...""\n";
-				docker run ${DOCKER_RUN_PARAMS};
+				# docker run ${DOCKER_RUN_PARAMS};
+				docker run ${DOCKER_RUN_ARR[@]};
 
 			fi;
 

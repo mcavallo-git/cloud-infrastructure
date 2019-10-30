@@ -227,7 +227,8 @@ server {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
+	ssl_certificate_key "/etc/l
+	etsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
@@ -236,7 +237,7 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 		add_header Content-Type text/plain;
 		#
-		# curl -s -o '/tmp/sync_cloud_infrastructure' 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure'; sudo chmod 0700 '/tmp/sync_cloud_infrastructure'; sudo '/tmp/sync_cloud_infrastructure';
+		# wget -qO- "https://sync.mcavallo.com/sh" | sh;
 		#
 	}
 	location /ps {

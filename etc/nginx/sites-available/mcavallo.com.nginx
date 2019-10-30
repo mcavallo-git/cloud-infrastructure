@@ -239,6 +239,8 @@ server {
 		#
 		# wget -qO- "https://sync.mcavallo.com/sh" | bash;
 		#
+		# curl -H 'Cache-Control: no-cache' -s "https://sync.mcavallo.com/sh?$(date +'%s.%N')" | bash
+		#
 	}
 	location /ps {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;

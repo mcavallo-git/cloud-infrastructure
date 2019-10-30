@@ -13,15 +13,64 @@ if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
 else
 	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
 	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
+	echo "IMAGES_MENU_OPTIONS:";
+	echo "${IMAGES_MENU_OPTIONS}";
+
+	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # Re-instantiate bash array
+
+	unset ARR_OPTIONS_MENU; declare -A ARR_OPTIONS_MENU; # Re-instantiate bash array
+	EACH_KEY=0;
+	MIN_KEY=$((EACH_KEY+1));
+	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
+		EACH_KEY=$((EACH_KEY+1));
+		ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
+	done;
+	MAX_KEY=${EACH_KEY};
+
 	MENU_LENGTH=10;
 	if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then
 		MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
 	fi;
 	IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
-	echo "IMAGES_MENU_OPTIONS:";
-	echo "${IMAGES_MENU_OPTIONS}";
 
-	exit 0;
+	if [ ${CHOICE_KEY} -le 0 ]; then
+		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
+	else
+
+		for EACH_KEY in "${!ARR_TAG_OPTIONS[@]}"; do
+			EACH_TAG="${ARR_TAG_OPTIONS[${EACH_KEY}]}";
+			echo "	${EACH_KEY}  |  ${IMAGE_NAME}:${EACH_TAG}";
+		done;
+
+		ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
+
+		MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
+		echo -e "\n";
+		if [ ${READ_RET_CODE} -gt 128 ]; then # from read --help: "The exit status is greater than 128 if the timeout is exceeded"
+			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
+			USER_SELECTION_KEY=$((0+"${REPLY}"));
+			if [ -z "${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}" ]; then
+				# Error - Input key not found as an index within the Docker-Image-Tags array
+				echo "Error: Invalid selection of \"${REPLY}\"";
+			else
+				E1="LINES=$(tput lines)";
+				E2="COLUMNS=$(tput cols)";
+				CONTAINER_ID="${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}";
+				DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+				echo "        |----> ID: \"${CONTAINER_ID}\"";
+				echo "        |-> Image: \"${DOCKER_IMAGE}\"";
+				docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+			fi;
+		elif [ ${READ_RET_CODE} -gt 128 ]; then
+			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
+			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+		else
+			# Error - Malformed User-input
+			echo "Error: Invalid/empty input detected";
+			echo "  |--> Expected input to be of integer type, with value between ${MIN_KEY} and ${MAX_KEY} (inclusive)";
+		fi;
+	fi;
 
 	# docker_name="jenkins_$(date +'%s')";
 	# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
@@ -29,48 +78,6 @@ else
 	# printf "    ===--  Started Docker:  ${docker_name}...\n"
 	# printf "    ===--    Bashing Into:  ${docker_name}...\n"
 	# docker exec -i -t ${docker_name} /bin/bash;
-
-	unset ARR_OPTIONS_MENU; declare -A ARR_OPTIONS_MENU; # Re-instantiate bash array
-	ARR_OPTIONS_MENU+=([1]="Val One");
-	ARR_OPTIONS_MENU+=([2]="Val Two");
-
-	CHOICE_KEY=0;
-	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
-		CHOICE_KEY=$((CHOICE_KEY+1));
-		EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_TAG}");
-		ARR_OPTIONS_MENU+=(["${CHOICE_KEY}"]="${EACH_TAG}");
-		ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
-	done;
-
-	if [ ${CHOICE_KEY} -le 0 ]; then
-		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
-	else
-		echo "Found the following dockers, locally:";
-		for EACH_KEY in "${!ARR_OPTIONS_MENU[@]}"; do
-			EACH_TAG="${ARR_OPTIONS_MENU[${EACH_KEY}]}";
-			EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-			echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_TAG})";
-		done;
-
-		MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
-		if [ -z "${REPLY}" ]; then
-			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
-		else
-			USER_SELECTION_KEY=$((0+"${REPLY}"));
-			if [ -z "${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}" ]; then
-				echo "Error: Invalid Selection of \"${REPLY}\"";
-			else
-				E1="LINES=$(tput lines)";
-				E2="COLUMNS=$(tput cols)";
-				CONTAINER_ID="${ARR_OPTIONS_MENU[${USER_SELECTION_KEY}]}";
-				DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
-				echo "        |----> ID: \"${CONTAINER_ID}\"";
-				echo "        |-> Image: \"${DOCKER_IMAGE}\"";
-				docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
-			fi;
-		fi;
-	fi;
-
 
 fi;
 

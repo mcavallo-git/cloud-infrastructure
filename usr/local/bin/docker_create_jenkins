@@ -33,11 +33,6 @@ else
 	ARR_OPTIONS_MENU+=([1]="Val One");
 	ARR_OPTIONS_MENU+=([2]="Val Two");
 
-# TESTER=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/jenkinsci/blueocean/tags" | jq -r ".[].name" 2>"/dev/null";); TESTER_ERR=$?; echo "${TESTER}"; echo "${TESTER_ERR}";
-
-# curl -s -S "https://registry.hub.docker.com/v1/repositories/jenkinsci/blueocean/tags" | jq -r '.[].name' | sort;
-
-
 	CHOICE_KEY=0;
 	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
 		CHOICE_KEY=$((CHOICE_KEY+1));

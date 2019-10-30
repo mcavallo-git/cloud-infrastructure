@@ -39,7 +39,7 @@ else
 		ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 		for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
 			EACH_TAG="${ARR_TAG_OPTIONS_NO_DUPES[${EACH_KEY}]}";
-			echo "	${EACH_KEY}  |  ${DOCKER_IMAGE_NAME}:${EACH_TAG}";
+			echo "   ${EACH_KEY}	|  ${DOCKER_IMAGE_NAME}:${EACH_TAG}";
 		done;
 
 		ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";

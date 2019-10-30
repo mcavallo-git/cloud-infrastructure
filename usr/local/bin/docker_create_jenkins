@@ -2,6 +2,9 @@
 
 # docker exec -i -t ${docker_name} -p 127.0.0.1:80:8080 /bin/bash;
 
+REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+
+
 IMAGE_NAME="jenkinsci/blueocean";
 DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
 if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then

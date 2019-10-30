@@ -72,13 +72,16 @@ else
 				DOCKER_RUN_ARR+=("-v '/var/run/docker.sock:/var/run/docker.sock'");
 				DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
 
-				ROLLBACK_IFS="${IFS}"; IFS=" "; # Backup the global delimiter (to restore later), then set it as-intended ### $'\n'
+				# ROLLBACK_IFS="${IFS}"; IFS=" "; # Backup the global delimiter (to restore later), then set it as-intended ### $'\n'
 				DOCKER_RUN_PARAMS="${DOCKER_RUN_ARR[@]}"; # Build the docker-params in one string (especially for WSL -> [ Docker-for-Windows ] hand-offs)
-				IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
+				# IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
+				echo -e "\n""\${DOCKER_RUN_PARAMS} = [ ${DOCKER_RUN_PARAMS} ]""\n";
+				echo -e "\n""\${DOCKER_RUN_ARR[@]} = [ ${DOCKER_RUN_ARR[@]} ]""\n";
+				
 				echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_PARAMS} ]...""\n";
-				# docker run ${DOCKER_RUN_PARAMS};
-				docker run ${DOCKER_RUN_ARR[@]};
+				docker run ${DOCKER_RUN_PARAMS};
+				# docker run ${DOCKER_RUN_ARR[@]};
 
 			fi;
 

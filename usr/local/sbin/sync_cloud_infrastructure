@@ -468,9 +468,9 @@ else
 				
 				# Backup & Update the sshd_config (SSH Server) file
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
-				SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa";
-				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa";
-				SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth";
+				SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_MFA}" "${SSHD_CONFIG_MFA}";
+				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_NO_MFA}" "${SSHD_CONFIG_NO_MFA}";
+				SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_AUTH}" "${SSHD_CONFIG_PASS_AUTH}";
 
 				if [ -d "/etc/ssh/authorized_keys" ]; then
 					# At least one SSH-Key exists in the standard directory (/etc/ssh/authorized_keys)
@@ -484,7 +484,7 @@ else
 						SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
 					fi;
 				else
-					# No SSH Key(s) exist in standard location (/etc/ssh/authorized_keys) --> Allow passwords for the time-being
+					# No SSH Key(s) exist in standard location (/etc/ssh/authorized_keys) --> Allow passwords, for now
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 

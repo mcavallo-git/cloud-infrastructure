@@ -491,7 +491,7 @@ else
 				dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
 					# SSH-Config file already fully up-to-date
-					echo -e "\n""Info: Skipping update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
+					echo -e "\n""Info: Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 					echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
 				else
@@ -910,7 +910,7 @@ else
 						unlink "${Each_SitesEnabled}";
 						# echo "  |→ Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
 					# else
-						# echo "  |→ Skipping NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+						# echo "  |→ Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
 					fi;
 				done;
 
@@ -934,7 +934,7 @@ else
 			LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>/dev/null;);
 			COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
 			if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
-				echo -e "\n""Info: Skipping removal of cron sync-triggers (No scripts found matching \"/etc/cron.d/CRON_*\")";
+				echo -e "\n""Info: Skipped removal of cron sync-triggers (No scripts found matching \"/etc/cron.d/CRON_*\")";
 			else
 				echo -e "\n""Info: Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
 				for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
@@ -974,7 +974,7 @@ else
 			SERVICE_NAME="cron";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
 				/usr/sbin/service "${SERVICE_NAME}" status;
@@ -989,7 +989,7 @@ else
 			SERVICE_NAME="jenkins";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
 				/usr/sbin/service "${SERVICE_NAME}" status;
@@ -1003,7 +1003,7 @@ else
 			SERVICE_NAME="nginx";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/local/sbin/reload_nginx;
 			fi;
@@ -1017,7 +1017,7 @@ else
 			SERVICE_NAME="ssh";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
 				/usr/sbin/service "${SERVICE_NAME}" status;
@@ -1032,7 +1032,7 @@ else
 			SERVICE_NAME="ufw";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipping restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
 				if [ -n "$(which ${SERVICE_NAME};)" ]; then

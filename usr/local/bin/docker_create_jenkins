@@ -11,8 +11,8 @@ if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
 	echo "Error: No docker images found to match \"${DOCKER_IMAGE_NAME}\"";
 	exit 1;
 else
-	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
-	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
+	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
+	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
 
 	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # Re-instantiate bash array
 

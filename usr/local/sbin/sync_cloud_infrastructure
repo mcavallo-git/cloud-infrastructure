@@ -484,7 +484,7 @@ else
 				fi;
 
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ] && [ $(find "/etc/ssh/authorized_keys" -type f | wc -l;) -eq 0 ]; then
-					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" checksums already erqual with already up-to-date twith \"${GIT_REPO_NAME}\" repository";
+					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" - checksum already up-to-date";
 
 				else
 

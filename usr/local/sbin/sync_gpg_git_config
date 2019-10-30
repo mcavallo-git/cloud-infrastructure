@@ -721,6 +721,7 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 			KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
 			echo "$(git config --local --list --show-origin)";

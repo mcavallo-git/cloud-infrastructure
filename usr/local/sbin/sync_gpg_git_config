@@ -3,17 +3,21 @@
 # LOCAL_SBIN="/usr/local/sbin/sync_gpg_git_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# SYNC 1-LINER:
-#
-if [ 0 -eq 1 ]; then
+# if [ 0 -eq 1 ]; then
 
-mkdir -p "${HOME}/.gpg_git" \
-&& curl --silent --output "${HOME}/.gpg_git/sync_gpg_git_config" "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" \
-&& "${HOME}/.gpg_git/sync_gpg_git_config" \
-&& rm -f "${HOME}/.gpg_git/sync_gpg_git_config";
+# mkdir -p "${HOME}/.gpg_git" \
+# && curl --silent --output "${HOME}/.gpg_git/sync_gpg_git_config" "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" \
+# && "${HOME}/.gpg_git/sync_gpg_git_config" \
+# && rm -f "${HOME}/.gpg_git/sync_gpg_git_config";
+
+# fi;
+if [ 0 -eq 1 ]; then # To run this script on-the-fly, paste the following command into target environment's terminal:
+
+wget -qO- "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash;
+
+curl -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash
 
 fi;
-#
 # ------------------------------------------------------------
 #
 # In a Windows environment, take control of signing commits in Git by redirecting gpg commands to use
@@ -584,11 +588,12 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			# Booleans
+			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
-			KEY="gpg.program";                                                git config --local --unset "${KEY}";
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
@@ -619,14 +624,16 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
 				# Strings (GPG)
+				KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
 				KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+				# Booleans
+				KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
 				# Unsets
-				KEY="gpg.program";                                                git config --local --unset "${KEY}";
 				KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-				KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 			fi;
 			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 				echo "------------------------------------------------------------";
+				echo "$(git config --local --list --show-origin)";
 				echo "$(git config --local --list --show-origin)";
 				echo "------------------------------------------------------------";
 			fi;
@@ -672,11 +679,12 @@ for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			# Booleans
+			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
-			KEY="gpg.program";                                                git config --local --unset "${KEY}";
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
 		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
@@ -707,12 +715,12 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
 			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			# Booleans
+			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
-			KEY="gpg.program";                                                git config --local --unset "${KEY}";
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-			KEY="commit.gpgsign";                                             git config --local --unset "${KEY}";
-		fi;
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 			echo "------------------------------------------------------------";
 			echo "$(git config --local --list --show-origin)";

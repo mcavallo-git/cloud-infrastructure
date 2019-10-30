@@ -50,7 +50,7 @@ else
 			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
 			echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
 		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
-			USER_SELECTION_KEY=$((0+"${REPLY}"));
+			USER_SELECTION_KEY=$((0+${REPLY}));
 			if [ -z "${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}" ]; then
 				# Error - User-input key not found as an index within the Docker-Image-Tags array
 				echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";

@@ -387,6 +387,10 @@ else
 	else
 		# Required source directory/directories exist → Sync them to local workstation/server
 		EXIT_CODE=0;
+
+		# Convert any CRLF files to force line-endings to be LF (only)
+		dos2unix --quiet "${DESTINATION_PATH}"/*;
+
 		
 		# ------------------------------------------------------------
 		#

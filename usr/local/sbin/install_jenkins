@@ -51,11 +51,19 @@ else
 	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
 	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+			echo -e "\n""!!! Warning !!!";
+			echo "  |";
+			echo "  |--> Update to SSH Configuration Requested";
+			echo "  |";
+			echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+			echo "  |";
+			read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+			echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
 	# ------------------------------------------------------------
 	# Determine if Jenkins is already installed
-	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -eq 0 ]; then
+	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -gt 0 ]; then
 	# if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
 
 		# Install Java Development Kit (Jenkins Pre-Requisite)

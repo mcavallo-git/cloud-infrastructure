@@ -500,11 +500,11 @@ else
 					echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
 					echo "  |";
 					read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
-					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+					if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 						# User declined the config-update
-						echo "Info: Skipped SSH-Config Update (command \"ssh\" not found)";
-
+						echo "Info: Skipped SSH-Config Update (canceled by user)";
 					else
+
 						# User accepted/confirmed the config-update
 						echo -e "\n""Info: Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 						echo "  |-> Using config from file \"${SSHD_CONFIG_REPLACEMENT}\"";

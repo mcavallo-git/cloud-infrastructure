@@ -35,8 +35,9 @@ else
 	if [ ${CHOICE_KEY} -le 0 ]; then
 		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
 	else
-
-		for EACH_KEY in "${!ARR_TAG_OPTIONS[@]}"; do
+		
+		ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+		for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
 			EACH_TAG="${ARR_TAG_OPTIONS[${EACH_KEY}]}";
 			echo "	${EACH_KEY}  |  ${DOCKER_IMAGE_NAME}:${EACH_TAG}";
 		done;
@@ -45,14 +46,16 @@ else
 
 		MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
 		echo -e "\n";
-		if [ ${READ_RET_CODE} -gt 128 ]; then # from read --help: "The exit status is greater than 128 if the timeout is exceeded"
-			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+		if [ ${READ_RET_CODE} -gt 128 ]; then
+			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
+			echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
 		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 			USER_SELECTION_KEY=$((0+"${REPLY}"));
 			if [ -z "${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}" ]; then
-				# Error - Input key not found as an index within the Docker-Image-Tags array
-				echo "Error: Invalid selection of \"${REPLY}\"";
+				# Error - User-input key not found as an index within the Docker-Image-Tags array
+				echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
 			else
+				# Success - User selected a valid tag
 				E1="LINES=$(tput lines)";
 				E2="COLUMNS=$(tput cols)";
 				DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS[${USER_SELECTION_KEY}]}";
@@ -66,23 +69,21 @@ else
 				DOCKER_RUN_ARR+=("-v \"jenkins-data:/var/jenkins_home\""); \
 				DOCKER_RUN_ARR+=("-v \"/var/run/docker.sock:/var/run/docker.sock\"");
 				DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
-				
+
 				ROLLBACK_IFS="${IFS}"; IFS=" "; # Backup the global delimiter (to restore later), then set it as-intended ### $'\n'
-				DOCKER_RUN_PARAMS="${DOCKER_RUN_ARR[@]}";
+				DOCKER_RUN_PARAMS="${DOCKER_RUN_ARR[@]}"; # Build the docker-params in one string (especially for WSL -> [ Docker-for-Windows ] hand-offs)
 				IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 				echo "";
 				echo "Info: Calling [ docker run \"${DOCKER_RUN_PARAMS}\" ]";
 				docker run "${DOCKER_RUN_PARAMS}";
-				# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+
 			fi;
-		elif [ ${READ_RET_CODE} -gt 128 ]; then
-			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
-			echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+
 		else
-			# Error - Malformed User-input
-			echo "Error: Invalid/empty input detected";
-			echo "  |--> Expected input to be of integer type, with value between ${MIN_KEY} and ${MAX_KEY} (inclusive)";
+			# Error - Malformed User-input (didn't meet criteria, above)
+			echo -e "Error: Invalid/empty User-input""\n""${ERROR_SUGGEST_HELP}";
+
 		fi;
 	fi;
 

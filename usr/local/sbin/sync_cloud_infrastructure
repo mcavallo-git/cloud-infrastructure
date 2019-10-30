@@ -387,7 +387,7 @@ else
 	else
 		# Required source directory/directories exist → Sync them to local workstation/server
 		EXIT_CODE=0;
-
+		
 		# ------------------------------------------------------------
 		#
 		# /usr/local/bin
@@ -456,15 +456,10 @@ else
 		# /etc/ssh/sshd_config
 		#
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
-			# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-			echo -e "\n""!!! Warning !!!";
-			echo "  |";
-			echo "  |--> Update to SSH Configuration Requested";
-			echo "  |";
-			echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
-			echo "  |";
-			read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
-			if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+
+			# service --status-all 2>/dev/null | grep 'jenkins';
+
+			if [ -n "$(which ssh)" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 				
 				# Backup & Update the sshd_config (SSH Server) file
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
@@ -488,6 +483,14 @@ else
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
+				# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+				echo -e "\n""!!! Warning !!!";
+				echo "  |";
+				echo "  |--> Update to SSH Configuration Requested";
+				echo "  |";
+				echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+				echo "  |";
+				read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 				if [ $(cmp -v "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ] && [ $(find "/etc/ssh/authorized_keys" -type f | wc -l;) -eq 0 ]; then
 					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" checksums already erqual with already up-to-date twith \"${GIT_REPO_NAME}\" repository";
 

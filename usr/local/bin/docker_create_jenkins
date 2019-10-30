@@ -64,7 +64,7 @@ else
 
 				unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
 				DOCKER_RUN_ARR+=("-u root"); \
-				DOCKER_RUN_ARR+=("--rm"); \
+				# DOCKER_RUN_ARR+=("--rm"); \
 				DOCKER_RUN_ARR+=("-d"); \
 				DOCKER_RUN_ARR+=("-p 8080:8080"); \
 				DOCKER_RUN_ARR+=("-p 50000:50000"); \
@@ -78,7 +78,7 @@ else
 
 				echo -e "\n""\${DOCKER_RUN_PARAMS} = [ ${DOCKER_RUN_PARAMS} ]""\n";
 				echo -e "\n""\${DOCKER_RUN_ARR[@]} = [ ${DOCKER_RUN_ARR[@]} ]""\n";
-				
+
 				echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_PARAMS} ]...""\n";
 				docker run ${DOCKER_RUN_PARAMS};
 				# docker run ${DOCKER_RUN_ARR[@]};

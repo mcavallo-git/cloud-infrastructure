@@ -28,8 +28,8 @@ else
 		ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
 		EACH_KEY=$((EACH_KEY+1));
 	done;
-	MAX_KEY=$((EACH_KEY-1));
-	# MAX_KEY=${EACH_KEY};
+	# MAX_KEY=$((EACH_KEY-1));
+	MAX_KEY=$((${EACH_KEY}-1));
 
 	# MENU_LENGTH=10;
 	# if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then

@@ -45,7 +45,6 @@ else
 		ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
 
 		MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
-		echo -e "\n";
 		if [ ${READ_RET_CODE} -gt 128 ]; then
 			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
 			echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
@@ -74,8 +73,7 @@ else
 				DOCKER_RUN_PARAMS="${DOCKER_RUN_ARR[@]}"; # Build the docker-params in one string (especially for WSL -> [ Docker-for-Windows ] hand-offs)
 				IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
-				echo "";
-				echo "Info: Calling [ docker run \"${DOCKER_RUN_PARAMS}\" ]";
+				echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_PARAMS} ]...""\n";
 				docker run ${DOCKER_RUN_PARAMS};
 
 			fi;

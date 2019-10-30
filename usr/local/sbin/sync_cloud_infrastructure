@@ -532,7 +532,7 @@ else
 				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
 			else
 				# Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
-				if [[ $(ufw status 1>&2 2>/dev/null; echo $?;) -ne 0 ]]; 
+				if [[ $(ufw status 1>&2 2>/dev/null; echo $?;) -ne 0 ]]; then
 					echo -e "\n""Info: Skipped UFW sync (incompatible OS)";
 
 				else

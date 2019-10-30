@@ -459,7 +459,7 @@ else
 
 			# service --status-all 2>/dev/null | grep 'jenkins';
 
-			if [ -n "$(which ssh)" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+			if [ -n "$(which ssh)" ]; then
 				
 				# Backup & Update the sshd_config (SSH Server) file
 				SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
@@ -467,8 +467,8 @@ else
 				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_NO_MFA}" "${SSHD_CONFIG_NO_MFA}";
 				SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_AUTH}" "${SSHD_CONFIG_PASS_AUTH}";
 
-				if [ -d "/etc/ssh/authorized_keys" ]; then
-					# At least one SSH-Key exists in the standard directory (/etc/ssh/authorized_keys)
+				if [ -d "/etc/ssh/authorized_keys" ] && [ "$(find /etc/ssh/authorized_keys -type f | wc -l;)" != "0" ]; then
+					# At least one SSH-Key exists in the standard keyfile directory (/etc/ssh/authorized_keys)
 					MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
 					MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
 					if [ -f "${MFA_CONFIG_PAM_DUO}" ] || [ -f "${MFA_CONFIG_LOGIN_DUO}" ]; then
@@ -479,39 +479,46 @@ else
 						SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
 					fi;
 				else
-					# No SSH Key(s) exist in standard location (/etc/ssh/authorized_keys) --> Allow passwords, for now
+					# No SSH Key(s) exist in the standard keyfile directory (/etc/ssh/authorized_keys) --> Allow passwords, for now
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
-				# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-				echo -e "\n""!!! Warning !!!";
-				echo "  |";
-				echo "  |--> Update to SSH Configuration Requested";
-				echo "  |";
-				echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
-				echo "  |";
-				read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
 				if [ $(cmp -v "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ] && [ $(find "/etc/ssh/authorized_keys" -type f | wc -l;) -eq 0 ]; then
 					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" checksums already erqual with already up-to-date twith \"${GIT_REPO_NAME}\" repository";
 
 				else
-					echo -e "\n""Info: Updating \"${SSHD_CONFIG_LIVE}\" with changes from \"${GIT_REPO_NAME}\" repository";
-					echo "  |-> Using file \"${SSHD_CONFIG_REPLACEMENT}\"";
-					BENCHMARK_START=$(date +'%s.%N');
-					
-					# Backup & Update the sshd_config (SSH Server) file
-					mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
-						&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_REPLACEMENT}" -O "${SSHD_CONFIG_REPLACEMENT}" -q \
-						&& chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
-						&& cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
-						&& RESTART_SERVICE_SSH=1;
 
-					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
-					
+					# Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+					echo -e "\n""!!! Warning !!!";
+					echo "  |";
+					echo "  |--> Update to SSH Configuration Requested";
+					echo "  |";
+					echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+					echo "  |";
+					read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+						echo -e "\n""Info: Updating \"${SSHD_CONFIG_LIVE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+						echo "  |-> Using file \"${SSHD_CONFIG_REPLACEMENT}\"";
+						BENCHMARK_START=$(date +'%s.%N');
+						
+						# Backup & Update the sshd_config (SSH Server) file
+						mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
+							&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_REPLACEMENT}" -O "${SSHD_CONFIG_REPLACEMENT}" -q \
+							&& chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
+							&& cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
+							&& RESTART_SERVICE_SSH=1;
+
+						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+					else
+						echo "Info: Skipped SSH-Config Update";
+
+					fi;
+
 				fi;
 			else
-				echo "Skipped SSH-Config Update";
+				echo "Info: Skipped SSH-Config Update";
+
 			fi;
 		fi;
 
@@ -612,7 +619,7 @@ else
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 					else
-						echo "Skipped DNS-Server Sync";
+						echo "Info: Skipped DNS-Server Sync";
 					fi;
 				fi;
 
@@ -639,7 +646,7 @@ else
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 					else
-						echo "Skipped Automatic Updates";
+						echo "Info: Skipped Automatic Updates";
 					fi;
 				fi;
 

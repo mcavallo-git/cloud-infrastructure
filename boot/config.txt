@@ -1,13 +1,9 @@
 # ------------------------------------------------------------
 #
 #	Raspberry Pi  :::  [  /boot/config.txt  ]
-#		|
-#		|--> Some settings may impact device functionality - See https://rpf.io/configtxt for more details
 #
 # ------------------------------------------------------------
 
-# For more options and information see
-# http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
 # uncomment if you get no picture on HDMI for a default "safe" mode
@@ -102,8 +98,8 @@ dtparam=audio=off
 
 gpu_mem=16
 
+# hdmi_force_hotplug  :::  Setting hdmi_force_hotplug to 1 pretends that the HDMI hotplug signal is asserted, so it appears that a HDMI display is attached. In other words, HDMI output mode will be used, even if no HDMI monitor is detected.
 hdmi_force_hotplug=1
-
 
 # Enable GPU
 dtoverlay=vc4-fkms-v3d
@@ -134,8 +130,21 @@ hdmi_timings=480 0 10 16 59 800 0 15 113 15 0 0 0 60 0 32000000 6
 # ------------------------------------------------------------
 # Citation(s)
 #
-#   www.raspberrypi.org  |  "Video options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/video.md
+#   www.raspberrypi.org  | "config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/
+#    |--> "Licence key and codec options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/codeclicence.md
+#    |--> "Memory options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
+#    |--> "Video options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/video.md
+#    |--> "Onboard analogue audio options in config.txt (3.5mm jack)"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/audio.md
+#    |--> "Camera Settings in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/camera.md
+#    |--> "Boot options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/boot.md
+#    |--> "Ports and Device Tree"  |  https://www.raspberrypi.org/documentation/configuration/device-tree.md#part4.6
+#    |--> "GPIO control in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/gpio.md
+#    |--> "Overclocking options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md
+#    |--> "Conditional filters in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/conditional.md
+#    |--> "Miscellaneous options in config.txt"  |  https://www.raspberrypi.org/documentation/configuration/config-txt/misc.md
+#
 #
 #   github.com  |  "RPI 3B+ fails to boot with vc4-fkms-v3d and Hyperpixel 4 TFT screen on kernel 4.19.59"  |  https://github.com/raspberrypi/firmware/issues/1204
+#
 #
 # ------------------------------------------------------------

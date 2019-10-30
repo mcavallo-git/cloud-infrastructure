@@ -484,7 +484,8 @@ else
 				fi;
 
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ] && [ $(find "/etc/ssh/authorized_keys" -type f | wc -l;) -eq 0 ]; then
-					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" - checksum already up-to-date";
+					echo -e "\n""Info: Skipping update to \"${SSHD_CONFIG_LIVE}\"";
+					echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
 				else
 
@@ -530,42 +531,49 @@ else
 			if [ "$(which ufw)" == "" ]; then
 				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
 			else
-				# Check UFW Enabled/Disabled Status
-				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-				if [ ${UFW_ENABLED} -eq 0 ]; then
-					# Prompt for confirmation before auto-enabling UFW
-					echo -e "\n""!!! Warning !!!";
-					echo "  |";
-					echo "  |--> UFW sync requested, however UFW is currently disabled";
-					echo "  |";
-					read -p "  |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
-					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-						ufw enable;
+				# Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
+				if [[ $(ufw status 1>&2 2>/dev/null; echo $?;) -ne 0 ]]; 
+					echo -e "\n""Info: Skipped UFW sync (incompatible OS)";
+
+				else
+					# Check UFW Enabled/Disabled Status
+					UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+					if [ ${UFW_ENABLED} -eq 0 ]; then
+						# Prompt for confirmation before auto-enabling UFW
+						echo -e "\n""!!! Warning !!!";
+						echo "  |";
+						echo "  |--> UFW sync requested, however UFW is currently disabled";
+						echo "  |";
+						read -p "  |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
+						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+							ufw enable;
+						fi;
 					fi;
-				fi;
 
-				# Re-check UFW Enabled/Disabled Status
-				UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-				if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-					echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
-				fi;
+					# Re-check UFW Enabled/Disabled Status
+					UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+					if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+						echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
+					fi;
 
-				# Proceed if UFW is, indeed, enabled
-				if [ ${UFW_ENABLED} -eq 1 ]; then
+					# Proceed if UFW is, indeed, enabled
+					if [ ${UFW_ENABLED} -eq 1 ]; then
 
-					RESTART_SERVICE_UFW=1;
-					RESTART_SERVICE_SSH=1;
+						RESTART_SERVICE_UFW=1;
+						RESTART_SERVICE_SSH=1;
 
-					# Sync Cronjob Automation:  UFW DDNS Updates
-					if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
-						CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-						echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
-						BENCHMARK_START=$(date +'%s.%N');
-						wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
-							&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
-							&& RESTART_SERVICE_CRON=1;
-						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						# Sync Cronjob Automation:  UFW DDNS Updates
+						if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
+							CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
+							echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+							BENCHMARK_START=$(date +'%s.%N');
+							wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
+								&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
+								&& RESTART_SERVICE_CRON=1;
+							BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+							test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						fi;
+
 					fi;
 
 				fi;

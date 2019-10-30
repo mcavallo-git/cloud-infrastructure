@@ -488,8 +488,8 @@ else
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
-				if [ $(cmp -v "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
-					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" checksums already erqual with \"${GIT_REPO_NAME}\" repository";
+				if [ $(cmp -v "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ] && [ $(find "/etc/ssh/authorized_keys" -type f | wc -l;) -eq 0 ]; then
+					echo -e "\n""Info: Skipping update to config-file \"${SSHD_CONFIG_LIVE}\" checksums already erqual with already up-to-date twith \"${GIT_REPO_NAME}\" repository";
 
 				else
 					echo -e "\n""Info: Updating \"${SSHD_CONFIG_LIVE}\" with changes from \"${GIT_REPO_NAME}\" repository";
@@ -509,7 +509,6 @@ else
 				fi;
 			else
 				echo "Skipped SSH-Config Update";
-
 			fi;
 		fi;
 

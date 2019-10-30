@@ -588,10 +588,10 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
-			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
-			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
 			# Booleans
-			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
+			KEY="commit.gpgSign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 		fi;
@@ -624,10 +624,10 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
 				# Strings (GPG)
-				KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
-				KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+				KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+				KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
 				# Booleans
-				KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
+				KEY="commit.gpgSign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 				# Unsets
 				KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 			fi;
@@ -679,10 +679,10 @@ for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
-			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
-			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
 			# Booleans
-			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
+			KEY="commit.gpgSign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 		fi;
@@ -715,10 +715,10 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
 			# Strings (GPG)
-			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";			
-			KEY="user.signingkey"; VAL="${GPG_KEY_ID}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
 			# Booleans
-			KEY="commit.gpgSign";   VAL="true";                               git config --global --replace-all --bool "${KEY}" "${VAL}";
+			KEY="commit.gpgSign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 			# Unsets
 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then

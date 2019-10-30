@@ -9,11 +9,11 @@ AddressFamily inet
 
 AllowTcpForwarding no
 
-AuthenticationMethods publickey password
+AuthenticationMethods publickey
 
 AuthorizedKeysFile /etc/ssh/authorized_keys/%u
 
-ChallengeResponseAuthentication no
+ChallengeResponseAuthentication yes
 
 ClientAliveCountMax 10
 
@@ -35,7 +35,7 @@ MaxSessions 10
 
 MaxStartups 10:30:60
 
-PasswordAuthentication yes
+PasswordAuthentication no
 
 PermitEmptyPasswords no
 

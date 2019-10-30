@@ -88,12 +88,18 @@ GPG_KEYSERVER_OPTIONS=""; # GPG Key-Server Options
 
 # ------------------------------------------------------------
 
-DEFAULT_CONFIG_FILE="${HOME}/.gpg_git/config";
+DEFAULT_CONFIG_DIRNAME="${HOME}/.gpg_git";
+DEFAULT_CONFIG_FULLPATH="${DEFAULT_CONFIG_DIRNAME}/config";
+
+# Create parent directory to the main config (if not found to exist)
+if [ ! -d "${DEFAULT_CONFIG_DIRNAME}" ]; then
+	mkdir "${DEFAULT_CONFIG_DIRNAME}";
+fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 	source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
-elif [ -f "${DEFAULT_CONFIG_FILE}" ]; then
-	source "${DEFAULT_CONFIG_FILE}"; # Default shell script which sets/instantiates all required config variables
+elif [ -f "${DEFAULT_CONFIG_FULLPATH}" ]; then
+	source "${DEFAULT_CONFIG_FULLPATH}"; # Default shell script which sets/instantiates all required config variables
 else
 	echo "";
 	echo "Error - FIRST inline parameter ( \$1 ) must point to the filepath of a separate shell script which sets/instantiates all required git + gnupg config variables (see var-names above)";

@@ -13,8 +13,6 @@ if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
 else
 	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
 	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
-	echo "IMAGES_MENU_OPTIONS:";
-	echo "${IMAGES_MENU_OPTIONS}";
 
 	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # Re-instantiate bash array
 
@@ -26,11 +24,13 @@ else
 	done;
 	MAX_KEY=${EACH_KEY};
 
-	MENU_LENGTH=10;
-	if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then
-		MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
-	fi;
-	IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
+	# MENU_LENGTH=10;
+	# if [ -n "$(which bc)" ] && [ -n "$(which tput)" ]; then
+	# 	MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
+	# fi;
+	# IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
+	# echo "IMAGES_MENU_OPTIONS:";
+	# echo "${IMAGES_MENU_OPTIONS}";
 
 	if [ ${CHOICE_KEY} -le 0 ]; then
 		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";

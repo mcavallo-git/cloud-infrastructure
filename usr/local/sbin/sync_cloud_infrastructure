@@ -174,7 +174,7 @@ else
 				ARGS_CRONJOB="SYNC";
 				ARGS_DEBUG_MODE=1;
 				ARGS_REMOVE_CRONJOBS=0;
-				# ARGS_SYNC_DDNS=1;
+				ARGS_SYNC_DDNS=1;
 				ARGS_SYNC_JENKINS=1;
 				ARGS_SYNC_NGINX=1;
 				ARGS_SYNC_SSH_CONFIG=1;
@@ -387,10 +387,7 @@ else
 	else
 		# Required source directory/directories exist → Sync them to local workstation/server
 		EXIT_CODE=0;
-
-		# Convert any CRLF files to force line-endings to be LF (only)
-		dos2unix --quiet "${DIR_REPO_BASE}"/*;
-
+		
 		
 		# ------------------------------------------------------------
 		#
@@ -490,6 +487,8 @@ else
 					SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
 				fi;
 
+				# dos2unix --quiet "${SSHD_CONFIG_LIVE}";
+				dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
 					# SSH-Config file already fully up-to-date
 					echo -e "\n""Info: Skipping update to \"${SSHD_CONFIG_LIVE}\"";

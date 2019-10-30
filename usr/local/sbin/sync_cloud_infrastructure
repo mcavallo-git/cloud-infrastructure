@@ -491,7 +491,7 @@ else
 				dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
 				if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
 					# SSH-Config file already fully up-to-date
-					echo -e "\n""Info: Skipping update to \"${SSHD_CONFIG_LIVE}\"";
+					echo -e "\n""Info: Skipping update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 					echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
 				else
@@ -878,7 +878,7 @@ else
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
 			if [ -z "$(which nginx)" ]; then
 				# NGINX does NOT exist locally
-				echo "Warning: NGINX not installed - skipping nginx update"
+				echo -e "\n""Info: Skipped NGINX sync (not found as a local service)";
 
 			else
 				# NGINX exists locally

@@ -1,0 +1,109 @@
+#!/bin/bash
+
+if [ ! -v IMAGE_NAME ] || [ -z "${IMAGE_NAME}" ]; then
+	echo "Error: Required variable \"\$IMAGE_NAME\" unset/empty";
+	echo "  |--> Please retry using syntax [ env IMAGE_NAME=\"YOUR_IMAGE\" ${0} ]";
+	exit 1;
+
+else
+
+	REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+
+	DOCKER_IMAGE_NAME="${IMAGE_NAME}";
+
+	DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${DOCKER_IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
+	if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
+		echo "Error: No docker images found to match \"${DOCKER_IMAGE_NAME}\"";
+		exit 1;
+	else
+
+		echo "";
+		echo "\${#DOCKER_IMAGE_TAGS} = [ ${#DOCKER_IMAGE_TAGS} ]";
+		echo "";
+
+		DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
+		DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
+
+		unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # Re-instantiate bash array
+
+		EACH_KEY=0;
+		# MIN_KEY=$((EACH_KEY+1));
+		MIN_KEY=${EACH_KEY};
+		for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
+			ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
+			EACH_KEY=$((EACH_KEY+1));
+		done;
+		MAX_KEY=$((${EACH_KEY}-1));
+
+		# MENU_LENGTH=10;
+		# 	MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
+		# fi;
+		# IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
+		# echo "IMAGES_MENU_OPTIONS:";
+		# echo "${IMAGES_MENU_OPTIONS}";
+
+		if [ ${CHOICE_KEY} -le 0 ]; then
+			echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
+		else
+			
+			ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+			for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
+				EACH_TAG="${ARR_TAG_OPTIONS_NO_DUPES[${EACH_KEY}]}";
+				echo "   ${EACH_KEY}	|  ${DOCKER_IMAGE_NAME}:${EACH_TAG}";
+			done;
+
+			ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
+			
+			# Let the user determine which tag (image-revision) to build-from
+			MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
+			if [ ${READ_RET_CODE} -gt 128 ]; then
+				# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
+				echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
+
+			elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
+				USER_SELECTION_KEY=$((0+${REPLY}));
+				if [ -z "${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}" ]; then
+					# Error - User-input key not found as an index within the Docker-Image-Tags array
+					echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
+
+				else
+					# Success - User selected a valid tag
+					E1="LINES=$(tput lines)";
+					E2="COLUMNS=$(tput cols)";
+					DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
+
+					unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
+					# DOCKER_RUN_ARR+=("-u root");
+					DOCKER_RUN_ARR+=("--rm");
+					DOCKER_RUN_ARR+=("-d");
+					DOCKER_RUN_ARR+=("-p 8080:8080");
+					# DOCKER_RUN_ARR+=("-p 50000:50000");
+					# DOCKER_RUN_ARR+=("-v 'jenkins-data:/var/jenkins_home'");
+					# DOCKER_RUN_ARR+=("-v '/var/run/docker.sock:/var/run/docker.sock'");
+					DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
+
+					echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
+					# docker run ${DOCKER_RUN_PARAMS};
+					docker run ${DOCKER_RUN_ARR[@]};
+
+				fi;
+
+			else
+				# Error - Malformed User-input (didn't meet criteria, above)
+				echo -e "Error: Invalid/empty User-input""\n""${ERROR_SUGGEST_HELP}";
+
+			fi;
+		fi;
+
+	fi;
+
+fi;
+
+
+
+# ------------------------------------------------------------
+# Citation(s)
+# 
+#   docs.docker.com  |  "docker search - Search the Docker Hub for images"  |  https://docs.docker.com/engine/reference/commandline/search/
+#
+# ------------------------------------------------------------

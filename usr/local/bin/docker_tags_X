@@ -88,6 +88,7 @@ else
 						# Apply predefined docker-run arguments
 						DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
 					else
+						read -p "Bash into the docker, now? (y/n)   " -t 20 -r;
 						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 							# Create & Bash into the Docker
 							DOCKER_RUN_ARR+=("-i -t --rm ${DOCKER_IMAGE_WITH_TAG} /bin/bash");

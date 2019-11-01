@@ -1,7 +1,17 @@
 #!/bin/bash
 
 if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
-	echo "Error: Required variable \"\$DOCKER_IMAGE\" unset/empty";
+	read -p "Search for Tags on which Docker Image?  " -t 60 -r; READ_RET_CODE=$?;
+	if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
+		echo -e "Error: Response timed out ";
+	elif [ -n "${REPLY}" ]; then
+		DOCKER_IMAGE="${REPLY}";
+	fi;
+fi;
+
+
+if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
+	echo "Error: Empty/unset Docker Image-Name";
 	echo "  |--> Please retry using syntax [ env DOCKER_IMAGE=\"YOUR_IMAGE\" ${0} ]";
 	exit 1;
 
@@ -56,10 +66,9 @@ else
 			ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
 			
 			# Let the user determine which tag (image-revision) to build-from
-			MAX_READ_WAIT=60; read -p "Select which Tag to build:  " -t ${MAX_READ_WAIT} -r; READ_RET_CODE=$?;
-			if [ ${READ_RET_CODE} -gt 128 ]; then
-				# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
-				echo -e "Error: Response timed out after ${MAX_READ_WAIT}s""\n""${ERROR_SUGGEST_HELP}";
+			read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
+			if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
+				echo -e "Error: Response timed out""\n""${ERROR_SUGGEST_HELP}";
 
 			elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 				USER_SELECTION_KEY=$((0+${REPLY}));

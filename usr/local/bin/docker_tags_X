@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ ! -v IMAGE_NAME ] || [ -z "${IMAGE_NAME}" ]; then
-	echo "Error: Required variable \"\$IMAGE_NAME\" unset/empty";
-	echo "  |--> Please retry using syntax [ env IMAGE_NAME=\"YOUR_IMAGE\" ${0} ]";
+if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
+	echo "Error: Required variable \"\$DOCKER_IMAGE\" unset/empty";
+	echo "  |--> Please retry using syntax [ env DOCKER_IMAGE=\"YOUR_IMAGE\" ${0} ]";
 	exit 1;
 
 else
 
 	REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
-	DOCKER_IMAGE_NAME="${IMAGE_NAME}";
+	DOCKER_IMAGE_NAME="${DOCKER_IMAGE}";
 
 	DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${DOCKER_IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
 	if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
@@ -74,13 +74,11 @@ else
 					DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
 
 					unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
-					# DOCKER_RUN_ARR+=("-u root");
-					DOCKER_RUN_ARR+=("--rm");
-					DOCKER_RUN_ARR+=("-d");
-					DOCKER_RUN_ARR+=("-p 8080:8080");
-					# DOCKER_RUN_ARR+=("-p 50000:50000");
-					# DOCKER_RUN_ARR+=("-v 'jenkins-data:/var/jenkins_home'");
-					# DOCKER_RUN_ARR+=("-v '/var/run/docker.sock:/var/run/docker.sock'");
+					if [ -v DOCKER_RUN_ARGS ] && [ -n "${DOCKER_RUN_ARGS}" ]; then
+						DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
+					else
+						DOCKER_RUN_ARR+=("-d");
+					fi;
 					DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
 
 					echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";

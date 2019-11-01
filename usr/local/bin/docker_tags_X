@@ -77,6 +77,7 @@ else
 					echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
 
 				else
+
 					# Success - User selected a valid tag
 					E1="LINES=$(tput lines)";
 					E2="COLUMNS=$(tput cols)";
@@ -84,15 +85,24 @@ else
 
 					unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
 					if [ -v DOCKER_RUN_ARGS ] && [ -n "${DOCKER_RUN_ARGS}" ]; then
+						# Apply predefined docker-run arguments
 						DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
 					else
-						DOCKER_RUN_ARR+=("-d");
+						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+							# Create & Bash into the Docker
+							DOCKER_RUN_ARR+=("-i -t --rm ${DOCKER_IMAGE_WITH_TAG} /bin/bash");
+						else
+							# Create the Docker as a Background process
+							DOCKER_RUN_ARR+=("-d");
+							DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
+						fi;
 					fi;
-					DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
 
 					echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
 					# docker run ${DOCKER_RUN_PARAMS};
 					docker run ${DOCKER_RUN_ARR[@]};
+
+					# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
 
 				fi;
 

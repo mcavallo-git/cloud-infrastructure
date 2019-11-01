@@ -8,10 +8,7 @@ if [ 0 -eq 1 ]; then # To run this script on-the-fly, paste the following comman
 
 # wget -qO- "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config" | bash;
 
-curl \
--H 'Cache-Control: no-cache' \
--s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config?$(date +'%s.%N')" \
-| bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config?$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

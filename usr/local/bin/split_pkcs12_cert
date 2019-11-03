@@ -2,12 +2,8 @@
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
-	DAT_DIRNAME=$(dirname "${1}");
-	DAT_BASENAME=$(basename "${1}");
-	cd "${DAT_DIRNAME}";
+	openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.crt.pem";
 
-	openssl pkcs12 -in "./${DAT_BASENAME}" -clcerts -nokeys -out "./${DAT_BASENAME}.pem";
-
-	openssl pkcs12 -in "./${DAT_BASENAME}" -nocerts -nodes -out "./${DAT_BASENAME}.pem";
+	openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
 
 fi;

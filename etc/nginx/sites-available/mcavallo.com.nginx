@@ -233,7 +233,7 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
 	}
 	location /sh {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
 		add_header Content-Type text/plain;
 		#
 		# wget -qO- "https://sync.mcavallo.com/sh" | bash;

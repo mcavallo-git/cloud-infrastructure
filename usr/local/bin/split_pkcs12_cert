@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -n "${1}" ] && [ -f "${1}" ]; then
+
+	DAT_DIRNAME=$(dirname "${1}");
+	DAT_BASENAME=$(basename "${1}");
+	cd "${DAT_DIRNAME}";
+
+	openssl pkcs12 -in "./${DAT_BASENAME}" -clcerts -nokeys -out cert.pem
+	openssl pkcs12 -in "./${DAT_BASENAME}" -nocerts -nodes -out privkey.pem
+
+fi;

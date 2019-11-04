@@ -495,7 +495,7 @@ if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # Unsets
-KEY="core.sshCommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+KEY="core.sshcommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 KEY="push.gpgsign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
@@ -516,7 +516,7 @@ fi;
 # Strings
 # KEY="user.name";        VAL="${GLOBAL_COMMIT_NAME}";                   git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --replace-all "${KEY}" "${VAL}";
-# KEY="core.sshCommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"";     git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="core.sshcommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"";     git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
 # Booleans
 # KEY="commit.gpgsign";   VAL="true";                                    git config --global --replace-all --bool "${KEY}" "${VAL}";
@@ -573,7 +573,7 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		# Strings
 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
@@ -609,7 +609,7 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 			if [ -z "${GPG_KEY_ID}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
@@ -664,7 +664,7 @@ for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 		# Strings
-		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
@@ -700,7 +700,7 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 		# Strings
 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-		KEY="core.sshCommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else

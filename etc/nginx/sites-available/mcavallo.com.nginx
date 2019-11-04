@@ -253,6 +253,8 @@ server {
 		#
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$((Date).Ticks)") -Verb RunAs;
 		#
+		# $SyncTemp="${Env:TEMP}/PowerShell-Sync.$((Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$((Date).Ticks)"))) | Out-Null; PowerShell.exe -File "${SyncTemp}"; Remove-Item "${SyncTemp}";
+		#
 	}
 
 	include "/etc/nginx/nginx_error_locations.conf";

@@ -230,7 +230,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
+		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?$msec;
 	}
 	location /sh {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
@@ -243,7 +243,7 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
 		add_header Content-Type text/plain;
 		#
-		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString('https://sync.mcavallo.com/ps?$(Get-Date -UFormat %s)') -Verb RunAs;
+		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$(Get-Date -UFormat %s)") -Verb RunAs;
 		#
 	}
 	include "/etc/nginx/nginx_error_locations.conf";

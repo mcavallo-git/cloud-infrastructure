@@ -248,8 +248,8 @@ server {
 		#
 	}
 	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		add_header Content-Type text/plain;
 		proxy_cache sync_cache;
 		proxy_cache_revalidate on;

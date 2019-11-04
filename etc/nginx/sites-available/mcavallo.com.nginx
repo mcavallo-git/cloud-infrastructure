@@ -233,14 +233,14 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?$msec;
 	}
 	location /sh {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?$msec;
 		add_header Content-Type text/plain;
 		#
 		# curl -ssL "https://sync.mcavallo.com/sh?$(date +'%s.%N')" | bash;
 		#
 	}
 	location /ps {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?$msec;
 		add_header Content-Type text/plain;
 		#
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$(Get-Date -UFormat %s)") -Verb RunAs;

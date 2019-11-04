@@ -235,6 +235,10 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 	}
 
+	location ~* "^/[\d\.]*.(ba)?sh$" {
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+		add_header Content-Type text/plain;
+	}
 	location /sh {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		add_header Content-Type text/plain;

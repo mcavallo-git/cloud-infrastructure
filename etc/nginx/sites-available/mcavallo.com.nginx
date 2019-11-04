@@ -247,7 +247,6 @@ server {
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%N').sh" | sudo bash;
 		#
 	}
-	location ~* "^/[\d\.]*.(ba)?sh$" {
 	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
 		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;

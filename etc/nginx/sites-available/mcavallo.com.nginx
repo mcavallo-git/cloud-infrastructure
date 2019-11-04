@@ -223,21 +223,29 @@ server {
 	listen [::]:80;
 	listen [::]:443 ssl http2;
 	server_name sync.mcavallo.com;
+
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
+
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 	}
+
 	location /sh {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		add_header Content-Type text/plain;
 		#
 		# curl -ssL "https://sync.mcavallo.com/sh?$(date +'%s.%N')" | bash;
 		#
+	}
+
+	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		add_header Content-Type text/plain;
 	}
 	location /ps {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
@@ -246,7 +254,9 @@ server {
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$((Date).Ticks)") -Verb RunAs;
 		#
 	}
+
 	include "/etc/nginx/nginx_error_locations.conf";
+
 }
 
 

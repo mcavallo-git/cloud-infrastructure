@@ -238,7 +238,7 @@ server {
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 	}
 
-	location ~* "^(/[\d\.]*\.)?(ba)?sh$" {
+	location ~* "^/[\d\.]*\.?(ba)?sh$" {
 		
 		
 		proxy_buffering on;
@@ -250,7 +250,7 @@ server {
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%N').sh" | sudo bash;
 		#
 	}
-	location ~* "^/([\d\.]*\.)?ps(m)?(1)?$" {
+	location ~* "^/[\d\.]*\.?ps(m)?(1)?$" {
 
 		proxy_cache sync_cache;
 		proxy_cache_revalidate on;

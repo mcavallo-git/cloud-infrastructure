@@ -236,28 +236,24 @@ server {
 	}
 
 	location ~* "^/[\d\.]*.(ba)?sh$" {
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+		add_header Content-Type text/plain;
 	}
 	location /sh {
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+		add_header Content-Type text/plain;
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%N').sh" | sudo bash;
 		#
 	}
 
 	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
-		return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		# add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		add_header Content-Type text/plain;
 	}
 	location /ps {
-		return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		# add_header Content-Type text/plain;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		add_header Content-Type text/plain;
 		#
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$((Date).Ticks)") -Verb RunAs;
 		#

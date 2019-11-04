@@ -238,14 +238,12 @@ server {
 	location ~* "^/[\d\.]*.(ba)?sh$" {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		proxy_buffering on;
-		proxy_cache STATIC;
 		proxy_cache_valid 5s;
 		add_header Content-Type text/plain;
 	}
 	location /sh {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		proxy_buffering on;
-		proxy_cache STATIC;
 		proxy_cache_valid 5s;
 		add_header Content-Type text/plain;
 		#
@@ -256,14 +254,12 @@ server {
 	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		proxy_buffering on;
-		proxy_cache STATIC;
 		proxy_cache_valid 5s;
 		add_header Content-Type text/plain;
 	}
 	location /ps {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		proxy_buffering on;
-		proxy_cache STATIC;
 		proxy_cache_valid 5s;
 		add_header Content-Type text/plain;
 		#

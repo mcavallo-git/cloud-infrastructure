@@ -247,8 +247,11 @@ server {
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%N').sh" | sudo bash;
 		#
 	}
+	location ~* "^/[\d\.]*.(ba)?sh$" {
 	location ~* "^/[\d\.]*.ps(m)?(1)?$" {
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		add_header Content-Type text/plain;
 		proxy_cache sync_cache;
 		proxy_cache_revalidate on;
 		proxy_cache_min_uses 1;
@@ -256,8 +259,6 @@ server {
 		# proxy_cache_valid 5s;
 		proxy_cache_background_update on;
 		proxy_cache_lock on;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		add_header Content-Type text/plain;
 		#
 		# Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?$((Date).Ticks)") -Verb RunAs;
 		#

@@ -572,16 +572,20 @@ if [[ 0 -eq 1 ]; then
 
 unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # Re-instantiate bash array
 
+ENV_VARS=$(printenv | grep -i 'onedrive' | sed --quiet --regexp-extended --expression='s/^([a-zA-Z0-9]+)=(.+)$/\2/pi';); \
+DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+
+for EACH_ENV_VAR in "${ENV_VARS[@]}"; do
+
+done;
+
 if [ -v ONEDRIVE ]; then
 	EXCLUDED_HOMEDIRS+=("${ONEDRIVE}");
 	EXCLUDED_HOMEDIRS+=("${ONEDRIVE//OneDrive - /}");
 	test -v ONEDRIVE && echo 1 || echo 0;
 fi;
 
-printenv | sed --quiet --regexp-extended --expression='s/^onedrive=(.+)$/\1/pi'; # /i=case-insensitive, /p=handle-piped-output
-
-
-ENV_VARS=$(printenv | sed --regexp-extended --quiet --expression='s/^onedrive=/\0/p'); \
+ENV_VARS=$(printenv | sed --quiet --regexp-extended --expression='s/^onedrive=(.+)$/\1/pi';); \
 printenv | grep -i 'onedrive=' | sed 's/^\/.*$//' | while read EACH_VAR; do \
 echo "------------------------------------------------------------"; \
 echo "${EACH_VAR}"; \

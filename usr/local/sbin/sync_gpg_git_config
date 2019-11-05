@@ -573,7 +573,8 @@ echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"..."; \
 RESULTS=$(find "${HAYSTACK}" -maxdepth 4 -type d -name "${NEEDLE}" -print0 2>"/dev/null";); \
 echo "${RESULTS}";
 
-find "${HAYSTACK}" -maxdepth 4 -type d -name "${NEEDLE}" -print0 2>"/dev/null";
+find "${HOME}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null";
+
 # declare -a DELETE_ALL=("DOCKER_SCRIPTS" "SPINUP_DIR"); # Note: Clearing ${SPINUP_DIR} clears ${JENKINS_JOBS} & ${WEB_FILES}
 # DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for EACH_PATH in "${DELETE_ALL_NO_DUPES[@]}"; do

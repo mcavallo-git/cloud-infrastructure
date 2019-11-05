@@ -570,18 +570,32 @@ fi;
 #		 |--> FIND ALL IN HOME-DIR
 if [[ 0 -eq 1 ]; then
 
-unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # Re-instantiate bash array
-EXCLUDED_HOMEDIRS+=("${EACH_ENV_VAR}");
+shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
+
+unset EXCLUDED_HOMEDIRS; declare -a EXCLUDED_HOMEDIRS; # Re-instantiate bash array
+EXCLUDED_HOMEDIRS+=("AppData");
+EXCLUDED_HOMEDIRS+=("OneDrive");
 
 #
 # Exclude OneDrive Dirs
 #   |--> Note: Running 'find' against OneDrive files causes them to be downloaded (if cloud synced), effectively ruining the functionality of OneDrive's "Files On-Demand" feature
 #
-ENV_VARS=$(printenv | grep -i 'onedrive' | sed --quiet --regexp-extended --expression='s/^([a-zA-Z0-9]+)=(.+)$/\2/pi';); \
-ENV_VARS_NO_DUPES=($(echo "${ENV_VARS}" | sort -u));
-for EACH_ENV_VAR in "${ENV_VARS_NO_DUPES}"; do
-EXCLUDED_HOMEDIRS+=("${EACH_ENV_VAR}");
+ONEDRIVE_ENV_VAR="OneDrive";
+SHAREPOINT_SLICE="OneDrive - ";
+printenv \
+| grep -i "${ONEDRIVE_ENV_VAR}" \
+| sed --quiet --regexp-extended --expression='s/^([a-zA-Z0-9]+)=(.+)$/\2/pi' \
+| while read -r EACH_PATH; do
+EXCLUDED_HOMEDIRS+=("${EACH_PATH}");
+EACH_SHAREPOINT_PATH="${EACH_PATH//${SHAREPOINT_SLICE}/}";
+if [ "${EACH_PATH}" != "${EACH_SHAREPOINT_PATH}" ]; then
+EXCLUDED_HOMEDIRS+=("${EACH_SHAREPOINT_PATH}");
+fi;
 done;
+EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | sort -u;));
+echo "${EXCLUDED_HOMEDIRS_NO_DUPES[@]}";
+
+
 
 ENV_VARS=$(printenv | sed --quiet --regexp-extended --expression='s/^onedrive=(.+)$/\1/pi';); \
 printenv | grep -i 'onedrive=' | sed 's/^\/.*$//' | while read EACH_VAR; do \

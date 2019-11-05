@@ -217,11 +217,13 @@ SEARCH_DIRECTORIES+=("${PROG_FILES_X64_LINUX}/");
 SEARCH_DIRECTORIES+=("${PROG_FILES_X86_LINUX}/");
 
 for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
-	EACH_DIR_REALPATH=$(realpath "${EACH_DIRECTORY}");
 
-	echo "Searching \"${EACH_DIR_REALPATH}\" for instances of \"git.exe\"...";
-	find "${EACH_DIR_REALPATH}" \
-	-name 'git.exe' \
+	HAYSTACK=$(realpath "${EACH_DIRECTORY}");
+	NEEDLE="git.exe";
+	echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
+	find "${HAYSTACK}" \
+	-type f \
+	-name "${NEEDLE}" \
 	-print0 \
 	2>"/dev/null" \
 	| while IFS= read -r -d $'\0' EACH_GIT_EXE; do
@@ -244,6 +246,7 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 		fi;
 
 	done;
+
 done;
 
 IFS="${ROLLBACK_IFS}";
@@ -558,6 +561,29 @@ else
 	exit 1;
 fi;
 
+
+#	------------------------------------------------------------
+#		GIT REPOS
+#		 |--> FIND ALL IN HOME-DIR
+if [[ 0 -eq 1 ]; then
+
+HAYSTACK=$(realpath "${HOME}"); \
+NEEDLE=".git"; \
+echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"..."; \
+RESULTS=$(find "${HAYSTACK}" -maxdepth 4 -type d -name "${NEEDLE}" -print0 2>"/dev/null";); \
+echo "${RESULTS}";
+
+find "${HAYSTACK}" -maxdepth 4 -type d -name "${NEEDLE}" -print0 2>"/dev/null";
+# declare -a DELETE_ALL=("DOCKER_SCRIPTS" "SPINUP_DIR"); # Note: Clearing ${SPINUP_DIR} clears ${JENKINS_JOBS} & ${WEB_FILES}
+# DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+# for EACH_PATH in "${DELETE_ALL_NO_DUPES[@]}"; do
+#
+# done;
+
+
+fi;
+
+
 #	------------------------------------------------------------
 #		GIT REPOS
 #		 |--> PERSONAL, PUBLIC
@@ -592,6 +618,7 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		fi;
 	fi;
 done;
+
 
 #	------------------------------------------------------------
 #		GIT REPOS

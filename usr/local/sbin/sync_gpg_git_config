@@ -27,7 +27,6 @@ fi;
 #
 # ------------------------------------------------------------
 
-
 if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${OSTYPE}" != "darwin"* ]]; then
 	OS_IS_WINDOWS=1;
 else
@@ -100,6 +99,10 @@ else
 	echo "";
 	exit 1;
 fi;
+
+# ------------------------------------------------------------
+
+shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
 
 # ------------------------------------------------------------
 
@@ -567,6 +570,27 @@ fi;
 #		 |--> FIND ALL IN HOME-DIR
 if [[ 0 -eq 1 ]; then
 
+unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # Re-instantiate bash array
+
+if [ -v ONEDRIVE ]; then
+	EXCLUDED_HOMEDIRS+=("${ONEDRIVE}");
+	EXCLUDED_HOMEDIRS+=("${ONEDRIVE//OneDrive - /}");
+	test -v ONEDRIVE && echo 1 || echo 0;
+fi;
+
+printenv | grep -i 'onedrive=' | sed 's/^\/.*$//'
+
+
+printenv | sed 's/^onedrive=((?!$).)*$//'
+
+
+
+ENV_VARS=$(printenv | sed --regexp-extended --quiet --expression='s/^onedrive=/\0/p'); \
+printenv | grep -i 'onedrive=' | sed 's/^\/.*$//' | while read EACH_VAR; do \
+echo "------------------------------------------------------------"; \
+echo "${EACH_VAR}"; \
+done;
+
 HAYSTACK=$(realpath "${HOME}"); \
 NEEDLE=".git"; \
 echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"..."; \
@@ -575,11 +599,11 @@ echo "${RESULTS}";
 
 find "${HOME}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null";
 
-# declare -a DELETE_ALL=("DOCKER_SCRIPTS" "SPINUP_DIR"); # Note: Clearing ${SPINUP_DIR} clears ${JENKINS_JOBS} & ${WEB_FILES}
-# DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-# for EACH_PATH in "${DELETE_ALL_NO_DUPES[@]}"; do
-#
-# done;
+declare -a DELETE_ALL=("DOCKER_SCRIPTS" "SPINUP_DIR"); # Note: Clearing ${SPINUP_DIR} clears ${JENKINS_JOBS} & ${WEB_FILES}
+DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+for EACH_PATH in "${DELETE_ALL_NO_DUPES[@]}"; do
+
+done;
 
 
 fi;

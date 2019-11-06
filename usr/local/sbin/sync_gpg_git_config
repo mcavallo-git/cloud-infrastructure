@@ -603,16 +603,17 @@ if [[ 0 -eq 1 ]; then
 	FIND_ARGS="";
 	FIND_ARGS+="-maxdepth 1 ";
 	FIND_ARGS+="-type d ";
-	FIND_ARGS+="-name '.git' ";
+	# FIND_ARGS+="-name '.git' ";
+	FIND_ARGS+="-name '*' ";
 	for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
 		DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
-		ls -al "${DAT_KEY}";
 		FIND_ARGS+="-a -not -path '${DAT_KEY}' ";
 		FIND_ARGS+="-a -not -path '${DAT_KEY}/*' ";
 	done;
-	echo "FIND_ARGS = [ ${FIND_ARGS} ]";
 
-	echo "Calling [ find "${HOME}" ${FIND_ARGS}; ]...";
+	echo "";
+	echo "find \"\${HOME}\" ${FIND_ARGS};";
+	echo "";
 	find "${HOME}" ${FIND_ARGS};
 
 

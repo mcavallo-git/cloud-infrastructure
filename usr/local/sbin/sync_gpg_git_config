@@ -628,8 +628,10 @@ if [[ 0 -eq 1 ]; then
 		done;
 		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
 
-			# SEARCH THIS DIR FOR GIT REPOS
-			echo "${EACH_DIR}";
+			# Not an excluded directory - search it for directories with name ".git"
+			find "${EACH_DIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_GIT_DIR; do
+				echo "${EACH_GIT_DIR}";
+			done;
 
 		fi;
 	done;

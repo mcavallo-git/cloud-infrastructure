@@ -568,7 +568,7 @@ fi;
 #	------------------------------------------------------------
 #		GIT REPOS
 #		 |--> FIND ALL IN HOME-DIR
-if [ 0 -eq 1 ]; then
+# if [ 0 -eq 1 ]; then
 
 	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
 
@@ -628,8 +628,15 @@ if [ 0 -eq 1 ]; then
 		echo ""
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 
+		# EACH_REPO_ORIGIN=$(git config --get "remote.origin.url");
+		# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+		# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+		# 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+		# 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+		# done;
 
-# EACH_REPO_BASENAME
+
+		# EACH_REPO_BASENAME
 
 		# for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
 		# 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
@@ -639,7 +646,7 @@ if [ 0 -eq 1 ]; then
 
 	done;
 
-fi;
+# fi;
 
 
 #	------------------------------------------------------------

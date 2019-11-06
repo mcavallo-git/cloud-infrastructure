@@ -574,6 +574,7 @@ if [[ 0 -eq 1 ]; then
 
 	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # Re-instantiate bash array
 	EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
+	EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
 	EXCLUDED_HOMEDIRS+=(["${HOME}/OneDrive"]="");
 
 	#
@@ -600,22 +601,24 @@ if [[ 0 -eq 1 ]; then
 
 	done;
 
-	FIND_ARGS="";
-	FIND_ARGS+="-maxdepth 1 ";
-	FIND_ARGS+="-type d ";
-	# FIND_ARGS+="-name '.git' ";
-	FIND_ARGS+="-name '*' ";
+	unset FIND_ARGS; declare -a FIND_ARGS; # Re-instantiate bash array
+	FIND_ARGS+=("\"${HOME}\"");
+	FIND_ARGS+=("-maxdepth 1");
+	FIND_ARGS+=("-type d");
+	# FIND_ARGS+=("-name '.git'");
+	FIND_ARGS+=("-name '*'");
 	for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
 		DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
-		FIND_ARGS+="-a -not -path '${DAT_KEY}' ";
-		FIND_ARGS+="-a -not -path '${DAT_KEY}/*' ";
+		DAT_KEY_ESCAPED_SPACES="${DAT_KEY// /\\ }";
+		FIND_ARGS+=("-a -not -path '${DAT_KEY}'");
+		FIND_ARGS+=("-a -not -path '${DAT_KEY}/*'");
 	done;
 
 	echo "";
-	echo "find \"\${HOME}\" ${FIND_ARGS};";
+	echo find ${FIND_ARGS[@]};
 	echo "";
-	find "${HOME}" ${FIND_ARGS};
-
+	find ${FIND_ARGS[@]};
+	# find "${HOME}" ${FIND_ARGS};
 
 	# HAYSTACK=$(realpath "${HOME}"); \
 	# NEEDLE=".git"; \

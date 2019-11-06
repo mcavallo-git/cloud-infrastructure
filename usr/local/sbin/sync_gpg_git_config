@@ -601,16 +601,19 @@ if [[ 0 -eq 1 ]; then
 	done;
 
 	FIND_ARGS="";
+	FIND_ARGS+="-maxdepth 1 ";
+	FIND_ARGS+="-type d ";
+	FIND_ARGS+="-name '.git' ";
 	for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
 		DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
 		ls -al "${DAT_KEY}";
-		FIND_ARGS+="-not -path '${DAT_KEY}' ";
-		FIND_ARGS+="-not -path '${DAT_KEY}/*' ";
+		FIND_ARGS+="-a -not -path '${DAT_KEY}' ";
+		FIND_ARGS+="-a -not -path '${DAT_KEY}/*' ";
 	done;
 	echo "FIND_ARGS = [ ${FIND_ARGS} ]";
 
-	echo "Calling [ find \"${HOME}\" -maxdepth 1 -type d ${FIND_ARGS} ]...";
-	find "${HOME}" -maxdepth 1 -type d ${FIND_ARGS};
+	echo "Calling [ find "${HOME}" ${FIND_ARGS}; ]...";
+	find "${HOME}" ${FIND_ARGS};
 
 
 	# HAYSTACK=$(realpath "${HOME}"); \

@@ -609,6 +609,10 @@ if [[ 0 -eq 1 ]; then
 	done;
 	echo "FIND_ARGS = [ ${FIND_ARGS} ]";
 
+	echo "Calling [ find \"${HOME}\" -maxdepth 1 -type d ${FIND_ARGS} ]...";
+	find "${HOME}" -maxdepth 1 -type d ${FIND_ARGS};
+
+
 	# HAYSTACK=$(realpath "${HOME}"); \
 	# NEEDLE=".git"; \
 	# echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"..."; \

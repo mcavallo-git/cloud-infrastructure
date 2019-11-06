@@ -617,9 +617,21 @@ if [[ 0 -eq 1 ]; then
 			find "${EACH_HOMEDIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_REPO_FULLPATH; do
 				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
+			REPO_FULLPATHS=${REPO_FULLPATHS};
 		fi;
 
 	done;
+
+
+	echo "";
+	echo "\${REPO_FULLPATHS}:";
+	echo "${REPO_FULLPATHS}";
+	echo "";
+
+	echo "";
+	echo "\${REPO_FULLPATHS[@]}:";
+	echo "${REPO_FULLPATHS[@]}";
+	echo "";
 
 fi;
 

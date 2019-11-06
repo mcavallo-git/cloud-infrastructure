@@ -602,9 +602,6 @@ if [[ 0 -eq 1 ]; then
 	done;
 
 	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # Re-instantiate bash array
-	GIT_DIRS+=(["${HOME}/AppData"]="");
-	GIT_DIRS+=(["${HOME}/Dropbox"]="");
-	GIT_DIRS+=(["${HOME}/OneDrive"]="");
 
 	# Get all dirs within current user's home-dir
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
@@ -623,17 +620,6 @@ if [[ 0 -eq 1 ]; then
 		fi;
 
 	done;
-
-
-	echo "";
-	echo "\${REPO_FULLPATHS}:";
-	echo "${REPO_FULLPATHS}";
-	echo "";
-
-	echo "";
-	echo "\${REPO_FULLPATHS[@]}:";
-	echo "${REPO_FULLPATHS[@]}";
-	echo "";
 
 fi;
 

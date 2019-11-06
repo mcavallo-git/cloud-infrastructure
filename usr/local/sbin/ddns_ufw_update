@@ -53,8 +53,8 @@ else
 	#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 	#        |--> Example:   tcp:22:demo.example.com
 	#
-	if [ -v RUNTIME_SERVICE_USERS ]; then unset RUNTIME_SERVICE_USERS; fi; # Re-instantiate bash array (if-set) via unset + declare
-	if [ -v RUNTIME_SERVICE_USERS[@] ]; then unset RUNTIME_SERVICE_USERS; fi; # Re-instantiate bash array (if-set) via unset + declare
+	if [ -v RUNTIME_SERVICE_USERS ]; then unset RUNTIME_SERVICE_USERS; fi; # [Re-]Instantiate bash array (if-set) via unset + declare
+	if [ -v RUNTIME_SERVICE_USERS[@] ]; then unset RUNTIME_SERVICE_USERS; fi; # [Re-]Instantiate bash array (if-set) via unset + declare
 	declare -A RUNTIME_SERVICE_USERS;
 	RUNTIME_SERVICE_USERS+=(["sshd"]="root");
 	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");

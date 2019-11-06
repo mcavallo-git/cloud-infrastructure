@@ -572,7 +572,7 @@ if [ 0 -eq 1 ]; then
 
 	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
 
-	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # Re-instantiate bash array
+	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
 	EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
 	EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
@@ -602,7 +602,7 @@ if [ 0 -eq 1 ]; then
 
 	done;
 
-	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # Re-instantiate bash array
+	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
 	# Get all dirs within current user's home-dir
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
@@ -627,6 +627,16 @@ if [ 0 -eq 1 ]; then
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
 		echo ""
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
+
+
+# EACH_REPO_BASENAME
+
+		# for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
+		# 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+		# 		DIR_IS_EXCLUDED=1;
+		# 	fi;
+		# done;
+
 	done;
 
 fi;

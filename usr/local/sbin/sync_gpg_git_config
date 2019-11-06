@@ -601,54 +601,39 @@ if [[ 0 -eq 1 ]; then
 
 	done;
 
-	# unset FIND_ARGS; declare -a FIND_ARGS; # Re-instantiate bash array
-	# FIND_ARGS+=("\"${HOME}\"");
-	# FIND_ARGS+=("-maxdepth 1");
-	# FIND_ARGS+=("-maxdepth 1 -type d");
-	# # FIND_ARGS+=("-name '.git'");
-	# FIND_ARGS+=("-name '*'");
-	# for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
-	# 	DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
-	# 	DAT_KEY_ESCAPED_SPACES="${DAT_KEY// /\\ }";
-	# 	echo "${DAT_ITEM}";
-	# 	echo "${DAT_KEY_ESCAPED_SPACES}";
-	# 	FIND_ARGS+=("-a -not -path '${DAT_KEY}'");
-	# 	FIND_ARGS+=("-a -not -path '${DAT_KEY}/*'");
-	# done;
-	# find "${HOME}" ${FIND_ARGS};
-	# find "${HOME}" -maxdepth 1 -type d
+	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # Re-instantiate bash array
+	GIT_DIRS+=(["${HOME}/AppData"]="");
+	GIT_DIRS+=(["${HOME}/Dropbox"]="");
+	GIT_DIRS+=(["${HOME}/OneDrive"]="");
 
-	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_DIR; do
+	# Get all dirs within current user's home-dir
+	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 		
 		DIR_IS_EXCLUDED=0;
-		for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
-			if [ "${EACH_DIR}" == "${DAT_KEY}" ]; then
+		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
+			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
 				DIR_IS_EXCLUDED=1;
 			fi;
 		done;
 		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
-
 			# Not an excluded directory - search it for directories with name ".git"
-			find "${EACH_DIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_GIT_DIR; do
-				echo "${EACH_GIT_DIR}";
+			find "${EACH_HOMEDIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_REPO_FULLPATH; do
+				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
-
 		fi;
+
 	done;
 
-	# HAYSTACK=$(realpath "${HOME}"); \
-	# NEEDLE=".git"; \
-	# echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"..."; \
-	# RESULTS=$(find "${HAYSTACK}" -maxdepth 4 -type d -name "${NEEDLE}" -print0 2>"/dev/null";); \
-	# echo "${RESULTS}";
 
-	# find "${HOME}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null";
+	echo "";
+	echo "\${REPO_FULLPATHS}:";
+	echo "${REPO_FULLPATHS}";
+	echo "";
 
-	# declare -a DELETE_ALL=("DOCKER_SCRIPTS" "SPINUP_DIR"); # Note: Clearing ${SPINUP_DIR} clears ${JENKINS_JOBS} & ${WEB_FILES}
-	# DELETE_ALL_NO_DUPES=($(echo "${DELETE_ALL[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-	# for EACH_PATH in "${DELETE_ALL_NO_DUPES[@]}"; do
-
-	# done;
+	echo "";
+	echo "\${REPO_FULLPATHS[@]}:";
+	echo "${REPO_FULLPATHS[@]}";
+	echo "";
 
 fi;
 

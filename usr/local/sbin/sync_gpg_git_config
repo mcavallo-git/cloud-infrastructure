@@ -601,24 +601,37 @@ if [[ 0 -eq 1 ]; then
 
 	done;
 
-	unset FIND_ARGS; declare -a FIND_ARGS; # Re-instantiate bash array
-	FIND_ARGS+=("\"${HOME}\"");
-	FIND_ARGS+=("-maxdepth 1");
-	FIND_ARGS+=("-type d");
-	# FIND_ARGS+=("-name '.git'");
-	FIND_ARGS+=("-name '*'");
-	for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
-		DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
-		DAT_KEY_ESCAPED_SPACES="${DAT_KEY// /\\ }";
-		FIND_ARGS+=("-a -not -path '${DAT_KEY}'");
-		FIND_ARGS+=("-a -not -path '${DAT_KEY}/*'");
-	done;
-
-	echo "";
-	echo find ${FIND_ARGS[@]};
-	echo "";
-	find ${FIND_ARGS[@]};
+	# unset FIND_ARGS; declare -a FIND_ARGS; # Re-instantiate bash array
+	# FIND_ARGS+=("\"${HOME}\"");
+	# FIND_ARGS+=("-maxdepth 1");
+	# FIND_ARGS+=("-maxdepth 1 -type d");
+	# # FIND_ARGS+=("-name '.git'");
+	# FIND_ARGS+=("-name '*'");
+	# for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
+	# 	DAT_ITEM="${EXCLUDED_HOMEDIRS[${DAT_KEY}]}";
+	# 	DAT_KEY_ESCAPED_SPACES="${DAT_KEY// /\\ }";
+	# 	echo "${DAT_ITEM}";
+	# 	echo "${DAT_KEY_ESCAPED_SPACES}";
+	# 	FIND_ARGS+=("-a -not -path '${DAT_KEY}'");
+	# 	FIND_ARGS+=("-a -not -path '${DAT_KEY}/*'");
+	# done;
 	# find "${HOME}" ${FIND_ARGS};
+	# find "${HOME}" -maxdepth 1 -type d
+
+	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_DIR; do
+		
+		DIR_IS_EXCLUDED=0;
+		for DAT_KEY in "${!EXCLUDED_HOMEDIRS[@]}"; do
+			if [ "${EACH_DIR}" == "${DAT_KEY}" ]; then
+				DIR_IS_EXCLUDED=1;
+			fi;
+		done;
+		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
+
+			echo "${EACH_DIR}";
+
+		fi;
+	done;
 
 	# HAYSTACK=$(realpath "${HOME}"); \
 	# NEEDLE=".git"; \

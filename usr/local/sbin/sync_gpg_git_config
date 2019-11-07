@@ -635,13 +635,8 @@ read -p "Press any key to begin search...  " -n 1 -t 60 -r; echo "";  # Await si
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
 		DIR_IS_EXCLUDED=0;
-echo "Info: Starting for-loop [ for EACH_EXCLUDED_DIR in ";
+		echo "Info: Starting for-loop [ for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do ] ...";
 read -p "Press any key to begin search...  " -n 1 -t 60 -r; echo "";  # Await single keypress
-echo ${!EXCLUDED_HOMEDIRS[@]};
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; echo "";  # Await single keypress
-echo "; do ] ...";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; echo "";  # Await single keypress
-
 		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
 			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
 				DIR_IS_EXCLUDED=1;

@@ -85,6 +85,16 @@ GPG_KEYSERVER_OPTIONS=""; # GPG Key-Server Options
 
 # ------------------------------------------------------------
 
+GIT_SYNC_REPOS_ID1=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
+
+GIT_SYNC_REPOS_ID2=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
+
+GIT_SYNC_GPG_KEYS=""; # Git Emails (Key) and their associated GnuPG-Key Fingerprint (Val) [ Implemented 2019-11-06 ]
+
+GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ Implemented 2019-11-06 ]
+
+# ------------------------------------------------------------
+
 DEFAULT_CONFIG_DIRNAME="${HOME}/.gpg_git";
 DEFAULT_CONFIG_FULLPATH="${DEFAULT_CONFIG_DIRNAME}/config";
 
@@ -652,6 +662,7 @@ fi;
 
 	echo "";
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
+
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";

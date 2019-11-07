@@ -95,7 +95,7 @@ elif [ -f "${DEFAULT_CONFIG_FULLPATH}" ]; then
 	source "${DEFAULT_CONFIG_FULLPATH}"; # Default shell script which sets/instantiates all required config variables
 else
 	echo "";
-	echo "Error - FIRST inline parameter ( \$1 ) must point to the filepath of a separate shell script which sets/instantiates all required git + gnupg config variables (see var-names above)";
+	echo "Error: FIRST inline parameter ( \$1 ) must point to the filepath of a separate shell script which sets/instantiates all required git + gnupg config variables (see var-names above)";
 	echo "";
 	exit 1;
 fi;
@@ -170,7 +170,7 @@ GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 IS_ADMIN=$(net session > /dev/null 2>&1; if [ "$?" -ne "0" ]; then echo 0; else echo 1; fi;);
 if [ "${IS_ADMIN}" == "0" ]; then
 	echo "";
-	echo "Error - Must \"Run as Administrator\" on the Git Bash terminal";
+	echo "Error: Must \"Run as Administrator\" on the Git Bash terminal";
 	echo "";
 	sleep 60;
 	exit 1;
@@ -181,7 +181,7 @@ elif [ ! -e "${GPG4WIN_GPG_EXE_LINUX}" ]; then
 	#		Make sure that "Gpg4win" is installed, as it both upgrades Git's default "gpg.exe" runtime, and
 	#		also brings along "Kleopatra", a Windows handler for gpg-keys w/ a front-end GUI & server-sync built-in
 	#
-	echo "Error - Unable to locate \"Gpg4win\" directory";
+	echo "Error: Unable to locate \"Gpg4win\" directory";
 	echo " |--> Please download & install \"Gpg4win\" via : https://www.gpg4win.org/thanks-for-download.html ";
 	echo " |--> Once Gpg4win is installed, import/create your GnuPG keys using its \"Kleopatra\" included module ";
 	sleep 60;
@@ -223,7 +223,7 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 
 	HAYSTACK=$(realpath "${EACH_DIRECTORY}");
 	NEEDLE="git.exe";
-	echo "Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
+	echo "Info: Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
 	find "${HAYSTACK}" \
 	-type f \
 	-name "${NEEDLE}" \
@@ -287,9 +287,9 @@ elif [ -f "/c/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe" ]; then GPG_PIN
 elif [ -f "/c/Program Files (x86)/GnuPG/bin/pinentry-basic.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/bin/pinentry-basic.exe");
 fi;
 
-echo "Info - GnuPG exe - Git  (gpg.exe) :  \"${GIT_EXE_DIR_LINUX}/gpg.exe\"";
-echo "Info - GnuPG exe - Gpg4win  (gpg.exe) :  \"${GPG4WIN_GPG_EXE_LINUX}\"";
-echo "Info - GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
+echo "Info: GnuPG exe - Git  (gpg.exe) :  \"${GIT_EXE_DIR_LINUX}/gpg.exe\"";
+echo "Info: GnuPG exe - Gpg4win  (gpg.exe) :  \"${GPG4WIN_GPG_EXE_LINUX}\"";
+echo "Info: GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
 
 for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
 	EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
@@ -339,14 +339,14 @@ GCONF_PRIMARY_DIR_WIN32=""; MM="${GPG_CONFIG_DIR/\/c\//C:\\}"; GCONF_PRIMARY_DIR
 GCONF_PRIMARY_LINUX="${GCONF_PRIMARY_DIR_LINUX}/gpg-agent.conf";
 GCONF_PRIMARY_WIN32="${GCONF_PRIMARY_DIR_WIN32}\gpg-agent.conf";
 
-echo "Info - GnuPG %USERPROFILE% Config-File (Linux): \"${GCONF_USERPROFILE_LINUX}\"";
-# echo "Info - GnuPG %USERPROFILE% Config-File (Win32): \"${GCONF_USERPROFILE_WIN32}\"";
+echo "Info: GnuPG %USERPROFILE% Config-File (Linux): \"${GCONF_USERPROFILE_LINUX}\"";
+# echo "Info: GnuPG %USERPROFILE% Config-File (Win32): \"${GCONF_USERPROFILE_WIN32}\"";
 
-echo "Info - GnuPG %APPDATA% Config-File (Linux): \"${GCONF_APPDATA_LINUX}\"";
-# echo "Info - GnuPG %APPDATA% Config-File (Win32): \"${GCONF_APPDATA_WIN32}\"";
+echo "Info: GnuPG %APPDATA% Config-File (Linux): \"${GCONF_APPDATA_LINUX}\"";
+# echo "Info: GnuPG %APPDATA% Config-File (Win32): \"${GCONF_APPDATA_WIN32}\"";
 
-echo "Info - GnuPG Default Config-File (Linux): \"${GCONF_PRIMARY_LINUX}\"";
-# echo "Info - GnuPG Default Config-File (Win32): \"${GCONF_PRIMARY_WIN32}\"";
+echo "Info: GnuPG Default Config-File (Linux): \"${GCONF_PRIMARY_LINUX}\"";
+# echo "Info: GnuPG Default Config-File (Win32): \"${GCONF_PRIMARY_WIN32}\"";
 
 # ------------------------------------------------------------
 

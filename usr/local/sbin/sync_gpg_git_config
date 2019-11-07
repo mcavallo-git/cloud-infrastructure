@@ -3,9 +3,13 @@
 # LOCAL_SBIN="/usr/local/sbin/sync_gpg_git_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then # Run this script on-the-fly:
+if [ 0 -eq 1 ]; then
 
+# Download & run this script on-the-fly:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_gpg_git_config?$(date +'%s.%N')" | bash;
+
+# Run the local copy of this script:
+bash "${HOME}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\sync_gpg_git_config";
 
 fi;
 # ------------------------------------------------------------

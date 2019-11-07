@@ -499,6 +499,8 @@ GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
 mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
 curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
+if [ 0 -eq 1 ]; then
+
 if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 
 # Strings
@@ -514,6 +516,8 @@ KEY="user.name";                     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset
 KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 
 rm -f "${GIT_CONFIG_ALL_LOCAL}";
+
+fi;
 
 fi;
 

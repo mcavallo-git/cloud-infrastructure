@@ -625,15 +625,16 @@ fi;
 
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
+		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 		echo ""
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
+		echo "  |--> Origin:  ${EACH_REPO_ORIGIN}";
 
-		# EACH_REPO_ORIGIN=$(git config --get "remote.origin.url");
-		# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-		# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-		# 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-		# 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
-		# done;
+		for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+			EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+			EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+			echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+		done;
 
 
 		# EACH_REPO_BASENAME

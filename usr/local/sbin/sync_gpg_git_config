@@ -633,8 +633,7 @@ fi;
 	echo "Info: Starting while-loop [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
-		echo "Info: Calling [ sleep 5; ] ...";
-		sleep 5;
+		read -p "Press any key to continue...  " -n 1 -t 60 -r; # Await single keypress
 
 		DIR_IS_EXCLUDED=0;
 		echo "Info: Starting for-loop [ for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do ] ...";

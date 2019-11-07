@@ -585,18 +585,22 @@ fi;
 	#
 	ONEDRIVE_ENV_VAR="OneDrive";
 	SHAREPOINT_SLICE="OneDrive - ";
+
 	printenv \
 	| grep -i "${ONEDRIVE_ENV_VAR}" \
 	| sed --quiet --regexp-extended --expression='s/^([a-zA-Z0-9]+)=(.+)$/\2/pi' \
 	| while read -r EACH_PATH; do
+		# Check for each Excluded path
 		EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
 		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
-
 		if [ -d "${EACH_PATH_LINUX}" ]; then
 			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
-			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
 		fi;
-
+		#
+		# OneDrive for Business
+		#   |--> Enterprise Users' Personal-OneDrives are located in directory  [ ${HOME}/OneDrive - [BUSINESS_NAME] ]
+		#   |--> Enterprise Users' Personal-OneDrives are located in directory  [ ${HOME}/[BUSINESS_NAME] ]
+		#
 		EACH_SHAREPOINT_PATH="${EACH_PATH_LINUX//${SHAREPOINT_SLICE}/}";
 		if [ "${EACH_PATH_LINUX}" != "${EACH_SHAREPOINT_PATH}" ] && [ -d "${EACH_SHAREPOINT_PATH}" ]; then
 			EXCLUDED_HOMEDIRS+=(["${EACH_SHAREPOINT_PATH}"]="");
@@ -607,6 +611,8 @@ fi;
 	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
 	# Get all dirs within current user's home-dir
+	echo "";
+	echo "Info: Starting [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
 		DIR_IS_EXCLUDED=0;
@@ -617,18 +623,22 @@ fi;
 		done;
 
 		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
+			echo "  |--> Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";
 			# Not an excluded directory - search it for directories with name ".git"
 			find "${EACH_HOMEDIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
 				EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
 				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
+		else
+			echo "  |--> Skipping excluded directory: \"${EACH_HOMEDIR}\"";
 		fi;
 	done;
+	echo "Info: Finished [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
 
+	echo "";
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
-		echo ""
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Origin:  ${EACH_REPO_ORIGIN}";
 

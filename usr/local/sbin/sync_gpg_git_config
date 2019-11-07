@@ -620,25 +620,32 @@ fi;
 
 	# Get all dirs within current user's home-dir
 	echo "";
-	echo "Info: Starting [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
+	echo "Info: Starting while-loop [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
 	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
+		echo "Info: Calling [ sleep 5; ] ...";
+		sleep 5;
+
 		DIR_IS_EXCLUDED=0;
+		echo "Info: Starting for-loop [ for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do ] ...";
 		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
 			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
 				DIR_IS_EXCLUDED=1;
 			fi;
 		done;
 
+		echo "Info: Calling [ sleep 6; ] ...";
+		sleep 6;
+
 		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
-			echo "  |--> Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";
+			echo "Info: Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";
 			# Not an excluded directory - search it for directories with name ".git"
 			find "${EACH_HOMEDIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
 				EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
 				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
 		else
-			echo "  |--> Skipping excluded directory: \"${EACH_HOMEDIR}\"";
+			echo "Info: Skipping excluded directory: \"${EACH_HOMEDIR}\"";
 		fi;
 	done;
 	echo "Info: Finished [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";

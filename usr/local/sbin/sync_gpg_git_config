@@ -318,7 +318,7 @@ for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
 			fi;
 			# Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
 			echo "";
-			echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINKs are Windows Sym-Links
+			echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 		fi;
 	fi;
 done;
@@ -417,19 +417,19 @@ else
 	EACH_CONF="gpg.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ USERPROFILE ] gpgconf.conf
 	EACH_CONF="gpgconf.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ USERPROFILE ] gpg-agent.conf
 	EACH_CONF="gpg-agent.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 fi;
 
@@ -445,19 +445,19 @@ else
 	EACH_CONF="gpg.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ APPDATA ] gpgconf.conf
 	EACH_CONF="gpgconf.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ APPDATA ] gpg-agent.conf
 	EACH_CONF="gpg-agent.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
 		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINKs are Windows Sym-Links
+		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 fi;
 

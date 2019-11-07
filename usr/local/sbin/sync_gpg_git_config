@@ -665,12 +665,11 @@ fi;
 		
 		else
 			# Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
+			NGINX_UNAME=$(sed --regexp-extended --quiet --expression='s/^([a-z]+)]user ([a-z_][a-z0-9_\-]{0,30}[a-z0-9_\-\$]?)\s*;\s*$/\1/p' "/etc/nginx/nginx.conf");
 
 		fi;
 
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
-
-	NGINX_UNAME=$(sed --regexp-extended --quiet --expression='s/^user ([a-z_][a-z0-9_\-]{0,30}[a-z0-9_\-\$]?)\s*;\s*$/\1/p' "/etc/nginx/nginx.conf");
 
 		# echo $(echo "${EACH_REPO_ORIGIN}") | cut -d":" -f2
 		echo "";

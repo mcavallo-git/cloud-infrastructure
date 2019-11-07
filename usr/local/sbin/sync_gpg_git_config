@@ -629,32 +629,25 @@ fi;
 	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
 	# Get all dirs within current user's home-dir
-echo "";
-echo "Info: Starting while-loop [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
-	find "${HOME}" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
-
-echo "EACH_HOMEDIR = \"${EACH_HOMEDIR}\"";
+	find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
 		DIR_IS_EXCLUDED=0;
-echo "Info: Starting for-loop [ for EACH_EXCLUDED_DIR in ";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
-echo ${!EXCLUDED_HOMEDIRS[@]};
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
-echo "; do ] ...";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
-
 		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
 			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
 				DIR_IS_EXCLUDED=1;
 			fi;
 		done;
 
-		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
+		if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
 			echo "Info: Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
 			# Not an excluded directory - search it for directories with name ".git"
-			find "${EACH_HOMEDIR}" -maxdepth 4 -type d -name ".git" -print0 2>"/dev/null" | while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
+			find "${EACH_HOMEDIR}" \
+			-maxdepth 4 \
+			-type d \
+			-name ".git" \
+			-print0 2>"/dev/null" \
+			| while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
+				echo "EACH_GIT_CONFIG_PATH = [ ${EACH_GIT_CONFIG_PATH} ]";
 				EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
 				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
@@ -662,11 +655,7 @@ read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 			echo "Info: Skipping excluded directory: \"${EACH_HOMEDIR}\"";
 		fi;
 	done;
-	echo "Info: Finished [ find \"${HOME}\" -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do ] ...";
 
-echo "";
-echo "Info: Starting while-loop [ for EACH_REPO_FULLPATH in \"${!REPO_FULLPATHS[@]}\"; do ] ...";
-read -p "Press any key to begin search...  " -n 1 -t 60 -r; RETURN_CODE_READ=$?; echo -e "CODE = [ ${RETURN_CODE_READ} ]\nREPLY = [ ${REPLY} ]\n";  # Await single keypress
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);

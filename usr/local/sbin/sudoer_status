@@ -55,7 +55,7 @@ else
 			# ------------------------------------------------------------
 			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
 				if [ -n "${EDIT_ACTION}" ]; then
-					# Error - Multiple add/remove actions defined
+					# Error: Multiple add/remove actions defined
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
 				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]  || [ "${EACH_ARG}" == "--add" ]; then
 					# Add user as a sudoer
@@ -72,11 +72,11 @@ else
 			# ------------------------------------------------------------
 			if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
 				if [ -n "${TARGET_USER}" ]; then
-					# Error - Multiple users defined
+					# Error: Multiple users defined
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
 
 				elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
-					# Error - Non-existent target-user
+					# Error: Non-existent target-user
 					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found as a local user: \"${NEXT_ARG}\"";
 					echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
@@ -101,13 +101,13 @@ else
 	# Verify validity of ${TARGET_USER}
 	if [ -z "${TARGET_USER}" ]; then 
 
-		# Error - Empty/Unset target-user
+		# Error: Empty/Unset target-user
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Target-user empty / unset";
 		echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
 	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
-		# Error - User not found
+		# Error: User not found
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → User not found: \"${TARGET_USER}\"";
 		echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 

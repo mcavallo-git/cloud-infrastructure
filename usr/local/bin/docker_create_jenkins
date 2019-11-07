@@ -53,13 +53,13 @@ else
 		# Let the user determine which tag (image-revision) to build-from
 		read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
 		if [ ${READ_RET_CODE} -gt 128 ]; then
-			# Error - Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
+			# Error: Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
 			echo -e "Error: Response timed out""\n""${ERROR_SUGGEST_HELP}";
 
 		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 			USER_SELECTION_KEY=$((0+${REPLY}));
 			if [ -z "${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}" ]; then
-				# Error - User-input key not found as an index within the Docker-Image-Tags array
+				# Error: User-input key not found as an index within the Docker-Image-Tags array
 				echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
 
 			else
@@ -85,7 +85,7 @@ else
 			fi;
 
 		else
-			# Error - Malformed User-input (didn't meet criteria, above)
+			# Error: Malformed User-input (didn't meet criteria, above)
 			echo -e "Error: Invalid/empty User-input""\n""${ERROR_SUGGEST_HELP}";
 
 		fi;

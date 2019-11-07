@@ -24,14 +24,14 @@ done;
 
 # Output Status: PASS or FAIL
 if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
-	# Error - Clear Variables
+	# Error: Clear Variables
 	RESPONSE_SRVR="";
 	THIS_WAN_IP="";
 	LENGTH_WAN_IP="";
 	THIS_HOST="$(hostname)";
-	# Error - Show Message
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error - Unable to resolve WAN-IP";
-	# Error - Throw 'bad' return-code
+	# Error: Show Message
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to resolve WAN-IP";
+	# Error: Throw 'bad' return-code
 	exit 1;
 else
 	# Success - Show Message

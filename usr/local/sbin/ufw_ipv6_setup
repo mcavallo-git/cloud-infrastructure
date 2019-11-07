@@ -31,7 +31,7 @@ else
 	SERVICE_NAME="ufw";
 	SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 	if [ -z "${SERVICE_MATCHES}" ]; then
-		echo "Error - Service \"${SERVICE_NAME}\" NOT found as a local service";
+		echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";
 		exit 1;
 	else
 		# ------------------------------------------------------------

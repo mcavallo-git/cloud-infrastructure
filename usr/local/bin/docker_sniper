@@ -14,7 +14,7 @@ echo -e "\n$(date +'%r, %B %d, %Y (%A)')\nStarting ${THIS_SCRIPT} as user (whoam
 
 if [ "$#" -ne 1 ]; then
 	# Program was called with anything other than a single parameter
-	printf "\n   ERROR - '${THIS_SCRIPT}' Requires [1] Parameter (Docker-Substring-Target), Received [${#}] Parameters\n";
+	printf "\n   Error: '${THIS_SCRIPT}' Requires [1] Parameter (Docker-Substring-Target), Received [${#}] Parameters\n";
 else 
 
 	# Correct # of parameters (just $1) - holds the name of dockers to stop

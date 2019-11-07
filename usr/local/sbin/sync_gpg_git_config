@@ -32,7 +32,7 @@ if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${
 else
 	OS_IS_WINDOWS=0;
 	echo "";
-	echo "Error | Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
+	echo "Error: Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
 	echo "";
 	exit 1;
 fi;
@@ -477,7 +477,7 @@ elif [ ! -f "${GIT_SSH_PERSONAL}" ] && [ -f "${GIT_SSH_WORK}" ]; then
 
 else 
 	echo "";
-	echo "Error | No SSH-Key(s) found for git-repos (work OR personal)";
+	echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
 	sleep 60;
 	exit 1;
 
@@ -558,7 +558,7 @@ elif [ -f "${GIT_SSH_WORK}" ]; then
 	fi;
 else
 	echo "";
-	echo "Error | No SSH-Key(s) found for personal git-repos";
+	echo "Error: No SSH-Key(s) found for personal git-repos";
 	echo "";
 	sleep 60;
 	exit 1;
@@ -568,6 +568,7 @@ fi;
 #	------------------------------------------------------------
 #		GIT REPOS
 #		 |--> FIND ALL IN HOME-DIR
+
 # if [ 0 -eq 1 ]; then
 
 	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
@@ -592,6 +593,7 @@ fi;
 		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
 
 		if [ -d "${EACH_PATH_LINUX}" ]; then
+			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
 			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
 		fi;
 
@@ -738,7 +740,7 @@ if [ -f "${GIT_SSH_WORK}" ]; then
 	fi;
 else
 	echo "";
-	echo "Error | No SSH-Key(s) found for work git-repos";
+	echo "Error: No SSH-Key(s) found for work git-repos";
 	sleep 60;
 	exit 1;
 fi;

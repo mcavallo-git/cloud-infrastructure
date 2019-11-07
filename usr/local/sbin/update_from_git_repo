@@ -75,7 +75,7 @@ else
 		EXIT_CODE=1;
 
 		echo "";
-		echo "Error - Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+		echo "Error: Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 		# Error-out if any required source directories are missing
@@ -83,11 +83,11 @@ else
 
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
 			echo "";
-			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+			echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
 		fi;
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 			echo "";
-			echo "Error - Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+			echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 		fi;
 
 	else

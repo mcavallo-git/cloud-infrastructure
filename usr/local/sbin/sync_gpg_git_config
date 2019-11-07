@@ -644,8 +644,7 @@ fi;
 			fi;
 		done;
 
-		echo "Info: Calling [ sleep 6; ] ...";
-		sleep 6;
+		read -p "Press any key to continue...  " -n 1 -t 60 -r; # Await single keypress
 
 		if [[ ${DIR_IS_EXCLUDED} -eq 0 ]]; then
 			echo "Info: Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";

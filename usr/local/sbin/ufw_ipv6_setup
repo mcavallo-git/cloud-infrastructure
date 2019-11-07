@@ -42,7 +42,7 @@ else
 		ALLOW_ICMPv6_ECHO=$(cat "/etc/ufw/before6.rules" | sed --regexp-extended --quiet --expression='s/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/\0/p');
 		if [ -n "${ALLOW_ICMPv6_ECHO}" ]; then
 			echo -e "\n""IPv6 Pinging is currently ENABLED";
-			read -p "DISABLE IPv6 Pinging, Now? ( Y/N )  " -n 1 -t 20 -r; echo "";
+			read -p "DISABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r; echo ""; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
 					--regexp-extended \
@@ -53,7 +53,7 @@ else
 				RESTART_SERVICE_UFW=1;
 			fi;
 		else
-			echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( Y/N )  " -n 1 -t 20 -r;
+			echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r;
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
 					--regexp-extended \
@@ -72,7 +72,8 @@ else
 		ALLOW_ICMPv6_MULTICAST=$(cat "/etc/ufw/before6.rules" | sed --regexp-extended --quiet --expression='s/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/\0/p');
 		if [ -n "${ALLOW_ICMPv6_MULTICAST}" ]; then
 			echo -e "\n""IPv6 Multicast is currently ENABLED";
-			read -p "DISABLE IPv6 Multicast, Now? ( Y/N )  " -n 1 -t 20 -r; echo "";
+			read -p "DISABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
 					--regexp-extended \
@@ -84,7 +85,8 @@ else
 			fi;
 		else
 			echo -e "\n""IPv6 Multicast is currently DISABLED";
-			read -p "ENABLE IPv6 Multicast, Now? ( Y/N )  " -n 1 -t 20 -r;
+			read -p "ENABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
 					--regexp-extended \

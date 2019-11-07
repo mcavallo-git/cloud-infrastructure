@@ -122,7 +122,7 @@ ETC_SSH_AUTHKEYS_USERNAME="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
 
 if [ "$(id -un)" == "root" ]; then
 	echo "";
-	read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( Y/N ) " -n 1 -r;
+	read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
 	APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
 
 else # Non-root users --> block etc-authkey editing
@@ -156,7 +156,7 @@ else
 	# Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
 	#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 	echo "";
-	read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( Y/N ) " -n 1 -r;
+	read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
 	APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
 	
 	if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then

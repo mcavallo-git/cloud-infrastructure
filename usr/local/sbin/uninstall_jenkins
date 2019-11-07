@@ -51,7 +51,7 @@ else
 	# Remove Jenkins' Apt-Package
 	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -gt 0 ]; then
 		echo -e "\n""Info: Removing Jenkins' Apt-Package";
-		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
+		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ apt-get remove -y jenkins; ]...";
 			apt-get remove -y jenkins;
@@ -62,7 +62,7 @@ else
 	# Remove Jenkins' Runtime-User
 	if [ -n "$(getent passwd 'jenkins';)" ]; then
 		echo -e "\n""Info: Removing Jenkins' Runtime-User";
-		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
+		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ userdel jenkins --force --remove; ]...";
 			userdel jenkins --force --remove;
@@ -73,7 +73,7 @@ else
 	# Remove Jenkins' Runtime-Group
 	if [ -n "$(getent group 'jenkins';)" ]; then
 		echo -e "\n""Info: Removing Jenkins' Runtime-Group";
-		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
+		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ groupdel jenkins; ]...";
 			groupdel jenkins;
@@ -84,7 +84,7 @@ else
 	# Remove Jenkins' Service
 	if [ $(service --status-all 2>/dev/null | grep 'jenkins' | wc -l) -gt 0 ]; then
 		echo -e "\n""Info: Removing Jenkins' Service";
-		read -p "  |--> Are you sure you want to continue? (y/n)   " -t 20 -r;
+		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ apt-get purge \"jenkins\" ]...";
 			apt-get -y purge "jenkins";

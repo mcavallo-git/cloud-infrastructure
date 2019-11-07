@@ -501,7 +501,7 @@ else
 					echo "  |";
 					echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
 					echo "  |";
-					read -p "  |--> Are you sure you want to continue? (y/n - if you are unsure, choose n)   " -t 20 -r;
+					read -p "  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 						# User declined the config-update
 						echo "Info: Skipped SSH-Config Update (canceled by user)";
@@ -548,7 +548,7 @@ else
 						echo "  |";
 						echo "  |--> UFW sync requested, however UFW is currently disabled";
 						echo "  |";
-						read -p "  |--> Enable UFW, now? (y/n - if you are unsure, choose n)  " -t 20 -r;
+						read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
 						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 							ufw enable;
 						fi;
@@ -618,7 +618,7 @@ else
 					if [ -f "${DESTINATION_PATH}" ]; then
 						REPLY="y";
 					else
-						echo ""; read -p "Setup DNS-Server Sync (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)   " -t 20 -r; # Do not perform this sync unless user opts-in
+						echo ""; read -p "Setup DNS-Server Sync (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					fi;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -644,7 +644,7 @@ else
 					if [ -f "${DESTINATION_PATH}" ]; then
 						REPLY="y";
 					else
-						echo ""; read -p "Setup Automatic Updates (every Sunday @ 04:10 AM) via \"update_system\"? (y/n)   " -t 20 -r; # Do not perform this sync unless user opts-in
+						echo ""; read -p "Setup Automatic Updates (every Sunday @ 04:10 AM) via \"update_system\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					fi;
 
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -938,7 +938,7 @@ else
 				echo -e "\n""Info: Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
 				for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
 					echo "  |";
-					read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\"? (y/n)   " -t 20 -r;
+					read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";
 						rm -f "${EACH_CRON_TRIGGER}";

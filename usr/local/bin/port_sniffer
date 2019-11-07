@@ -9,7 +9,7 @@ fi;
 if [ -z "$(which nmap)" ]; then
 	echo "";
 	echo "Error: command \"nmap\" not found";
-	read -p " |-->  Install package \"nmap\", now? (y/n)   " -t 20 -r;
+	read -p " |-->  Install package \"nmap\", now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 		if [ -n "$(which apt-get)" ]; then
 			sudo apt-get install -y "nmap";

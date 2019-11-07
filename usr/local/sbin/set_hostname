@@ -211,7 +211,7 @@ else
 
 		if [[ "${DRY_RUN}" == "0" ]]; then
 			echo "";
-			read -p "  --> Press 'y' to confirm & apply above configuration ( y / n )" -n 1 -r
+			read -p "  --> Apply aforementioned edits to hostname/domain, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "$(date +'%Y-%m-%d %H:%M:%S') Info: - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
@@ -317,7 +317,7 @@ else
 		if [[ -f "/etc/init.d/network" ]]; then # centos distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
-				read -p "REBOOT NOW? ( Y/N )" -n 1 -r
+				read -p "REBOOT NOW? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";
@@ -334,7 +334,7 @@ else
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-				read -p "REBOOT REQUIRED - PERFORM NOW? ( Y/N )" -n 1 -r
+				read -p "REBOOT REQUIRED - PERFORM NOW? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";

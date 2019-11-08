@@ -667,18 +667,32 @@ fi;
 			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip';);
 			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip';);
 		fi;
-		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 		echo "";
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
-		if [ -n "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}" ]; then
-			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]}"\"";
+		ID1_USER="${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}";
+		ID1_USER="${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}";
+		ID1_GPG_KEY="${GIT_SYNC_GPG_KEYS[${ID1_USER}]}";
+		ID1_FULLNAME="${GIT_SYNC_FULLNAMES[${ID1_USER}]}";
+		if [ -n "${ID1_USER}" ] && [ -n "${ID1_GPG_KEY}" ]; then
+			LOCAL_GPG_KEY_ID1_MATCHES="$(gpg --list-keys --keyid-format 'LONG' | grep -v 'gpg:' | grep -i '^pub' | grep ${ID1_GPG_KEY} | wc -l 2>/dev/null;)";
+			if [ ${LOCAL_GPG_KEY_ID1_MATCHES} -gt 1 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)
+				echo "  |--> Found user with access:  \"${ID1_GPG_KEY}\"";
+			fi;
 		fi;
 		# Check second ID-Array
-		if [ -n "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}" ]; then
-			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]}"\"";
+		ID2_USER="${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}";
+		ID2_GPG_KEY="${GIT_SYNC_GPG_KEYS[${ID2_USER}]}";
+		ID2_FULLNAME="${GIT_SYNC_FULLNAMES[${ID2_USER}]}";
+		if [ -n "${ID2_USER}" ] && [ -n "${ID2_GPG_KEY}" ]; then
+			LOCAL_GPG_KEY_ID2_MATCHES="$(gpg --list-keys --keyid-format 'LONG' | grep -v 'gpg:' | grep -i '^pub' | grep ${ID2_GPG_KEY} | wc -l 2>/dev/null;)";
+			if [ ${LOCAL_GPG_KEY_ID2_MATCHES} -gt 1 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)
+				echo "  |--> Found user with access:  \"${ID2_USER}\"";
+			fi;
 		fi;
+
+		LOCAL_GPG_KEY_ID1="$(gpg --list-keys --keyid-format 'LONG' | grep -v 'gpg:' | grep -i '^pub' | grep ${LOCAL_GPG_KEY_ID1} 2>/dev/null;)";
 
 		# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
 		# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";

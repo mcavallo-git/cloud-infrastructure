@@ -677,11 +677,11 @@ fi;
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
 		if [ -n "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}" ]; then
-			echo "  |--> Found user with access:  \"${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}\"";
+			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]}"\"";
 		fi;
 		# Check second ID-Array
 		if [ -n "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}" ]; then
-			echo "  |--> Found user with access:  \"${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}\"";
+			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]}"\"";
 		fi;
 
 		# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do

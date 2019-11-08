@@ -676,7 +676,7 @@ fi;
 		COMMIT_EMAIL="";
 		COMMIT_NAME="";
 		COMMIT_GPG_KEY="";
-		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ]; then
+		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${COMMIT_GPG_KEY}" ]; then
 			# Use Primary ID Array values, first
 			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
 			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
@@ -684,11 +684,13 @@ fi;
 			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
 				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			else
-				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+			# 	echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
+			# else
+			# 	echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
-		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ]; then
+		fi;
+		
+		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${COMMIT_GPG_KEY}" ]; then
 			# Use Secondary (Fallback) ID Array values, first
 			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
 			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
@@ -696,30 +698,34 @@ fi;
 			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
 				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			else
-				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+			# 	echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
+			# else
+			# 	echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
 		fi;
 
-		# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-		# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-		# 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-		# 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
-		# done;
+		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ]; then
 
-		# EACH_REPO_BASENAME
+			# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+			# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+			# 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+			# 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+			# done;
 
-		# for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-		# 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
-		# 		DIR_IS_EXCLUDED=1;
-		# 	fi;
-		# done;
+			# EACH_REPO_BASENAME
 
-		# ${GIT_SYNC_REPOS_ID1}
-		# ${GIT_SYNC_REPOS_ID2}
-		# ${GIT_SYNC_GPG_KEYS}
-		# ${GIT_SYNC_FULLNAMES}
+			# for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
+			# 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+			# 		DIR_IS_EXCLUDED=1;
+			# 	fi;
+			# done;
+
+			# ${GIT_SYNC_REPOS_ID1}
+			# ${GIT_SYNC_REPOS_ID2}
+			# ${GIT_SYNC_GPG_KEYS}
+			# ${GIT_SYNC_FULLNAMES}
+
+		fi;
 
 	done;
 	

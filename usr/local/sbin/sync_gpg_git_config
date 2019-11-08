@@ -673,9 +673,9 @@ fi;
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
-		ID1_USER="${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}";
-		ID1_GPG_KEY="${GIT_SYNC_GPG_KEYS[${ID1_USER}]}";
-		ID1_FULLNAME="${GIT_SYNC_FULLNAMES[${ID1_USER}]}";
+		ID1_USER=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}" 2>/dev/null;);
+		ID1_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID1_USER}]}" 2>/dev/null;);
+		ID1_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID1_USER}]}" 2>/dev/null;);
 		if [ -n "${ID1_USER}" ] && [ -n "${ID1_GPG_KEY}" ]; then
 			LOCAL_GPG_KEY_ID1_MATCHES="$(gpg --list-keys --keyid-format 'LONG' | grep -v 'gpg:' | grep -i '^pub' | grep ${ID1_GPG_KEY} | wc -l 2>/dev/null;)";
 			if [ ${LOCAL_GPG_KEY_ID1_MATCHES} -gt 1 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)
@@ -685,9 +685,9 @@ fi;
 			fi;
 		fi;
 		# Check second ID-Array
-		ID2_USER="${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}";
-		ID2_GPG_KEY="${GIT_SYNC_GPG_KEYS[${ID2_USER}]}";
-		ID2_FULLNAME="${GIT_SYNC_FULLNAMES[${ID2_USER}]}";
+		ID2_USER=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}" 2>/dev/null;);
+		ID2_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID2_USER}]}" 2>/dev/null;);
+		ID2_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID2_USER}]}" 2>/dev/null;);
 		if [ -n "${ID2_USER}" ] && [ -n "${ID2_GPG_KEY}" ]; then
 			LOCAL_GPG_KEY_ID2_MATCHES="$(gpg --list-keys --keyid-format 'LONG' | grep -v 'gpg:' | grep -i '^pub' | grep ${ID2_GPG_KEY} | wc -l 2>/dev/null;)";
 			if [ ${LOCAL_GPG_KEY_ID2_MATCHES} -gt 1 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)

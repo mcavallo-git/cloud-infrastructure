@@ -672,12 +672,12 @@ fi;
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
-		CHECK_ID_1=${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]};
+		CHECK_ID_1=${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]};
 		if [ -n "${CHECK_ID_1}" ]; then
 			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]}"\"";
 		fi;
 		# Check second ID-Array
-		CHECK_ID_2=${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]};
+		CHECK_ID_2=${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]};
 		if [ -n "${CHECK_ID_2}" ]; then
 			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]}"\"";
 		fi;

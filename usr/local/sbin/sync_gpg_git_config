@@ -673,9 +673,9 @@ fi;
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
-		ID1_USER=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}" 2>/dev/null;);
-		ID1_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID1_USER}]}" 2>/dev/null;);
-		ID1_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID1_USER}]}" 2>/dev/null;);
+		ID1_USER=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}") 2>/dev/null;
+		ID1_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID1_USER}]}") 2>/dev/null;
+		ID1_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID1_USER}]}") 2>/dev/null;
 		if [ -n "${ID1_USER}" ] && [ -n "${ID1_GPG_KEY}" ]; then
 			echo "";
 			echo " ---> Calling [ \"${GPG4WIN_GPG_EXE_LINUX}\" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep \"/${ID1_GPG_KEY} \" | wc -l 2>/dev/null;\" ] ]...";
@@ -687,9 +687,9 @@ fi;
 			fi;
 		fi;
 		# Check second ID-Array
-		ID2_USER=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}" 2>/dev/null;);
-		ID2_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID2_USER}]}" 2>/dev/null;);
-		ID2_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID2_USER}]}" 2>/dev/null;);
+		ID2_USER=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}") 2>/dev/null;
+		ID2_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID2_USER}]}") 2>/dev/null;
+		ID2_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID2_USER}]}") 2>/dev/null;
 		if [ -n "${ID2_USER}" ] && [ -n "${ID2_GPG_KEY}" ]; then
 			echo "";
 			echo " ---> Calling [ \"${GPG4WIN_GPG_EXE_LINUX}\" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep \"/${ID2_GPG_KEY} \" | wc -l 2>/dev/null;\" ] ]...";

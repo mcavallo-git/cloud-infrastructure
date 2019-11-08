@@ -658,14 +658,14 @@ fi;
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 		if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
 			# Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip';);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip';);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip';);
+			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		else
 			# Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip';);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip';);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip';);
+			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		fi;
 		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 

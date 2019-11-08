@@ -672,7 +672,6 @@ fi;
 			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+)$/\3/ip';);
 		fi;
 
-		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 
 		# echo $(echo "${EACH_REPO_ORIGIN}") | cut -d":" -f2
 		echo "";

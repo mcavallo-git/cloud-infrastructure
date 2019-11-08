@@ -665,7 +665,14 @@ fi;
 		
 		else
 			# Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
-			GIT_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^([a-z\_\-\.]+)@([a-z\_\-\.]+)\/([a-z\_\-\.]+)\/([a-z\_\-\.]+)$/\1/ip';);
+			GIT_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)$/\1/ip';);
+			GIT_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)$/\1/ip';);
+
+			GIT_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+)$/\1/ip';);
+
+echo "git@github.com:mcavallo-git/CodingWordPress.git" \
+| sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+)$/\1/ip';
+
 
 		fi;
 
@@ -884,18 +891,23 @@ GIT_CONF_SYSTEM_PATHS_WIN32="";
 #	Citation(s)
 #
 #		www.gpg4win.org  |  "Upated Installed - Gpg4win"  |  https://www.gpg4win.org/thanks-for-download.html
+#
 #		www.gpg4win.org  |  "The Gpg4win Compendium"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium.html
+#
 #		www.gpg4win.org  |  "22 Files and settings in Gpg4win"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium_28.html
 #
 #		superuser.com  |  "Where is my gpgconf file on Windows?"  |  https://superuser.com/questions/1068980
+#
 #		superuser.com  |  "How to prevent gpg-agent from timing out during passphrase collection?"  |  https://superuser.com/questions/1172804
 #
 #		github.com  |  "Signing Git commit with GPG ask passphrase everytime"  |  https://github.com/fish-shell/fish-shell/issues/4665#issuecomment-359020584
+#
 #		gist.github.com  |  "How to enable auto-signing Git commits with GnuPG ..."  |  https://gist.github.com/BoGnY/f9b1be6393234537c3e247f33e74094a
 #
 #		joshfrankel.me  |  "Signing commits for Github and Sublime Merge"  |  https://joshfrankel.me/blog/signing-commits-for-github-and-sublime-merge
 #
 #		riseup.net  |  "OpenPGP Best Practices"  |  https://riseup.net/en/security/message-security/openpgp/best-practices
+#
 #		riseup.net  |  "Managing OpenPGP Keys"  |  https://riseup.net/en/security/message-security/openpgp/gpg-keys
 #
 # ------------------------------------------------------------

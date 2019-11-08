@@ -672,30 +672,33 @@ fi;
 		echo "";
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
-		# Check first ID-Array
+
+		COMMIT_EMAIL="";
+		COMMIT_NAME="";
+		COMMIT_GPG_KEY="";
 		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ]; then
-			ID1_USER=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}") 2>/dev/null;
-			ID1_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID1_USER}]}") 2>/dev/null;
-			ID1_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID1_USER}]}") 2>/dev/null;
-		# if [ -n "${ID1_USER}" ] && [ -n "${ID1_GPG_KEY}" ]; then
-			LOCAL_GPG_KEY_ID1_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${ID1_GPG_KEY} " | wc -l 2>/dev/null;);
-			if [ ${LOCAL_GPG_KEY_ID1_MATCHES} -gt 0 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)
-				echo "  |--> Local match found for user \"${ID1_USER}\" w/ GPG-Key \"${ID1_GPG_KEY}\" & Full-Name \"${ID1_FULLNAME}\"";
+			# Use Primary ID Array values, first
+			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
+			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
+			TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
+				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
 			else
-				echo "  |--> NO local match found for user \"${ID1_USER}\" w/ GPG-Key \"${ID1_GPG_KEY}\"";
+				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
-		fi;
-		# Check second ID-Array
-		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ]; then
-			ID2_USER=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}") 2>/dev/null;
-			ID2_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${ID2_USER}]}") 2>/dev/null;
-			ID2_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${ID2_USER}]}") 2>/dev/null;
-		# if [ -n "${ID2_USER}" ] && [ -n "${ID2_GPG_KEY}" ]; then
-			LOCAL_GPG_KEY_ID2_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${ID2_GPG_KEY} " | wc -l 2>/dev/null;);
-			if [ ${LOCAL_GPG_KEY_ID2_MATCHES} -gt 0 ]; then # gpg always outputs "gpg: using pgp trust model" - look for one or more lines past that (and count them as matches)
-				echo "  |--> Local match found for user \"${ID2_USER}\" w/ GPG-Key \"${ID2_GPG_KEY}\" & Full-Name \"${ID2_FULLNAME}\"";
+		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ]; then
+			# Use Secondary (Fallback) ID Array values, first
+			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
+			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
+			TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
+				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
 			else
-				echo "  |--> NO local match found for user \"${ID2_USER}\" w/ GPG-Key \"${ID2_GPG_KEY}\"";
+				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
 		fi;
 

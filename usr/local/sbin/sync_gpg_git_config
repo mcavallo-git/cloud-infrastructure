@@ -639,7 +639,6 @@ fi;
 		done;
 
 		if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
-			echo "Info: Searching for directories with name \".git\" within \"${EACH_HOMEDIR}\" ...";
 			# Not an excluded directory - search it for directories with name ".git"
 			find "${EACH_HOMEDIR}" \
 			-maxdepth 4 \
@@ -647,12 +646,9 @@ fi;
 			-name ".git" \
 			-print0 2>"/dev/null" \
 			| while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
-				echo "EACH_GIT_CONFIG_PATH = [ ${EACH_GIT_CONFIG_PATH} ]";
 				EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
 				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
-		else
-			echo "Info: Skipping excluded directory: \"${EACH_HOMEDIR}\"";
 		fi;
 	done;
 
@@ -676,11 +672,13 @@ fi;
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 		# Check first ID-Array
-		if [ -n "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}" ]; then
+		CHECK_ID_1=${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]};
+		if [ -n "${CHECK_ID_1}" ]; then
 			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID1["${EACH_REPO_URI}"]}"\"";
 		fi;
 		# Check second ID-Array
-		if [ -n "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}" ]; then
+		CHECK_ID_2=${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]};
+		if [ -n "${CHECK_ID_2}" ]; then
 			echo "  |--> Found user with access:  \""${GIT_SYNC_REPOS_ID2["${EACH_REPO_URI}"]}"\"";
 		fi;
 

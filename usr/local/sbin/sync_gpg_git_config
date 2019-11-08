@@ -684,9 +684,9 @@ fi;
 			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
 				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-			# 	echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			# else
-			# 	echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
+			else
+				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
 		fi;
 		
@@ -698,13 +698,41 @@ fi;
 			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
 				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-			# 	echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			# else
-			# 	echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
+			else
+				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
 			fi;
 		fi;
 
 		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ]; then
+
+			cd "${EACH_REPO_FULLPATH}";
+			GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+			GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
+			GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
+			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
+			echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
+			# Strings
+			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+			if [ -z "${GPG_KEY_ID}" ]; then
+				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+			else
+				# Strings (GPG)
+				KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+				KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
+				# Booleans
+				KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
+				# Unsets
+				KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+			fi;
+			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
+				echo "------------------------------------------------------------";
+				echo "$(git config --local --list --show-origin)";
+				echo "------------------------------------------------------------";
+			fi;
+
 
 			# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
 			# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";

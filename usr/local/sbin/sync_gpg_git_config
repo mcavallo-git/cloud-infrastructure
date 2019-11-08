@@ -667,6 +667,8 @@ fi;
 			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip';);
 			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip';);
 		fi;
+		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
+
 		echo "";
 		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
 		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";

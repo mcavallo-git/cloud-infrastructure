@@ -373,7 +373,7 @@ fi;
 
 # if [ "$(cat ${EACH_FULLCONF} | grep 'pinentry-mode')" == "" ]; then echo "pinentry-mode loopback" >> "${EACH_FULLCONF}"; fi;
 # if [ "$(cat ${EACH_FULLCONF} | grep 'passphrase')" == "" ]; then echo "passphrase $(cat ${HOME}/.gnupg/passphrase.personal)" >> "${EACH_FULLCONF}"; fi;
-if [ "$(cat ${EACH_FULLCONF} | grep 'verbose')" == "" ]; then echo "verbose" >> "${EACH_FULLCONF}"; fi;
+# if [ "$(cat ${EACH_FULLCONF} | grep 'verbose')" == "" ]; then echo "verbose" >> "${EACH_FULLCONF}"; fi;
 if [ "$(cat ${EACH_FULLCONF} | grep 'utf8-strings')" == "" ]; then echo "utf8-strings" >> "${EACH_FULLCONF}"; fi;
 if [ "$(cat ${EACH_FULLCONF} | grep 'keyid-format')" == "" ]; then echo "keyid-format ${GPG_KEY_ID_FORMAT}" >> "${EACH_FULLCONF}"; fi;
 if [ "$(cat ${EACH_FULLCONF} | grep 'keyserver-options')" == "" ]; then echo "keyserver-options ${GPG_KEYSERVER_OPTIONS}" >> "${EACH_FULLCONF}"; fi;

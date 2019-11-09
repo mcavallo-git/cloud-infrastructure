@@ -652,6 +652,7 @@ fi;
 		fi;
 	done;
 
+	# Loop through array of local repository filepaths, attempting to parse their values & set applicable [ git config ... ] settings for each
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
@@ -707,15 +708,22 @@ fi;
 		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ]; then
 
 			cd "${EACH_REPO_FULLPATH}";
+
 			GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
 			GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
 			GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
 			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
-			echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
+
+			SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
+			echo "";
+			echo "${SSH_KEY}";
+
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
+
 			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"";                 git config --local --replace-all "${KEY}" "${VAL}";
+
 			if [ -z "${GPG_KEY_ID}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
@@ -733,6 +741,7 @@ fi;
 				echo "------------------------------------------------------------";
 			fi;
 
+			echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
 
 			# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
 			# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
@@ -954,6 +963,8 @@ GIT_CONF_SYSTEM_PATHS_WIN32="";
 #		superuser.com  |  "Where is my gpgconf file on Windows?"  |  https://superuser.com/questions/1068980
 #
 #		superuser.com  |  "How to prevent gpg-agent from timing out during passphrase collection?"  |  https://superuser.com/questions/1172804
+#
+#		superuser.com  |  "How to name openssh public and private key pairs?"  |  https://superuser.com/a/1261644
 #
 #		github.com  |  "Signing Git commit with GPG ask passphrase everytime"  |  https://github.com/fish-shell/fish-shell/issues/4665#issuecomment-359020584
 #

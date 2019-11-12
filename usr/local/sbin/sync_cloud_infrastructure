@@ -366,16 +366,16 @@ else
 		if [ -d "${WSL_DIR}" ]; then
 			# Current User 
 			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
-				ln -sf "${WSL_DIR}" "${HOME}/man";
+				ln -sf "${WSL_DIR}" "${HOME}/Desktop";
 			fi;
 			if [ -v SUDO_USER ]; then
 				# Sudoer User (also create link in default user's homedir)
 				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 				if [ -d "${SUDOER_HOMEDIR}" ]; then
-					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
-						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/man";
+					if [ ! -h "${SUDOER_HOMEDIR}/Desktop" ]; then
+						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/Desktop";
 					fi;
-					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/Desktop";
 				fi;
 			fi;
 		fi;

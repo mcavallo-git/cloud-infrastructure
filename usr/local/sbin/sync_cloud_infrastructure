@@ -309,7 +309,7 @@ else
 	if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
 		# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
 		# echo -e "\n""Info: Unset/Empty variable: \${WIN32_HOMEDIR} ";
-		echo -e "\n""Info: Checking for local repository files within [ $(whoami) ] user's home-directory";
+		echo -e "\n""Info: Checking for local repository files within user [ $(whoami) ]'s home-directory";
 		BENCHMARK_START=$(date +'%s.%N');
 		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
@@ -340,25 +340,45 @@ else
 
 
 	else
-		# Running in WSL - Create link to repo-manuals
-		MAN_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
-		if [ -d "${MAN_DIR}" ]; then
+		# Running WSL on Windows-based OS
+
+		# Create link to repo-manuals
+		WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
+		if [ -d "${WSL_DIR}" ]; then
 			# Current User 
 			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
-				ln -sf "${MAN_DIR}" "${HOME}/man";
+				ln -sf "${WSL_DIR}" "${HOME}/man";
 			fi;
 			if [ -v SUDO_USER ]; then
 				# Sudoer User (also create link in default user's homedir)
 				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 				if [ -d "${SUDOER_HOMEDIR}" ]; then
 					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
-						ln -sf "${MAN_DIR}" "${SUDOER_HOMEDIR}/man";
+						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/man";
 					fi;
 					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
 				fi;
 			fi;
 		fi;
-
+		
+		# Create link to Desktop
+		WSL_DIR="${WIN32_HOMEDIR}/Desktop";
+		if [ -d "${WSL_DIR}" ]; then
+			# Current User 
+			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
+				ln -sf "${WSL_DIR}" "${HOME}/man";
+			fi;
+			if [ -v SUDO_USER ]; then
+				# Sudoer User (also create link in default user's homedir)
+				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
+				if [ -d "${SUDOER_HOMEDIR}" ]; then
+					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
+						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/man";
+					fi;
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
+				fi;
+			fi;
+		fi;
 
 	fi;
 

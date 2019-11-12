@@ -676,36 +676,61 @@ fi;
 
 		COMMIT_EMAIL="";
 		COMMIT_NAME="";
-		COMMIT_GPG_KEY="";
-		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${COMMIT_GPG_KEY}" ]; then
+		SSH_KEY="";
+		GPG_KEY_ID="";
+		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
 			# Use Primary ID Array values, first
-			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
-			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
-			TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
-			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
-			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
-				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			else
-				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
+			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
+			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
+				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
+				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+				if [ -z "${TEST_SSH_KEY}" ]; then
+					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+				else
+					echo "  |--> Found SSH-Key \"${SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					COMMIT_EMAIL="${TEST_EMAIL}";
+					COMMIT_NAME="${TEST_FULLNAME}";
+					SSH_KEY="${TEST_SSH_KEY}";
+					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+						GPG_KEY_ID="${TEST_GPG_KEY}";
+						echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\" & Full-Name \"${COMMIT_NAME}\"";
+					else
+						echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
+					fi;
+				fi;
 			fi;
 		fi;
 		
-		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${COMMIT_GPG_KEY}" ]; then
-			# Use Secondary (Fallback) ID Array values, first
-			COMMIT_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
-			COMMIT_NAME=$(echo "${GIT_SYNC_FULLNAMES[${COMMIT_EMAIL}]}");
-			TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
-			LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
-			if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
-				COMMIT_GPG_KEY="${TEST_GPG_KEY}";
-				echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\" & Full-Name \"${COMMIT_NAME}\"";
-			else
-				echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${COMMIT_GPG_KEY}\"";
+		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+			# Fall back to Secondary ID Array values
+			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
+			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
+			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
+				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
+				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+				if [ -z "${TEST_SSH_KEY}" ]; then
+					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+				else
+					echo "  |--> Found SSH-Key \"${SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					COMMIT_EMAIL="${TEST_EMAIL}";
+					COMMIT_NAME="${TEST_FULLNAME}";
+					SSH_KEY="${TEST_SSH_KEY}";
+					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+						GPG_KEY_ID="${TEST_GPG_KEY}";
+						echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\" & Full-Name \"${COMMIT_NAME}\"";
+					else
+						echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
+					fi;
+				fi;
 			fi;
 		fi;
 
-		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ]; then
+		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ] && [ -n "${SSH_KEY}" ]; then
 
 			cd "${EACH_REPO_FULLPATH}";
 

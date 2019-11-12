@@ -121,8 +121,11 @@ shopt -s lastpipe; # extends the current shell into sub-shells (within piped-com
 # ------------------------------------------------------------
 
 # SHOW_GIT_CONFIG_OUTPUTS=0;
-SHOW_GIT_CONFIG_OUTPUTS=1;
+# SHOW_GIT_CONFIG_OUTPUTS=1;
 # SHOW_GIT_CONFIG_OUTPUTS=2;
+if [ ! -v SHOW_GIT_CONFIG_OUTPUTS ]; then
+	SHOW_GIT_CONFIG_OUTPUTS=1;
+fi;
 
 # ------------------------------------------------------------
 # Environment Variables
@@ -464,38 +467,38 @@ fi;
 # ------------------------------------------------------------
 
 # Personal Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
-if [ ! -f "${GIT_SSH_PERSONAL}" ]; then
-	GPG_KEY_ID_PERSONAL="";
-	GPG_PASS_FILE_PERSONAL="";
-fi;
+# if [ ! -f "${GIT_SSH_PERSONAL}" ]; then
+# 	GPG_KEY_ID_PERSONAL="";
+# 	GPG_PASS_FILE_PERSONAL="";
+# fi;
 
-# Work Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
-if [ ! -f "${GIT_SSH_WORK}" ]; then
-	GPG_KEY_ID_WORK="";
-	GPG_PASS_FILE_WORK="";
-fi;
+# # Work Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
+# if [ ! -f "${GIT_SSH_WORK}" ]; then
+# 	GPG_KEY_ID_WORK="";
+# 	GPG_PASS_FILE_WORK="";
+# fi;
 
-if [ -f "${GIT_SSH_PERSONAL}" ]; then
-	#  PERSONAL SSH-KEY EXISTS
-	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
-	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}";
-	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_PERSONAL}";
-	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_PERSONAL}";
+# if [ -f "${GIT_SSH_PERSONAL}" ]; then
+# 	#  PERSONAL SSH-KEY EXISTS
+# 	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
+# 	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}";
+# 	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_PERSONAL}";
+# 	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_PERSONAL}";
 
-elif [ ! -f "${GIT_SSH_PERSONAL}" ] && [ -f "${GIT_SSH_WORK}" ]; then
-	#  PERSONAL SSH-KEY DOESN'T EXIST BUT WORK SSH-KEY EXISTS
-	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_WORK}";
-	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_WORK}";
-	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_WORK}";
-	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_WORK}";
+# elif [ ! -f "${GIT_SSH_PERSONAL}" ] && [ -f "${GIT_SSH_WORK}" ]; then
+# 	#  PERSONAL SSH-KEY DOESN'T EXIST BUT WORK SSH-KEY EXISTS
+# 	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_WORK}";
+# 	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_WORK}";
+# 	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_WORK}";
+# 	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_WORK}";
 
-else 
-	echo "";
-	echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
-	sleep 60;
-	exit 1;
+# else 
+# 	echo "";
+# 	echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
+# 	sleep 60;
+# 	exit 1;
 
-fi;
+# fi;
 
 # ------------------------------------------------------------
 # [ SYSTEM ] Git Configs
@@ -504,32 +507,32 @@ fi;
 
 ###  Download the "git_config_all" script, which will scour the current drive for all git exe's, then
 ###  perform config-updates on each exe's global & system config-files with the values given (below)
-GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
-GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
-mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
-curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
+# GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
+# GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
+# mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
+# curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
-if [ 0 -eq 1 ]; then
+# if [ 0 -eq 1 ]; then
 
-if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
+# if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 
-# Strings
-KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
-KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
-# Unsets
-KEY="core.sshcommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="push.gpgsign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="user.email";                    "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="user.name";                     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
-KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# # Strings
+# KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# # Unsets
+# KEY="core.sshcommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="gpg.program";                   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="push.gpgsign";                  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="user.email";                    "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="user.name";                     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
+# KEY="user.signingkey";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 
-rm -f "${GIT_CONFIG_ALL_LOCAL}";
+# rm -f "${GIT_CONFIG_ALL_LOCAL}";
 
-fi;
+# fi;
 
-fi;
+# fi;
 
 # ------------------------------------------------------------
 # [ GLOBAL ] Git Configs
@@ -560,27 +563,27 @@ fi;
 # ------------------------------------------------------------
 
 # SSH-Key, Email
-if [ -f "${GIT_SSH_PERSONAL}" ]; then
-	COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
-	COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
-	SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
-	if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
-		GPG_KEY_ID="${GPG_KEY_ID_PERSONAL}"; # GPG-Key
-	fi;
-elif [ -f "${GIT_SSH_WORK}" ]; then
-	COMMIT_NAME="${COMMIT_NAME_WORK}";
-	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
-	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
-	if [ -n "${GPG_KEY_ID_WORK}" ]; then
-		GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
-	fi;
-else
-	echo "";
-	echo "Error: No SSH-Key(s) found for personal git-repos";
-	echo "";
-	sleep 60;
-	exit 1;
-fi;
+# if [ -f "${GIT_SSH_PERSONAL}" ]; then
+# 	COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
+# 	COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
+# 	SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
+# 	if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
+# 		GPG_KEY_ID="${GPG_KEY_ID_PERSONAL}"; # GPG-Key
+# 	fi;
+# elif [ -f "${GIT_SSH_WORK}" ]; then
+# 	COMMIT_NAME="${COMMIT_NAME_WORK}";
+# 	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
+# 	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
+# 	if [ -n "${GPG_KEY_ID_WORK}" ]; then
+# 		GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
+# 	fi;
+# else
+# 	echo "";
+# 	echo "Error: No SSH-Key(s) found for personal git-repos";
+# 	echo "";
+# 	sleep 60;
+# 	exit 1;
+# fi;
 
 
 #	------------------------------------------------------------
@@ -688,7 +691,7 @@ fi;
 				if [ -z "${TEST_SSH_KEY}" ]; then
 					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
-					echo "  |--> Found SSH-Key \"${SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
 					COMMIT_EMAIL="${TEST_EMAIL}";
 					COMMIT_NAME="${TEST_FULLNAME}";
 					SSH_KEY="${TEST_SSH_KEY}";
@@ -714,7 +717,7 @@ fi;
 				if [ -z "${TEST_SSH_KEY}" ]; then
 					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
-					echo "  |--> Found SSH-Key \"${SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
 					COMMIT_EMAIL="${TEST_EMAIL}";
 					COMMIT_NAME="${TEST_FULLNAME}";
 					SSH_KEY="${TEST_SSH_KEY}";
@@ -739,9 +742,9 @@ fi;
 			GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
 			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 
-			SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
-			echo "";
-			echo "${SSH_KEY}";
+			# SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
+			# echo "";
+			# echo "${SSH_KEY}";
 
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
@@ -792,6 +795,8 @@ fi;
 	done;
 	
 echo "";
+
+exit 0;
 
 # fi;
 

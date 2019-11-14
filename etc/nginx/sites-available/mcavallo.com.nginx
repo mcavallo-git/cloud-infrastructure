@@ -22,8 +22,6 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		add_header Content-Type text/plain;
 		#
-		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" | sudo bash;
-		#
 		# curl -ssL "https://sync.mcavallo.com/sh?t=$(date +'%s%N')" | sudo bash;
 		#
 	}

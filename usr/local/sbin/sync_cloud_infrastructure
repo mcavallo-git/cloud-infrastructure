@@ -33,6 +33,11 @@ else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
 	
+	if [ -z "$(which apt;)" ]; then
+		# For Non-Debian Distros, halt on errors
+		set -e; #     -e  Exit immediately if a command exits with a non-zero status
+	fi;
+
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);

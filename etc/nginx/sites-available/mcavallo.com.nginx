@@ -20,7 +20,16 @@ server {
 	}
 	location ~* "^/[\d\.]*\.?(ba)?sh$" {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		add_header Content-Type text/plain;
+
+		add_header 'Content-Type' 'text/plain';
+
+		# Headers for client browser NOCACHE + CORS origin filter 
+		add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+		expires off;
+		add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept' always;
+
+
 		#
 		# curl  -H "Cache-Control: no-store, no-cache, must-revalidate" -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" | sudo bash;
 		#
@@ -29,7 +38,7 @@ server {
 	}
 	location ~* "^/[\d\.]*\.?ps(m)?(1)?$" {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		add_header Content-Type text/plain;
+		add_header 'Content-Type' 'text/plain';
 		#
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)") -Verb RunAs;
 		#
@@ -343,9 +352,10 @@ server {
 # FQDN="mcavallo.com"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}";
 #
 # ------------------------------------------------------------
-
 # Citation(s)
 #
 #   serverfault.com  |  "Reply with 200 from Nginx config without serving a file"  |  https://serverfault.com/a/491817
+#
+#   stackoverflow.com  |  "nginx reverse proxy disable cache"  |  https://stackoverflow.com/a/56257749
 #
 # ------------------------------------------------------------

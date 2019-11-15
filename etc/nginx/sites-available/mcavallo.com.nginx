@@ -3,6 +3,8 @@
 #==--  sync.mcavallo.com
 #
 
+proxy_cache off;
+
 server {
 	listen 80;
 	listen 443 ssl http2;
@@ -12,9 +14,13 @@ server {
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
+
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+
+	proxy_cache off;
+
 	location / {
 		# keepalive_timeout 0;
 		# return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
@@ -33,6 +39,7 @@ server {
 		proxy_busy_buffers_size 64k;
 		# proxy_buffering off;
 		proxy_cache off;
+		proxy_cache_revalidate off;
 
 
 		# add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;

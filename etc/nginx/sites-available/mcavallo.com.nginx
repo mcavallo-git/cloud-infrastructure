@@ -32,12 +32,15 @@ server {
 		proxy_busy_buffers_size 64k;
 		proxy_cache off;
 
-		add_header 'Content-Type' 'text/plain';
+		# add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+		# add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept' always;
 		add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+		add_header 'Content-Type' 'text/plain';
+		add_header 'Last-Modified' $date_gmt;
+		if_modified_since off;
 		expires off;
-		add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-		add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept' always;
-
+		etag off;
+ 
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" | sudo bash;
 		#

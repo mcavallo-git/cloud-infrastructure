@@ -35,6 +35,9 @@ else
 	
 	if [ -z "$(which apt;)" ]; then
 		# For Non-Debian Distros, halt on errors
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Non-Debian distro detected";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ set -e; ] (Halt on errors)";
 		set -e; #     -e  Exit immediately if a command exits with a non-zero status
 	fi;
 

@@ -14,6 +14,10 @@ fi;
 #   |
 #   |--> Need to upgrade this script to use [ ptx ] command instead of [ lsb_release ]  & [ sed ], as ptx is part of GNU Coreutils (which is included in most Linux distros)
 #
+
+shopt -s nocasematch; # If set, Bash matches patterns in a case-insensitive fashion when performing matching while executing case or [[ conditional commands, when performing pattern substitution word expansions, or when filtering possible completions as part of programmable completion.
+
+
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
@@ -53,7 +57,6 @@ fi;
 
 RETURNED_OS="Unknown";
 
-
 # ------------------------------------------------------------
 #
 # OS (Operating System) Details
@@ -77,18 +80,22 @@ RETURNED_OS="${THIS_OS_TYPE}";
 # Linux Distro (Distribution) Details
 #
 if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
-	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_DESCRIPTION="$(lsb_release --short --description | tr '[:lower:]' '[:upper:]';)";
-
+	DISTRO_ID="$(lsb_release --short --id;)";
+	DISTRO_RELEASE="$(lsb_release --short --release;)";
+	DISTRO_CODENAME="$(lsb_release --short --codename;)";
+	DISTRO_DESCRIPTION="$(lsb_release --short --description;)";
 
 elif [ -n "$(which sed 2>'/dev/null')" ]; then
-	DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release");
-	DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID="(.+)"$/\1/p' "/etc/os-release");
-	DISTRO_CODENAME=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
-	DISTRO_DESCRIPTION=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
+	DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release";);
+	DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID="(.+)"$/\1/p' "/etc/os-release";);
+	DISTRO_CODENAME=$(sed -rne 's/^VERSION=".+\((.+)\)"$/\1/p' "/etc/os-release";);
+	DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="(.+)"$/\1/p' "/etc/os-release";);
 
+elif [ -n "$(which grep 2>'/dev/null')" ]; then
+	DISTRO_ID=$(cat /etc/*release | grep -i "^NAME=";);
+	DISTRO_RELEASE=$(cat /etc/*release | grep -i "^VERSION_ID=";);
+	DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);
+	DISTRO_DESCRIPTION=$(cat /etc/*release | grep -i "^PRETTY_NAME=";);
 
 else
 	DISTRO_ID=""
@@ -98,6 +105,15 @@ else
 
 fi;
 
+
+# Force uppercase letting (if command [ tr ] exists locally)
+if [ -n "$(which tr 2>'/dev/null')" ]; then
+	DISTRO_ID="$(echo "${DISTRO_ID}" | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_RELEASE="$(echo "${DISTRO_RELEASE}" | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_CODENAME="$(echo "${DISTRO_CODENAME}" | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_DESCRIPTION="$(echo "${DISTRO_DESCRIPTION}" | tr '[:lower:]' '[:upper:]';)";
+
+fi;
 
 # ------------------------------------------------------------
 #
@@ -129,6 +145,7 @@ else
 	IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 	IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 	IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+	IS_RED_HAT=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i 'red hat' | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 
 fi;
 

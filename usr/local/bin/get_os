@@ -74,14 +74,19 @@ RETURNED_OS="${THIS_OS_TYPE}";
 #
 # Linux Distro (Distribution) Details
 #
-DISTRO_ID=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
-
-
 if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_DESCRIPTION="$(lsb_release --short --description | tr '[:lower:]' '[:upper:]';)";
+
+
+elif [ -n "$(which sed 2>'/dev/null')" ]; then
+	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_DESCRIPTION="$(lsb_release --short --description | tr '[:lower:]' '[:upper:]';)";
+
 
 else
 	DISTRO_ID=""

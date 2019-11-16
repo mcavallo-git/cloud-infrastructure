@@ -186,6 +186,8 @@ if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
 		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	fi;
+elif [ -n "${DISTRO_RELEASE}" ]; then
+	THIS_RELEASE="${DISTRO_RELEASE}";
 fi;
 
 if [ "${THIS_DISTRO}" != "Unknown" ]; then

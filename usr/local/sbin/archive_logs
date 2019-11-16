@@ -3,6 +3,18 @@
 # LOCAL_SBIN="/usr/local/sbin/archive_logs" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+
+if [ 0 -eq 1 ]; then
+
+# Download & run this script on-the-fly:
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/archive_logs?$(date +'%s.%N')" | bash;
+
+# Run the local copy of this script:
+bash "${HOME}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\archive_logs";
+
+fi;
+
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -41,11 +53,15 @@ else
 
 		if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
 
+			echo "Calling [ mv \"${PATH_LOGS}\" \"${PATH_ARCH}\"; ] ...";
 			mv "${PATH_LOGS}" "${PATH_ARCH}";
 
+			echo "Calling [ chmod 0400 \"${PATH_ARCH}\"; ] ...";
 			chmod 0400 "${PATH_ARCH}";
 
+			echo "Calling [ ln -sf \"${PATH_ARCH}\" \"${PATH_LOGS}\"; ] ...";
 			ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
+
 		fi;
 
 	done;

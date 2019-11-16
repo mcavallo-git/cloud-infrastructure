@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # Run this script on-the-fly:
 
-curl -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

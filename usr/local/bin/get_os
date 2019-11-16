@@ -106,14 +106,17 @@ else
 fi;
 
 
+# ------------------------------------------------------------
+#
 # Force uppercase letting (if command [ tr ] exists locally)
+#
 if [ -n "$(which tr 2>'/dev/null')" ]; then
 	DISTRO_ID="$(echo "${DISTRO_ID}" | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_RELEASE="$(echo "${DISTRO_RELEASE}" | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_CODENAME="$(echo "${DISTRO_CODENAME}" | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_DESCRIPTION="$(echo "${DISTRO_DESCRIPTION}" | tr '[:lower:]' '[:upper:]';)";
-
 fi;
+
 
 # ------------------------------------------------------------
 #

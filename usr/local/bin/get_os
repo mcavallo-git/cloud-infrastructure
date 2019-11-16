@@ -10,6 +10,12 @@ curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo
 fi;
 # ------------------------------------------------------------
 #
+# Attempt to determine os-type, etc. using distro-agnostic commands
+#   |
+#   |--> GNU Coreutils: http://www.gnu.org/software/coreutils/manual/html_node/index.html#toc-Operating-on-characters-1
+#
+# ------------------------------------------------------------
+#
 # Log all shell output & error output to logfile
 
 if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
@@ -70,6 +76,9 @@ RETURNED_OS="${THIS_OS_TYPE}";
 #
 # Linux Distro (Distribution) Details
 #
+DISTRO_ID=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
+
+
 if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
@@ -197,8 +206,12 @@ fi;
 #	------------------------------------------------------------
 #	Citation(s)
 #
-#		stackexchange.com  |  "How can I reliably get the operating system's name?"  |  https://unix.stackexchange.com/a/92218
+#		gnu.org  |  "GNU Coreutils"  |  http://www.gnu.org/software/coreutils/manual/html_node/index.html#toc-Operating-on-characters-1
 #
 #		stackoverflow.com  |  "How to detect the OS from a Bash script?"  |  https://stackoverflow.com/a/8597411
+#
+#		unix.stackexchange.com  |  "How can I reliably get the operating system's name?"  |  https://unix.stackexchange.com/a/92218
+#
+#		unix.stackexchange.com  |  "Which are the standard commands available in every Linux based distribution?"  |  https://unix.stackexchange.com/a/37065
 #
 #	------------------------------------------------------------

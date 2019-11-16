@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # Run this script on-the-fly:
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?$(date +'%s.%N')" | bash;
+curl -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
@@ -102,11 +102,11 @@ IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" =
 
 if [ -n "${DISTRO_ID}" ]; then
 	# Directly-compare the current OS' Distro-ID against known values runtime
-	IS_ALPINE=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "ALPINE" ]; then echo 1; else echo 0; fi;);
-	IS_CENTOS=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "CENTOS" ]; then echo 1; else echo 0; fi;);
-	IS_DEBIAN=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
-	IS_RASPBIAN=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
-	IS_UBUNTU=$(if [ "$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
+	IS_ALPINE=$(if [ "${DISTRO_ID}" == "ALPINE" ]; then echo 1; else echo 0; fi;);
+	IS_CENTOS=$(if [ "${DISTRO_ID}" == "CENTOS" ]; then echo 1; else echo 0; fi;);
+	IS_DEBIAN=$(if [ "${DISTRO_ID}" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
+	IS_RASPBIAN=$(if [ "${DISTRO_ID}" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
+	IS_UBUNTU=$(if [ "${DISTRO_ID}" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
 
 else
 	# Manually determine Distro-type

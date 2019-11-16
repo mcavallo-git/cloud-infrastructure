@@ -11,6 +11,8 @@ fi;
 # ------------------------------------------------------------
 #
 # Attempt to determine os-type, etc. using (ideally) distro-agnostic commands
+#   |
+#   |--> Need to upgrade this script to use [ ptx ] command instead of [ lsb_release ]  & [ sed ], as ptx is part of GNU Coreutils (which is included in most Linux distros)
 #
 # ------------------------------------------------------------
 #
@@ -82,10 +84,10 @@ if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 
 
 elif [ -n "$(which sed 2>'/dev/null')" ]; then
-	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_DESCRIPTION="$(lsb_release --short --description | tr '[:lower:]' '[:upper:]';)";
+	DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release");
+	DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID="(.+)"$/\1/p' "/etc/os-release");
+	DISTRO_CODENAME=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
+	DISTRO_DESCRIPTION=$(sed -rne 's/^NAME="(.+)"$/\1/p' "/etc/os-release");
 
 
 else

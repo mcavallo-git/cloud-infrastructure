@@ -140,6 +140,7 @@ if [ -n "${DISTRO_ID}" ]; then
 	IS_DEBIAN=$(if [ "${DISTRO_ID}" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
 	IS_RASPBIAN=$(if [ "${DISTRO_ID}" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
 	IS_UBUNTU=$(if [ "${DISTRO_ID}" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
+	IS_RED_HAT=$(if [ "${DISTRO_ID}" == "RHEL" ]; then echo 1; else echo 0; fi;);
 
 else
 	# Manually determine Distro-type
@@ -165,6 +166,8 @@ elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 	# Linux shell-distro(s)
 	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
 		THIS_DISTRO="Raspbian";
+	elif [[ ${IS_RED_HAT} -gt 0 ]]; then
+		THIS_DISTRO="Red Hat";
 	elif [[ ${IS_CENTOS} -gt 0 ]]; then
 		THIS_DISTRO="CentOS";
 	elif [[ ${IS_UBUNTU} -gt 0 ]]; then
@@ -202,13 +205,14 @@ if [ ${VERBOSE} -eq 1 ]; then
 	echo "IS_MAC=${IS_MAC}"; \
 	echo "IS_WSL=${IS_WSL}"; \
 	echo "";
-	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
-	echo "IS_CENTOS=${IS_CENTOS}"; \
-	echo "IS_UBUNTU=${IS_UBUNTU}"; \
 	echo "IS_ALPINE=${IS_ALPINE}"; \
-	echo "IS_DEBIAN=${IS_DEBIAN}"; \
 	echo "IS_CYGWIN=${IS_CYGWIN}"; \
+	echo "IS_CENTOS=${IS_CENTOS}"; \
+	echo "IS_DEBIAN=${IS_DEBIAN}"; \
 	echo "IS_MINGW=${IS_MINGW}";
+	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
+	echo "IS_RED_HAT=${IS_RED_HAT}"; \
+	echo "IS_UBUNTU=${IS_UBUNTU}"; \
 fi;
 
 if [ ${VERBOSE} -eq 1 ]; then

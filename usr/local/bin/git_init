@@ -44,7 +44,7 @@ FAIL_MSG="";
 #
 # if acting as the "root" user and the "git" module is not installed, then attempt to install it
 #
-if [ "$(which git)" == "" ] && [ "$(id -un)" == "root" ]; then
+if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 	if [ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]; then
 		# Ubuntu
 		echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Ubuntu Linux) - Attempting to install via:";

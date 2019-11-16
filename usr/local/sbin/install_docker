@@ -22,7 +22,7 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 	exit 1;
 else
 	# ------------------------------------------------------------
-	if [[ "$(which get_os)" != "" && "$(get_os)" == *"Microsoft"* ]]; then
+	if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
 		#
 		# WSL Docker Installation
 		#

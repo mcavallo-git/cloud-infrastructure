@@ -26,14 +26,14 @@ else
 	EXIT_CODE=1;
 
 	# Make sure required runtime(s) are installed
-	if [ -z "$(which dos2unix)" ]; then
+	if [ -z "$(which dos2unix 2>'/dev/null')" ]; then
 		apt-get-update -y; apt-get install -y dos2unix;
 	fi;
 	
 	DIR_REPO_BASE="";
 
 	# Detect & handle WSL instance(s)
-	WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
+	WSL_CHECK_EXISTS=$(which wsl_get_windows_username 2>'/dev/null');
 	if [ -n "${WSL_CHECK_EXISTS}" ]; then
 		WIN32_USERNAME=$(wsl_get_windows_username);
 		WIN32_USER_ERRORS="$?";

@@ -70,7 +70,7 @@ RETURNED_OS="${THIS_OS_TYPE}";
 #
 # Linux Distro (Distribution) Details
 #
-if [ -n "$(which lsb_release)" ]; then
+if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	DISTRO_ID="$(lsb_release --short --id | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	DISTRO_CODENAME="$(lsb_release --short --codename | tr '[:lower:]' '[:upper:]';)";
@@ -143,7 +143,7 @@ elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 fi;
 
 THIS_RELEASE="Unknown";
-if [ -n "$(which lsb_release)" ]; then
+if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
 		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	fi;

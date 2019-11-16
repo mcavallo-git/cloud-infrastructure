@@ -24,7 +24,7 @@ if [ -n "${BASH_VERSION}" ]; then
 
 	# Set 'Vim' as default text-editor (if it exists)
 	#  |--> avoids using 'Nano' for commands such as [ crontab -e ], etc.
-	if [ -n "$(which vim)" ] && [ -f "$(which vim)" ]; then
+	if [ -n "$(which vim 2>'/dev/null')" ] && [ -f "$(which vim 2>'/dev/null')" ]; then
 		export EDITOR=vim;
 		export VISUAL=vim;
 	fi;

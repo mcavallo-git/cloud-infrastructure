@@ -35,21 +35,21 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# apt / apt-get
-		if [ -z "$(which apt)" ]; then
+		if [ -z "$(which apt 2>'/dev/null')" ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
-		elif [ -z "$(which apt-get)" ]; then
+		elif [ -z "$(which apt-get 2>'/dev/null')" ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" not found";
 		else
 			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(which apt)";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(which apt 2>'/dev/null')";
 			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(which apt-get)";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(which apt-get 2>'/dev/null')";
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
 			sudo apt-get -y update;
-			if [ -n "$(which update_unifi)" ]; then
+			if [ -n "$(which update_unifi 2>'/dev/null')" ]; then
 				sudo update_unifi;
 			fi;
 			echo "";
@@ -68,12 +68,12 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# yum
-		if [ -z "$(which yum)" ]; then
+		if [ -z "$(which yum 2>'/dev/null')" ]; then
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" not found";
 
 		else
 			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(which yum)";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(which yum 2>'/dev/null')";
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum list --upgradable";
 			sudo yum check-update; 
@@ -87,7 +87,7 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# updatedb
-		if [ -z "$(which updatedb)" ]; then
+		if [ -z "$(which updatedb 2>'/dev/null')" ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"updatedb\" not found";
 		else
@@ -105,7 +105,7 @@ else
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" not found";
 		else
 			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" resolved to $(which ldconfig)";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" resolved to $(which ldconfig 2>'/dev/null')";
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo ldconfig";
 			sudo ldconfig;
@@ -116,11 +116,11 @@ else
 		if [ "skip pip" == "skip pip" ]; then
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
 		else 
-			if [ -z "$(which pip)" ]; then
+			if [ -z "$(which pip 2>'/dev/null')" ]; then
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
 			else
 				echo "";
-				echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" resolved to $(which pip)";
+				echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" resolved to $(which pip 2>'/dev/null')";
 				echo "";
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip install --upgrade pip;";
 				sudo pip install --upgrade pip;

@@ -59,7 +59,7 @@ else
 
 	fi;
 
-	if [ "$(which dotnet)" == "" ]; then
+	if [ "$(which dotnet 2>'/dev/null')" == "" ]; then
 		# UNKNOWN/UNHANDLED OPERATING SYSTEM
 		echo "";
 		echo "Unhandled version of Linux:";

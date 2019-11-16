@@ -50,7 +50,7 @@ else
 			sudo dpkg -i $(basename "${DOWNLOAD_URL}"); # Register the Microsoft repository GPG keys
 			sudo apt-get update -y; # Update the list of products
 			sudo apt-get install -y "powershell"; # Install PowerShell
-			sudo ln -sf $(readlink -f $(which pwsh)) "/usr/bin/powershell"; # Redirect "powershell" to use "pwsh" command
+			sudo ln -sf $(readlink -f $(which pwsh 2>'/dev/null')) "/usr/bin/powershell"; # Redirect "powershell" to use "pwsh" command
 
 		elif [[ ${OS_VERSION_MAJOR} -lt 16 ]] && [[ ${OS_VERSION_MAJOR} -ge 14 ]]; then
 			# UBUNTU 14.x
@@ -65,7 +65,7 @@ else
 	fi;
 
 
-	if [ "$(which pwsh)" == "" ]; then
+	if [ "$(which pwsh 2>'/dev/null')" == "" ]; then
 		# UNKNOWN/UNHANDLED OPERATING SYSTEM
 		echo "";
 		echo "Unhandled version of Linux:";

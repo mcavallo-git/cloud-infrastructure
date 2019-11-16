@@ -114,8 +114,8 @@ else
 			systemctl start jenkins;
 
 			# Reload NGINX (if found locally)
-			if [ -n "$(which nginx)" ]; then
-				if [ -f "$(which reload_nginx)" ]; then
+			if [ -n "$(which nginx 2>'/dev/null')" ]; then
+				if [ -f "$(which reload_nginx 2>'/dev/null')" ]; then
 					echo "";
 					echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
 					reload_nginx;

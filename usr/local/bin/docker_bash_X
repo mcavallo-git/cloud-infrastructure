@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ -n "$0" ]; then
 	
-	if [ -z "$(which docker)" ]; then
+	if [ -z "$(which docker 2>'/dev/null')" ]; then
 		echo "Error: command \"docker\" not found";
 
 	else

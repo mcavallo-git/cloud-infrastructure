@@ -6,22 +6,22 @@ if [ -z "${1}" ]; then
 	exit 1;
 fi;
 
-if [ -z "$(which nmap)" ]; then
+if [ -z "$(which nmap 2>'/dev/null')" ]; then
 	echo "";
 	echo "Error: command \"nmap\" not found";
 	read -p " |-->  Install package \"nmap\", now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-		if [ -n "$(which apt-get)" ]; then
+		if [ -n "$(which apt-get 2>'/dev/null';)" ]; then
 			sudo apt-get install -y "nmap";
-		elif [ -n "$(which yum)" ]; then
+		elif [ -n "$(which yum 2>'/dev/null';)" ]; then
 			sudo yum install -y "nmap";
-		elif [ -n "$(which apk)" ]; then
+		elif [ -n "$(which apk 2>'/dev/null';)" ]; then
 			sudo apk install -y "nmap";
 		fi;
 	fi;
 fi;
 
 
-if [ -n "$(which nmap)" ]; then
+if [ -n "$(which nmap 2>'/dev/null';)" ]; then
 	nmap -T Aggressive -A -v "${1}" -p 1-65535;
 fi;

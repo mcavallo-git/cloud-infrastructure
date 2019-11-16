@@ -137,7 +137,7 @@ else
 		#
 		REQUIRED_PACKAGE_NAME="resolvconf";
 		REQUIRED_METHOD_NAME="resolvconf";
-		if [ -n "$(which ${REQUIRED_METHOD_NAME})" ]; then
+		if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
 			echo ""; echo "${BOX_CHECK} Passed  [which \"${REQUIRED_METHOD_NAME}\";] ";
 		else
 			echo ""; echo "${BOX_XMARK} Failed [which \"${REQUIRED_METHOD_NAME}\";] ";
@@ -157,7 +157,7 @@ else
 		#
 		REQUIRED_PACKAGE_NAME="ifupdown";
 		REQUIRED_METHOD_NAME="ifup";
-		if [ -n "$(which ${REQUIRED_METHOD_NAME})" ]; then
+		if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
 			echo ""; echo "${BOX_CHECK} Passed  [which \"${REQUIRED_METHOD_NAME}\";] ";
 		else
 			echo ""; echo "${BOX_XMARK} Failed [which \"${REQUIRED_METHOD_NAME}\";] ";
@@ -168,7 +168,7 @@ else
 		fi;
 		REQUIRED_PACKAGE_NAME="ifupdown";
 		REQUIRED_METHOD_NAME="ifdown";
-		if [ -n "$(which ${REQUIRED_METHOD_NAME})" ]; then
+		if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
 			echo ""; echo "${BOX_CHECK} Passed  [which \"${REQUIRED_METHOD_NAME}\";] ";
 		else
 			echo ""; echo "${BOX_XMARK} Failed [which \"${REQUIRED_METHOD_NAME}\";] ";

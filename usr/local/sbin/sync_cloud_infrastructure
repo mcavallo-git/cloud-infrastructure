@@ -33,7 +33,7 @@ else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
 	
-	if [ -z "$(which apt;)" ]; then
+	if [ -z "$(which apt 2>'/dev/null';)" ]; then
 		# For Non-Debian Distros, halt on errors
 		echo "";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Non-Debian distro detected";
@@ -63,7 +63,7 @@ else
 	if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
 		mkdir -p "${DIRNAME_LOCAL_CONFIG}";
 	fi;
-	if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
+	if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
 		chmod 755	"${DIRNAME_LOCAL_CONFIG}";
 	fi;
 
@@ -96,12 +96,12 @@ else
 
 	# ------------------------------------------------------------
 	# Make sure required runtime(s) are installed
-	REQUIRED_PKG="bc"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="git"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="vim"; if [ -z "$(which ${REQUIRED_PKG})" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="bc"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="git"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	REQUIRED_PKG="vim"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
 
 	# ------------------------------------------------------------
@@ -292,7 +292,7 @@ else
 	# ------------------------------------------------------------
 	# Check for (Detect/Handle) WSL instance(s)
 	if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
-		WSL_CHECK_EXISTS=$(which wsl_get_windows_username);
+		WSL_CHECK_EXISTS=$(which wsl_get_windows_username 2>'/dev/null');
 		if [ -n "${WSL_CHECK_EXISTS}" ]; then
 			echo -e "\n""Info: Checking for Windows Subsystem for Linux (WSL) Environment";
 			WIN32_USERNAME=$(wsl_get_windows_username);
@@ -490,7 +490,7 @@ else
 
 			# service --status-all 2>/dev/null | grep 'jenkins';
 
-			if [ -z "$(which ssh)" ]; then
+			if [ -z "$(which ssh 2>'/dev/null')" ]; then
 				echo "Info: Skipped SSH-Config Update (command \"ssh\" not found)";
 
 			else
@@ -563,7 +563,7 @@ else
 		# Sync UFW ("Uncomplicated Firewall")
 		if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
 			# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
-			if [ "$(which ufw)" == "" ]; then
+			if [ "$(which ufw 2>'/dev/null')" == "" ]; then
 				echo -e "\n""Info: Skipped UFW sync (incompatible Linux distro)";
 			else
 				# Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
@@ -906,7 +906,7 @@ else
 		# /etc/nginx
 		#
 		if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
-			if [ -z "$(which nginx)" ]; then
+			if [ -z "$(which nginx 2>'/dev/null')" ]; then
 				# NGINX does NOT exist locally
 				echo -e "\n""Info: Skipped NGINX sync (not found as a local service)";
 
@@ -1065,7 +1065,7 @@ else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			else
 				/usr/sbin/service "${SERVICE_NAME}" restart;
-				if [ -n "$(which ${SERVICE_NAME};)" ]; then
+				if [ -n "$(which ${SERVICE_NAME} 2>'/dev/null';)" ]; then
 					ufw reload;
 				fi;
 				/usr/sbin/service "${SERVICE_NAME}" status;

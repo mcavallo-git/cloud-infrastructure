@@ -30,7 +30,7 @@ else
 		fi;
 		
 		# Make sure required runtime(s) are installed
-		if [ -z "$(which bc)" ]; then
+		if [ -z "$(which bc 2>'/dev/null';)" ]; then
 			apt-get-update -y; apt-get install -y bc;
 		fi;
 

@@ -8,13 +8,13 @@
 if [ -n "${HOME}" ]; then
 	USER_HOMEDIR="${HOME}";
 
-elif [ -n "${USERNAME}" ] && [ -n "$(which getent;)" ] && [ -n "$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)" ]; then
+elif [ -n "${USERNAME}" ] && [ -n "$(which getent 2>'/dev/null';)" ] && [ -n "$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)" ]; then
 	USER_HOMEDIR="$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)";
 
-elif [ -n "$(which realpath;)" ] && [ -n "$(realpath ~;)" ]; then
+elif [ -n "$(which realpath 2>'/dev/null';)" ] && [ -n "$(realpath ~;)" ]; then
 	USER_HOMEDIR="$(realpath ~)";
 
-elif [ -n "$(which readlink;)" ] && [ -n "$(readlink -f ~;)" ]; then
+elif [ -n "$(which readlink 2>'/dev/null';)" ] && [ -n "$(readlink -f ~;)" ]; then
 	USER_HOMEDIR="$(readlink -f ~)";
 
 fi;
@@ -35,12 +35,12 @@ if [ -n "${USER_HOMEDIR}" ]; then
 	if [ -d "${BASH_LOGDIR}" ] && [ -w "${BASH_LOGDIR}" ]; then
 
 		# Set user:group ownership for the log-directory to be the current-user && their default-group
-		if [ -n "$(which stat;)" ] && [ "$(stat -c '%u:%g' ${BASH_LOGDIR})" != "$(id --user):$(id --group)" ]; then
+		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat -c '%u:%g' ${BASH_LOGDIR})" != "$(id --user):$(id --group)" ]; then
 			chown -R "$(id -u):$(id -g)" "${BASH_LOGDIR}";
 		fi;
 
 		# Limit access to bash-log-dirs (block read-access from users who aren't the owner)
-		if [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${BASH_LOGDIR})" != "700" ]; then
+		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGDIR})" != "700" ]; then
 			chmod -R 700 "${BASH_LOGDIR}";
 		fi;
 
@@ -50,16 +50,16 @@ if [ -n "${USER_HOMEDIR}" ]; then
 		fi;
 
 		# Limit access to bash-log-files (block read-access from users who aren't the owner)
-		if [ -n "$(which stat;)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
+		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
 			chmod 600 "${BASH_LOGFILE}";
 		fi;
 
 		# Log the current bash-command to the user's logs-directory as-intended
 		# GET_LAST_COMMAND="HISTTIMEFORMAT=\"%d/%m/%y %T \" history 1";
 		GET_LAST_COMMAND="history 1";
-		if [ -n "$(which sed)" ]; then
+		if [ -n "$(which sed 2>'/dev/null')" ]; then
 			GET_LAST_COMMAND="${GET_LAST_COMMAND} | sed 's/^ *[0-9]* *//'";
-		elif [ -n "$(which cut)" ]; then
+		elif [ -n "$(which cut 2>'/dev/null')" ]; then
 			GET_LAST_COMMAND="${GET_LAST_COMMAND} | cut -c 8-";
 		fi;
 

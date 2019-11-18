@@ -81,12 +81,15 @@ RETURNED_OS="${THIS_OS_TYPE}";
 #
 # Linux Distro (Distribution) Details
 #
-RELEASE_SOURCE_FILE="/etc/os-release";
-if [ -f "/etc/system-release" ]; then
-	RELEASE_SOURCE_FILE="/etc/system-release"; # RedHat/CentOS Distros
-elif [ -f "/etc/lsb-release" ]; then
-	RELEASE_SOURCE_FILE="/etc/lsb-release"; # Debian-Based Distros
-fi;
+
+#
+# RELEASE_SOURCE_FILE="/etc/os-release";
+# if [ -f "/etc/system-release" ]; then
+# 	RELEASE_SOURCE_FILE="/etc/system-release"; # RedHat/CentOS Distros
+# elif [ -f "/etc/lsb-release" ]; then
+# 	RELEASE_SOURCE_FILE="/etc/lsb-release"; # Debian-Based Distros
+# fi;
+#
 
 if [ -n "$(which lsb_release 2>'/dev/null')" ]; then
 	DISTRO_ID="$(lsb_release --short --id;)";

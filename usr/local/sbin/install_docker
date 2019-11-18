@@ -54,7 +54,13 @@ else
 		# Non-WSL Docker Installation
 		#
 
-		wget -qO- "https://get.docker.com/" | sh;
+		if [ -n "$(which wget 2>/dev/null;)" ]; then
+			wget -qO- "https://get.docker.com/" | sh;
+
+		else
+			curl -ssL "https://get.docker.com/" | sh;
+		
+		fi;
 	
 	fi;
 

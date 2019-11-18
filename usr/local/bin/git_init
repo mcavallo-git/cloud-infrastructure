@@ -233,7 +233,7 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 	FIRST_CLONE_OF_REPO="1";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
 	cd "${GIT_LOCAL_CEILING}";
-	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -i \"${REMOTE_PRIVATE_KEY}\" -F /dev/null";
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;
@@ -252,7 +252,7 @@ else
 fi;
 #
 # [config]  core.sshcommand
-${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+${GIT_CLI} config core.sshcommand "ssh -o StrictHostKeyChecking=no -i \"${REMOTE_PRIVATE_KEY}\" -F /dev/null";
 #
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then

@@ -241,9 +241,9 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;
-#
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git init";
 ${GIT_CLI} init;
+
 
 # [config] remote.origin.url
 LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
@@ -262,7 +262,8 @@ ${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHos
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then
 	${GIT_CLI} config --unset core.compression;
 fi;
-#
+
+
 # [config]  user.name
 if [ -n "${REMOTE_USER_NAME}" ]; then
 	LOCAL_CURRENT_USER_NAME=$(${GIT_CLI} config user.name);
@@ -282,7 +283,8 @@ if [ -n "${REMOTE_USER_EMAIL}" ]; then
 		${GIT_CLI} config user.email "${REMOTE_USER_EMAIL}";
 	fi;
 fi;
-#
+
+
 # [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
 REPO_PRUNE_ACTIVE=$(${GIT_CLI} config remote.origin.prune);
 if [ "${REPO_PRUNE_ACTIVE}" != "true" ]; then
@@ -306,7 +308,8 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
 	${GIT_CLI} pull -v;
 fi;
-#
+
+
 # get current branch
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} branch | grep '*' | awk '{print \$2}'  # (get current branch)";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git branch | grep '*' | awk '{print \$2}'  # (get current branch)";
@@ -337,28 +340,31 @@ else
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
 	${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
 fi;
-#
+
+
 # pull the desired branch
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
 ${GIT_CLI} pull -v;
-#
+
+
 # show final config
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list --show-origin";
 ${GIT_CLI} config --list --show-origin;
-#
+
+
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} status";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git status";
 ${GIT_CLI} status;
-#
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
-#
+
 
 chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 chmod -R 0700 "${GIT_WORK_TREE}";
 # chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 # chmod -R 0700 "${ALL_REPOS_DIR}";
-#
+
+
 # ------------------------------------------------------------
 #
 # Remove undesired variables from the environment

@@ -227,9 +227,8 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Git Working Tree:";
 echo "${GIT_WORK_TREE}";
 echo "";
 # create default ssh-confs dir
-if [ ! -d "~/.ssh" ]; then
-	USER_HOMEDIR="$(getent passwd $(whoami) | cut -d: -f6)";
-	mkdir -p "${USER_HOMEDIR}/.ssh"; chmod 700 "${USER_HOMEDIR}/.ssh";
+if [ ! -d "${HOME}/.ssh" ]; then
+	mkdir -p "${HOME}/.ssh"; chmod 700 "${HOME}/.ssh";
 fi;
 #
 # Clone repo (if non existent)

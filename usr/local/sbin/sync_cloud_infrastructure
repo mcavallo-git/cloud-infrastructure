@@ -95,11 +95,11 @@ else
 	REQUIRED_PKGS_ARRAY+=("vim");
 	echo "${REQUIRED_PKGS_ARRAY[@]}";
 	# Bulk install all packages
-	if [ -z "$(which apt 2>'/dev/null';)" ]; then
+	if [ -n "$(which apt 2>'/dev/null';)" ]; then
 		apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};
-	elif [ -z "$(which yum 2>'/dev/null';)" ]; then
+	elif [ -n "$(which yum 2>'/dev/null';)" ]; then
 		yum check-update -y && yum install -y ${REQUIRED_PKGS_ARRAY[@]};
-	elif [ -z "$(which apk 2>'/dev/null';)" ]; then
+	elif [ -n "$(which apk 2>'/dev/null';)" ]; then
 		apk update -y && apk add -y ${REQUIRED_PKGS_ARRAY[@]};
 	fi;
 

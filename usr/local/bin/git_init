@@ -214,19 +214,23 @@ ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # TARG
 # ORIGIN_HTTPS="https://${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
 #
 # ------------------------------------------------------------
-#
-# Pull repository host's IPs
-# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling Host's Keys:";
-# ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}";
-#
+
+# Show the git working tree
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Git Working Tree:";
 echo "${GIT_WORK_TREE}";
 echo "";
-# create default ssh-confs dir
+
+# Create default-directory for SSH's configs
 if [ ! -d "${HOME}/.ssh" ]; then
 	mkdir -p "${HOME}/.ssh"; chmod 700 "${HOME}/.ssh";
 fi;
-#
+
+# Gather SSH Public Keys for target Hostname
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling public keys for hostname \"${REMOTE_HOST}\":";
+ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts";
+# ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
+
+
 # Clone repo (if non existent)
 FIRST_CLONE_OF_REPO="0";
 if [ ! -d "${GIT_GITDIR}" ]; then

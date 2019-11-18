@@ -107,7 +107,7 @@ else
 	# ------------------------------------------------------------
 	# If this script's last-modified date was more than 60-seconds ago, update it before proceeding
 
-	if [ -f '/usr/local/sbin/sync_cloud_infrastructure' ] && [ $(echo "$(date +'%s') - 60 > $(stat -c '%Y' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
+	if [ -f '/usr/local/sbin/sync_cloud_infrastructure' ] && [ $(echo "$(date +'%s') - 60 > $(stat -c '%Z' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
 		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
 		BENCHMARK_START=$(date +'%s.%N');

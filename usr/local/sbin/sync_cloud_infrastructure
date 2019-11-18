@@ -40,7 +40,7 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ set -e; ] (Halt on errors)...";
 		set -e; #     -e  Exit immediately if a command exits with a non-zero status
 
-		# yum update -y;
+		# yum check-update -y;
 
 	fi;
 
@@ -95,13 +95,24 @@ else
 
 
 	# ------------------------------------------------------------
-	# Make sure required runtime(s) are installed
-	REQUIRED_PKG="bc"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="cron"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="dos2unix"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="git"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="rsync"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
-	REQUIRED_PKG="vim"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+	# Make sure prerequisite-packages are installed
+	unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
+	REQUIRED_PKGS_ARRAY=();
+	REQUIRED_PKGS_ARRAY+=("bc");
+	REQUIRED_PKGS_ARRAY+=("cron");
+	REQUIRED_PKGS_ARRAY+=("dos2unix");
+	REQUIRED_PKGS_ARRAY+=("git");
+	REQUIRED_PKGS_ARRAY+=("rsync");
+	REQUIRED_PKGS_ARRAY+=("vim");
+	echo "${REQUIRED_PKGS_ARRAY[@]}";
+	# Bulk install all packages
+	if [ -z "$(which apt 2>'/dev/null';)" ]; then
+		apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};
+	elif [ -z "$(which yum 2>'/dev/null';)" ]; then
+		yum check-update -y && yum install -y ${REQUIRED_PKGS_ARRAY[@]};
+	elif [ -z "$(which apk 2>'/dev/null';)" ]; then
+		apk update -y && apk add -y ${REQUIRED_PKGS_ARRAY[@]};
+	fi;
 
 
 	# ------------------------------------------------------------

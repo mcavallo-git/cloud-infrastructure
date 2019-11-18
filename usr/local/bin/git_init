@@ -199,10 +199,10 @@ GIT_GITDIR="${GIT_WORK_TREE}/.git";
 	GIT_GITDIR_REL="${GIT_WORK_TREE_REL}/.git";
 #
 GIT_CLI_NOCONF="git";
-GIT_CLI_NOCONF="${GIT_CLI_NOCONF} -C ${GIT_LOCAL_CEILING}";
+# GIT_CLI_NOCONF="${GIT_CLI_NOCONF} -C ${GIT_LOCAL_CEILING}";
 #
 GIT_CLI="git";
-GIT_CLI="${GIT_CLI} -C ${GIT_WORK_TREE}";
+# GIT_CLI="${GIT_CLI} -C ${GIT_WORK_TREE}";
 GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL}";
 GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL}";
 #
@@ -232,6 +232,7 @@ FIRST_CLONE_OF_REPO="0";
 if [ ! -d "${GIT_GITDIR}" ]; then
 	FIRST_CLONE_OF_REPO="1";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
+	cd "${GIT_LOCAL_CEILING}";
 	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;

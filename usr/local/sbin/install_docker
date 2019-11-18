@@ -71,14 +71,14 @@ else
 			service docker start;
 		fi;
 
-		if [ ! -f "/usr/local/bin/docker-compose" ]; then
+		if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
 
 			if [ -n "$(which apk 2>/dev/null)" ]; then
 				# Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
 				apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
 			fi;
-			sudo curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "/usr/local/bin/docker-compose";
-			sudo chmod 0755 "/usr/local/bin/docker-compose";
+			sudo curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+			sudo chmod 0755 "${BIN_DOCKER_COMPOSE}";
 
 		fi;
 		

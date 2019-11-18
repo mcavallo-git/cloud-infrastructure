@@ -27,6 +27,10 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
+
+	BIN_DOCKER="/usr/bin/docker";
+	BIN_DOCKER_COMPOSE="/usr/bin/docker-compose";
+
 	# ------------------------------------------------------------
 	if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
 		#
@@ -34,8 +38,8 @@ else
 		#
 
 		# Redirect Bash calls to Windows docker-host
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "/usr/bin/docker-compose";
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
 
 		# Download Docker Desktop (if not found locally)
 		if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
@@ -50,15 +54,15 @@ else
 		# usermod -aG docker "${USER}";
 
 		# Redirect Bash calls to Windows docker-host
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "/usr/bin/docker";
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "/usr/bin/docker-compose";
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
 
 	else # ------------------------------------------------------------
 		#
 		# Non-WSL Docker Installation
 		#
 
-		if [ ! -f "/usr/bin/docker" ]; then
+		if [ ! -f "${BIN_DOCKER}" ]; then
 			curl -ssL "https://get.docker.com/" | sh;
 		fi;
 
@@ -80,8 +84,8 @@ else
 		
 	fi;
 
-	"/usr/bin/docker" --version;
-	"/usr/bin/docker-compose" --version;
+	"${BIN_DOCKER}" --version;
+	"${BIN_DOCKER_COMPOSE}" --version;
 
 fi;
 

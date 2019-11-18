@@ -32,19 +32,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
-	
-	if [ -z "$(which apt 2>'/dev/null';)" ]; then
-		# For Non-Debian Distros, halt on errors
-		# echo "";
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Non-Debian distro detected";
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ set -e; ] (Halt on errors)...";
-		# set -e; #     -e  Exit immediately if a command exits with a non-zero status
-
-		# yum check-update -y;
-
-	fi;
-
-	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+	START_SECONDS_NANOSECONDS=$(date +'%s.%N')
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
 	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);

@@ -62,8 +62,15 @@ else
 
 		fi;
 
-		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then service docker start; fi;
-	
+		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then
+			echo "Calling [ service docker start; ]...";
+			service docker start;
+
+		else
+			service docker status;
+
+		fi;
+
 	fi;
 
 fi;

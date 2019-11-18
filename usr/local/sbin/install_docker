@@ -29,7 +29,7 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 else
 
 	BIN_DOCKER="/usr/bin/docker";
-	BIN_DOCKER_COMPOSE="/usr/bin/docker-compose";
+	BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
 
 	# ------------------------------------------------------------
 	if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then

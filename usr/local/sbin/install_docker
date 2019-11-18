@@ -41,9 +41,7 @@ else
 		if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
 			echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
 			"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
-		else
-			"/usr/bin/docker" --version;
-			"/usr/bin/docker-compose" --version;
+			exit 1;
 		fi;
 
 		# if [ -v SUDO_USER ]; then
@@ -60,12 +58,8 @@ else
 		# Non-WSL Docker Installation
 		#
 
-		if [ -n "$(which wget 2>/dev/null;)" ]; then
-			wget -qO- "https://get.docker.com/" | sh;
-
-		else
+		if [ ! -f "/usr/bin/docker" ]; then
 			curl -ssL "https://get.docker.com/" | sh;
-
 		fi;
 
 		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then
@@ -73,10 +67,21 @@ else
 			service docker start;
 		fi;
 
-		"/usr/bin/docker" --version;
-		"/usr/bin/docker-compose" --version;
+		if [ ! -f "/usr/local/bin/docker-compose" ]; then
 
+			if [ -n "$(which apk 2>/dev/null)" ]; then
+				# Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
+				apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
+			fi;
+			sudo curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "/usr/local/bin/docker-compose";
+			sudo chmod 0755 "/usr/local/bin/docker-compose";
+
+		fi;
+		
 	fi;
+
+	"/usr/bin/docker" --version;
+	"/usr/bin/docker-compose" --version;
 
 fi;
 
@@ -84,6 +89,8 @@ fi;
 # Citation(s)
 #
 #   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce-1
+#
+#   docs.docker.com  |  "Install Docker Compose"  |  https://docs.docker.com/compose/install/
 #
 #   stackoverflow.com  |  "Run Docker on Ubuntu on Windows Subsystem for Linux"  |  https://stackoverflow.com/a/48008676
 #

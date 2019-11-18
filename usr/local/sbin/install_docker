@@ -71,11 +71,10 @@ else
 		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then
 			echo "Calling [ service docker start; ]...";
 			service docker start;
-
-		else
-			service docker status;
-
 		fi;
+
+		"/usr/bin/docker" --version;
+		"/usr/bin/docker-compose" --version;
 
 	fi;
 

@@ -59,8 +59,10 @@ else
 
 		else
 			curl -ssL "https://get.docker.com/" | sh;
-		
+
 		fi;
+
+		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then service docker start; fi;
 	
 	fi;
 

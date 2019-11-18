@@ -351,8 +351,10 @@ ${GIT_CLI} pull -v;
 
 
 # show final config
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list --show-origin";
-${GIT_CLI} config --list --show-origin;
+# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list --show-origin";
+# ${GIT_CLI} config --list --show-origin;
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list";
+${GIT_CLI} config --list;
 
 
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} status";

@@ -124,13 +124,15 @@ else
 
 	# ------------------------------------------------------------
 	# If the local script's checksum is different than the source-script's checksum, then update the local to match the source
-	CHECKSUM_SOURCE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | cksum | cut -d" " -f1);
 	CHECKSUM_LOCAL=$(if [ -f "/usr/local/sbin/sync_cloud_infrastructure" ]; then cat "/usr/local/sbin/sync_cloud_infrastructure" | cksum | cut -d" " -f1; else echo 0; fi;);
-	# echo "CHECKSUM_SOURCE = [ ${CHECKSUM_SOURCE} ]";
-	# echo "CHECKSUM_LOCAL = [ ${CHECKSUM_LOCAL} ]";
+	CHECKSUM_SOURCE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | cksum | cut -d" " -f1);
+	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+		echo -e "\n""Debug: CHECKSUM_SOURCE = [ ${CHECKSUM_SOURCE} ]";
+		echo -e "\n""Debug: CHECKSUM_LOCAL = [ ${CHECKSUM_LOCAL} ]";
+	fi;
 	if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_LOCAL}" ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-		echo -e "\n""Info: Updating local runtime \"/usr/local/sbin/sync_cloud_infrastructure\" from source \"https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')\"";
+		echo -e "\n""Info: Updating local runtime \"/usr/local/sbin/sync_cloud_infrastructure\" from source \"https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure\"";
 		
 		BENCHMARK_START=$(date +'%s.%N');
 		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" -o "/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";

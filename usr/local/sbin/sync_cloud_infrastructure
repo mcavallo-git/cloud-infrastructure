@@ -231,7 +231,7 @@ else
 	# If any packages were found to be missing, install them
 	if [ ${#MISSING_PKGS_ARRAY[@]} -ne 0 ]; then
 		if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-			echo -e "\n""Debug: MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
+			echo -e "\n""Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
 		fi;
 		# Bulk install all packages
 		if [ -n "$(which apt 2>'/dev/null';)" ]; then
@@ -250,8 +250,8 @@ else
 	CHECKSUM_SOURCE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | cksum | cut -d" " -f1);
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 		echo "";
-		echo "Debug: CHECKSUM_SOURCE = [ ${CHECKSUM_SOURCE} ]";
-		echo "Debug: CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+		echo "Debug:  CHECKSUM_SOURCE = [ ${CHECKSUM_SOURCE} ]";
+		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
 	fi;
 	if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_LOCAL}" ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
@@ -610,7 +610,7 @@ else
 					# Re-check UFW Enabled/Disabled Status
 					UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 					if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-						echo -e "\n""Debug: UFW_ENABLED = [ ${UFW_ENABLED} ]";
+						echo -e "\n""Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
 					fi;
 
 					# Proceed if UFW is, indeed, enabled

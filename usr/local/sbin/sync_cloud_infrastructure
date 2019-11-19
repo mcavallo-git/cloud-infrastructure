@@ -223,10 +223,13 @@ else
 	fi;
 	# Determine if any required packages are missing
 	NEED_TO_INSTALL_PKGS=0;
+	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+		echo "";
+	fi;
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
 		if [ "$(which ${EACH_REQUIRED_PKG} 2>&1 >'/dev/null'; echo $?;)" != "0" ]; then
 			if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-				echo -e "\n""Debug: Missing package \"${EACH_REQUIRED_PKG}\"";
+				echo "Debug: Missing package \"${EACH_REQUIRED_PKG}\"";
 			fi;
 			NEED_TO_INSTALL_PKGS=1;
 		fi;

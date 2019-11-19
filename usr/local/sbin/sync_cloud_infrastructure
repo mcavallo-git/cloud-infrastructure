@@ -88,12 +88,15 @@ else
 	unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
 	REQUIRED_PKGS_ARRAY=();
 	REQUIRED_PKGS_ARRAY+=("bc");
-	REQUIRED_PKGS_ARRAY+=("cron");
 	REQUIRED_PKGS_ARRAY+=("dos2unix");
 	REQUIRED_PKGS_ARRAY+=("git");
 	REQUIRED_PKGS_ARRAY+=("rsync");
 	REQUIRED_PKGS_ARRAY+=("vim");
 	REQUIRED_PKGS_ARRAY+=("wget");
+	# Debian-only installs
+	if [ "$(which apt 2>'/dev/null'; echo $?;)" == "0" ]; then
+		REQUIRED_PKGS_ARRAY+=("cron");
+	fi;
 	# Determine if any required packages are missing
 	NEED_TO_INSTALL_PKGS=0;
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do

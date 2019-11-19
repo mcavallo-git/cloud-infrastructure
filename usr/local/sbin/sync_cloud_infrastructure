@@ -229,7 +229,7 @@ else
 		fi;
 	done;
 	# If any packages were found to be missing, install them
-	if [ "${MISSING_PKGS_ARRAY[@]}" != "" ]; then
+	if [ ${#MISSING_PKGS_ARRAY[@]} -eq 0 ]; then
 		if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 			echo -e "\n""Debug: MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
 		fi;

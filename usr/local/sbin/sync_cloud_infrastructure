@@ -93,14 +93,22 @@ else
 	REQUIRED_PKGS_ARRAY+=("git");
 	REQUIRED_PKGS_ARRAY+=("rsync");
 	REQUIRED_PKGS_ARRAY+=("vim");
-	echo "${REQUIRED_PKGS_ARRAY[@]}";
-	# Bulk install all packages
-	if [ -n "$(which apt 2>'/dev/null';)" ]; then
-		apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};
-	elif [ -n "$(which yum 2>'/dev/null';)" ]; then
-		yum check-update -y && yum install -y ${REQUIRED_PKGS_ARRAY[@]};
-	elif [ -n "$(which apk 2>'/dev/null';)" ]; then
-		apk update -y && apk add -y ${REQUIRED_PKGS_ARRAY[@]};
+	# Determine if any required packages are missing
+	NEED_TO_INSTALL_PKGS=0;
+	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
+		if [ -z "$(which ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]; then
+			NEED_TO_INSTALL_PKGS=1;
+		fi;
+	done;
+	if [ "${NEED_TO_INSTALL_PKGS}" == "${NEED_TO_INSTALL_PKGS}" ]; then
+		# Bulk install all packages
+		if [ -n "$(which apt 2>'/dev/null';)" ]; then
+			apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};
+		elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+			yum check-update -y && yum install -y ${REQUIRED_PKGS_ARRAY[@]};
+		elif [ -n "$(which apk 2>'/dev/null';)" ]; then
+			apk update -y && apk add -y ${REQUIRED_PKGS_ARRAY[@]};
+		fi;
 	fi;
 
 

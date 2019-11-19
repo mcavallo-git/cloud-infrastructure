@@ -93,6 +93,7 @@ else
 	REQUIRED_PKGS_ARRAY+=("git");
 	REQUIRED_PKGS_ARRAY+=("rsync");
 	REQUIRED_PKGS_ARRAY+=("vim");
+	REQUIRED_PKGS_ARRAY+=("wget");
 	# Determine if any required packages are missing
 	NEED_TO_INSTALL_PKGS=0;
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
@@ -113,18 +114,21 @@ else
 
 
 	# ------------------------------------------------------------
-	# If this script's last-modified date was more than 60-seconds ago, update it before proceeding
-
-	if [ -f '/usr/local/sbin/sync_cloud_infrastructure' ] && [ $(echo "$(date +'%s') - 60 > $(stat -c '%Z' '/usr/local/sbin/sync_cloud_infrastructure')" | bc) -eq 1 ]; then
+	# If the local script's checksum is different than the source-script's checksum, then update the local to match the source
+	CHECKSUM_SOURCE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | cksum | cut -d" " -f1);
+	CHECKSUM_LOCAL=$(if [ -f "/usr/local/sbin/sync_cloud_infrastructure" ]; then cat "/usr/local/sbin/sync_cloud_infrastructure" | cksum | cut -d" " -f1; else echo 0; fi;);
+	# echo "CHECKSUM_SOURCE = [ ${CHECKSUM_SOURCE} ]";
+	# echo "CHECKSUM_LOCAL = [ ${CHECKSUM_LOCAL} ]";
+	if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_LOCAL}" ]; then
 		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
-		echo -e "\n""Info: Pulling latest \"/usr/local/sbin/sync_cloud_infrastructure\" from GitHub (last-modified date was more-than 60s ago)";
-		BENCHMARK_START=$(date +'%s.%N');
-		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q;
+		echo -e "\n""Info: Updating local runtime \"/usr/local/sbin/sync_cloud_infrastructure\" from source \"https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')\"";
 		
+		BENCHMARK_START=$(date +'%s.%N');
+		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" -O "/usr/local/sbin/sync_cloud_infrastructure" -q;
+		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 
-		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
 		"/usr/local/sbin/sync_cloud_infrastructure" $@;
 		exit 0;
 	fi;

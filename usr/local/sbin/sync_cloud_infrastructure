@@ -231,9 +231,7 @@ else
 			NEED_TO_INSTALL_PKGS=1;
 		fi;
 	done;
-	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-		echo "";
-	fi;
+	# If any packages were found to be missing, install them
 	if [ "${NEED_TO_INSTALL_PKGS}" == "1" ]; then
 		if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 			echo -e "\n""Debug: NEED_TO_INSTALL_PKGS = [ ${NEED_TO_INSTALL_PKGS} ]";

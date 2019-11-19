@@ -210,6 +210,7 @@ else
 	# ------------------------------------------------------------
 	# Make sure prerequisite-packages are installed
 	unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
+	unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array
 	REQUIRED_PKGS_ARRAY=();
 	REQUIRED_PKGS_ARRAY+=("bc");
 	REQUIRED_PKGS_ARRAY+=("dos2unix");
@@ -222,27 +223,23 @@ else
 		REQUIRED_PKGS_ARRAY+=("cron");
 	fi;
 	# Determine if any required packages are missing
-	NEED_TO_INSTALL_PKGS=0;
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
 		if [ "$(which ${EACH_REQUIRED_PKG} 2>&1 >'/dev/null'; echo $?;)" != "0" ]; then
-			if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-				echo "Debug: Missing package \"${EACH_REQUIRED_PKG}\"";
-			fi;
-			NEED_TO_INSTALL_PKGS=1;
+			MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
 		fi;
 	done;
 	# If any packages were found to be missing, install them
-	if [ "${NEED_TO_INSTALL_PKGS}" == "1" ]; then
+	if [ "${MISSING_PKGS_ARRAY[@]}" != "" ]; then
 		if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-			echo -e "\n""Debug: NEED_TO_INSTALL_PKGS = [ ${NEED_TO_INSTALL_PKGS} ]";
+			echo -e "\n""Debug: MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
 		fi;
 		# Bulk install all packages
 		if [ -n "$(which apt 2>'/dev/null';)" ]; then
-			apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};
+			apt-get update -y && apt-get install -y ${MISSING_PKGS_ARRAY[@]};
 		elif [ -n "$(which yum 2>'/dev/null';)" ]; then
-			yum check-update -y && yum install -y ${REQUIRED_PKGS_ARRAY[@]};
+			yum check-update -y && yum install -y ${MISSING_PKGS_ARRAY[@]};
 		elif [ -n "$(which apk 2>'/dev/null';)" ]; then
-			apk update -y && apk add -y ${REQUIRED_PKGS_ARRAY[@]};
+			apk update -y && apk add -y ${MISSING_PKGS_ARRAY[@]};
 		fi;
 	fi;
 

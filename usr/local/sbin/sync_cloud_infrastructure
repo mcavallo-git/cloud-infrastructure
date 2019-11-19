@@ -101,7 +101,7 @@ else
 			NEED_TO_INSTALL_PKGS=1;
 		fi;
 	done;
-	if [ "${NEED_TO_INSTALL_PKGS}" == "${NEED_TO_INSTALL_PKGS}" ]; then
+	if [ "${NEED_TO_INSTALL_PKGS}" == "1" ]; then
 		# Bulk install all packages
 		if [ -n "$(which apt 2>'/dev/null';)" ]; then
 			apt-get update -y && apt-get install -y ${REQUIRED_PKGS_ARRAY[@]};

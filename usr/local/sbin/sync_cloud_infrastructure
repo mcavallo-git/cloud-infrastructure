@@ -93,7 +93,7 @@ else
 	REQUIRED_PKGS_ARRAY+=("rsync");
 	REQUIRED_PKGS_ARRAY+=("vim");
 	REQUIRED_PKGS_ARRAY+=("wget");
-	# Debian-only installs
+	# Debian-specific packages
 	if [ "$(which apt 2>'/dev/null'; echo $?;)" == "0" ]; then
 		REQUIRED_PKGS_ARRAY+=("cron");
 	fi;

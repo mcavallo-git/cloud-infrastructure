@@ -124,8 +124,7 @@ else
 		echo -e "\n""Info: Updating local runtime \"/usr/local/sbin/sync_cloud_infrastructure\" from source \"https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')\"";
 		
 		BENCHMARK_START=$(date +'%s.%N');
-		wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" -O "/usr/local/sbin/sync_cloud_infrastructure" -q;
-		chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
+		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" -o "/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 		echo "  |→ Finished after ${BENCHMARK_DELTA}s";
 

@@ -97,7 +97,7 @@ else
 	# Determine if any required packages are missing
 	NEED_TO_INSTALL_PKGS=0;
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
-		if [ -z "$(which ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]; then
+		if [ "$(which ${EACH_REQUIRED_PKG} 2>'/dev/null'; echo $?;)" != "0" ]; then
 			NEED_TO_INSTALL_PKGS=1;
 		fi;
 	done;

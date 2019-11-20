@@ -46,7 +46,7 @@ PermitUserEnvironment no
 PermitTunnel no
 
 Port 22
-Port 24
+# Port 24
 
 PrintLastLog yes
 
@@ -85,38 +85,31 @@ Match Group sftp_jailed_users LocalPort 22
   ForceCommand internal-sftp
 
 #
-# addgroup --system "sftp_jailed_users"; # Add SFTP jail group
+### addgroup --system "sftp_jailed_users"; # Add SFTP jail group
 #
-# usermod -G "sftp_jailed_users" "USERNAME"; # Apply SFTP jail (to user)
-#
-# ------------------------------------------------------------
-#
-#  SFTP over Port-24
-#
-
-Match User boneal_backup,mcavallo,phanna,rgodithi,cavalol LocalPort 24
-  AuthenticationMethods publickey
-  AllowAgentForwarding no
-  X11Forwarding no
-  ForceCommand internal-sftp
-
-#
-# addgroup --system "sftp_port24_users";  # Add port-24 SFTP group
-#
-# usermod -G "sftp_port24_users" "USERNAME"; # Allow Port-24 SFTP (to user)
+### usermod -G "sftp_jailed_users" "USERNAME"; # Apply SFTP jail (to user)
 #
 # ------------------------------------------------------------
+#   SFTP over Port-24
 #
-
-Match User jenkins_ssh Address 13.58.94.67 LocalPort 22
-  AuthenticationMethods publickey
-
-Match User boneal_backup Address 52.15.93.108 LocalPort 22
-  AuthenticationMethods publickey
-
+# Match User SFTP_USER_1,SFTP_USER_2 LocalPort 24
+#   AuthenticationMethods publickey
+#   AllowAgentForwarding no
+#   X11Forwarding no
+#   ForceCommand internal-sftp
+# 
+#
 # ------------------------------------------------------------
-#
-#  Citation(s)
+#   BackEnd Automation Users (logins from external APIs)
+# 
+# Match User JENKINS_NODE_USER Address 1.2.3.4 LocalPort 22
+#   AuthenticationMethods publickey
+# 
+# Match User BACKUP_USER Address 1.2.3.4 LocalPort 22
+#   AuthenticationMethods publickey
+# 
+# ------------------------------------------------------------
+# Citation(s)
 #
 #    Documentation
 #      --> https://freebsd.org/cgi/man.cgi?sshd_config(5)

@@ -78,11 +78,11 @@ X11Forwarding yes
 #
 
 Match Group sftp_jailed_users LocalPort 22
-  AuthenticationMethods publickey
-  ChrootDirectory %h
-  AllowAgentForwarding no
-  X11Forwarding no
-  ForceCommand internal-sftp
+AuthenticationMethods publickey
+ChrootDirectory %h
+AllowAgentForwarding no
+X11Forwarding no
+ForceCommand internal-sftp
 
 #
 ### addgroup --system "sftp_jailed_users"; # Add SFTP jail group

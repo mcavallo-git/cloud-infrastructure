@@ -244,6 +244,19 @@ else
 			echo -e "\n""Info: Calling [ apk update -y && apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
 			apk update -y && apk add -y ${MISSING_PKGS_ARRAY[@]};
 		fi;
+
+		unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # Packages which failed to be installed (but are required to continue)
+		for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
+			if [ "$(which ${EACH_REQUIRED_PKG} 2>&1 >'/dev/null'; echo $?;)" != "0" ]; then
+				FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+			fi;
+		done;
+		if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
+			echo -e "\n""Error:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
+			sleep 60;
+			exit 1;
+		fi;
+		
 	fi;
 
 

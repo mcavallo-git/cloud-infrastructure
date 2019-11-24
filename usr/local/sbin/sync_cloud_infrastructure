@@ -253,12 +253,14 @@ else
 			fi;
 		done;
 		if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
-			echo -e "\n""Error: Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
-			echo "\n""Info: Attempting fallback-install method";
+			echo -e "\n""Warning : Attempting fallback installation-method for package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
 			echo "Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
-			yum check-update -y && yum -y install bc dos2unix git rsync vim wget;
-			sleep 60;
-			exit 1;
+			yum check-update -y && yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			if [ ${RET_CODE} -ne 0 ]; then 
+				echo -e "\n""Error: Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
+				sleep 60;
+				exit 1;
+			fi;
 		fi;
 		
 	fi;

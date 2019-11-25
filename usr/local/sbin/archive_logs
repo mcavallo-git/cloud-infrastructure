@@ -37,11 +37,11 @@ else
 
 	SVC="httpd";
 
-	INAME="*_log-*";
+	GLOB_PATTERN="*_log-*";
 
-	DIR_LOGS="/var/log/${SVC}";
+	DIR_LOGS="/var/log";
 
-	DIR_ARCH="/var/archived_logs/${SVC}";
+	DIR_ARCH="/var/archived_logs";
 
 	if [ ! -h "${DIR_ARCH}" ]; then
 
@@ -57,13 +57,13 @@ else
 
 	else
 
-		for EACH_FILE in $(find "${DIR_ARCH}/" -type f -name "${INAME}"); do
+		for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do
 
 			BASENAME=$(basename "${EACH_FILE}");
 
-			PATH_LOGS="${DIR_LOGS}/${BASENAME}"; 
+			PATH_LOGS="${DIR_LOGS}/${SVC}/${BASENAME}"; 
 
-			PATH_ARCH="${DIR_ARCH}/${BASENAME}";
+			PATH_ARCH="${DIR_ARCH}/${SVC}/${BASENAME}";
 
 			if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
 

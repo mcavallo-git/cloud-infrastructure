@@ -32,6 +32,8 @@ server {
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		add_header 'Content-Type' 'text/plain';
 		#
+		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)") -Verb RunAs;
+		#
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#
 	}

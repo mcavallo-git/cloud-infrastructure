@@ -41,31 +41,45 @@ else
 
 	DIR_LOGS="/var/log/${SVC}";
 
-	DIR_ARCH="/mnt/resource/log.bak/${SVC}";
+	DIR_ARCH="/var/archived_logs/${SVC}";
 
-	for EACH_FILE in $(find "${DIR_ARCH}/" -type f -name "${INAME}"); do
+	if [ ! -h "${DIR_ARCH}" ]; then
 
-		BASENAME=$(basename "${EACH_FILE}");
+		echo "";
+		echo "ERROR:";
+		echo "  Symlink not found at path \"${DIR_ARCH}\" ";
+		echo "  Please create a symbolic link from \"${DIR_ARCH}\" to your desired backup directory (ideally on a separate mount point)";
+		echo "";
+		echo "EXAMPLE:";
+		echo "  ln -sf \"${DIR_ARCH}\" \"/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/\"";
+		echo "";
+		exit 1;
 
-		PATH_LOGS="${DIR_LOGS}/${BASENAME}"; 
+	else
 
-		PATH_ARCH="${DIR_ARCH}/${BASENAME}";
+		for EACH_FILE in $(find "${DIR_ARCH}/" -type f -name "${INAME}"); do
 
-		if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
+			BASENAME=$(basename "${EACH_FILE}");
 
-			echo "Calling [ mv \"${PATH_LOGS}\" \"${PATH_ARCH}\"; ] ...";
-			mv "${PATH_LOGS}" "${PATH_ARCH}";
+			PATH_LOGS="${DIR_LOGS}/${BASENAME}"; 
 
-			echo "Calling [ chmod 0400 \"${PATH_ARCH}\"; ] ...";
-			chmod 0400 "${PATH_ARCH}";
+			PATH_ARCH="${DIR_ARCH}/${BASENAME}";
 
-			echo "Calling [ ln -sf \"${PATH_ARCH}\" \"${PATH_LOGS}\"; ] ...";
-			ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
+			if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
 
-		fi;
+				echo "Calling [ mv \"${PATH_LOGS}\" \"${PATH_ARCH}\"; ] ...";
+				mv "${PATH_LOGS}" "${PATH_ARCH}";
 
-	done;
+				echo "Calling [ chmod 0400 \"${PATH_ARCH}\"; ] ...";
+				chmod 0400 "${PATH_ARCH}";
 
-	BASENAME="ssl_error_log-20191104"; PATH_LOGS="${DIR_LOGS}/${BASENAME}"; PATH_ARCH="${DIR_ARCH}/${BASENAME}"; if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then mv "${PATH_LOGS}" "${PATH_ARCH}"; chmod 0400 "${PATH_ARCH}"; ln -sf "${PATH_ARCH}" "${PATH_LOGS}"; fi;
+				echo "Calling [ ln -sf \"${PATH_ARCH}\" \"${PATH_LOGS}\"; ] ...";
+				ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
+
+			fi;
+
+		done;
+
+	fi;
 
 fi;

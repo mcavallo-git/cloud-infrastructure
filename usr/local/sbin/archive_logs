@@ -57,6 +57,11 @@ else
 
 	else
 
+		if [ ! -d "${DIR_LOGS}/${SVC}" ]; then
+			mkdir -p "${DIR_LOGS}/${SVC}";
+			chmod 0700 "${PATH_ARCH}";
+		fi;
+
 		for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do
 
 			BASENAME=$(basename "${EACH_FILE}");
@@ -66,6 +71,8 @@ else
 			PATH_ARCH="${DIR_ARCH}/${SVC}/${BASENAME}";
 
 			if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
+
+				echo "Archiving log file  [ ${PATH_LOGS} ]  to path  [${PATH_ARCH} ]  ...";
 
 				echo "Calling [ mv \"${PATH_LOGS}\" \"${PATH_ARCH}\"; ] ...";
 				mv "${PATH_LOGS}" "${PATH_ARCH}";

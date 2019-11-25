@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_dotnet" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	RET_CODE=1;
+	if [ -n "$(which mc)" ]; then
+		echo "Error: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
+
+	elif [ -f "/usr/local/bin/mc" ]; then
+		echo "Error: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
+
+	else
+		# Download MC (as-per reccommend by MinIO Guide ( see Citation(s), below )
+		echo "Info: Adding MinIO management package - Call using command [ mc ]";
+		curl -ssL "https://dl.min.io/client/mc/release/linux-amd64/mc" -O "/usr/local/bin/mc"; RET_CODE=0;
+
+	fi;
+
+fi;
+
+
+# -------------------------------------------------------------
+#
+# Citation(s)
+#
+#		docs.min.io  |  "MinIO Admin Complete Guide Slack"  |  https://docs.min.io/docs/minio-admin-complete-guide.html
+#
+# ------------------------------------------------------------

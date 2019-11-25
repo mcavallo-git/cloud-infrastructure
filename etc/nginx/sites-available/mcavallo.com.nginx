@@ -23,37 +23,14 @@ server {
 	location ~* "^/[\d\.]*\.?(ba)?sh$" {
 		keepalive_timeout 0;
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# proxy_redirect off;
-		# proxy_buffers 32 16k;
-		# proxy_busy_buffers_size 64k;
-		# proxy_buffering off;
-		# proxy_cache off;
-		# proxy_cache_revalidate off;
-		# add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-		# add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept' always;
-		# add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
-		# add_header 'Content-Type' 'text/plain';
-		# add_header 'Last-Modified' $date_gmt;
-		# if_modified_since off;
-		# expires off;
-		# etag off;
 		#
-		#
-		#
-		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" | sudo bash;
-		#
-		# curl -H 'Cache-Control: no-store, no-cache, must-revalidate' -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" | sudo bash;
-		#
-		#
+		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
 		#
 	}
 	location ~* "^/[\d\.]*\.?ps(m)?(1)?$" {
 		keepalive_timeout 0;
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		add_header 'Content-Type' 'text/plain';
-		#
-		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)") -Verb RunAs;
 		#
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#

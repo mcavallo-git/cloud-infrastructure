@@ -18,11 +18,11 @@ fi;
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
-mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-exec > >(tee -a "${LOGFILE}" );
-exec 2>&1;
+# LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+# mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+# LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+# exec > >(tee -a "${LOGFILE}" );
+# exec 2>&1;
 #
 # ------------------------------------------------------------
 #
@@ -51,7 +51,7 @@ else
 		echo "  Please create a symbolic link from \"${DIR_ARCH}\" to your desired backup directory (ideally on a separate mount point)";
 		echo "";
 		echo "EXAMPLE:";
-		echo "  ln -sf \"${DIR_ARCH}\" \"/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/\"";
+		echo "  ln -sf \"/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/\" \"${DIR_ARCH}\"";
 		echo "";
 		exit 1;
 
@@ -83,3 +83,5 @@ else
 	fi;
 
 fi;
+
+ln -sf "/var/archived_logs" "/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/"

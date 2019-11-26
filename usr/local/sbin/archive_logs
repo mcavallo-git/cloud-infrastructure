@@ -67,7 +67,7 @@ else
 
 		if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
 			mkdir -p "${DIR_ARCH}/${SVC}";
-			chmod 0700 "${PATH_ARCH}";
+			chmod 0700 "${DIR_ARCH}/${SVC}";
 		fi;
 
 		for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do

@@ -43,7 +43,15 @@ else
 
 	DIR_ARCH="/var/archived_logs";
 
-	if [ ! -h "${DIR_ARCH}" ]; then
+	if [ ! -d "${DIR_LOGS}/${SVC}" ]; then
+		echo "";
+		echo "ERROR:";
+		echo "  Logs-dir not found for service \"${SVC}\" at path \"${DIR_LOGS}/${SVC}\" ";
+		echo "";
+		exit 1;
+	
+
+	elif [ ! -h "${DIR_ARCH}" ]; then
 
 		echo "";
 		echo "ERROR:";
@@ -57,8 +65,8 @@ else
 
 	else
 
-		if [ ! -d "${DIR_LOGS}/${SVC}" ]; then
-			mkdir -p "${DIR_LOGS}/${SVC}";
+		if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
+			mkdir -p "${DIR_ARCH}/${SVC}";
 			chmod 0700 "${PATH_ARCH}";
 		fi;
 

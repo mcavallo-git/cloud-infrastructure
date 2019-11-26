@@ -62,11 +62,6 @@ else
 
 	else
 
-		if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
-			mkdir -p "${DIR_ARCH}/${SVC}";
-			chmod 0700 "${DIR_ARCH}/${SVC}";
-		fi;
-
 		# Stop the target service
 		service ${SVC} stop; RET_CODE=$?;
 		if [ "${RET_CODE}" != "0" ]; then
@@ -77,6 +72,11 @@ else
 			exit 1;
 		
 		else
+			# Create the new logs dir
+			if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
+				mkdir -p "${DIR_ARCH}/${SVC}";
+				chmod 0700 "${DIR_ARCH}/${SVC}";
+			fi;
 			# Migrate all logs to new logs dir
 			mv ${DIR_LOGS}/${SVC}/* ${DIR_ARCH}/${SVC}/.;
 			# Remove old (now empty) logs dir

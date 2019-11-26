@@ -67,19 +67,38 @@ else
 			chmod 0700 "${DIR_ARCH}/${SVC}";
 		fi;
 
-		# Archive each log-file found (which is not the latest logfile, as-to avoid collisions with application file-access)
-		for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do
-			BASENAME=$(basename "${EACH_FILE}");
-			PATH_LOGS="${DIR_LOGS}/${SVC}/${BASENAME}"; 
-			PATH_ARCH="${DIR_ARCH}/${SVC}/${BASENAME}";
-			if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
-				echo "Archiving log file  [ ${PATH_LOGS} ]  to path  [${PATH_ARCH} ]  ...";
-				mv "${PATH_LOGS}" "${PATH_ARCH}";
-				chmod 0400 "${PATH_ARCH}";
-				ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
-			fi;
+		# Stop the target service
+		service ${SVC} stop; RET_CODE=$?;
+		if [ "${RET_CODE}" != "0" ]; then
+			echo "";
+			echo "ERROR:";
+			echo "  Unable to stop service \"${SVC}\" - Exiting...";
+			echo "";
+			exit 1;
+		
+		else
+			# Migrate all logs to new logs dir
+			mv ${DIR_LOGS}/${SVC}/* ${DIR_ARCH}/${SVC}/.;
+			# Remove old (now empty) logs dir
+			rmdir ${DIR_LOGS}/${SVC};
+			# Link the old logs dir to the new logs dir with a symbolic link
+			ln -sf "${DIR_ARCH}/${SVC}" "${DIR_LOGS}/${SVC}";
+			# Start the target service
+			service ${SVC} start;
 
-		done;
+			### Archive each log-file found (which is not the latest logfile, as-to avoid collisions with application file-access)
+			# for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do
+			# 	BASENAME=$(basename "${EACH_FILE}");
+			# 	PATH_LOGS="${DIR_LOGS}/${SVC}/${BASENAME}"; 
+			# 	PATH_ARCH="${DIR_ARCH}/${SVC}/${BASENAME}";
+			# 	if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
+			# 		echo "Archiving log file  [ ${PATH_LOGS} ]  to path  [${PATH_ARCH} ]  ...";
+			# 		mv "${PATH_LOGS}" "${PATH_ARCH}";
+			# 		chmod 0400 "${PATH_ARCH}";
+			# 		ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
+			# 	fi;
+			# done;
+		fi;
 
 	fi;
 

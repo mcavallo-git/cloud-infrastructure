@@ -75,8 +75,8 @@ else
 			# Create the new logs dir
 			if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
 				mkdir -p "${DIR_ARCH}/${SVC}";
+				chmod 0700 "${DIR_ARCH}/${SVC}";
 			fi;
-			chmod 0700 "${DIR_ARCH}/${SVC}";
 			# Migrate all logs to new logs dir
 			mv ${DIR_LOGS}/${SVC}/* ${DIR_ARCH}/${SVC}/.;
 			# Remove old (now empty) logs dir

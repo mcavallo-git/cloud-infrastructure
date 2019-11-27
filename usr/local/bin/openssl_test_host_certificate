@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+#    Pulls the details of the https-cert (if any) attached to a given hostname
+#
+
+HOST_NAME="";
+if [ -n "$1" ]; then
+	echo "";
+	read -p "Enter HTTP Host as arg. \$1 " -t 60 -r;
+	HOST_NAME="{REPLY}";
+else
+	HOST_NAME="$1";
+fi;
+
+
+CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}";);
+
+echo "";
+echo "SSL Certiifcate for ${HOST_NAME}:${HOST_PORT}";
+echo "";
+echo "${CERT_DETAILS}";
+echo "";
+
+
+# ------------------------------------------------------------
+#	Citation(s)
+#
+#		stackoverflow.com  |  "Using openssl to get the certificate from a server"  |  https://stackoverflow.com/a/7886248
+#
+# ------------------------------------------------------------

@@ -16,17 +16,21 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	location / {
-		# keepalive_timeout 0;
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
-	}
-	location ~* "^/[\d\.]*\.?(ba)?sh$" {
 		keepalive_timeout 0;
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+	}
+	# ------------------------------------------------------------
+	# Bash Module Sync
+	location ~* "^/[\d\.]*\.?(ba)?sh$" {
+		keepalive_timeout 0;
+		add_header 'Content-Type' 'text/plain';
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
 		#
 	}
+	# ------------------------------------------------------------
+	# PowerShell Module Sync
 	location ~* "^/[\d\.]*\.?ps(m)?(1)?$" {
 		keepalive_timeout 0;
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
@@ -37,6 +41,7 @@ server {
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#
 	}
+
 	include "/etc/nginx/nginx_error_locations.conf";
 }
 

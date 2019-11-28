@@ -95,11 +95,11 @@ else
 			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
 			for EACH_FILE in /etc/update-motd.d/*motd-news*; do
 				echo "Updating \"${EACH_FILE}\"";
-				sed --in-place -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+				sed --in-place -ne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;
 			for EACH_FILE in /etc/default/motd-news; do
 				echo "Updating \"${EACH_FILE}\"";
-				sed --in-place -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+				sed --in-place -ne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;
 
 		fi;

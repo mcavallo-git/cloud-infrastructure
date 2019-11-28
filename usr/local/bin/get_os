@@ -16,10 +16,24 @@ fi;
 #   |
 #   |--> Need to upgrade this script to use [ ptx ] command instead of [ lsb_release ]  & [ sed ], as ptx is part of GNU Coreutils (which is included in most Linux distros)
 #
-# 
-# shopt -s nocasematch; # If set, Bash matches patterns in a case-insensitive fashion when performing matching while executing case or [[ conditional commands, when performing pattern substitution word expansions, or when filtering possible completions as part of programmable completion.
-# 
-# 
+
+shopt -s nocasematch; # If set, Bash matches patterns in a case-insensitive fashion when performing matching while executing case or [[ conditional commands, when performing pattern substitution word expansions, or when filtering possible completions as part of programmable completion.
+
+
+# ------------------------------------------------------------
+
+Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S';)"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
 # ------------------------------------------------------------
 # Runtime Variable(s)
 #

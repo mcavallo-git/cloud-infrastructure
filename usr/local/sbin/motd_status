@@ -1,0 +1,107 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/motd_status" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# test -v SUDO_USER && motd_status --user $SUDO_USER --allow;
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Parse inline arguments (passed to current script)
+	ARGS=("$@");
+	COUNT_ARGS=${#ARGS[@]};
+	
+	DISABLE_MOTD=0;
+	ENABLE_MOTD=0;
+
+	# Walk through any inline-arguments passed to this function
+	for (( i=0;i<$COUNT_ARGS;i++ )); do
+		EACH_ARG=${ARGS[${i}]};
+		# Check if this is the last inline-argument or if there are more to follow
+		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+			NEXT_ARG="";
+		else
+			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
+		fi;
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+			# ------------------------------------------------------------
+
+			if [ "${EACH_ARG}" == "--enable" ] || [ "${EACH_ARG}" == "-enable" ] || [ "${EACH_ARG}" == "enable" ]; then
+				ENABLE_MOTD=0;
+			fi;
+			if [ "${EACH_ARG}" == "--disable" ] || [ "${EACH_ARG}" == "-disable" ] || [ "${EACH_ARG}" == "disable" ]; then
+				DISABLE_MOTD=0;
+			fi;
+
+			# ------------------------------------------------------------
+		fi;
+
+	done;
+
+	# Verify argument validity
+	if [ -f "/etc/default/motd-news" ]; then
+		# Missing required file
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD file detected @ \"/etc/default/motd-news\"";
+		echo -e "${EXAMPLE_VALID_CALL}";
+		exit 1;
+
+	elif [ -z "$(which sed 2>'/dev/null';)" ]; then
+		# Missing required package
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
+		echo -e "${EXAMPLE_VALID_CALL}";
+		exit 1;
+
+	else
+		# ------------------------------------------------------------
+		if [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
+			# Conflicting arguments
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable not both";
+
+		elif [ ${DISABLE_MOTD} -eq 1 ]; then
+			# MOTD - Disable
+			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=0" "/etc/default/motd-news";
+
+		elif [ ${ENABLE_MOTD} -eq 1 ]; then
+			# MOTD - Enable
+			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=1" "/etc/default/motd-news";
+
+		else
+			# Show instructions if associated runtime arguments are empty/undefined
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
+
+		fi;
+		# ------------------------------------------------------------
+
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#		stackoverflow.com  |  "Check Whether a User Exists"  |  https://stackoverflow.com/a/14811915
+#
+# ------------------------------------------------------------

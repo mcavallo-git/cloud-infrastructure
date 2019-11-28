@@ -49,10 +49,10 @@ else
 			# ------------------------------------------------------------
 
 			if [ "${EACH_ARG}" == "--enable" ] || [ "${EACH_ARG}" == "-enable" ] || [ "${EACH_ARG}" == "enable" ]; then
-				ENABLE_MOTD=0;
+				ENABLE_MOTD=1;
 			fi;
 			if [ "${EACH_ARG}" == "--disable" ] || [ "${EACH_ARG}" == "-disable" ] || [ "${EACH_ARG}" == "disable" ]; then
-				DISABLE_MOTD=0;
+				DISABLE_MOTD=1;
 			fi;
 
 			# ------------------------------------------------------------
@@ -73,10 +73,6 @@ else
 		elif [ ${DISABLE_MOTD} -eq 1 ]; then
 			MOTD_ENABLED_VALUE=0;
 		fi;
-
-		echo "ENABLE_MOTD = ${ENABLE_MOTD}";
-		echo "DISABLE_MOTD = ${DISABLE_MOTD}";
-		echo "MOTD_ENABLED_VALUE = ${MOTD_ENABLED_VALUE}";
 
 		if [ ! -v MOTD_ENABLED_VALUE ]; then
 			# ERROR - Required argument(s) are empty/undefined

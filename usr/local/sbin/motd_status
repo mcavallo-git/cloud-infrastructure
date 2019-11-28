@@ -83,9 +83,9 @@ else
 			# ERROR - Conflicting arguments
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
 
-		elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
+		elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ] && [ $(find /etc/default/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
 				# ERROR - Missing required file(s)
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD config file(s) found in: /etc/update-motd.d/*motd-news*";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
 				echo -e "${EXAMPLE_VALID_CALL}";
 				exit 1;
 
@@ -94,6 +94,10 @@ else
 			# Success - Update each associated config-file
 			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
 			for EACH_FILE in /etc/update-motd.d/*motd-news*; do
+				echo "Updating \"${EACH_FILE}\"";
+				sed -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+			done;
+			for EACH_FILE in /etc/default/motd-news; do
 				echo "Updating \"${EACH_FILE}\"";
 				sed -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;

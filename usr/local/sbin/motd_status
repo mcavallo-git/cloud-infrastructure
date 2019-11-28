@@ -61,9 +61,9 @@ else
 	done;
 
 	# Verify argument validity
-	if [ -f "/etc/default/motd-news" ]; then
+	if [ ! -d "/etc/update-motd.d/" ]; then
 		# Missing required file
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD file detected @ \"/etc/default/motd-news\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD file detected @ \"/etc/update-motd.d/\"";
 		echo -e "${EXAMPLE_VALID_CALL}";
 		exit 1;
 
@@ -75,17 +75,19 @@ else
 
 	else
 		# ------------------------------------------------------------
+		MOTD_NEWS_CONFIG_FILE="$(find '/etc/update-motd.d' -type f -iname '*motd-news*';)"
+
 		if [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
 			# Conflicting arguments
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable not both";
 
 		elif [ ${DISABLE_MOTD} -eq 1 ]; then
 			# MOTD - Disable
-			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=0" "/etc/default/motd-news";
+			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=0" "/etc/update-motd.d/";
 
 		elif [ ${ENABLE_MOTD} -eq 1 ]; then
 			# MOTD - Enable
-			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=1" "/etc/default/motd-news";
+			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=1" "/etc/update-motd.d/";
 
 		else
 			# Show instructions if associated runtime arguments are empty/undefined

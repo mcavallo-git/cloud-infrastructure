@@ -60,44 +60,48 @@ else
 
 	done;
 
-	# Verify argument validity
-	if [ ! -d "/etc/update-motd.d/" ]; then
-		# Missing required file
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD file detected @ \"/etc/update-motd.d/\"";
-		echo -e "${EXAMPLE_VALID_CALL}";
-		exit 1;
-
-	elif [ -z "$(which sed 2>'/dev/null';)" ]; then
+	if [ -z "$(which sed 2>'/dev/null';)" ]; then
 		# Missing required package
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
 		echo -e "${EXAMPLE_VALID_CALL}";
 		exit 1;
 
 	else
-		# ------------------------------------------------------------
-		MOTD_NEWS_CONFIG_FILE="$(find '/etc/update-motd.d' -type f -iname '*motd-news*';)"
 
-		if [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
-			# Conflicting arguments
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable not both";
+	if [ ${ENABLE_MOTD} -eq 1 ]; then
+		MOTD_ENABLED_VALUE=1;
+	elif [ ${DISABLE_MOTD} -eq 1 ]; then
+		MOTD_ENABLED_VALUE=0;
+	fi;
 
-		elif [ ${DISABLE_MOTD} -eq 1 ]; then
-			# MOTD - Disable
-			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=0" "/etc/update-motd.d/";
+	if [ ! -v MOTD_ENABLED_VALUE ]; then
+		# ERROR - Required argument(s) are empty/undefined
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
+	
+	elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
+		# ERROR - Conflicting arguments
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
 
-		elif [ ${ENABLE_MOTD} -eq 1 ]; then
-			# MOTD - Enable
-			sudo sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^ENABLED=/c\ENABLED=1" "/etc/update-motd.d/";
+	elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
+			# ERROR - Missing required file(s)
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD config file(s) found in: /etc/update-motd.d/*motd-news*";
+			echo -e "${EXAMPLE_VALID_CALL}";
+			exit 1;
 
-		else
-			# Show instructions if associated runtime arguments are empty/undefined
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
+		else	
+			# Success - Update each associated config-file
+			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
+			for EACH_FILE in /etc/update-motd.d/*motd-nesws*; do
+				echo "Updating \"${EACH_FILE}\"";
+				sed -i ".$(date +'%Y-%m-%d_%H-%M-%S').bak" -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+				fi;
+			done;
 
 		fi;
-		# ------------------------------------------------------------
 
 	fi;
+	# ------------------------------------------------------------
 
 fi;
 

@@ -93,7 +93,7 @@ else
 
 			# Success - Update each associated config-file
 			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
-			for EACH_FILE in /etc/update-motd.d/*motd-nesws*; do
+			for EACH_FILE in /etc/update-motd.d/*motd-news*; do
 				echo "Updating \"${EACH_FILE}\"";
 				sed -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;

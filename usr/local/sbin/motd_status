@@ -68,36 +68,37 @@ else
 
 	else
 
-	if [ ${ENABLE_MOTD} -eq 1 ]; then
-		MOTD_ENABLED_VALUE=1;
-	elif [ ${DISABLE_MOTD} -eq 1 ]; then
-		MOTD_ENABLED_VALUE=0;
-	fi;
+		if [ ${ENABLE_MOTD} -eq 1 ]; then
+			MOTD_ENABLED_VALUE=1;
+		elif [ ${DISABLE_MOTD} -eq 1 ]; then
+			MOTD_ENABLED_VALUE=0;
+		fi;
 
-	if [ ! -v MOTD_ENABLED_VALUE ]; then
-		# ERROR - Required argument(s) are empty/undefined
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
-	
-	elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
-		# ERROR - Conflicting arguments
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
+		if [ ! -v MOTD_ENABLED_VALUE ]; then
+			# ERROR - Required argument(s) are empty/undefined
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
+		
+		elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
+			# ERROR - Conflicting arguments
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
 
-	elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
-			# ERROR - Missing required file(s)
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD config file(s) found in: /etc/update-motd.d/*motd-news*";
-			echo -e "${EXAMPLE_VALID_CALL}";
-			exit 1;
+		elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
+				# ERROR - Missing required file(s)
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No MOTD config file(s) found in: /etc/update-motd.d/*motd-news*";
+				echo -e "${EXAMPLE_VALID_CALL}";
+				exit 1;
 
-	else
+		else
 
-		# Success - Update each associated config-file
-		echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
-		for EACH_FILE in /etc/update-motd.d/*motd-nesws*; do
-			echo "Updating \"${EACH_FILE}\"";
-			sed -i ".$(date +'%Y-%m-%d_%H-%M-%S').bak" -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
-			fi;
-		done;
+			# Success - Update each associated config-file
+			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
+			for EACH_FILE in /etc/update-motd.d/*motd-nesws*; do
+				echo "Updating \"${EACH_FILE}\"";
+				sed -i ".$(date +'%Y-%m-%d_%H-%M-%S').bak" -rne "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+			done;
+
+		fi;
 
 	fi;
 

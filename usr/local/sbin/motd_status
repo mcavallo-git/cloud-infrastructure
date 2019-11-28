@@ -74,6 +74,10 @@ else
 			MOTD_ENABLED_VALUE=0;
 		fi;
 
+		echo "ENABLE_MOTD = ${ENABLE_MOTD}";
+		echo "DISABLE_MOTD = ${DISABLE_MOTD}";
+		echo "MOTD_ENABLED_VALUE = ${MOTD_ENABLED_VALUE}";
+
 		if [ ! -v MOTD_ENABLED_VALUE ]; then
 			# ERROR - Required argument(s) are empty/undefined
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";

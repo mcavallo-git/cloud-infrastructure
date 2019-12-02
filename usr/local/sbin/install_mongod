@@ -36,8 +36,12 @@ else
 
 	# Debian distros
 	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		if [ "$(which gnupg 2>'/dev/null'; echo $?;)" != "1" ]; then apt-get -y update; apt-get -y install "gnupg"; fi;
-		if [ "$(which tee 2>'/dev/null'; echo $?;)" != "1" ]; then apt-get -y update; apt-get -y install "tee"; fi;
+		if [ "$(which gnupg 2>'/dev/null'; echo $?;)" != "1" ]; then
+			apt-get -y update; apt-get -y install "gnupg";
+		fi;
+		if [ "$(which tee 2>'/dev/null'; echo $?;)" != "1" ]; then
+			apt-get -y update; apt-get -y install "tee";
+		fi;
 		wget -qO - "https://www.mongodb.org/static/pgp/server-4.2.asc" | apt-key add -;
 		echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee "/etc/apt/sources.list.d/mongodb-org-4.2.list";
 		apt-get -y update; apt-get -y install "mongodb-org";
@@ -76,8 +80,11 @@ else
 		echo ""; read -p "Enter Filepath for MongoDB KeyFile:  " -t 60 -r; echo "";
 		if [ -n "${REPLY}" ]; then
 			NEW_KEYFILE="${REPLY}";
-			if [ ! -f "${NEW_KEYFILE}" ]; then echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then openssl rand -base64 741 > "${NEW_KEYFILE}"; fi;
+			if [ ! -f "${NEW_KEYFILE}" ]; then
+				echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo "";
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					openssl rand -base64 741 > "${NEW_KEYFILE}";
+				fi;
 			fi;
 			CURRENT_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
 			if [ -z "${CURRENT_KEYFILE}" ]; then
@@ -131,6 +138,7 @@ replication:
 	# ------------------------------------------------------------
 
 
+	fi;
 fi;
 
 

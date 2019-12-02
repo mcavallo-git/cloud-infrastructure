@@ -116,6 +116,10 @@ security:
 			fi;
 		fi;
 
+		FINAL_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
+		chown "${MONGO_UNAME}:${MONGO_GNAME}" "${FINAL_KEYFILE}";
+		chmod 0600 "${FINAL_KEYFILE}";
+
 		# ------------------------------------------------------------
 		# Setup replication
 		CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')";

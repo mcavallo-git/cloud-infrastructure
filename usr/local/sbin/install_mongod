@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_mongod" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+#
+if [ 0 -eq 1 ]; then
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_mongod?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+
+if [ "$(which apt 2>'/dev/null'; echo $?;)" == "0" ]; then \
+if [ "$(which gnupg 2>'/dev/null'; echo $?;)" != "1" ]; then apt-get -y update; apt-get -y install "gnupg"; fi; \
+if [ "$(which tee 2>'/dev/null'; echo $?;)" != "1" ]; then apt-get -y update; apt-get -y install "tee"; fi; \
+wget -qO - "https://www.mongodb.org/static/pgp/server-4.2.asc" | apt-key add -; \
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee "/etc/apt/sources.list.d/mongodb-org-4.2.list"; \
+apt-get -y update; apt-get -y install "mongodb-org"; \
+fi;
+# CentOS / RHEL distros
+if [ "$(which yum 2>'/dev/null'; echo $?;)" == "0" ]; then \
+echo -e "[mongodb-org-4.2]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.2/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc\n" > "/etc/yum.repos.d/mongodb-org-4.2.repo"; yum check-update; yum install -y mongodb-org; \
+fi;
+
+# ------------------------------------------------------------
+# Setup MongoDB directories
+mkdir -p "/var/lib/mongo"; chown -R "mongod:mongod" "/var/lib/mongo"; chmod 0755 "/var/lib/mongo"; \
+mkdir -p "/var/lib/mongodb"; chown -R "mongod:mongod" "/var/lib/mongodb"; chmod 0755 "/var/lib/mongodb"; \
+service mongod start;
+
+# ------------------------------------------------------------
+# Setup Bind-IP as [ Loopback-IPv4,LAN-IPv4 ] instead of just the [ Loopback-IPv4 ]
+THIS_IPv4=$(ip addr show | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.'); \
+if [ -n "$(cat '/etc/mongod.conf' | grep '127.0.0.1 ';)" ]; then \
+sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  bindIp: 127.0.0.1 /c\  bindIp: 127.0.0.1,${THIS_IPv4}  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting." "/etc/mongod.conf"; \
+cat "/etc/mongod.conf"; service mongod restart; \
+fi;
+
+# ------------------------------------------------------------
+# Setup access security
+echo ""; read -p "Enter Filepath for MongoDB KeyFile:  " -t 60 -r; echo ""; \
+if [ -n "${REPLY}" ]; then \
+NEW_KEYFILE="${REPLY}"; \
+if [ ! -f "${NEW_KEYFILE}" ]; then echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo ""; if [[ $REPLY =~ ^[Yy]$ ]]; then openssl rand -base64 741 > "${NEW_KEYFILE}"; fi; fi; \
+CURRENT_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')"; \
+if [ -z "${CURRENT_KEYFILE}" ]; then \
+sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
+/^#security:/ {
+a\
+  keyFile: '${NEW_KEYFILE}'
+a\
+  authorization: enabled
+c\
+security:
+}' "/etc/mongod.conf"; \
+cat "/etc/mongod.conf"; service mongod restart; \
+elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then \
+echo "Warning:  keyFile currently set to path \"${CURRENT_KEYFILE}\""; read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead? (y/n)  " -n 1 -t 60 -r; echo ""; if [[ $REPLY =~ ^[Yy]$ ]]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  keyFile:/c\  keyFile: ${NEW_KEYFILE}" "/etc/mongod.conf"; cat "/etc/mongod.conf"; service mongod restart; fi; \
+else \
+echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\" - no action required";
+fi; \
+fi;
+
+
+# ------------------------------------------------------------
+# Setup replication
+CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')"; \
+CURRENT_REPL_DISABLED="$(cat /etc/mongod.conf | grep '#replication:')"; \
+if [ -z "${CURRENT_REPL_SET_NAME}" ] && [ -n "${CURRENT_REPL_DISABLED}" ]; then
+echo ""; read -p "Enable replication for MongoDB? (y/n)  " -n 1 -t 60 -r; echo ""; if [[ $REPLY =~ ^[Yy]$ ]]; then \
+echo ""; read -p "Enter the name of the replication set to join:  " -t 60 -r; echo ""; if [ -n "${REPLY}" ]; then NEW_REPL_SET_NAME="${REPLY}"; \
+sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
+/^#replication:/ {
+a\
+  replSetName: '${NEW_REPL_SET_NAME}'
+c\
+replication:
+}' "/etc/mongod.conf"; \
+cat "/etc/mongod.conf"; service mongod restart; \
+fi; \
+fi; \
+fi;
+
+
+# ------------------------------------------------------------
+
+
+fi;
+
+
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   docs.mongodb.com  |  "Install MongoDB Community Edition on Debian"  |  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+#
+#   docs.mongodb.com  |  "Install MongoDB Community Edition on Red Hat or CentOS"  |  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
+#
+#   docs.mongodb.com  |  "Install MongoDB Community Edition on Ubuntu"  |  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+#
+#   docs.mongodb.com  |  "Deploy a Replica Set"  |  https://docs.mongodb.com/manual/tutorial/deploy-replica-set/
+#
+# ------------------------------------------------------------

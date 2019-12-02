@@ -316,16 +316,16 @@ else
 		#
 		if [[ -f "/etc/init.d/network" ]]; then # CentOS-RHEL distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-				echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
-				read -p "REBOOT NOW? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				echo "Network Manager must be restarted to apply changes ( required command [ /etc/init.d/network restart ] )";
+				read -p "Restart Network Manager now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";
-					echo "RESTARTING [ /etc/init.d/network ]";
+					echo "Restarting Network Manager via command [ /etc/init.d/network ]";
 					/etc/init.d/network restart;
 				else
 					echo "";
-					echo "POST-PONING RESTART OF [ /etc/init.d/network ]";
+					echo "Postponing Network Manager restart";
 					exit 1;
 				fi;
 			# else # dry-run
@@ -334,15 +334,15 @@ else
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-				read -p "REBOOT REQUIRED - PERFORM NOW? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				read -p "Reboot Required - Perform Now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";
-					echo "REBOOTING...";
+					echo "Rebooting...";
 					shutdown -r now;
 				else
 					echo "";
-					echo "POST-PONING REBOOT";
+					echo "Postponing Reboot";
 					exit 1;
 				fi;
 			# else # dry-run

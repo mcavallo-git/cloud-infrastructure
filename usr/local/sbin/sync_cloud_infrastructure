@@ -220,7 +220,7 @@ else
 	REQUIRED_PKGS_ARRAY+=("wget");
 
 	# Debian-specific packages
-	if [ "$(which apt 2>'/dev/null'; echo $?;)" == "0" ]; then
+	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 		REQUIRED_PKGS_ARRAY+=("cron");
 	fi;
 	# Determine if any required packages are missing
@@ -235,18 +235,18 @@ else
 			echo -e "\n""Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
 		fi;
 		# Bulk install all packages
-		if [ -n "$(which apt 2>'/dev/null';)" ]; then
+		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# Debian distros (Ubuntu, Raspbian, etc.)
 			echo -e "\n""Info: Calling [ apt-get update -y && apt-get install -y ${MISSING_PKGS_ARRAY[@]}; ]...";
 			apt-get update; apt-get install -y ${MISSING_PKGS_ARRAY[@]};
 			REQUIRED_PKGS_ARRAY+=("cron"); # Debian distros - include the cron package
 
-		elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# RHEL, CentOS
 			echo -e "\n""Info: Calling [ yum check-update -y && yum install -y ${MISSING_PKGS_ARRAY[@]}; ]...";
 			yum check-update -y; yum install -y ${MISSING_PKGS_ARRAY[@]};
 
-		elif [ -n "$(which apk 2>'/dev/null';)" ]; then
+		elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# Alpine
 			echo -e "\n""Info: Calling [ apk update -y && apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
 			apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]};

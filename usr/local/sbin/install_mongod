@@ -55,7 +55,11 @@ else
 
 
 	# ------------------------------------------------------------
-	if [ -n "$(id mongod 2>'/dev/null' || id mongodb 2>'/dev/null';)" ]; then
+	MONGO_USER_ROW=$(echo "$(id mongod 2>'/dev/null' || id mongodb 2>'/dev/null';)" | awk '{print $1}');
+	MONGO_UID=$(echo "${MONGO_USER_ROW}" | sed -rne 's/^uid=([0-9]+)\(.+\)$/\1/p';);
+	MONGO_UNAME=$(id -un "${MONGO_UID}");
+
+	if [ -n "$(id ${MONGO_UNAME} 2>'/dev/null';)" ]; then
 
 		# Setup MongoDB directories
 		mkdir -p "/var/lib/mongo";

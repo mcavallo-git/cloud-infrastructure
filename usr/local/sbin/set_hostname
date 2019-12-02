@@ -314,7 +314,7 @@ else
 		# ------------------------------------------------------------
 		# Apply Changes
 		#
-		if [[ -f "/etc/init.d/network" ]]; then # centos distros
+		if [[ -f "/etc/init.d/network" ]]; then # CentOS-RHEL distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "REBOOT REQUIRED FOR [ /etc/init.d/network ]";
 				read -p "REBOOT NOW? (y/n)  " -n 1 -t 60 -r; # Await single keypress

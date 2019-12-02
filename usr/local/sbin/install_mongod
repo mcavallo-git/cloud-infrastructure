@@ -58,15 +58,16 @@ else
 	MONGO_USER_ROW=$(echo "$(id mongod 2>'/dev/null' || id mongodb 2>'/dev/null';)" | awk '{print $1}');
 	MONGO_UID=$(echo "${MONGO_USER_ROW}" | sed -rne 's/^uid=([0-9]+)\(.+\)$/\1/p';);
 	MONGO_UNAME=$(id -un "${MONGO_UID}");
+	MONGO_GNAME=$(id -gn "${MONGO_UNAME}");
 
 	if [ -n "$(id ${MONGO_UNAME} 2>'/dev/null';)" ]; then
 
 		# Setup MongoDB directories
 		mkdir -p "/var/lib/mongo";
-		chown -R "mongod:mongod" "/var/lib/mongo";
+		chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongo";
 		chmod 0755 "/var/lib/mongo";
 		mkdir -p "/var/lib/mongodb";
-		chown -R "mongod:mongod" "/var/lib/mongodb";
+		chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongodb";
 		chmod 0755 "/var/lib/mongodb";
 		service mongod start;
 

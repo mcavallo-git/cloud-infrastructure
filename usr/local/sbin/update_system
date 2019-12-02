@@ -35,10 +35,10 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# apt / apt-get
-		if [ -z "$(which apt 2>'/dev/null')" ]; then
+		if [ $(which apt 2>'/dev/null' | wc -l;) -eq 0 ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
-		elif [ -z "$(which apt-get 2>'/dev/null')" ]; then
+		elif [ $(which apt-get 2>'/dev/null' | wc -l;) -eq 0 ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" not found";
 		else
@@ -49,7 +49,7 @@ else
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
 			sudo apt-get -y update;
-			if [ -n "$(which update_unifi 2>'/dev/null')" ]; then
+			if [ $(which update_unifi 2>'/dev/null' | wc -l;) -eq 0 ]; then
 				sudo update_unifi;
 			fi;
 			echo "";
@@ -87,7 +87,7 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# updatedb
-		if [ -z "$(which updatedb 2>'/dev/null')" ]; then
+		if [ $(which updatedb 2>'/dev/null' | wc -l;) -eq 0 ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"updatedb\" not found";
 		else
@@ -100,7 +100,7 @@ else
 		echo "------------------------------------------------------------";
 		#
 		# ldconfig
-		if [ -z "$(which ldconfig)" ]; then
+		if [ $(which ldconfig 2>'/dev/null' | wc -l;) -eq 0 ]; then
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" not found";
 		else
@@ -116,7 +116,7 @@ else
 		if [ "skip pip" == "skip pip" ]; then
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
 		else 
-			if [ -z "$(which pip 2>'/dev/null')" ]; then
+			if [ $(which pip 2>'/dev/null' | wc -l;) -eq 0 ]; then
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
 			else
 				echo "";

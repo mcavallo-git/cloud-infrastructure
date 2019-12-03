@@ -305,9 +305,9 @@ else
 		if [[ -f "/etc/sysconfig/network" ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				sed --in-place -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY HOSTNAME VIA [ /etc/sysconfig/network ]";
+			else # dry-run
+				echo "";
+				echo "Info:  Skipping call [ sed --in-place -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
 			fi;
 		fi;
 
@@ -319,7 +319,7 @@ else
 				/etc/init.d/hostname.sh;
 			else # dry-run
 				echo "";
-				echo "APPLY HOSTNAME VIA [ /etc/init.d/hostname.sh ]";
+				echo "Info:  Skipping call [ /etc/init.d/hostname.sh; ] (Dry-Run Enabled)";
 			fi;
 		fi;
 
@@ -329,9 +329,9 @@ else
 		if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				hostnamectl set-hostname "${SET_HOSTNAME}";
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY HOSTNAME VIA [ hostnamectl ]";
+			else # dry-run
+				echo "";
+				echo "Info:  Skipping call [ hostnamectl set-hostname \"${SET_HOSTNAME}\" ] (Dry-Run Enabled)";
 			fi;
 		fi;
 
@@ -359,14 +359,14 @@ else
 					echo "Postponing Network Manager restart";
 					exit 1;
 				fi;
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY CHANGES VIA [ /etc/init.d/network restart ]";
+			else # dry-run
+				echo "";
+				echo "Info:  (Dry-Run Enabled) Network restart not required as no changes were made";
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "";
-				echo "Reboot Required to apply changes to hostname";
+				echo "System restart required to apply changes to hostname";
 				read -p "   |--> Reboot this workstation/server, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -375,12 +375,12 @@ else
 					shutdown -r now;
 				else
 					echo "";
-					echo "Postponing Reboot";
+					echo "System restart postponed";
 					exit 1;
 				fi;
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY CHANGES VIA [ shutdown -r now ]";
+			else # dry-run
+				echo "";
+				echo "Info:  (Dry-Run Enabled) System restart not required as no changes were made";
 			fi;
 		fi;
 		echo "";

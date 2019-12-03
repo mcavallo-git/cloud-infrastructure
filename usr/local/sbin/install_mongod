@@ -140,7 +140,7 @@ security:
 		FINAL_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
 		if [ -f "${FINAL_KEYFILE}" ]; then
 			chown "${MONGO_UNAME}:${MONGO_GNAME}" "${FINAL_KEYFILE}";
-			chmod 0600 "${FINAL_KEYFILE}";
+			chmod 0400 "${FINAL_KEYFILE}";
 		fi;
 
 		# ------------------------------------------------------------

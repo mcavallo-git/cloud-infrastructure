@@ -245,7 +245,10 @@ else
 
 			# Alert user they're NOT including WAN IPv4
 			if [ ${ADD_WAN_IPV4} -eq 0 ]; then
-				echo ""; echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  If this IPv4 is ONLY attached to this machine, run with the \"--wan\" argument to include hostname resolution for the current WAN IPv4, as well (and not just the LAN IPv4)";
+				echo "";
+				echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Excluding WAN IPv4 hostname declaration";
+				echo "                    To resolve hostname \"${SET_HOSTNAME}.${SET_DOMAIN}\" to the current WAN IPv4 \"${THIS_WAN_IPV4}\", call using the \"--wan\" argument";
+				echo "                    (Intended for cloud-based servers, where a given IPv4 address is associated with only one, unique instance of linux)";
 			fi;
 
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run

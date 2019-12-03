@@ -385,7 +385,7 @@ else
 				fi;
 			else # dry-run
 				echo "";
-				echo "Info:  (Dry-Run Enabled) Network restart not required as no changes were made";
+				echo "Info:  Skipping network manager restart (Dry-Run Enabled)";
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
@@ -404,7 +404,7 @@ else
 				fi;
 			else # dry-run
 				echo "";
-				echo "Info:  (Dry-Run Enabled) System restart not required as no changes were made";
+				echo "Info:  Skipping restart (Dry-Run Enabled)";
 			fi;
 		fi;
 		echo "";

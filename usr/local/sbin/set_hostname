@@ -334,8 +334,10 @@ else
 
 		if [ ${DRY_RUN} -eq 1 ]; then
 			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Warning: Dry-Run Mode is Enabled (System configuration will not be affected or modified)";
-			echo "                    Please call again using the \"--force\" argument (or via \"--dry-run 0\")";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') Info: DRY RUN MODE IS ON";
+			echo "                    Changes will NOT be made to System configuration (e.g. \"/etc/hosts\" will not be affected)";
+			echo "";
+			echo "                    To apply changes, call using the \"--force\" argument (or via \"--dry-run 0\")";
 		fi;
 
 		# ------------------------------------------------------------

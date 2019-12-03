@@ -21,8 +21,6 @@ if [ "$(id -un)" != "root" ]; then
 	echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
-	echo "";
-
 	# ------------------------------------------------------------
 	#
 	# This script modifies a Linux instance's host & domain name(s)
@@ -133,7 +131,6 @@ else
 			SET_DOMAIN=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --complement --only-delimited;);
 		fi;
 
-		echo "";
 		echo "Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
 		echo "Info:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
 

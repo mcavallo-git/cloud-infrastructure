@@ -262,55 +262,58 @@ else
 				echo "Info:  To resolve hostname to the current WAN IPv4 \"${THIS_WAN_IPV4}\", instead, call using the \"--wan\" argument (intended for cloud-based servers, where a given WAN IPv4 Address is associated with only one, unique instance of linux)";
 			fi;
 
-			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+			echo "";
+			echo "Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+			cat "${HOSTS_FILE}";
 
-				echo "";
-				echo "Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
-				cat "${HOSTS_FILE}";
+			TEMP_HOSTS="${HOSTS_FILE}.$(date +'%s.%N').tmp";
+			cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
 
-				TEMP_HOSTS="${HOSTS_FILE}_TEMP";
-				cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
-
-				# Remove pre-existing LAN-IPV4 hostsfile lines (leave loopback unaffected)
-				sed -i -e "/^${THIS_LAN_IPV4} /c\ " "${TEMP_HOSTS}";
+			# Remove pre-existing LAN-IPV4 hostsfile lines (leave loopback unaffected)
+			sed -i -e "/^${THIS_LAN_IPV4} /c\ " "${TEMP_HOSTS}";
+			
+			if [ ${USE_WAN_IPV4} -ne 0 ]; then
+				# Remove pre-existing WAN-IPV4 hostsfile lines
+				sed -i -e "/^${THIS_WAN_IPV4} /c\ " "${TEMP_HOSTS}";
+			fi;
 				
-				if [ ${USE_WAN_IPV4} -ne 0 ]; then
-					# Remove pre-existing WAN-IPV4 hostsfile lines
-					sed -i -e "/^${THIS_WAN_IPV4} /c\ " "${TEMP_HOSTS}";
-				fi;
-					
-				# Update IPv4 hostname resolution
-				if [ -n "${SET_DOMAIN}" ]; then
-					# Hostname + FQDN (hostname.domainname)
-					sed --in-place -e "/^127.0.0.1/ {
-						a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME} ${SET_HOSTNAME}.${SET_DOMAIN}
-						c\ 127.0.0.1 localhost localhost.localdomain
-					}" "${TEMP_HOSTS}";
-				
-				else
-					# Hostname only (no FQDN)
-					sed --in-place -e "/^127.0.0.1/ {
-						a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}
-						c\ 127.0.0.1 localhost localhost.localdomain
-					}" "${TEMP_HOSTS}";
+			# Update IPv4 hostname resolution
+			if [ -n "${SET_DOMAIN}" ]; then
+				# Hostname + FQDN (hostname.domainname)
+				sed --in-place -e "/^127.0.0.1/ {
+					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME} ${SET_HOSTNAME}.${SET_DOMAIN}
+					c\ 127.0.0.1 localhost localhost.localdomain
+				}" "${TEMP_HOSTS}";
+			
+			else
+				# Hostname only (no FQDN)
+				sed --in-place -e "/^127.0.0.1/ {
+					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}
+					c\ 127.0.0.1 localhost localhost.localdomain
+				}" "${TEMP_HOSTS}";
 
-				fi;
+			fi;
 
-				# Remove empty (or whitespace-only) lines
-				sed -i -e '/^\s*$/d' "${TEMP_HOSTS}";
+			# Remove empty (or whitespace-only) lines
+			sed -i -e '/^\s*$/d' "${TEMP_HOSTS}";
 
-				# Trim spaces/tabs off the start of each line
-				sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
+			# Trim spaces/tabs off the start of each line
+			sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
 
-				#
+			
+			if [[ "${DRY_RUN}" == "0" ]]; then
+				# NOT a dry-run -> Replace hosts-file
 				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
 				echo "";
 				echo "Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
 				cat "${HOSTS_FILE}";
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY HOSTNAME VIA [ ${HOSTS_FILE} ]";
+			else # dry-run
+				echo "";
+				echo "Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]  (Dry-Run Enabled)";
+				cat "${TEMP_HOSTS}";
 			fi;
+
+			
 		fi;
 
 		# ------------------------------------------------------------

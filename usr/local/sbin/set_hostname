@@ -348,8 +348,7 @@ else
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "";
 				echo "Network Manager must be restarted to apply changes ( required command [ /etc/init.d/network restart ] )";
-				echo "";
-				read -p "Restart Network Manager now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				read -p "   |--> Restart Network Manager, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";
@@ -367,7 +366,8 @@ else
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "";
-				read -p "Reboot Required - Perform Now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				echo "Reboot Required to apply changes to hostname";
+				read -p "   |--> Reboot this workstation/server, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					echo "";

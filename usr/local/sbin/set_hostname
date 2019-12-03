@@ -128,11 +128,8 @@ else
 		fi;
 
 		SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
-		
-		if [ ${DRY_RUN} -eq 1 ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Warning: Dry-Run Mode is Enabled (System configuration will not be affected or modified). Please call again using:  --dry-run 0";
-		fi;
 
+		echo "";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Info: SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Info: SET_DOMAIN:   \"${SET_DOMAIN}\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Info: SET_FQDN:   \"${SET_FQDN}\"";
@@ -335,6 +332,11 @@ else
 			fi;
 		fi;
 
+		if [ ${DRY_RUN} -eq 1 ]; then
+			echo "";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') Warning: Dry-Run Mode is Enabled (System configuration will not be affected or modified)";
+			echo "                    Please call again using the \"--force\" argument (or via \"--dry-run 0\")";
+		fi;
 
 		# ------------------------------------------------------------
 		# Apply Changes

@@ -118,14 +118,14 @@ else
 
 			# DNS Nameserver #1
 			if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
-				sed -ie "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
+				sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
 			else
 				echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
 			fi;
 
 			# DNS Nameserver #2
 			if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
-				sed -ie "/^DNS2=/c\DNS2=${DNS_NAMESRVR_2}" "${RHEL_NETWORK_CONF}";
+				sed -i -e "/^DNS2=/c\DNS2=${DNS_NAMESRVR_2}" "${RHEL_NETWORK_CONF}";
 			else
 				echo "DNS2=${DNS_NAMESRVR_2}" >> "${RHEL_NETWORK_CONF}";
 			fi;

@@ -226,11 +226,20 @@ else
 		#
 		HOSTNAME_FILE="/etc/hostname";
 		if [[ -f "${HOSTNAME_FILE}" ]]; then
+			echo "";
+			echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+			cat "${HOSTNAME_FILE}";
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-				echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
-			# else # dry-run
-			# 	echo "";
-			# 	echo "APPLY HOSTNAME VIA [ ${HOSTNAME_FILE} ]";
+				echo "";
+				if [ "$(cat ${HOSTNAME_FILE})" != "{SET_HOSTNAME}" ]; then # update required for hostname file
+					echo "Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";
+					echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
+					echo "";
+					echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+					cat "${HOSTNAME_FILE}";
+				else
+					echo "Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\" (already matches desired hostname)";
+				fi;
 			fi;
 		fi;
 
@@ -296,19 +305,17 @@ else
 			# Trim spaces/tabs off the start of each line
 			sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
 
-			
-			if [[ "${DRY_RUN}" == "0" ]]; then
-				# NOT a dry-run -> Replace hosts-file
-				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}" && rm -f "${TEMP_HOSTS}";
-				echo "";
-				echo "Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
-				cat "${HOSTS_FILE}";
-			else # dry-run
-				echo "";
-				echo "Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]  (Dry-Run Enabled)";
-				cat "${TEMP_HOSTS}";
-			fi;
+			echo "";
+			echo "Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+			cat "${TEMP_HOSTS}";
 
+
+			if [[ "${DRY_RUN}" == "0" ]]; then
+				# NOT a dry-run -> Overwrite hosts-file
+				cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}";
+
+			fi;
+			rm -f "${TEMP_HOSTS}";
 			
 		fi;
 

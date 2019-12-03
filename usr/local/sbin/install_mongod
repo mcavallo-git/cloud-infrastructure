@@ -114,20 +114,33 @@ security:
 				cat "/etc/mongod.conf";
 				service mongod restart;
 			elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then
-				echo "Warning:  keyFile currently set to path \"${CURRENT_KEYFILE}\""; read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead? (y/n)  " -n 1 -t 60 -r; echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then
-					sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  keyFile:/c\  keyFile: ${NEW_KEYFILE}" "/etc/mongod.conf";
-					cat "/etc/mongod.conf";
-					service mongod restart;
+				if [ ! -f "${CURRENT_KEYFILE}" ]; then
+					echo "";
+					echo "Error:  keyFile not found at path \"${CURRENT_KEYFILE}\"";
+					echo "  |--> Please setup keyfile then re-run this script";
+					echo "";
+					echo "Info:  keyFile will remain unchanged at path \"${CURRENT_KEYFILE}\"";
+				else
+					echo "Warning:  keyFile currently set to path \"${CURRENT_KEYFILE}\"";
+					read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead? (y/n)  " -n 1 -t 60 -r; echo "";
+					if [[ $REPLY =~ ^[Yy]$ ]]; then
+						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  keyFile:/c\  keyFile: ${NEW_KEYFILE}" "/etc/mongod.conf";
+						cat "/etc/mongod.conf";
+						service mongod restart;
+					fi;
 				fi;
 			else
-				echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\" - Mo action required";
+				echo "";
+				echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\"";
+				echo "  |--> No action required (already up to date)";
 			fi;
 		fi;
 
 		FINAL_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
-		chown "${MONGO_UNAME}:${MONGO_GNAME}" "${FINAL_KEYFILE}";
-		chmod 0600 "${FINAL_KEYFILE}";
+		if [ -f "${FINAL_KEYFILE}" ]; then
+			chown "${MONGO_UNAME}:${MONGO_GNAME}" "${FINAL_KEYFILE}";
+			chmod 0600 "${FINAL_KEYFILE}";
+		fi;
 
 		# ------------------------------------------------------------
 		# Setup replication

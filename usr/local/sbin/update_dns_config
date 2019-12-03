@@ -104,7 +104,7 @@ else
 	# Network config filepaths
 	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
 	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; # AWS default cloud-config
-	RHEL_NETWORK_CONF=$(find /etc/sysconfig/network-scripts/ -name ifcfg-* -a -not -name ifcfg-lo -printf "%p" | head -n 1 2>'/dev/null';);
+	RHEL_NETWORK_CONF=$(find /etc/sysconfig/network-scripts/ -name ifcfg-* -a -not -name ifcfg-lo | head -n 1 2>'/dev/null';);
 	
 	if [ -n "${RHEL_NETWORK_CONF}" ]; then
 

@@ -93,7 +93,6 @@ else
 		# Setup access security
 		echo ""; read -p "Enter Filepath for mongod keyFile:  " -t 60 -r; echo "";
 		if [ -z "${REPLY}" ]; then
-			echo "";
 			echo "Info: Skipping mongod security setup (empty input received for keyFile)";
 		else
 			NEW_KEYFILE="${REPLY}";
@@ -118,7 +117,6 @@ security:
 				service mongod restart;
 			elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then
 				if [ ! -f "${CURRENT_KEYFILE}" ]; then
-					echo "";
 					echo "Error:  keyFile not found at path \"${CURRENT_KEYFILE}\"";
 					echo "  |--> Please setup keyfile then re-run this script";
 					echo "";
@@ -133,7 +131,6 @@ security:
 					fi;
 				fi;
 			else
-				echo "";
 				echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\"";
 				echo "  |--> No action required (already up to date)";
 			fi;

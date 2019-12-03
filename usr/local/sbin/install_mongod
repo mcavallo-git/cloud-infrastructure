@@ -117,7 +117,7 @@ security:
 				cat "/etc/mongod.conf";
 				service mongod restart;
 			elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then
-				if [ ! -f "${CURRENT_KEYFILE}" ]; then
+				if [ ! -f "${NEW_KEYFILE}" ]; then
 					echo "Error:  keyFile not found at path \"${CURRENT_KEYFILE}\"";
 					echo "  |--> Please setup keyfile then re-run this script";
 					echo "";

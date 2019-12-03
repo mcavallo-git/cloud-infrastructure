@@ -210,12 +210,11 @@ else
 		#
 
 		if [[ "${DRY_RUN}" == "0" ]]; then
-			echo "";
-			read -p "  --> Apply aforementioned edits to hostname/domain, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+			echo ""; read -p "  --> Update hostname, now? (y/n)  " -n 1 -t 60 -r; echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "Info: - Confirmed by user - Proceeding with changes to hostname & domain-name...";
 			else
-				echo "Info: - Cancelled by user - Exiting after 60s...";
+				echo "Info: - Cancelled by user - exiting...";
 				exit 1;
 			fi;
 		fi;
@@ -226,18 +225,19 @@ else
 		#
 		HOSTNAME_FILE="/etc/hostname";
 		if [[ -f "${HOSTNAME_FILE}" ]]; then
-			echo "";
-			echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
-			cat "${HOSTNAME_FILE}";
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "";
+				echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+				cat "${HOSTNAME_FILE}";
 				if [ "$(cat ${HOSTNAME_FILE})" != "{SET_HOSTNAME}" ]; then # update required for hostname file
+					echo "";
 					echo "Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";
 					echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
 					echo "";
 					echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
 					cat "${HOSTNAME_FILE}";
 				else
+					echo "";
 					echo "Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\" (already matches desired hostname)";
 				fi;
 			fi;

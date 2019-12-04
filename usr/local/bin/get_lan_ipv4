@@ -15,19 +15,25 @@ exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 
 fi;
-#
 # ------------------------------------------------------------
 
-THIS_LAN_IPV4="";
-THIS_LAN_INET="";
-THIS_LAN_NETMASK="";
+shopt -s lastpipe; # If set, and job control is not active, the shell runs the last command of a pipeline not executed in the background in the current shell environment.
+          # |
+          # |--> e.g. extends scope of variables which get set/updated during "while ...; do" loop to be referenced AFTER said loop is "done;"
+          #           (normally, variables set during background tasks are scoped separately, and not able to be referenced afterwards)
+
+# ------------------------------------------------------------
+
+THIS_GATEWAY_IPV4="";
 THIS_LAN_BROADCAST="";
+THIS_LAN_NETMASK="";
+THIS_LAN_NIC="";
+THIS_LAN_IPV4="";
 
-START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
-
-TMP_LAN_INET="/tmp/get_lan_ipv4.${START_TIMESTAMP}.inet";
-TMP_LAN_NETMASK="/tmp/get_lan_ipv4.${START_TIMESTAMP}.netmask";
-TMP_LAN_BROADCAST="/tmp/get_lan_ipv4.${START_TIMESTAMP}.broadcast";
+# START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
+# TMP_LAN_INET="/tmp/get_lan_ipv4.${START_TIMESTAMP}.inet";
+# TMP_LAN_NETMASK="/tmp/get_lan_ipv4.${START_TIMESTAMP}.netmask";
+# TMP_LAN_BROADCAST="/tmp/get_lan_ipv4.${START_TIMESTAMP}.broadcast";
 
 LOOPBACK_IPV4="127.0.0.1";
 
@@ -37,40 +43,55 @@ SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s
 SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
 SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
 
-ifconfig | while read EACH_LINE; do
+if [ -n "$(which ip 2>'/dev/null')" ]; then # ------------------------------------------------------------
 
-	EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
+		### Get LAN-Local's Gateway IPv4
+		THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
 
-	# Parse the LAN IPv4 ("inet") from the ifconfig string
-	EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
+		### Get LAN-Local IPv4(s) - One per NIC
+		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 
-	if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
+		### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
+		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
+		THIS_LAN_NETMASK=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' 2>'/dev/null';);
 
-		# If the parsed IPv4 is not a loopback IPv4, then save it
-		echo "${EACH_INET}" > "${TMP_LAN_INET}";
+elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # ------------------------------------------------------------
 
-		# Parse the Netmask & Broadcast from the ifconfig string
-		EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
-		EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
-		if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
-			echo "${EACH_NETMASK}" > "${TMP_LAN_NETMASK}";
-			echo "${EACH_BROADCAST}" > "${TMP_LAN_BROADCAST}";
+	ifconfig | while read EACH_LINE; do
+		EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
+		# Parse the LAN IPv4 ("inet") from the ifconfig string
+		EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
+		if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
+			# If the parsed IPv4 is not a loopback IPv4, then save it
+			THIS_LAN_IPV4="${EACH_INET}";
+			# Parse the Netmask & Broadcast from the ifconfig string
+			EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
+			EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
+			if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
+				THIS_LAN_NETMASK="${EACH_NETMASK}";
+				THIS_LAN_BROADCAST="${EACH_BROADCAST}";
+			fi;
 		fi;
+	done;
 
-	fi;
+fi;
 
-done;
+# ------------------------------------------------------------
 
 # Instantiate exported variables
-test -f "${TMP_LAN_INET}" && export THIS_LAN_IPV4=$(cat "${TMP_LAN_INET}") && export THIS_LAN_INET=$(cat "${TMP_LAN_INET}") && rm "${TMP_LAN_INET}";
-test -f "${TMP_LAN_NETMASK}" && export THIS_LAN_NETMASK=$(cat "${TMP_LAN_NETMASK}") && rm "${TMP_LAN_NETMASK}";
-test -f "${TMP_LAN_BROADCAST}" && export THIS_LAN_BROADCAST=$(cat "${TMP_LAN_BROADCAST}") && rm "${TMP_LAN_BROADCAST}";
+test -v THIS_GATEWAY_IPV4 && export THIS_GATEWAY_IPV4="${THIS_GATEWAY_IPV4}";
+test -v THIS_LAN_BROADCAST && export THIS_LAN_BROADCAST="${THIS_LAN_BROADCAST}";
+test -v THIS_LAN_NETMASK && export THIS_LAN_NETMASK="${THIS_LAN_NETMASK}";
+test -v THIS_LAN_NIC && export THIS_LAN_NIC="${THIS_LAN_NIC}";
+test -v THIS_LAN_IPV4 && export THIS_LAN_IPV4="${THIS_LAN_IPV4}";
 
 # Show the LAN Network variables (if not running in quiet mode)
-if [[ $# -eq 0 ]] || [[ $# -gt 0 ]] && [ "$1" != "-quiet" ]; then
-	echo "LAN IPv4      → ${THIS_LAN_IPV4}  →  Stored to variable  \$THIS_LAN_IPV4  and  \$THIS_LAN_INET";
-	echo "LAN NetMask   → ${THIS_LAN_NETMASK}  →  Stored to variable  \$THIS_LAN_NETMASK";
-	echo "LAN Broadcast → ${THIS_LAN_BROADCAST}  →  Stored to variable  \$THIS_LAN_BROADCAST";
+if [[ $# -eq 0 ]] || [[ $# -gt 0 ]] && [ "$1" != "-q" ] && [ "$1" != "--quiet" ]; then
+	test -v THIS_GATEWAY_IPV4 && echo -e "\n${THIS_GATEWAY_IPV4}  ( Gateway IPv4, exported as \$THIS_GATEWAY_IPV4";
+	test -v THIS_LAN_BROADCAST && echo -e "\n${THIS_LAN_BROADCAST}  ( LAN Broadcast, exported as \$THIS_LAN_BROADCAST";
+	test -v THIS_LAN_NETMASK && echo -e "\n${THIS_LAN_NETMASK}  ( LAN NetMask, exported as \$THIS_LAN_NETMASK";
+	test -v THIS_LAN_NIC && echo -e "\n${THIS_LAN_NIC}  ( LAN NIC, exported as \$THIS_LAN_NIC";
+	test -v THIS_LAN_IPV4 && echo -e "\n${THIS_LAN_IPV4}  ( LAN IPv4, exported as \$THIS_LAN_IPV4";
 fi;
 
 # ------------------------------------------------------------

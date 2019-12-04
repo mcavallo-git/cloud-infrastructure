@@ -376,8 +376,8 @@ else
 		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-		SOURCE_DIR_ERRS=$?;
-		if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+		RET_CODE=$?;
+		if [ ${RET_CODE} -eq 0 ]; then
 			echo "  |→ Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
 		else 
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
@@ -389,9 +389,9 @@ else
 				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 				DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
 				DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-				SOURCE_DIR_ERRS=$?;
+				RET_CODE=$?;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				if [ ${SOURCE_DIR_ERRS} -eq 0 ]; then
+				if [ ${RET_CODE} -eq 0 ]; then
 					echo "  |→ Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;

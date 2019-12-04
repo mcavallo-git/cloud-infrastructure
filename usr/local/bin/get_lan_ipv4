@@ -15,12 +15,14 @@ exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 
 fi;
+
 # ------------------------------------------------------------
 
 shopt -s lastpipe; # If set, and job control is not active, the shell runs the last command of a pipeline not executed in the background in the current shell environment.
           # |
           # |--> e.g. extends scope of variables which get set/updated during "while ...; do" loop to be referenced AFTER said loop is "done;"
           #           (normally, variables set during background tasks are scoped separately, and not able to be referenced afterwards)
+
 
 # ------------------------------------------------------------
 
@@ -70,6 +72,7 @@ elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # --------------------------
 
 fi;
 
+
 # ------------------------------------------------------------
 
 # Instantiate exported variables
@@ -87,5 +90,6 @@ if [[ $# -eq 0 ]] || [[ $# -gt 0 ]] && [ "$1" != "-q" ] && [ "$1" != "--quiet" ]
 	test -v THIS_LAN_NIC && echo -e "\n${THIS_LAN_NIC}  <-- LAN NIC, exported as \$THIS_LAN_NIC";
 	test -v THIS_LAN_IPV4 && echo -e "\n${THIS_LAN_IPV4}  <-- LAN IPv4, exported as \$THIS_LAN_IPV4";
 fi;
+
 
 # ------------------------------------------------------------

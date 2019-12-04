@@ -159,7 +159,7 @@ else
 		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
 
 		### Get LAN-Local's Gateway IPv4
-		GATEWAY_LAN_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
+		THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
 
 		### Get LAN-Local IPv4(s) - One per NIC
 		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
@@ -184,8 +184,8 @@ else
 		fi;
 
 		### Show Resolved Gateway IPv4
-		if [ -n "${GATEWAY_LAN_IPV4}" ]; then
-			echo "Info: LAN Gateway IPv4 resolved to \"${GATEWAY_LAN_IPV4}\"";
+		if [ -n "${THIS_GATEWAY_IPV4}" ]; then
+			echo "Info: LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
 		else 
 			echo "Warning: Unable to resolve LAN's Gateway-IPv4.";
 		fi;

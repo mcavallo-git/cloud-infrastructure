@@ -83,7 +83,11 @@ test -v THIS_LAN_NIC && export THIS_LAN_NIC="${THIS_LAN_NIC}";
 test -v THIS_LAN_IPV4 && export THIS_LAN_IPV4="${THIS_LAN_IPV4}";
 
 # Show the LAN Network variables (if not running in quiet mode)
-if [[ $# -eq 0 ]] || [[ $# -gt 0 ]] && [ "$1" != "-q" ] && [ "$1" != "--quiet" ]; then
+if [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
+	if [ -v THIS_LAN_IPV4 ] && [ -n "${THIS_LAN_IPV4}" ]; then
+		echo -n "${THIS_LAN_IPV4}";
+	fi;
+else
 	test -v THIS_GATEWAY_IPV4 && echo -e "\n${THIS_GATEWAY_IPV4}  <-- Gateway IPv4, exported as \$THIS_GATEWAY_IPV4";
 	test -v THIS_LAN_BROADCAST && echo -e "\n${THIS_LAN_BROADCAST}  <-- LAN Broadcast, exported as \$THIS_LAN_BROADCAST";
 	test -v THIS_LAN_NETMASK && echo -e "\n${THIS_LAN_NETMASK}  <-- LAN NetMask, exported as \$THIS_LAN_NETMASK";

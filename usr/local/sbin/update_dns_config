@@ -118,33 +118,37 @@ else
 
 			# CAUSED ISSUES - MULTIPLE DHCLIENTS, UNABLE TO RESTART NETWORK INTERFACE
 
-			# DNS Nameserver #1
-			# if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
-			# 	sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
-			# else
-			# 	echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
-			# fi;
+			DNS Nameserver #1
+			if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
+				echo "";
+				# sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
+			else
+				echo "";
+				# echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
+			fi;
 
-			# DNS Nameserver #2
-			# if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
-			# 	sed -i -e "/^DNS2=/c\DNS2=${DNS_NAMESRVR_2}" "${RHEL_NETWORK_CONF}";
-			# else
-			# 	echo "DNS2=${DNS_NAMESRVR_2}" >> "${RHEL_NETWORK_CONF}";
-			# fi;
+			DNS Nameserver #2
+			if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
+				# sed -i -e "/^DNS2=/c\DNS2=${DNS_NAMESRVR_2}" "${RHEL_NETWORK_CONF}";
+				echo "";
+			else
+				echo "";
+				# echo "DNS2=${DNS_NAMESRVR_2}" >> "${RHEL_NETWORK_CONF}";
+			fi;
 
 			echo "";
-			# echo "Network Manager must be restarted to apply changes ( required command [ /etc/init.d/network restart ] )";
-			# read -p "   |--> Restart Network Manager, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-			# echo "";
-			# if [[ $REPLY =~ ^[Yy]$ ]]; then
-			# 	echo "";
-			# 	echo "Restarting Network Manager via command [ /etc/init.d/network ]";
-			# 	/etc/init.d/network restart;
-			# else
-			# 	echo "";
-			# 	echo "Postponing Network Manager restart";
-			# 	exit 1;
-			# fi;
+			echo "Network Manager must be restarted to apply changes ( required command [ /etc/init.d/network restart ] )";
+			read -p "   |--> Restart Network Manager, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+			echo "";
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				echo "";
+				echo "Restarting Network Manager via command [ /etc/init.d/network ]";
+				/etc/init.d/network restart;
+			else
+				echo "";
+				echo "Postponing Network Manager restart";
+				exit 1;
+			fi;
 
 		fi;
 

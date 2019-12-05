@@ -21,6 +21,54 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 
+	# ------------------------------------------------------------
+	# Parse inline arguments (passed to current script)
+	#
+
+	ARGS=("$@");
+	COUNT_ARGS=${#ARGS[@]};
+	ARGS_HOSTNAME_DEFINED=0;
+	USE_WAN_IPV4=0;
+	# SET_STATIC_IPV4="";
+	DRY_RUN=1;
+	# Walk through any inline-arguments passed to this function
+	for (( i=0;i<$COUNT_ARGS;i++ )); do
+
+		EACH_ARG=${ARGS[${i}]};
+		# BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
+
+		# Check if this is the last inline-argument or if there are more to follow
+		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+			NEXT_ARG="";
+		else
+			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
+		fi;
+
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+			# Parse inline hostname
+			if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
+				NEXT_ARG="${EACH_ARG}";
+				EACH_ARG="--hostname";
+			fi;
+
+			if [ "${EACH_ARG}" == "--wan" ]; then # --force
+				USE_WAN_IPV4=1;
+			fi;
+
+			# Parse static-IP calls
+			if [ "${EACH_ARG}" == "--static-ip" ] && [ -n "${NEXT_ARG}" ]; then
+				SET_STATIC_IPV4="${NEXT_ARG}";
+			fi;
+
+		fi;
+	done;
+
+	# ------------------------------------------------------------
+
 	if [ $(which nmcli 2>'/dev/null' | wc -l;) -gt 0 ]; then
 		#
 		# Prioritize DHCP DNS Nameservers from nmcli (NetworkManager), where available
@@ -105,6 +153,19 @@ else
 	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; # AWS default cloud-config
 	RHEL_NETWORK_CONF=$(find '/etc/sysconfig/network-scripts/' -name 'ifcfg-*' -a -not -name 'ifcfg-lo' | head -n 1 2>'/dev/null';);
 	
+	# Detect current IP Config
+	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p";); \
+	THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p";); \
+	THIS_LAN_NETMASK=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\7/p";); \
+	THIS_LAN_IPV4=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\9/p";); \
+	THIS_GATEWAY_IPV4=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\2/p";); \
+	THIS_LAN_NIC=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\3/p";); \
+	test -z "${THIS_LAN_IPV4}" && THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';); \
+	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' 2>'/dev/null';); \
+	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p";); \
+	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p";);
+
+
 	if [ -n "${RHEL_NETWORK_CONF}" ]; then
 
 		# RHEL/CentOS distros
@@ -118,13 +179,37 @@ else
 
 			# CAUSED ISSUES - MULTIPLE DHCLIENTS, UNABLE TO RESTART NETWORK INTERFACE
 
+			### IPADDR=192.168.0.110
+			### PREFIX=24
+			### GATEWAY=192.168.0.1
+			### DNS1=8.8.8.8
+			### PEERDNS=no
+
+			if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
+				echo -e "\n""Detected request to set LAN IPv4 as static with value \"${SET_STATIC_IPV4}\"";
+				read -p "   |--> Set static LAN-IP, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				echo "";
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
+						echo "";
+						sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
+					else
+						echo "";
+						echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
+					fi;
+
+				fi;
+
+			fi;
+
+
 			# DNS Nameserver #1
 			if [ $(cat "${RHEL_NETWORK_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
 				echo "";
-				# sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
+				sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${RHEL_NETWORK_CONF}";
 			else
 				echo "";
-				# echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
+				echo "DNS1=${DNS_NAMESRVR_1}" >> "${RHEL_NETWORK_CONF}";
 			fi;
 
 			# DNS Nameserver #2

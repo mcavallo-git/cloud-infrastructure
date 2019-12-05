@@ -29,7 +29,7 @@ else
 	COUNT_ARGS=${#ARGS[@]};
 	ARGS_HOSTNAME_DEFINED=0;
 	USE_WAN_IPV4=0;
-	# SET_STATIC_IPV4="";
+	USE_STATIC_IPV4=0;
 	DRY_RUN=1;
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
@@ -60,8 +60,11 @@ else
 			fi;
 
 			# Parse static-IP calls
-			if [ "${EACH_ARG}" == "--static-ip" ] && [ -n "${NEXT_ARG}" ]; then
-				SET_STATIC_IPV4="${NEXT_ARG}";
+			if [ "${EACH_ARG}" == "--static-ip" ]; then
+				USE_STATIC_IPV4=1;
+				if [ -n "${NEXT_ARG}" ]; then
+					SET_STATIC_IPV4="${NEXT_ARG}";
+				fi;
 			fi;
 
 		fi;
@@ -176,7 +179,12 @@ else
 
 		else
 
-			if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
+			if [ ${USE_STATIC_IPV4} -eq 1 ]; then
+
+				if [ -z "${SET_STATIC_IPV4}" ]; then
+					SET_STATIC_IPV4="${THIS_LAN_IPV4}";
+				fi;
+
 				echo -e "\n";
 				echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
 				echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";

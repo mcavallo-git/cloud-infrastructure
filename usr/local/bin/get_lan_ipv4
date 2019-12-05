@@ -28,55 +28,60 @@ shopt -s lastpipe; # If set, and job control is not active, the shell runs the l
 # Determine LAN IPv4
 #
 
-# START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
-# TMP_LAN_INET="/tmp/get_lan_ipv4.${START_TIMESTAMP}.inet";
-# TMP_LAN_NETMASK="/tmp/get_lan_ipv4.${START_TIMESTAMP}.netmask";
-# TMP_LAN_BROADCAST="/tmp/get_lan_ipv4.${START_TIMESTAMP}.broadcast";
+START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
 
 LOOPBACK_IPV4="127.0.0.1";
 
+PRIVATE_IP_SUBNET="169.254.0.0/16'";
+
 REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
-SED_LINE='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\0/p';
-SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\1/p';
-SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
-SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
 
 if [ -n "$(which ip 2>'/dev/null')" ]; then # ------------------------------------------------------------
 
-		### Get LAN-Local's Gateway IPv4
-		THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
+	### Get LAN-Local's Gateway IPv4
+	THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
 
-		### Get LAN-Local IPv4(s) - One per NIC
-		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
+	### Get LAN-Local IPv4(s) - One per NIC
+	THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 
-		### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
-		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
-		THIS_LAN_NETMASK=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' 2>'/dev/null';);
+	### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
+	THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
+	THIS_LAN_NETMASK=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' 2>'/dev/null';);
 
 elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # ------------------------------------------------------------
 
+	SED_LINE='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\0/p';
+	SED_INET='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\1/p';
+	SED_NETMASK='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\5/p';
+	SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
+
 	ifconfig | while read EACH_LINE; do
-		EACH_SED_LINE=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_LINE}";);
+		EACH_SED_LINE=$(echo "${EACH_LINE}" | sed -rne "${SED_LINE}";);
+
 		# Parse the LAN IPv4 ("inet") from the ifconfig string
-		EACH_INET=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_INET}";);
+		EACH_INET=$(echo "${EACH_LINE}" | sed -rne "${SED_INET}";);
+
 		if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
 			# If the parsed IPv4 is not a loopback IPv4, then save it
 			THIS_LAN_IPV4="${EACH_INET}";
+
 			# Parse the Netmask & Broadcast from the ifconfig string
-			EACH_NETMASK=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_NETMASK}";);
-			EACH_BROADCAST=$(echo "${EACH_LINE}" | sed --regexp-extended --quiet --expression="${SED_BROADCAST}";);
+			EACH_NETMASK=$(echo "${EACH_LINE}" | sed -rne "${SED_NETMASK}";);
+			EACH_BROADCAST=$(echo "${EACH_LINE}" | sed -rne "${SED_BROADCAST}";);
 			if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
 				THIS_LAN_NETMASK="${EACH_NETMASK}";
 				THIS_LAN_BROADCAST="${EACH_BROADCAST}";
 			fi;
+
 		fi;
+
 	done;
 
 fi;
 
 
 # ------------------------------------------------------------
-# Export variables
+# Export Variable(s)
 #
 
 test -v THIS_GATEWAY_IPV4 && export THIS_GATEWAY_IPV4="${THIS_GATEWAY_IPV4}";
@@ -109,7 +114,7 @@ fi;
 
 
 # ------------------------------------------------------------
-# Exit with appropriate code
+# Exit with appropriate return-code
 #
 
 if [ -v THIS_LAN_IPV4 ] && [ -n "${THIS_LAN_IPV4}" ]; then
@@ -119,4 +124,10 @@ else
 fi;
 
 
+# ------------------------------------------------------------
+# 
+# Citation(s)
+# 
+#   serverfault.com  |  "Where does the route to 169.254.0.0 comes from?"  |  https://serverfault.com/a/132716
+# 
 # ------------------------------------------------------------

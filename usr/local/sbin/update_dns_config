@@ -265,10 +265,11 @@ else
 				fi;
 			fi;
 
-			echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ service NetworkManger restart; ] )";
+			echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; service NetworkManger restart; ] )";
 			read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo -e "\n""Restarting NetworkManager via command [ service NetworkManger restart ]";
+				echo -e "\n""Restarting NetworkManager via command [ nmcli connection reload; service NetworkManger restart; ]";
+				nmcli connection reload;
 				service NetworkManger restart;
 			else
 				echo -e "\n""Postponing NetworkManager restart";

@@ -29,8 +29,17 @@ else
 	COUNT_ARGS=${#ARGS[@]};
 	ARGS_HOSTNAME_DEFINED=0;
 	USE_WAN_IPV4=0;
+	USE_SEARCH_DOMAIN=0;
 	USE_STATIC_IPV4=0;
 	DRY_RUN=1;
+
+	#
+	# DNS "SEARCH": TAKES A SET OF ONE OR MORE DOMAINS AND TRIES CONCATENATING EACH OF THEM WITH THE LOCAL ENVIRONMENT'S HOSTNAME (to try and resolve dns query) BEFORE REVERTING TO GOING EXTERNAL FOR RESOLUTION OF THE DNS QUERY IN_QUESTION
+	#
+	# MAX IS 6 DOMAINS TOTALING 256 OR LESS CHARACTERS)
+	#
+	DNS_SEARCH_DOMAIN="";
+
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
@@ -59,11 +68,19 @@ else
 				USE_WAN_IPV4=1;
 			fi;
 
-			# Parse static-IP calls
+			# Static-IP
 			if [ "${EACH_ARG}" == "--static-ip" ]; then
 				USE_STATIC_IPV4=1;
 				if [ -n "${NEXT_ARG}" ]; then
 					SET_STATIC_IPV4="${NEXT_ARG}";
+				fi;
+			fi;
+
+			# Domain Name
+			if [ "${EACH_ARG}" == "--domain" ]; then
+				USE_SEARCH_DOMAIN=1;
+				if [ -n "${NEXT_ARG}" ]; then
+					DNS_SEARCH_DOMAIN="${NEXT_ARG}";
 				fi;
 			fi;
 
@@ -131,14 +148,6 @@ else
 	DNS_FALLBACK_3="${VERISIGN_DNS_1}";
 
 	# ------------------------------------------------------------
-
-	# DNS "SEARCH": TAKES A SET OF ONE OR MORE DOMAINS AND TRIES CONCATENATING EACH OF THEM
-	# WITH THE LOCAL ENVIRONMENT'S HOSTNAME (to try and resolve dns query) BEFORE REVERTING TO
-	# GOING EXTERNAL FOR RESOLUTION OF THE DNS QUERY IN_QUESTION
-	#
-	# MAX IS 6 DOMAINS TOTALING 256 OR LESS CHARACTERS)
-	#
-	DNS_SEARCH_DOMAIN="";
 
 	# Dingbats, intuitive logging chars/info
 	BOX_CHECK="☑";
@@ -404,10 +413,9 @@ else
 				echo "" > "${DEBIAN_NETWORK_CONF}";
 			fi;
 
-			DNS_SEARCH_DOMAIN="";
 			THIS_HYPERVISOR="/sys/hypervisor/uuid";
 			AWS_HV_STARTS_WITH="ec2";
-			if [ -f "${THIS_HYPERVISOR}" ]; then
+			if [ ! -v DNS_SEARCH_DOMAIN ] && [ -f "${THIS_HYPERVISOR}" ]; then
 				if [[ "$(cat ${THIS_HYPERVISOR})" == "${AWS_HV_STARTS_WITH}"* ]] && [ -n "${DOMAIN}" ]; then
 					DNS_SEARCH_DOMAIN="${DOMAIN}";
 				fi;

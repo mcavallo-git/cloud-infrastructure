@@ -555,6 +555,8 @@ else
 	# echo "Calling [ifconfig eth0]...";
 	# echo "${DASHES}"; ifconfig eth0; echo "${DASHES}";
 
+	sleep 2;
+
 	if [ -f "${DEBIAN_NETWORK_CONF}" ]; then
 		echo -e "\n""Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
 		echo "${DASHES}"; cat "${DEBIAN_NETWORK_CONF}"; echo "${DASHES}";

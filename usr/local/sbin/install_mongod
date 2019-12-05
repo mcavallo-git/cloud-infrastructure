@@ -168,6 +168,16 @@ security:
 
 
 	# ------------------------------------------------------------
+	# Removing/Downgrading MongoDB
+	if [ 0 -eq 1 ]; then
+		yum -y remove mongodb-org;
+		yum -y remove mongodb-org-shell;
+		yum -y remove mongodb-org-tools;
+		yum -y remove mongodb-org-mongos;
+		yum -y remove mongodb-org-server;
+	fi;
+
+	# ------------------------------------------------------------
 
 
 	fi;

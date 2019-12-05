@@ -82,7 +82,8 @@ else
 				if [ -n "${NEXT_ARG}" ]; then
 					DNS_SEARCH_DOMAIN="${NEXT_ARG}";
 				else
-					echo "Error:  Must specify domain-name to set after argument --domain, e.g. use syntax [ --domain DOMAIN.TLD ]"
+					echo "Error:  Must specify domain-name to set after argument --domain, e.g. use syntax [ --domain DOMAIN.TLD ]";
+					exit 1;
 				fi;
 			fi;
 

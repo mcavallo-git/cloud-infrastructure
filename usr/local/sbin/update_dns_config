@@ -196,37 +196,37 @@ else
 					# Local LAN IPv4 Address
 					if [ $(cat "${NMCLI_CONF}" | grep 'IPADDR=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^IPADDR=/c\IPADDR=${SET_STATIC_IPV4}" "${NMCLI_CONF}";
+						sed -i -e "/^IPADDR=/c\IPADDR=\"${SET_STATIC_IPV4}\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "IPADDR=${SET_STATIC_IPV4}" >> "${NMCLI_CONF}";
+						echo "IPADDR=\"${SET_STATIC_IPV4}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Gateway LAN IPv4 Address
 					if [ $(cat "${NMCLI_CONF}" | grep 'GATEWAY=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^GATEWAY=/c\GATEWAY=${THIS_GATEWAY_IPV4}" "${NMCLI_CONF}";
+						sed -i -e "/^GATEWAY=/c\GATEWAY=\"${THIS_GATEWAY_IPV4}\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "GATEWAY=${THIS_GATEWAY_IPV4}" >> "${NMCLI_CONF}";
+						echo "GATEWAY=\"${THIS_GATEWAY_IPV4}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# LAN Netmask
 					if [ $(cat "${NMCLI_CONF}" | grep 'PREFIX=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^PREFIX=/c\PREFIX=${THIS_LAN_NETMASK}" "${NMCLI_CONF}";
+						sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_NETMASK}\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "PREFIX=${THIS_LAN_NETMASK}" >> "${NMCLI_CONF}";
+						echo "PREFIX=\"${THIS_LAN_NETMASK}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# PEERDNS
 					if [ $(cat "${NMCLI_CONF}" | grep 'PEERDNS=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^PEERDNS=/c\PEERDNS=no" "${NMCLI_CONF}";
+						sed -i -e "/^PEERDNS=/c\PEERDNS=\"no\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "PEERDNS=no" >> "${NMCLI_CONF}";
+						echo "PEERDNS=\"no\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# ------------------------------------------------------------
@@ -246,19 +246,19 @@ else
 					# DNS Nameserver #1
 					if [ $(cat "${NMCLI_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^DNS1=/c\DNS1=${DNS_NAMESRVR_1}" "${NMCLI_CONF}";
+						sed -i -e "/^DNS1=/c\DNS1=\"${DNS_NAMESRVR_1}\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "DNS1=${DNS_NAMESRVR_1}" >> "${NMCLI_CONF}";
+						echo "DNS1=\"${DNS_NAMESRVR_1}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# DNS Nameserver #2
 					if [ $(cat "${NMCLI_CONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
-						sed -i -e "/^DNS2=/c\DNS2=${DNS_NAMESRVR_2}" "${NMCLI_CONF}";
+						sed -i -e "/^DNS2=/c\DNS2=\"${DNS_NAMESRVR_2}\"" "${NMCLI_CONF}";
 						echo "";
 					else
 						echo "";
-						echo "DNS2=${DNS_NAMESRVR_2}" >> "${NMCLI_CONF}";
+						echo "DNS2=\"${DNS_NAMESRVR_2}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# ------------------------------------------------------------

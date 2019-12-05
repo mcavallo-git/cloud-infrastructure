@@ -220,6 +220,15 @@ else
 						echo "PREFIX=\"${THIS_LAN_NETMASK}\"" >> "${NMCLI_CONF}";
 					fi;
 
+					# Boot Protocol
+					if [ $(cat "${NMCLI_CONF}" | grep 'BOOTPROTO=' | wc -l;) -gt 0 ]; then
+						echo "";
+						sed -i -e "/^BOOTPROTO=/c\BOOTPROTO=\"none\"" "${NMCLI_CONF}";
+					else
+						echo "";
+						echo "BOOTPROTO=\"none\"" >> "${NMCLI_CONF}";
+					fi;
+
 					# PEERDNS
 					if [ $(cat "${NMCLI_CONF}" | grep 'PEERDNS=' | wc -l;) -gt 0 ]; then
 						echo "";

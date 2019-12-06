@@ -23,10 +23,10 @@ if [ "$(id -un)" != "root" ]; then
 else
 	RET_CODE=1;
 	if [ -n "$(which mc)" ]; then
-		echo "Error: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
+		echo "Info: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
 
 	elif [ -f "/usr/local/bin/mc" ]; then
-		echo "Error: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
+		echo "Info: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
 
 	else
 		# Download MC (as-per reccommend by MinIO Guide ( see Citation(s), below )
@@ -34,6 +34,15 @@ else
 		curl -ssL "https://dl.min.io/client/mc/release/linux-amd64/mc" -o "/usr/local/bin/mc" && chmod 0755 "/usr/local/bin/mc";
 
 	fi;
+
+	# Ensure that docker is installed
+	curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
+
+	# Ensure the docker-service is started
+	service docker start;
+
+	# Pull & Spin-up the MINIO server as a docker container ( pulls from https://hub.docker.com/r/minio/minio/ )
+	PORT_MINIO="9000"; DIR_MINIO_DATA="/data"; docker run -d --name "minio" -p "${PORT_MINIO}:9000" "minio/minio" "server" "${DIR_MINIO_DATA}";
 
 fi;
 

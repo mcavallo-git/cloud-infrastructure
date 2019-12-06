@@ -1035,16 +1035,18 @@ else
 		# Remove old/renamed scripts (if found to exist)
 		# ------------------------------------------------------------
 		#   bin-scripts
-		TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/bin/docker_check_installation_status"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		#   sbin-scripts
+		TO_DEL="/usr/local/sbin/install_devops_packages"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/sbin/install_minio_mc"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/sbin/install_mongod"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/sbin/install_utilities"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/jenkins-config-export"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-		TO_DEL="/usr/local/sbin/install_devops_packages"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-		TO_DEL="/usr/local/sbin/install_utilities"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-		TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/sudoer_edit"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 		TO_DEL="/usr/local/sbin/sync_config_gpg_git"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+		TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
 
 		# ------------------------------------------------------------

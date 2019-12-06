@@ -50,15 +50,14 @@ find \
 /var/lib/docker/volumes/*/_data/.minio.sys/config/config.json \
 -type f \
 -exec echo -e "\n""Found MinIO config.json:" \; \
--exec echo -e "\n""Filepath" \; \
+-exec echo -e "|""\n""Filepath" \; \
 -exec echo -e "------------------------------------------------------------" \; \
 -exec echo -e '{}' \; \
--exec echo -e "------------------------------------------------------------" \; \
--exec echo -e "\n""Contents" \; \
+-exec echo -e "------------------------------------------------------------"\n"" \; \
+-exec echo -e "|""\n""Contents" \; \
 -exec echo -e "------------------------------------------------------------" \; \
 -exec cat '{}' \; \
--exec echo -e "\n""------------------------------------------------------------" \; \
--exec echo -e "\n\n" \; \
+-exec echo -e "\n""------------------------------------------------------------""\n" \; \
 ;
 
 fi;

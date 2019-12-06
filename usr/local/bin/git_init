@@ -242,6 +242,8 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;
+
+cd "${GIT_WORK_TREE}";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git init";
 ${GIT_CLI} init;
 

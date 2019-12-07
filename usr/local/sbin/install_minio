@@ -44,8 +44,7 @@ else
 	# Pull & Spin-up the MINIO server as a docker container ( pulls from https://hub.docker.com/r/minio/minio/ )
 	PORT_MINIO="9000"; DIR_MINIO_DATA="/data"; docker run -d --name "minio" -p "${PORT_MINIO}:9000" "minio/minio" "server" "${DIR_MINIO_DATA}";
 
-	ls -al /var/lib/docker/volumes/*/_data/.minio.sys/
-
+# Locate Min-IO Config file(s)
 find \
 /var/lib/docker/volumes/*/_data/.minio.sys/config/config.json \
 -type f \

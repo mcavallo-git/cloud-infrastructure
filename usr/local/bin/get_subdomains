@@ -20,7 +20,7 @@ fi;
 
 if [ -z "${1}" ]; then
 
-	echo -e "\nError in call to \"get_subdomains\"\n  → Expected syntax:     >  get_subdomains HOSTNAME;\n";
+	echo -e "\nError in call to \"get_subdomains\"\n  --> Expected syntax:     >  get_subdomains HOSTNAME;\n";
 	exit 1;
 
 else
@@ -37,7 +37,7 @@ else
 
 	SMOKE_TEST=$(curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | head -n 1;);
 	if [ "${SMOKE_TEST}" == "error check your search parameter" ]; then
-		echo -e "\nError in call to \"get_subdomains\"\n  →  Hostname not found:  \"${1}\"\n";
+		echo -e "\nError in call to \"get_subdomains\"\n  -->  Hostname not found:  \"${1}\"\n";
 		exit 1;
 
 	else

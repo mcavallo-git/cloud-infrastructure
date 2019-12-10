@@ -176,7 +176,7 @@ else
 		if [ ${USE_WAN_IPV4} -ne 0 ]; then
 			### Show Resolved WAN IPv4
 			if [ -n "${THIS_WAN_IPV4}" ]; then
-				echo "Info: WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
+				echo "Info:  WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
 			else
 				echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Unable to resolve outgoing WAN IPv4 Address - If you wish to manually set it, please set \${THIS_WAN_IPV4} to your desired value and re-run this script.";
 				exit 1;
@@ -185,14 +185,14 @@ else
 
 		### Show Resolved Gateway IPv4
 		if [ -n "${THIS_GATEWAY_IPV4}" ]; then
-			echo "Info: LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
+			echo "Info:  LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
 		else 
-			echo "Warning: Unable to resolve LAN's Gateway-IPv4.";
+			echo "Warning:  Unable to resolve LAN's Gateway-IPv4.";
 		fi;
 
 		### Show Resolved LAN IPv4
 		if [ -n "${THIS_LAN_IPV4}" ]; then
-			echo "Info: LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
+			echo "Info:  LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
 		else 
 			echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Unable to resolve LAN Local IPv4 Address  - If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
 			exit 1;
@@ -200,9 +200,9 @@ else
 
 		### Show Resolved LAN IPv6
 		if [ -n "${THIS_LAN_IPV6}" ]; then
-			echo "Info: LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
+			echo "Info:  LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
 		else 
-			echo "Warning: Unable to resolve LAN Local IPv6 Address";
+			echo "Warning:  Unable to resolve LAN Local IPv6 Address";
 		fi;
 
 		# ------------------------------------------------------------
@@ -329,9 +329,9 @@ else
 			else # dry-run
 				echo "";
 				if [ -n "${SET_DOMAIN}" ]; then
-					echo "Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
+					echo "Info:  (Dry-Run Enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ]";
 				else
-					echo "Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
+					echo "Info:  (Dry-Run Enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
 				fi;
 			fi;
 		fi;
@@ -344,7 +344,7 @@ else
 				/etc/init.d/hostname.sh;
 			else # dry-run
 				echo "";
-				echo "Info:  Skipping call [ /etc/init.d/hostname.sh; ] (Dry-Run Enabled)";
+				echo "Info:  (Dry-Run Enabled) Skipping call [ /etc/init.d/hostname.sh; ]";
 			fi;
 		fi;
 
@@ -356,7 +356,7 @@ else
 				hostnamectl set-hostname "${SET_HOSTNAME}";
 			else # dry-run
 				echo "";
-				echo "Info:  Skipping call [ hostnamectl set-hostname \"${SET_HOSTNAME}\" ] (Dry-Run Enabled)";
+				echo "Info:  (Dry-Run Enabled) Skipping call [ hostnamectl set-hostname \"${SET_HOSTNAME}\" ]";
 			fi;
 		fi;
 
@@ -386,7 +386,7 @@ else
 				fi;
 			else # dry-run
 				echo "";
-				echo "Info:  Skipping network manager restart (Dry-Run Enabled)";
+				echo "Info:  (Dry-Run Enabled) Skipping network manager restart";
 			fi;
 		else # [other] distros
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
@@ -405,7 +405,7 @@ else
 				fi;
 			else # dry-run
 				echo "";
-				echo "Info:  Skipping restart (Dry-Run Enabled)";
+				echo "Info:  (Dry-Run Enabled) Skipping restart";
 			fi;
 		fi;
 		echo "";

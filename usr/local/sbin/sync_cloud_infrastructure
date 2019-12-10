@@ -513,7 +513,7 @@ else
 			EXPORTS_BEFORE_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\1/p' '/etc/profile' 2>'/dev/null';)";
 			EXPORTS_AFTER_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\3/p' '/etc/profile' 2>'/dev/null';)";
 			EXPORTS_SED='/^(\s*export ?.*)( MAIL)( ?.*)$/c\';
-			EXPORTS_SED="${EXPORTS_REPLACEMENT}${EXPORTS_BEFORE_MAIL}${EXPORTS_AFTER_MAIL}";
+			EXPORTS_SED="${EXPORTS_SED}${EXPORTS_BEFORE_MAIL}${EXPORTS_AFTER_MAIL}";
 
 			sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -re "${EXPORTS_SED}" "/etc/profile"; \
 

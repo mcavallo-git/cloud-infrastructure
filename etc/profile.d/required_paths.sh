@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# SH_PATH="/etc/profile.d/path_var.sh" && echo "" > "${SH_PATH}" && vi "${SH_PATH}" && chmod 0644 "${SH_PATH}" && chown root:root "${SH_PATH}";
+# SH_PATH="/etc/profile.d/required_paths.sh" && echo "" > "${SH_PATH}" && vi "${SH_PATH}" && chmod 0644 "${SH_PATH}" && chown root:root "${SH_PATH}";
 #
 # ------------------------------------------------------------
 
@@ -11,6 +11,7 @@ if [ -v PATH ] && [ -n "${PATH}" ]; then
 	REQUIRED_PATHS+=("/usr/local/bin");
 	REQUIRED_PATHS+=("/usr/local/sbin");
 
+	# Ensure each required path is found within the $PATH variable
 	for EACH_REQD_PATH in "${REQUIRED_PATHS[@]}"; do
 
 		PATH_EXISTS=0;

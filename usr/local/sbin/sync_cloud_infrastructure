@@ -520,6 +520,22 @@ else
 
 		# ------------------------------------------------------------
 		#
+		# /etc/profile.d/required_paths.sh
+		#
+		DESTINATION_PATH="/etc/profile.d/required_paths.sh";
+		SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+		FILE_PERMS="0644"; DIR_PERMS="0644";
+		echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+		BENCHMARK_START=$(date +'%s.%N');
+		rsync --archive --inplace --checksum --quiet --chown="root:root" --chmod="D${DIR_PERMS},F${FILE_PERMS}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
+
+		# ------------------------------------------------------------
+		#
 		# /etc/profile.d/bash_history_logging.sh
 		#
 		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";

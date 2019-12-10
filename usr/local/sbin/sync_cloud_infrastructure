@@ -515,6 +515,10 @@ else
 			EXPORTS_SED='/^(\s*export ?.*)( MAIL)( ?.*)$/c\';
 			EXPORTS_SED="${EXPORTS_SED}${EXPORTS_BEFORE_MAIL}${EXPORTS_AFTER_MAIL}";
 
+echo "\${EXPORTS_BEFORE_MAIL} = ${EXPORTS_BEFORE_MAIL}";
+echo "\${EXPORTS_AFTER_MAIL} = ${EXPORTS_AFTER_MAIL}";
+echo "\${EXPORTS_SED} = ${EXPORTS_SED}";
+
 			sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -re "${EXPORTS_SED}" "/etc/profile"; \
 
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);

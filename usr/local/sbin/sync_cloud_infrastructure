@@ -506,7 +506,7 @@ else
 		# /etc/profile
 		#
 
-		if [ -z "$(sed -rne 's/^MAIL=""/\0/p' '/etc/profile' 2>'/dev/null';)" ]; then
+		if [ -z "$(sed -rne 's/^MAIL=""$/\0/p' '/etc/profile' 2>'/dev/null';)" ]; then
 			if [ -n "$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\0/p' '/etc/profile' 2>'/dev/null';)" ]; then
 				### Bash - Disable "You have new mail in /var/spool/mail/..." alerts
 				echo -e "\n""Info: Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";

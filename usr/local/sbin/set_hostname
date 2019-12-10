@@ -227,7 +227,9 @@ else
 		if [[ -f "${HOSTNAME_FILE}" ]]; then
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 				echo "";
+				echo "------------------------------------------------------------";
 				echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+				echo "------------------------------------------------------------";
 				cat "${HOSTNAME_FILE}";
 				if [ "$(cat ${HOSTNAME_FILE})" != "{SET_HOSTNAME}" ]; then # update required for hostname file
 					echo "";
@@ -235,7 +237,9 @@ else
 					echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
 					echo "";
 					echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+					echo "------------------------------------------------------------";
 					cat "${HOSTNAME_FILE}";
+					echo "------------------------------------------------------------";
 				else
 					echo "";
 					echo "Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\" (already matches desired hostname)";

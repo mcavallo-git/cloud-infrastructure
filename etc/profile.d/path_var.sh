@@ -4,11 +4,30 @@
 #
 # ------------------------------------------------------------
 
-if [ -v PROFILE ] && [ -n "${PROFILE}" ]; then
+if [ -v PATH ] && [ -n "${PATH}" ]; then
 
-	IN="bla@some.com;john@home.com"
-	arrIN=(${IN//;/ })
-	
+	unset REQUIRED_PATHS; declare -a REQUIRED_PATHS; # [Re-]Instantiate bash array
+	REQUIRED_PATHS=();
+	REQUIRED_PATHS+=("/usr/local/bin");
+	REQUIRED_PATHS+=("/usr/local/sbin");
+
+	for EACH_REQD_PATH in "${REQUIRED_PATHS[@]}"; do
+
+	PATH_EXISTS=0;
+	for EACH_PATH in $(echo $PATH | tr ":" "\n"); do
+		if [ "${EACH_PATH}" == "${EACH_REQD_PATH}" ]; then
+			PATH_EXISTS=1;
+		fi;
+	done;
+
+	if [ ${PATH_EXISTS} -eq 0 ]; then
+		echo "Appending string \":${EACH_REQD_PATH}\" to \$PATH";
+		PATH="${PATH}:${EACH_REQD_PATH}";
+	fi;
+
+	done;
+
+	export PATH;
 
 fi;
 
@@ -16,8 +35,8 @@ fi;
 #
 #	Citation(s)
 #
-#		serverfault.com  |  "Where does the bash PATH on CentOS 7 get /usr/local/bin from?"  |  https://serverfault.com/a/838552
+#   serverfault.com  |  "Where does the bash PATH on CentOS 7 get /usr/local/bin from?"  |  https://serverfault.com/a/838552
 #
-#		stackoverflow.com  |  "How do I split a string on a delimiter in Bash?"  |  https://stackoverflow.com/a/5257398
-# 
+#   stackoverflow.com  |  "How do I split a string on a delimiter in Bash?"  |  https://stackoverflow.com/a/5257398
+#
 # ------------------------------------------------------------

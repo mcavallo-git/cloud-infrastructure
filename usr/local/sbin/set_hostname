@@ -286,7 +286,7 @@ else
 			if [ -n "${SET_DOMAIN}" ]; then
 				# Hostname + FQDN (hostname.domainname)
 				sed --in-place -e "/^127.0.0.1/ {
-					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME} ${SET_HOSTNAME}.${SET_DOMAIN}
+					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}
 					c\ 127.0.0.1 localhost localhost.localdomain
 				}" "${TEMP_HOSTS}";
 			

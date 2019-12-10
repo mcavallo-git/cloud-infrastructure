@@ -503,6 +503,20 @@ else
 
 		# ------------------------------------------------------------
 		#
+		# /etc/profile
+		#
+		if [ -n "$(sed -rne 's/^\s*MAIL=.*$/\0/p' '/etc/profile' 2>'/dev/null';)" ]; then \
+			### Bash - Disable "You have new mail in /var/spool/mail/..." alerts
+			echo -e "\n""Info: Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
+			BENCHMARK_START=$(date +'%s.%N');
+			sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -re '/^\s*MAIL=.*$/ s/^#*/#/' "/etc/profile"; \
+			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		fi;
+
+
+		# ------------------------------------------------------------
+		#
 		# /etc/profile.d/bash_history_logging.sh
 		#
 		DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
@@ -515,6 +529,7 @@ else
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+
 
 		# ------------------------------------------------------------
 		#

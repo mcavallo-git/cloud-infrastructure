@@ -283,19 +283,23 @@ else
 			fi;
 				
 			# Update IPv4 hostname resolution
+			LOOPBACK_IPV4="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4";
+			LOOPBACK_IPV6="::1 localhost localhost.localdomain localhost6 localhost6.localdomain6";
 			if [ -n "${SET_DOMAIN}" ]; then
 				# Hostname + FQDN (hostname.domainname)
-				sed --in-place -e "/^127.0.0.1/ {
+				sed -i -e "/^127.0.0.1/ {
 					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}
-					c\ 127.0.0.1 localhost localhost.localdomain
+					c\ 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 				}" "${TEMP_HOSTS}";
-			
+
 			else
 				# Hostname only (no FQDN)
-				sed --in-place -e "/^127.0.0.1/ {
-					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}
-					c\ 127.0.0.1 localhost localhost.localdomain
+				sed -i -e "/^127.0.0.1/ {
+					i\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}
+					a\ ::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
+					c\ 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
 				}" "${TEMP_HOSTS}";
+				sed -i -e "/^127.0.0.1/{" -e "i\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\AFTER" -e "c\MATCHED" -e "}";
 
 			fi;
 
@@ -326,17 +330,17 @@ else
 			if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 
 				if [ -n "${SET_DOMAIN}" ]; then
-					sed --in-place -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
+					sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
 				else
-					sed --in-place -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}" "/etc/sysconfig/network";
+					sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}" "/etc/sysconfig/network";
 				fi;
 
 			else # dry-run
 				echo "";
 				if [ -n "${SET_DOMAIN}" ]; then
-					echo "Info:  Skipping call [ sed --in-place -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
+					echo "Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
 				else
-					echo "Info:  Skipping call [ sed --in-place -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
+					echo "Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ] (Dry-Run Enabled)";
 				fi;
 			fi;
 		fi;

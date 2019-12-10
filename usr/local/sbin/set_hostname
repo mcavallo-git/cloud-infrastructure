@@ -274,24 +274,23 @@ else
 			TEMP_HOSTS="${HOSTS_FILE}.$(date +'%s.%N').tmp";
 			cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
 
-			# Remove pre-existing LAN-IPV4 hostsfile lines (leave loopback unaffected)
-			sed -i -e "/^${THIS_LAN_IPV4} /c\ " "${TEMP_HOSTS}";
-			
-			if [ ${USE_WAN_IPV4} -ne 0 ]; then
-				# Remove pre-existing WAN-IPV4 hostsfile lines
-				sed -i -e "/^${THIS_WAN_IPV4} /c\ " "${TEMP_HOSTS}";
+			# Remove pre-existing LAN-IPV4 hostsfile lines (leave loopback IPv5 line unaffected)
+			sed -i -e "/^${THIS_LAN_IPV4} /c\\" "${TEMP_HOSTS}";
+
+			if [ ${USE_WAN_IPV4} -ne 0 ]; then # Remove pre-existing WAN-IPV4 hostsfile lines
+				sed -i -e "/^${THIS_WAN_IPV4} /c\\" "${TEMP_HOSTS}";
 			fi;
-				
-			# Update IPv4 hostname resolution
+
+			sed -i -e "/^::1 /c\\" "${TEMP_HOSTS}"; # Remove pre-existing Loopback-IPv6 line(s)
+
+			# Update hostname resolution
 			LOOPBACK_IPV4="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4";
 			LOOPBACK_IPV6="::1 localhost localhost.localdomain localhost6 localhost6.localdomain6";
-			if [ -n "${SET_DOMAIN}" ]; then
-				# Hostname + FQDN (hostname.domainname)
-				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV4}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
+			if [ -n "${SET_DOMAIN}" ]; then # Hostname + FQDN (hostname.domainname)
+				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
 
-			else
-				# Hostname only (no FQDN)
-				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV4}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
+			else # Hostname only (no FQDN)
+				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
 
 			fi;
 

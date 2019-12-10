@@ -229,8 +229,8 @@ else
 				echo "";
 				echo "------------------------------------------------------------";
 				echo "Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
-				echo "------------------------------------------------------------";
 				cat "${HOSTNAME_FILE}";
+				echo "------------------------------------------------------------";
 				if [ "$(cat ${HOSTNAME_FILE})" != "{SET_HOSTNAME}" ]; then # update required for hostname file
 					echo "";
 					echo "Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";

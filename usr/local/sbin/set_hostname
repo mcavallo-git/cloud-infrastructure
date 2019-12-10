@@ -287,19 +287,11 @@ else
 			LOOPBACK_IPV6="::1 localhost localhost.localdomain localhost6 localhost6.localdomain6";
 			if [ -n "${SET_DOMAIN}" ]; then
 				# Hostname + FQDN (hostname.domainname)
-				sed -i -e "/^127.0.0.1/ {
-					a\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}
-					c\ 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
-				}" "${TEMP_HOSTS}";
+				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV4}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
 
 			else
 				# Hostname only (no FQDN)
-				sed -i -e "/^127.0.0.1/ {
-					i\ ${SET_HOSTS_IPV4} ${SET_HOSTNAME}
-					a\ ::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
-					c\ 127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
-				}" "${TEMP_HOSTS}";
-				sed -i -e "/^127.0.0.1/{" -e "i\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\AFTER" -e "c\MATCHED" -e "}";
+				sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV4}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
 
 			fi;
 

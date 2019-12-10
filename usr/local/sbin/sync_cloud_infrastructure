@@ -510,10 +510,10 @@ else
 			### Bash - Disable "You have new mail in /var/spool/mail/..." alerts
 			echo -e "\n""Info: Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
 			BENCHMARK_START=$(date +'%s.%N');
-			EXPORTS_BEFORE_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\1/p' '/etc/profile' 2>'/dev/null';)";
-			EXPORTS_AFTER_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\3/p' '/etc/profile' 2>'/dev/null';)";
-			EXPORTS_SED='/^(\s*export ?.*)( MAIL)( ?.*)$/c\';
-			EXPORTS_SED="${EXPORTS_SED}${EXPORTS_BEFORE_MAIL}${EXPORTS_AFTER_MAIL}";
+			# EXPORTS_BEFORE_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\1/p' '/etc/profile' 2>'/dev/null';)";
+			# EXPORTS_AFTER_MAIL="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\3/p' '/etc/profile' 2>'/dev/null';)";
+			EXPORTS_PROFILE="$(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\0/p' '/etc/profile' 2>'/dev/null';)";
+			EXPORTS_SED='^(\s*export ?.*)( MAIL)( ?.*)$/i\MAIL=""c\'${EXPORTS_PROFILE};
 			sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -re "${EXPORTS_SED}" "/etc/profile";
 			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";

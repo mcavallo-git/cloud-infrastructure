@@ -13,17 +13,17 @@ if [ -v PATH ] && [ -n "${PATH}" ]; then
 
 	for EACH_REQD_PATH in "${REQUIRED_PATHS[@]}"; do
 
-	PATH_EXISTS=0;
-	for EACH_PATH in $(echo $PATH | tr ":" "\n"); do
-		if [ "${EACH_PATH}" == "${EACH_REQD_PATH}" ]; then
-			PATH_EXISTS=1;
-		fi;
-	done;
+		PATH_EXISTS=0;
+		for EACH_PATH in $(echo $PATH | tr ":" "\n"); do
+			if [ "${EACH_PATH}" == "${EACH_REQD_PATH}" ]; then
+				PATH_EXISTS=1;
+			fi;
+		done;
 
-	if [ ${PATH_EXISTS} -eq 0 ]; then
-		echo "Appending string \":${EACH_REQD_PATH}\" to \$PATH";
-		PATH="${PATH}:${EACH_REQD_PATH}";
-	fi;
+		if [ ${PATH_EXISTS} -eq 0 ]; then
+			echo "Appending string \":${EACH_REQD_PATH}\" to \$PATH";
+			PATH="${PATH}:${EACH_REQD_PATH}";
+		fi;
 
 	done;
 

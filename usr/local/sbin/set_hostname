@@ -273,7 +273,9 @@ else
 
 			echo "";
 			echo "Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+			echo "------------------------------------------------------------";
 			cat "${HOSTS_FILE}";
+			echo "------------------------------------------------------------";
 
 			TEMP_HOSTS="${HOSTS_FILE}.$(date +'%s.%N').tmp";
 			cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
@@ -306,7 +308,9 @@ else
 
 			echo "";
 			echo "Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+			echo "------------------------------------------------------------";
 			cat "${TEMP_HOSTS}";
+			echo "------------------------------------------------------------";
 
 
 			if [[ "${DRY_RUN}" == "0" ]]; then

@@ -130,11 +130,11 @@ else
 					ARGS_REMOVE_CRONJOBS=1;
 				else
 					if [ -n "${ARGS_CRONJOB}" ]; then
-						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument:   Multiple instances of \"--cron\" detected";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument:   Multiple instances of \"--cron\" detected";
 					else
-						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
+						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
 					fi;
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error → Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
 					exit 1;
 				fi;
 			fi;
@@ -283,12 +283,12 @@ else
 		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
 	fi;
 	if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_LOCAL}" ]; then
-		#####  Sync 1-liner  →  Pull the raw version of the file directly out of GitHub
+		#####  Sync 1-liner  -->  Pull the raw version of the file directly out of GitHub
 		echo -e "\n""Info: Updating local runtime \"/usr/local/sbin/sync_cloud_infrastructure\"...";
 		BENCHMARK_START=$(date +'%s.%N');
 		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" -o "/usr/local/sbin/sync_cloud_infrastructure" && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure";
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 		"/usr/local/sbin/sync_cloud_infrastructure" $@;
 		exit 0;
@@ -305,8 +305,8 @@ else
 	# ------------------------------------------------------------
 	# Fetch/Pull/Clone the Remote Repo
 	echo -e "\n""Info: Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
-	echo "  |→ Source (URL):        ${GIT_SOURCE_REPO_URL}";
-	echo "  |→ Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
+	echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
+	echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
 	BENCHMARK_START=$(date +'%s.%N');
 	# Clone the repo if it hasn't been synced, yet
 	if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
@@ -319,7 +319,7 @@ else
 	git reset --quiet --hard "origin/master" && \
 	git pull --quiet;
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 	# ------------------------------------------------------------
 	# Set ownership for git-repo files as-intended
@@ -328,7 +328,7 @@ else
 	# find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
 	find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 	# Set ownership for git-repo directories as-intended
 	echo -e "\n""Info: Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
@@ -336,7 +336,7 @@ else
 	# find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
 	find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 	# ------------------------------------------------------------
@@ -356,7 +356,7 @@ else
 			WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 			if [ ! -n "${WIN32_USR_LOCAL}" ]; then
 				echo "";
-				echo "Error → Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+				echo "Error --> Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
 				exit 1;
 			else
 				DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
@@ -378,12 +378,12 @@ else
 		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		RET_CODE=$?;
 		if [ ${RET_CODE} -eq 0 ]; then
-			echo "  |→ Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
+			echo "  |--> Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
 		else 
 			if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
 				#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-				echo "  |→ Repository not found within [ $(whoami) ] user's home-directory";
-				echo "  |→ Checking for local repository files within [ ${SUDO_USER} ] user's home-directory";
+				echo "  |--> Repository not found within [ $(whoami) ] user's home-directory";
+				echo "  |--> Checking for local repository files within [ ${SUDO_USER} ] user's home-directory";
 				BENCHMARK_START=$(date +'%s.%N');
 				SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
 				SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
@@ -392,12 +392,12 @@ else
 				RET_CODE=$?;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 				if [ ${RET_CODE} -eq 0 ]; then
-					echo "  |→ Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
+					echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
 				fi;
 			fi;
 		fi;
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 	else
@@ -449,7 +449,7 @@ else
 		EXIT_CODE=1;
 
 		echo "";
-		echo "Error → Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+		echo "Error --> Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 		# Error-out if any required source directories are missing
@@ -457,15 +457,15 @@ else
 
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
 			echo "";
-			echo "Error → Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+			echo "Error --> Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
 		fi;
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 			echo "";
-			echo "Error → Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+			echo "Error --> Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 		fi;
 
 	else
-		# Required source directory/directories exist → Sync them to local workstation/server
+		# Required source directory/directories exist --> Sync them to local workstation/server
 		EXIT_CODE=0;
 		
 		
@@ -482,7 +482,7 @@ else
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -498,7 +498,7 @@ else
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -513,7 +513,7 @@ else
 				BENCHMARK_START=$(date +'%s.%N');
 				sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile";
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 			fi;
 		fi;
 
@@ -531,7 +531,7 @@ else
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -547,7 +547,7 @@ else
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -563,7 +563,7 @@ else
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -635,7 +635,7 @@ else
 							&& RESTART_SERVICE_SSH=1;
 
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					fi;
 				fi;
@@ -690,7 +690,7 @@ else
 								&& chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
 								&& RESTART_SERVICE_CRON=1;
 							BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-							test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+							test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 						fi;
 
 					fi;
@@ -722,7 +722,7 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 				# ------------------------------------------------------------
 				#
@@ -744,7 +744,7 @@ else
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 					else
 						echo "Info: Skipped DNS-Server Sync";
 					fi;
@@ -771,7 +771,7 @@ else
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 					else
 						echo "Info: Skipped Automatic Updates";
 					fi;
@@ -793,7 +793,7 @@ else
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 					fi;
 				fi;
 
@@ -828,12 +828,12 @@ else
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-				echo "  |→ \"${EACH_FILE}\" (Home-Directory File)";
+				echo "  |--> \"${EACH_FILE}\" (Home-Directory File)";
 				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
 					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
-					USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|--→ ${EACH_SSH_USER}");
+					USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}");
 					# Only copy files to SSH-Enabled user home-directories (plus root)
 					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "${DIR_USER_HOME}/.bash_history" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
 						DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
@@ -858,7 +858,7 @@ else
 		done;
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 		# ------------------------------------------------------------
@@ -878,7 +878,7 @@ else
 					&& RESTART_SERVICE_CRON=1;
 
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 			fi;
 		fi;
 
@@ -909,7 +909,7 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 				# ------------------------------------------------------------
 				#
@@ -924,7 +924,7 @@ else
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
 				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
@@ -942,7 +942,7 @@ else
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					# ------------------------------------------------------------
 					#
@@ -957,7 +957,7 @@ else
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					# ------------------------------------------------------------
 					#
@@ -972,13 +972,13 @@ else
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 				fi;
 				
 				RESTART_SERVICE_JENKINS=1;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 			fi;
 
@@ -1007,7 +1007,7 @@ else
 				DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
 				DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
 				if [ ! -f "${DH_PARAM_FILEPATH}" ]; then
-					echo "  |→ Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
+					echo "  |--> Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
 					openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
 				fi;
 
@@ -1018,13 +1018,13 @@ else
 					if [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
 						# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
 						ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-						echo "  |→ Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
+						echo "  |--> Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
 					elif [ -L "${Each_SitesEnabled}" ]; then
 						# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
 						unlink "${Each_SitesEnabled}";
-						# echo "  |→ Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
+						# echo "  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
 					# else
-						# echo "  |→ Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+						# echo "  |--> Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
 					fi;
 				done;
 
@@ -1035,7 +1035,7 @@ else
 
 				RESTART_SERVICE_NGINX=1;
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 			fi;
 
@@ -1176,7 +1176,7 @@ else
 	echo -e "\n""Info: End of \"sync_cloud_infrastructure\" runtime";
 	BENCHMARK_START=${START_SECONDS_NANOSECONDS};
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |→ Finished after ${BENCHMARK_DELTA}s";
+	test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 	echo "";
 
 

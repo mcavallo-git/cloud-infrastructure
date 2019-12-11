@@ -480,8 +480,8 @@ else
 		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		chown -R "root:root" "${DESTINATION_PATH}";
-		find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-		find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+		find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+		find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -499,8 +499,8 @@ else
 		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		chown -R "root:root" "${DESTINATION_PATH}";
-		find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-		find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+		find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+		find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -535,8 +535,8 @@ else
 		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		chown -R "root:root" "${DESTINATION_PATH}";
-		find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-		find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+		find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+		find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -554,8 +554,8 @@ else
 		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 		chown -R "root:root" "${DESTINATION_PATH}";
-		find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-		find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+		find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+		find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -573,8 +573,8 @@ else
 		BENCHMARK_START=$(date +'%s.%N');
 		rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 		chown -R "root:root" "${DESTINATION_PATH}";
-		find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-		find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+		find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+		find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 		if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 		dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 		BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -735,8 +735,8 @@ else
 				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 				chown -R "root:root" "${DESTINATION_PATH}";
-				find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-				find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+				find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -760,8 +760,8 @@ else
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
-						find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-						find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+						find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+						find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -790,8 +790,8 @@ else
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
-						find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-						find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+						find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+						find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -815,8 +815,8 @@ else
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
-						find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-						find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+						find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+						find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -934,8 +934,8 @@ else
 				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 				chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
-				find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-				find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+				find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -952,8 +952,8 @@ else
 				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 				chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
-				find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-				find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+				find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -973,8 +973,8 @@ else
 					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					chown -R "root:root" "${DESTINATION_PATH}";
-					find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-					find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -991,8 +991,8 @@ else
 					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					chown -R "root:root" "${DESTINATION_PATH}";
-					find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-					find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -1009,8 +1009,8 @@ else
 					BENCHMARK_START=$(date +'%s.%N');
 					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 					chown -R "root:root" "${DESTINATION_PATH}";
-					find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-					find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
@@ -1045,8 +1045,8 @@ else
 				BENCHMARK_START=$(date +'%s.%N');
 				rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
 				chown -R "root:root" "${DESTINATION_PATH}";
-				find "${DESTINATION_PATH}" -type d -print0 | xargs -0 chmod ${DIR_PERMS}; # chmod directories
-				find "${DESTINATION_PATH}" -type f -print0 | xargs -0 chmod ${FILE_PERMS}; # chmod files
+				find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 				DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";

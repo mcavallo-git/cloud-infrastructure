@@ -76,13 +76,13 @@ else
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(which yum 2>'/dev/null')";
 			echo "";
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum list --upgradable";
-			sudo yum check-update; 
-			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
-			sudo yum -y update;
-			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
-			sudo yum -y upgrade;
+			sudo yum check-update; RET_CODE_YUM_CHECK_UPDATE=$?;
+			if [ ${RET_CODE_YUM_CHECK_UPDATE} -eq 100 ]; then
+				# Command [ yum check-update ] returns exit value of 100 if there are packages available for an update
+				echo "";
+				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
+				sudo yum -y update;
+			fi;
 		fi;
 		echo "------------------------------------------------------------";
 		#

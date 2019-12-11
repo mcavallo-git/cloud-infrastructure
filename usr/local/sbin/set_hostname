@@ -99,8 +99,8 @@ else
 	#
 	CURRENT_HOSTNAME="$(hostname)";
 	CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}')";
-	if [ "$(domainname)" != "(none)" ]; then
-		CURRENT_DOMAIN="$(domainname)";
+	if [ "$(hostname -d;)" != "(none)" ]; then
+		CURRENT_DOMAIN="$(hostname -d;)";
 	fi;
 
 
@@ -122,8 +122,8 @@ else
 		if [ "${FQDN_COUNT_PERIODS}" == "0" ]; then
 			# Hostname includes no periods - use it as-is
 			SET_HOSTNAME="${INPUT_HOSTNAME}";
-			if [ "$(domainname)" != "(none)" ]; then
-				SET_DOMAIN="$(domainname)";
+			if [ -v CURRENT_DOMAIN ] && [ -n "${CURRENT_DOMAIN}" ]; then
+				SET_DOMAIN="${CURRENT_DOMAIN}";
 			fi;
 		else
 			# Hostname has at least one period in it --> parse the domain name out from the hostname
@@ -251,7 +251,7 @@ else
 		# /etc/hosts
 		#
 		# ------------------------------------------------------------
-		# To set the (DNS) domainname edit /etc/hosts file and ensure that:
+		# To set the DNS domainname edit /etc/hosts file and ensure that:
 		#	 |--> 1. There is a line <machine's primary, non-loopback IP address> <hostname>.<domainname> <hostname> there
 		#	 |--> 2. There are NO other lines with <some IP> <hostname>, and this includes lines with 127.0.0.1 and ::1 (IPv6) addresses.
 		# ------------------------------------------------------------

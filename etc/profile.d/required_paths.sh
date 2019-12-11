@@ -36,6 +36,8 @@ fi;
 #
 #	Citation(s)
 #
+#   serverfault.com  |  "What are the Default $PATH Values?"  |  https://askubuntu.com/a/386636
+#
 #   serverfault.com  |  "Where does the bash PATH on CentOS 7 get /usr/local/bin from?"  |  https://serverfault.com/a/838552
 #
 #   stackoverflow.com  |  "How do I split a string on a delimiter in Bash?"  |  https://stackoverflow.com/a/5257398

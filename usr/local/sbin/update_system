@@ -135,6 +135,7 @@ else
 			fi;
 		fi;
 		echo "------------------------------------------------------------";
+		#
 		# Check if reboot is required
 		if [ -f "/var/run/reboot-required" ]; then
 			# The File '/var/run/reboot-required' is an Ubuntu native, and signifies that at least one recent update requires a reboot to fully complete their install/update.
@@ -149,9 +150,10 @@ else
 		fi;
 	fi;
 	if [ -f "/usr/local/bin/get_os" ]&& [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
-		# !! WSL (Windows Subsystem for Linux)
-		#     |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
-		#          terminals, otherwise the linux environment persists the background as a service (essentially hidden)
+		#
+		# WSL (Windows Subsystem for Linux)
+		#  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
+		#       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
 		sudo touch "/var/run/reboot-required";
 	fi;
 	# Exit Gracefully

@@ -61,17 +61,31 @@ if [ ! -d "${USER_HOME}" ]; then
 	exit 1;
 fi;
 
+# Get fqdn (hostname & domainname) for this device
+if [ -z "$(which hostname 2>'/dev/null';)" ]; then
+	THIS_FQDN="";
+elif [ -z "$(hostname 2>'/dev/null';)" ]; then
+	THIS_FQDN="";
+else
+	if [ -n "$(hostname -d 2>'/dev/null';)" ]; then
+		THIS_FQDN="$(hostname 2>'/dev/null';).$(hostname -d 2>'/dev/null';)";
+	else
+		THIS_FQDN="$(hostname 2>'/dev/null';)";
+	fi;
+fi;
 
 # Runtime variables
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 USER_HOME="$(eval echo ~${USER_NAME})";
-KEY_UID="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
+
+# KEY_UID="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
+KEY_UID="id_rsa_${THIS_FQDN}_${USER_NAME}_${START_TIMESTAMP}";
 
 KEY_OUTPUT_DIR="${USER_HOME}/ssh_created_keys/${START_TIMESTAMP}";
 KEY_ABSPATH_NOEXT="${KEY_OUTPUT_DIR}/${KEY_UID}";
 
-PRIVATE_KEY_PATH="${KEY_ABSPATH_NOEXT}_private.pem";
-PUBLIC_KEY_PATH="${KEY_ABSPATH_NOEXT}_public.pub";
+PRIVATE_KEY_PATH="${KEY_ABSPATH_NOEXT}.pem";
+PUBLIC_KEY_PATH="${KEY_ABSPATH_NOEXT}.pub";
 
 # Create the output directory
 mkdir -p "${KEY_OUTPUT_DIR}";

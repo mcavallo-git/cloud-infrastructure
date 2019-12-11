@@ -22,7 +22,7 @@ if [ -v PATH ] && [ -n "${PATH}" ]; then
 		done;
 
 		if [ ${PATH_EXISTS} -eq 0 ]; then
-			echo "Appending string \":${EACH_REQD_PATH}\" to \$PATH";
+			# echo "Appending string \":${EACH_REQD_PATH}\" to \$PATH";
 			PATH="${PATH}:${EACH_REQD_PATH}";
 		fi;
 

@@ -148,16 +148,20 @@ else
 			sudo shutdown -r "${SCHEDULED_RESTART_TIME}";
 		fi;
 	fi;
+	# ------------------------------------------------------------
+	# !! WSL (Windows Subsystem for Linux)
+	#     |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
+	#          terminals, otherwise the linux environment persists the background as a service (essentially hidden)
+	if [ -f "/usr/local/bin/get_os" ]; then
+		if [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
+			sudo touch "/var/run/reboot-required";
+		fi;
+	fi;
+
+	# ------------------------------------------------------------
 	# Exit Gracefully
 	echo "";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Finished \"${THIS_SCRIPT}\"";
 	echo "------------------------------------------------------------";
 	exit 0;
 fi;
-#
-# WSL (Windows Subsystem for Linux)
-# !! To shutdown WSL, manually create above file via [sudo touch /var/run/reboot-required], when closing terminals,
-# !! otherwise the linux environment persists the background as a service (essentially hidden)
-#
-# > sudo touch /var/run/reboot-required
-#

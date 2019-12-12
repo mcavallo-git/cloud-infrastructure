@@ -33,7 +33,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
-	
+
 	# Docker-based installs:
 	#	"/usr/local/bin/create_docker_jenkins"
 	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
@@ -101,24 +101,24 @@ else
 
 	fi;
 
+
+	# ------------------------------------------------------------
 	SERVICE_NAME="jenkins";
 	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -n "${SERVICE_MATCHES}" ]; then
-		# Jenkins Service STILL not detected after install-attempt
+	if [ -n "${SERVICE_MATCHES}" ]; then		
 		EXIT_CODE=1;
+		# Jenkins Service STILL not detected after install-attempt
 		echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
 	else
 		EXIT_CODE=0;
 		
-		# ------------------------------------------------------------
-		# Show the status of the Jenkins-Service
+		# Show Jenkins' service status
 		echo -e "\n""Info: Showing Jenkins' Service-Status";
 		echo -e "  |--> Calling  [ systemctl status jenkins --no-pager --full; ]  ...""\n";
 		systemctl status jenkins --no-pager --full;
 
-		# ------------------------------------------------------------
-		# Show Jenkins' Ports which are in-use
+		# Show Jenkins' networking ports
 		echo -e "\n""Info: Showing Jenkins' Ports which are in-use";
 		echo -e "  |--> Calling  [ ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
@@ -126,8 +126,9 @@ else
 
 	fi;
 
+
 	# ------------------------------------------------------------
-	# Allow user to sync jenkins config-file to cloud-infrastructure repo
+	# Sync jenkins-config to cloud-infrastructure repo (require user confirmation)
 	if [ -f "/etc/default/jenkins" ]; then
 		READ_TIMEOUT=60;
 		read -p "Sync Jenkins config-file \"/etc/default/jenkins\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;

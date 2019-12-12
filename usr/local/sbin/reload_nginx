@@ -25,9 +25,13 @@ else
 
 	SERVICE_NAME="nginx";
 
-	SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
-	
-	if [ "${SERVICE_NAME}" == "${SERVICE_MATCHES}" ]; then
+	SYSTEMCTL_SERVICES=$(systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p' 2> '/dev/null';);
+	SYSTEMCTL_MATCHES=$(echo "${SYSTEMCTL_SERVICES}" | awk "/^${SERVICE_NAME}$/{print \$0}");
+
+	UBUNTU_SERVICES=$(service --status-all | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ (.+)$/\2/p' 2>'/dev/null');
+	UBUNTU_MATCHES=$(echo "${UBUNTU_SERVICES}" | awk "/^${SERVICE_NAME}$/{print \$0}");
+
+	if [ -n "${SYSTEMCTL_MATCHES}" ] || [ -n "${UBUNTU_MATCHES}" ]; then
 
 		# Service found to exist locally
 

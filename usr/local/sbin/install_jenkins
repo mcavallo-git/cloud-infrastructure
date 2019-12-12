@@ -156,6 +156,8 @@ else
 			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
 			wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
 			chmod 0644 "${JENKINS_CONFIG_PATH}";
+			SERVICE_NAME="jenkins";
+			/usr/sbin/service "${SERVICE_NAME}" restart;
 		else
 			echo "Denied - Skipping Jenkins config-file sync";
 		fi;

@@ -6,7 +6,7 @@
 #
 # Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
 #
-if [ $(which apt-get 2>'/dev/null'; echo $?;) -eq 0 ]; then
+if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 	#
 	# Debian, Ubuntu, etc.
 	#   |-->  openjdk-$(version)-jre-headless
@@ -17,7 +17,7 @@ if [ $(which apt-get 2>'/dev/null'; echo $?;) -eq 0 ]; then
 	apt-get -y update;
 	apt-get -y install openjdk-8-jre-headless;
 
-elif [ $(which yum 2>'/dev/null'; echo $?;) -eq 0 ]; then
+elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 	#
 	# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 	#   |-->  java-$(version)-openjdk-headless

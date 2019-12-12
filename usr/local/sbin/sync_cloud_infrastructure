@@ -586,6 +586,9 @@ else
 		#
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
+			# SYSTEMCTL_RET_CODE=$(systemctl 1>'/dev/null' 2>&1; echo $?); \
+			# echo "\$SYSTEMCTL_RET_CODE = [ ${SYSTEMCTL_RET_CODE} ]";
+
 			# service --status-all 2>/dev/null | grep 'jenkins';
 
 			if [ -z "$(which ssh 2>'/dev/null')" ]; then

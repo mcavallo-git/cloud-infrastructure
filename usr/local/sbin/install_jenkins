@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_jenkins" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+# Sync 1-Liner
 #
 if [ 0 -eq 1 ]; then
 
@@ -56,25 +56,15 @@ else
 	# ------------------------------------------------------------
 	# Determine if Jenkins is already installed
 
-	SERVICE_LIST_ALL=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null');
 	SERVICE_NAME="jenkins";
 	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+	if [ -n "${SERVICE_MATCHES}" ]; then
 
-	if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -gt 0 ]; then
-	# if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
+		# Install Java SE8
+		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 
-		# Install Java Development Kit (Jenkins Pre-Requisite)
-		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JDK}\/" | wc -l) -eq 0 ]; then
-			echo -e "\n""Info: Installing Java Development Kit";
-			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JDK}\"; ]  ...""\n";
-			apt-get -y update && apt-get -y install "${APT_PKG_JDK}";
-		fi;
 
-		# Install Java Runtime Environment (Jenkins Pre-Requisite)
-		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JRE}\/" | wc -l) -eq 0 ]; then
-			echo -e "\n""Info: Installing Java Runtime Environment";
-			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JRE}\"; ]  ...""\n";
-			apt-get -y update && apt-get -y install "${APT_PKG_JRE}";
 		fi;
 
 		# Install Jenkins

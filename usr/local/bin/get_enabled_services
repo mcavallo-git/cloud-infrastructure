@@ -5,9 +5,9 @@
 # ------------------------------------------------------------
 
 
-SYSTEMCTL_RAW_OUTPUT=$(systemctl list-unit-files --state=enabled --no-legend 2> '/dev/null';);
+SYSTEMCTL_RAW_OUTPUT=$(systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' 2> '/dev/null';);
 if [ -n "${SYSTEMCTL_RAW_OUTPUT}" ]; then
-	SYSTEMCTL_SERVICES=$(echo "${SYSTEMCTL_RAW_OUTPUT}" | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p';); echo "${SYSTEMCTL_SERVICES}";
+	SYSTEMCTL_SERVICES=$(echo "${SYSTEMCTL_RAW_OUTPUT}" | sed -rne 's/^(.+)\.service$/\1/p';); echo "${SYSTEMCTL_SERVICES}";
 fi;
 
 

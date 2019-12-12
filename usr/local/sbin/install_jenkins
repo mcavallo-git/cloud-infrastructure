@@ -39,6 +39,8 @@ else
 	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
 	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins:alpine
 
+	SERVICE_NAME="jenkins";
+
 	EXIT_CODE=1;
 
 	APT_PKG_JDK="default-jdk-headless";
@@ -55,8 +57,6 @@ else
 
 	# ------------------------------------------------------------
 	# Check for the Jenkins service locally
-
-	SERVICE_NAME="jenkins";
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		# Jenkins is already installed
@@ -84,7 +84,6 @@ else
 
 
 	# ------------------------------------------------------------
-	SERVICE_NAME="jenkins";
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		EXIT_CODE=0;
@@ -156,7 +155,6 @@ else
 			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
 			wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
 			chmod 0644 "${JENKINS_CONFIG_PATH}";
-			SERVICE_NAME="jenkins";
 			/usr/sbin/service "${SERVICE_NAME}" restart;
 		else
 			echo "Denied - Skipping Jenkins config-file sync";

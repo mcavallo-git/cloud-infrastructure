@@ -5,7 +5,8 @@
 # ------------------------------------------------------------
 
 
-systemctl list-unit-files --state=enabled --no-legend;
+SYSTEMCTL_ENABLED_SERVICES=$(systemctl list-unit-files --state=enabled --no-legend;);
+echo "${SYSTEMCTL_ENABLED_SERVICES}";
 
 
 # ------------------------------------------------------------

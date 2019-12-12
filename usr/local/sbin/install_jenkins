@@ -101,6 +101,21 @@ else
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
 
+	SERVICE_NAME="firewalld";
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+		SERVICE_ENABLED_GREP=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full | grep '; enabled');
+		if [ -n "${SERVICE_ENABLED_GREP}" ]; then
+			systemctl enable firewalld; \
+			systemctl start firewalld; \
+			firewall-cmd --set-default-zone=public; \
+			firewall-cmd --permanent --zone=public --add-service={ssh,mongodb}; \
+			firewall-cmd --permanent --add-port=27017/tcp; \
+			firewall-cmd --permanent --add-port=22/tcp; \
+			firewall-cmd --reload; \
+			firewall-cmd --list-all;
+		fi;
+
 	else
 		EXIT_CODE=1;
 		# Jenkins Service STILL not detected after install-attempt

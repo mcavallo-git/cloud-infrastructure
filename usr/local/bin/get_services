@@ -7,11 +7,11 @@
 
 if [ -z "$1" ]; then
 	# Show all services
-	systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' 2> '/dev/null';
+	systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
 
 else
 	#	List only services matching a given state, such as "enabled"
-	systemctl list-unit-files --state=$1 --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' 2> '/dev/null';
+	systemctl list-unit-files --state=$1 --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
 
 fi;
 

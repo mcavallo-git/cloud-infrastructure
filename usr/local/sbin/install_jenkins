@@ -87,13 +87,8 @@ else
 	SERVICE_NAME="jenkins";
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-		EXIT_CODE=1;
-		# Jenkins Service STILL not detected after install-attempt
-		echo -e "\n""Error:  Jenkins service not detected after install attempt";
-
-	else
 		EXIT_CODE=0;
-		
+
 		# Show Jenkins' service status
 		echo -e "\n""Info: Showing Jenkins' Service-Status";
 		echo -e "  |--> Calling  [ /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full; ]  ...""\n";
@@ -104,6 +99,11 @@ else
 		echo -e "  |--> Calling  [ ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
+
+	else
+		EXIT_CODE=1;
+		# Jenkins Service STILL not detected after install-attempt
+		echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
 	fi;
 

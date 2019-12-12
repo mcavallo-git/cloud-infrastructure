@@ -59,6 +59,10 @@ else
 	SERVICE_NAME="jenkins";
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+		# Jenkins is already installed
+		echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
+
+	else
 		# ------------------------------------------------------------
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			# Debian, Ubuntu, etc.
@@ -76,9 +80,6 @@ else
 
 		fi;
 
-	else
-		# Jenkins is already installed
-		echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
 
 	fi;
 

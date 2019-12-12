@@ -54,26 +54,25 @@ else
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
 	# ------------------------------------------------------------
-	# Determine if Jenkins is already installed
+	# Determine if the Jenkins service already exists locally
 
 	SERVICE_NAME="jenkins";
 	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
 	if [ -n "${SERVICE_MATCHES}" ]; then
 
-		# Install Java SE8
-		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			# Debian, Ubuntu, etc.
-			apt-get -y update && apt-get -y install openjdk-8-jre-headless;
+		# ------------------------------------------------------------
+		
+		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Debian, Ubuntu, etc.
+			PACKAGE_NAME="openjdk-8-jre-headless" && apt-get -y update && apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8
+			wget -q -O - "https://pkg.jenkins.io/debian-stable/jenkins.io.key" | sudo apt-key add -; # Import Jenkins' official GPG Key
+			deb "https://pkg.jenkins.io/debian-stable" binary/; # Add Jenkins' package repository
+			PACKAGE_NAME="jenkins" && apt-get -y update && apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
 
-		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			#
-			# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
-			#   |-->  java-$(version)-openjdk-headless
-			#
-			
-			# yum search java headless 1.8 --exclude=*debug*
 
-			yum -y check-update && yum -y install java-1.8.0-openjdk-headless;
+		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+			PACKAGE_NAME="java-1.8.0-openjdk-headless" && yum -y check-update && yum -y install "${PACKAGE_NAME}"; # Install Java SE8
+			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
+			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
 
 		fi;
 
@@ -98,14 +97,16 @@ else
 
 	else
 		# Jenkins is already installed
-		echo -e "\n""Info: Jenkins already installed";
+		echo -e "\n""Info:  Skipping Package-Install (Jenkins service already exists locally)";
 
 	fi;
 
-	if [ "$(service --status-all 2>/dev/null | grep 'jenkins')" == "" ]; then
-		# Jenkins-Service STILL not detected after install-attempt
+	SERVICE_NAME="jenkins";
+	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+	if [ -n "${SERVICE_MATCHES}" ]; then
+		# Jenkins Service STILL not detected after install-attempt
 		EXIT_CODE=1;
-		echo -e "\n""Error: Jenkins service not detected after install attempt";
+		echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
 	else
 		EXIT_CODE=0;
@@ -113,15 +114,14 @@ else
 		# ------------------------------------------------------------
 		# Show the status of the Jenkins-Service
 		echo -e "\n""Info: Showing Jenkins' Service-Status";
-		echo -e "  |--> Calling  [ service jenkins status; ]  ...""\n";
-		service jenkins status;
+		echo -e "  |--> Calling  [ systemctl status jenkins --no-pager --full; ]  ...""\n";
+		systemctl status jenkins --no-pager --full;
 
 		# ------------------------------------------------------------
 		# Show Jenkins' Ports which are in-use
 		echo -e "\n""Info: Showing Jenkins' Ports which are in-use";
-		echo -e "  |--> Calling  [ ps aux | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
-		ps aux | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
-
+		echo -e "  |--> Calling  [ ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
+		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
 
 	fi;

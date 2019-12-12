@@ -54,14 +54,20 @@ if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
 	# Error: Throw 'bad' return-code
 	exit 1;
 else
-	# Success - Show Message
+	# Success
 	if [ "${1}" == "verbose" ]; then
+	# "Verbose" output
 		echo "";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
 		echo "";
+	elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
+		# "Quiet" output (NO trailing newline)
+		echo -n "${THIS_WAN_IPv4}";
+	else
+		# "Normal" output (output w/ newline)
+		echo "${THIS_WAN_IPv4}";
 	fi;
-	echo -n "${THIS_WAN_IPv4}";
-	# Success - Throw 'good' return-code
+	# Exit w/ 'good' return-code
 	exit 0;
 fi;
 

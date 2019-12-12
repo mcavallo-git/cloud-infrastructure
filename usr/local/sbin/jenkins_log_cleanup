@@ -86,8 +86,8 @@ else
 
 
 	# # NGINX - Reload
-	# echo -e "\n\n$(date +'%D  %r') Calling [ systemctl reload nginx; ]...";
-	# systemctl reload nginx;
+	# echo -e "\n\n$(date +'%D  %r') Calling [ /bin/systemctl reload nginx; ]...";
+	# /bin/systemctl reload nginx;
 
 	# # Jenkins - Reload
 	# RESTART_JENKINS_SERVICE="Yes";
@@ -95,7 +95,7 @@ else
 	# 	if [ "${RESTART_JENKINS_SERVICE}" == "Yes" ]; then
 	# 		DELAY_SECONDS=30;
 	# 		(sleep ${DELAY_SECONDS}; service jenkins force-reload; ) & \
-	# 		echo -e "\n\n$(date +'%D  %r') Creating parallel/background task: [ sleep ${DELAY_SECONDS}; service jenkins force-reload; ]...";
+	# 		echo -e "\n\n$(date +'%D  %r') Creating parallel/background task: [ sleep ${DELAY_SECONDS}; /bin/systemctl force-reload "jenkins"; ]...";
 	# 	fi;
 	# fi;
 

@@ -83,21 +83,21 @@ else
 	# ------------------------------------------------------------
 	# Remove Jenkins' Service
 	SERVICE_NAME="jenkins";
-	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
 	if [ -n "${SERVICE_MATCHES}" ]; then
 		echo -e "\n""Info: Removing Jenkins' Service";
 		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ apt-get purge \"jenkins\" ]...";
 			apt-get -y purge "jenkins";
-			echo "  |--> Calling [ systemctl stop \"jenkins\"; ]...";
-			systemctl stop "jenkins";
+			echo "  |--> Calling [ /bin/systemctl stop \"jenkins\"; ]...";
+			/bin/systemctl stop "jenkins";
 			echo "  |--> Calling [ update-rc.d \"jenkins\" remove -f; ]...";
 			update-rc.d "jenkins" remove -f;
-			echo "  |--> Calling [ systemctl daemon-reload; ]...";
-			systemctl daemon-reload;
-			echo "  |--> Calling [ systemctl reset-failed; ]...";
-			systemctl reset-failed;
+			echo "  |--> Calling [ /bin/systemctl daemon-reload; ]...";
+			/bin/systemctl daemon-reload;
+			echo "  |--> Calling [ /bin/systemctl reset-failed; ]...";
+			/bin/systemctl reset-failed;
 		fi;
 	fi;
 	

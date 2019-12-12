@@ -24,12 +24,12 @@ else
 	# ------------------------------------------------------------
 
 	SERVICE_NAME="unifi";
-	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
 	if [ -n "${SERVICE_MATCHES}" ]; then # Service exists locally
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service unifi status; ] (before potential update)...";
-		service unifi status;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"unifi\" --no-pager --full; ] (before potential update)...";
+		/bin/systemctl status "unifi" --no-pager --full;
 
 		# Update UniFi
 		echo "";
@@ -41,13 +41,14 @@ else
 		echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
 
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart; ]...";
-		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && service unifi restart;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /bin/systemctl restart \"unifi\"; ]...";
+		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /bin/systemctl restart "unifi";
+
 
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service unifi status; ] (after potential update)...";
-		service unifi status;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"unifi\" --no-pager --full; ] (after potential update)...";
+		/bin/systemctl status "unifi" --no-pager --full;
 
 	else # Service NOT found to exist as a local service
 		echo "";

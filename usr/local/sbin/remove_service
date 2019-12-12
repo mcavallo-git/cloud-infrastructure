@@ -48,10 +48,10 @@ else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing service \"${SERVICE_NAME}\"...";
 
 			# Stop the service
-			systemctl stop "${SERVICE_NAME}";
+			/bin/systemctl stop "${SERVICE_NAME}";
 
 			# Disable the service from attempting to start
-			systemctl disable "${SERVICE_NAME}";
+			/bin/systemctl disable "${SERVICE_NAME}";
 
 			# Remove any files which auto-start the service
 			if [ -f "/etc/systemd/system/${SERVICE_NAME}" ]; then
@@ -59,10 +59,10 @@ else
 			fi;
 
 			# Reload systemd manager configurations
-			systemctl daemon-reload;
+			/bin/systemctl daemon-reload;
 
 			# Reset the 'failed' state of all services
-			systemctl reset-failed;
+			/bin/systemctl reset-failed;
 
 		else
 

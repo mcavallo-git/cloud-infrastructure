@@ -177,6 +177,7 @@ else
 			#                located @ "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" to point to your desired file/archive.
 			#              Once you have updated the symbolic link to point-to your desired archive, use the same command, below (as-if nothing changed, since it uses the same sym-link)
 			#
+			SERVICE_NAME="jenkins" && \
 			USERNAME_JENKINS="jenkins" && \
 			JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6) && \
 			BAK_CURRENT_CONFIG="${JENKINS_HOME}/config.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
@@ -186,12 +187,12 @@ else
 			test -f "${LATEST_ARCHIVE_PLUGINS}" && \
 			cd $(dirname "${LATEST_ARCHIVE_PLUGINS}") && \
 			7z x $(basename "${LATEST_ARCHIVE_PLUGINS}") && \
-			service jenkins stop && \
+			/bin/systemctl stop "${SERVICE_NAME}" && \
 			mv "${JENKINS_HOME}/plugins" "${BAK_CURRENT_PLUGINS}" && \
 			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${BAK_CURRENT_PLUGINS}" && \
 			mv "$(dirname "${LATEST_ARCHIVE_PLUGINS}")/${JENKINS_HOME}/plugins" "${JENKINS_HOME}/plugins" && \
 			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${JENKINS_HOME}/plugins" && \
-			service jenkins start && \
+			/bin/systemctl start "${SERVICE_NAME}" && \
 			rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
 			df -h ".";
 		fi;

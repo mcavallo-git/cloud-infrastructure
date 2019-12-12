@@ -24,39 +24,39 @@ else
 	# ------------------------------------------------------------
 
 	SERVICE_NAME="nginx";
-	SERVICE_ENABLED_LIST=$(systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p' 2> '/dev/null';);
+	SERVICE_ENABLED_LIST=$(/bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p' 2> '/dev/null';);
 	SERVICE_MATCHES=$(echo "${SERVICE_ENABLED_LIST}" | awk "/^${SERVICE_NAME}$/{print \$0}");
 
 	if [ -n "${SERVICE_MATCHES}" ]; then
 
 		# Service found to exist locally
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (before reload)...";
-		# service nginx status;
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"${SERVICE_NAME}\"; ] (before reload)...";
+		# /bin/systemctl status "${SERVICE_NAME}";
 
 		if [ -f "/run/nginx.pid" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
-			sudo nginx -t && sudo sleep 1 && sudo service nginx reload;
+			nginx -t && sleep 1 && /bin/systemctl reload "${SERVICE_NAME}";
 		else
 			# Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
 			PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
 			if [ -n "${PID_ROGUE_NGINX_INSTANCE}" ]; then
 				# Snipe rogue nginx PIDs
 				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
-				sudo kill "${PID_ROGUE_NGINX_INSTANCE}";
+				kill "${PID_ROGUE_NGINX_INSTANCE}";
 			fi;
 			# Start nginx service, again
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
-			sudo nginx -t && sudo sleep 1 && sudo service nginx start;
+			 nginx -t && sleep 1 && /bin/systemctl start "${SERVICE_NAME}";
 		fi;
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ service nginx status; ] (after reload)...";
-		# service nginx status;
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"${SERVICE_NAME}\"; ] (after reload)...";
+		# /bin/systemctl status "${SERVICE_NAME}";
 		
 	else
 	
 		# Service NOT found to exist locally
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: service \"${SERVICE_NAME}\" not found amongst local services";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
 	fi;
 fi;

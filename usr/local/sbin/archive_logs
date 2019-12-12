@@ -35,15 +35,15 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 
-	SVC="httpd";
+	SERVICE_NAME="httpd";
 	GLOB_PATTERN="*_log-*";
 	DIR_LOGS="/var/log";
 	DIR_ARCH="/var/archived_logs";
 
-	if [ ! -d "${DIR_LOGS}/${SVC}" ]; then
+	if [ ! -d "${DIR_LOGS}/${SERVICE_NAME}" ]; then
 		echo "";
 		echo "ERROR:";
-		echo "  Logs-dir not found for service \"${SVC}\" at path \"${DIR_LOGS}/${SVC}\" ";
+		echo "  Logs-dir not found for service \"${SERVICE_NAME}\" at path \"${DIR_LOGS}/${SERVICE_NAME}\" ";
 		echo "";
 		exit 1;
 	
@@ -63,34 +63,34 @@ else
 	else
 
 		# Stop the target service
-		service ${SVC} stop; RET_CODE=$?;
+		/bin/systemctl stop "${SERVICE_NAME}"; RET_CODE=$?;
 		if [ "${RET_CODE}" != "0" ]; then
 			echo "";
 			echo "ERROR:";
-			echo "  Unable to stop service \"${SVC}\" - Exiting...";
+			echo "  Unable to stop service \"${SERVICE_NAME}\" - Exiting...";
 			echo "";
 			exit 1;
 		
 		else
 			# Create the new logs dir
-			if [ ! -d "${DIR_ARCH}/${SVC}" ]; then
-				mkdir -p "${DIR_ARCH}/${SVC}";
-				chmod 0700 "${DIR_ARCH}/${SVC}";
+			if [ ! -d "${DIR_ARCH}/${SERVICE_NAME}" ]; then
+				mkdir -p "${DIR_ARCH}/${SERVICE_NAME}";
+				chmod 0700 "${DIR_ARCH}/${SERVICE_NAME}";
 			fi;
 			# Migrate all logs to new logs dir
-			mv ${DIR_LOGS}/${SVC}/* ${DIR_ARCH}/${SVC}/.;
+			mv ${DIR_LOGS}/${SERVICE_NAME}/* ${DIR_ARCH}/${SERVICE_NAME}/.;
 			# Remove old (now empty) logs dir
-			rmdir ${DIR_LOGS}/${SVC};
+			rmdir ${DIR_LOGS}/${SERVICE_NAME};
 			# Link the old logs dir to the new logs dir with a symbolic link
-			ln -sf "${DIR_ARCH}/${SVC}" "${DIR_LOGS}/${SVC}";
+			ln -sf "${DIR_ARCH}/${SERVICE_NAME}" "${DIR_LOGS}/${SERVICE_NAME}";
 			# Start the target service
-			service ${SVC} start;
+			/bin/systemctl start "${SERVICE_NAME}";
 
 			### Archive each log-file found (which is not the latest logfile, as-to avoid collisions with application file-access)
-			# for EACH_FILE in $(find "${DIR_LOGS}/${SVC}/" -type f -name "${GLOB_PATTERN}"); do
+			# for EACH_FILE in $(find "${DIR_LOGS}/${SERVICE_NAME}/" -type f -name "${GLOB_PATTERN}"); do
 			# 	BASENAME=$(basename "${EACH_FILE}");
-			# 	PATH_LOGS="${DIR_LOGS}/${SVC}/${BASENAME}"; 
-			# 	PATH_ARCH="${DIR_ARCH}/${SVC}/${BASENAME}";
+			# 	PATH_LOGS="${DIR_LOGS}/${SERVICE_NAME}/${BASENAME}"; 
+			# 	PATH_ARCH="${DIR_ARCH}/${SERVICE_NAME}/${BASENAME}";
 			# 	if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
 			# 		echo "Archiving log file  [ ${PATH_LOGS} ]  to path  [${PATH_ARCH} ]  ...";
 			# 		mv "${PATH_LOGS}" "${PATH_ARCH}";

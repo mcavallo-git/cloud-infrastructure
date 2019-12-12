@@ -102,16 +102,16 @@ else
 
 			# Stop the Jenkins service (before updating its runtime warfile)
 			echo "";
-			echo "$(date +'%D  %r')   Calling [ systemctl stop jenkins; ]...";
-			systemctl stop jenkins;
+			echo "$(date +'%D  %r')   Calling [ /bin/systemctl stop jenkins; ]...";
+			/bin/systemctl stop jenkins;
 			
 			# Replace Jenkins' runtime warfile with the newly downloaded runtime warfile
 			mv --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
 
 			# Start the Jenkins service (after updating its runtime warfile)
 			echo "";
-			echo "$(date +'%D  %r')   Calling [ systemctl start jenkins; ]...";
-			systemctl start jenkins;
+			echo "$(date +'%D  %r')   Calling [ /bin/systemctl start jenkins; ]...";
+			/bin/systemctl start jenkins;
 
 			# Reload NGINX (if found locally)
 			if [ -n "$(which nginx 2>'/dev/null')" ]; then
@@ -121,8 +121,8 @@ else
 					reload_nginx;
 				else
 					echo "";
-					echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && service nginx reload; ]...";
-					nginx -t && sleep 1 && service nginx reload;
+					echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /bin/systemctl reload \"nginx\"; ]...";
+					nginx -t && sleep 1 && /bin/systemctl reload "nginx";
 				fi;
 			else
 				echo "";

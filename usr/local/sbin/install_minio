@@ -39,7 +39,7 @@ else
 	curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
 
 	# Ensure the docker-service is started
-	service docker start;
+	/bin/systemctl start "docker";
 
 	# Pull & Spin-up the MINIO server as a docker container ( pulls from https://hub.docker.com/r/minio/minio/ )
 	PORT_MINIO="9000"; DIR_MINIO_DATA="/data"; docker run -d --name "minio" -p "${PORT_MINIO}:9000" "minio/minio" "server" "${DIR_MINIO_DATA}";

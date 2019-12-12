@@ -66,9 +66,10 @@ else
 			curl -ssL "https://get.docker.com/" | sh;
 		fi;
 
-		if [ -z "$(service docker status | grep 'Active: active (running)')" ]; then
-			echo "Calling [ service docker start; ]...";
-			service docker start;
+		SERVICE_NAME="docker";
+		if [ -z "$(/bin/systemctl status ${SERVICE_NAME} | grep 'Active: active (running)')" ]; then
+			echo "Calling [ /bin/systemctl start \"${SERVICE_NAME}\"; ]...";
+			/bin/systemctl start "${SERVICE_NAME}";
 		fi;
 
 		if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
@@ -77,8 +78,8 @@ else
 				# Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
 				apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
 			fi;
-			sudo curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
-			sudo chmod 0755 "${BIN_DOCKER_COMPOSE}";
+			curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+			chmod 0755 "${BIN_DOCKER_COMPOSE}";
 
 		fi;
 		

@@ -67,7 +67,7 @@ else
 		fi;
 
 		SERVICE_NAME="docker";
-		if [ -z "$(/bin/systemctl status ${SERVICE_NAME} | grep 'Active: active (running)')" ]; then
+		if [ -z "$(/usr/sbin/service ${SERVICE_NAME} status | grep 'Active: active (running)')" ]; then
 			echo "Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
 			/usr/sbin/service "${SERVICE_NAME}" start;
 		fi;

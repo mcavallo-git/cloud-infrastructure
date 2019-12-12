@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 
 
-apt list --installed || rpm --query --all | sort 2>'/dev/null';
+apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;
 
 
 # ------------------------------------------------------------

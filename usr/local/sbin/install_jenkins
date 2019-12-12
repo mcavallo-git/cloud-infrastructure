@@ -96,8 +96,8 @@ else
 		
 		# Show Jenkins' service status
 		echo -e "\n""Info: Showing Jenkins' Service-Status";
-		echo -e "  |--> Calling  [ /bin/systemctl status jenkins --no-pager --full; ]  ...""\n";
-		/bin/systemctl status jenkins --no-pager --full;
+		echo -e "  |--> Calling  [ /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full; ]  ...""\n";
+		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
 		# Show Jenkins' networking ports
 		echo -e "\n""Info: Showing Jenkins' Ports which are in-use";

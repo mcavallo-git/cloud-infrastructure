@@ -28,8 +28,8 @@ else
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"unifi\" --no-pager --full; ] (before potential update)...";
-		/bin/systemctl status "unifi" --no-pager --full;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
+		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
 		# Update UniFi
 		echo "";
@@ -44,11 +44,10 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
 		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
 
-
 		# Show service status
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"unifi\" --no-pager --full; ] (after potential update)...";
-		/bin/systemctl status "unifi" --no-pager --full;
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
+		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
 	else # Service NOT found to exist as a local service
 		echo "";

@@ -86,16 +86,18 @@ else
 
 
 	# # NGINX - Reload
-	# echo -e "\n\n$(date +'%D  %r') Calling [ /bin/systemctl reload nginx; ]...";
-	# /bin/systemctl reload nginx;
+	# echo -e "\n\n$(date +'%D  %r') Calling [ /usr/sbin/service \"${SERVICE_NAME}\" reload; ]...";
+	# SERVICE_NAME="nginx";
+	# /usr/sbin/service "${SERVICE_NAME}" reload;
 
 	# # Jenkins - Reload
 	# RESTART_JENKINS_SERVICE="Yes";
 	# if [ -n "${RESTART_JENKINS_SERVICE}" ]; then
 	# 	if [ "${RESTART_JENKINS_SERVICE}" == "Yes" ]; then
 	# 		DELAY_SECONDS=30;
-	# 		(sleep ${DELAY_SECONDS}; service jenkins force-reload; ) & \
-	# 		echo -e "\n\n$(date +'%D  %r') Creating parallel/background task: [ sleep ${DELAY_SECONDS}; /bin/systemctl force-reload "jenkins"; ]...";
+	# 		SERVICE_NAME="jenkins";
+	# 		(sleep ${DELAY_SECONDS}; /usr/sbin/service "${SERVICE_NAME}" force-reload ) & \
+	# 		echo -e "\n\n$(date +'%D  %r') Creating parallel/background task: [ sleep ${DELAY_SECONDS}; /usr/sbin/service \"${SERVICE_NAME}\" force-reload; ]...";
 	# 	fi;
 	# fi;
 

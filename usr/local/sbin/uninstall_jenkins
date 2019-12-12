@@ -90,8 +90,8 @@ else
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 			echo "  |--> Calling [ apt-get purge \"jenkins\" ]...";
 			apt-get -y purge "jenkins";
-			echo "  |--> Calling [ /bin/systemctl stop \"jenkins\"; ]...";
-			/bin/systemctl stop "jenkins";
+			echo "  |--> Calling [ /usr/sbin/service \"${SERVICE_NAME}\" stop; ]...";
+			/usr/sbin/service "${SERVICE_NAME}" stop;
 			echo "  |--> Calling [ update-rc.d \"jenkins\" remove -f; ]...";
 			update-rc.d "jenkins" remove -f;
 			echo "  |--> Calling [ /bin/systemctl daemon-reload; ]...";

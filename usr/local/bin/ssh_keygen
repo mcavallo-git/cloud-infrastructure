@@ -262,7 +262,7 @@ exit;
 #		echo "Updated SSH Config-File \"${SSH_CONF_FILEPATH}\"";
 
 #### Apply changes to the SSH service
-#		/bin/systemctl stop "sshd";
+#		SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;
 
 
 # ------------------------------------------------------------

@@ -16,7 +16,7 @@ else
 		exit 1;
 	else
 		# If service IS found: Show service & exit with return-code 0
-		systemctl status "${MATCHED_SERVICE}";
+		systemctl status "${MATCHED_SERVICE}" --no-pager --full;
 		exit 0;
 	fi;
 

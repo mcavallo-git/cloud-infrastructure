@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_services" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+
+systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p' 2> '/dev/null';
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   askubuntu.com  |  "How to list all enabled services from systemctl?"  |  https://askubuntu.com/a/795245
+#
+#   www.cyberciti.biz  |  "Red Hat / CentOS Check and List Running Services Linux Command"  |  https://www.cyberciti.biz/faq/check-running-services-in-rhel-redhat-fedora-centoslinux/
+#
+# ------------------------------------------------------------

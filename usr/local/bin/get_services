@@ -10,7 +10,15 @@ if [ -z "$1" ]; then
 
 else
 	#	Search for one, specific service
-	systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${1}$/{print \$0}" | sort 2> '/dev/null';
+	MATCHED_SERVICE=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${1}$/{print \$0}" | sort 2> '/dev/null';);
+	if [ -z "${MATCHED_SERVICE}" ]; then
+		# If service is NOT found: Exit with return-code 1
+		exit 1;
+	else
+		# If service IS found: Show service & exit with return-code 0
+		systemctl status "${MATCHED_SERVICE}";
+		exit 0;
+	fi;
 
 fi;
 

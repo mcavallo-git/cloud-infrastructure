@@ -4,43 +4,31 @@
 #
 # ------------------------------------------------------------
 #
-# Search for available packages
+# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
 #
-if [ 0 -eq 1 ]; then
-#
-# The openjdk-headless package contains a minimal implementation of the JDK for executing Java applications on the command line
-#
-yum search openjdk 8 headless
-yum search java headless 1.8 --exclude=*debug*
+if [ $(which apt-get 2>'/dev/null'; echo $?;) -eq 0 ]; then
+	#
+	# Debian, Ubuntu, etc.
+	#   |-->  openjdk-$(version)-jre-headless
+	#
 
-# apt-cache search java headless
-# apt-cache search openjdk 8 headless
+	# apt-cache search --names-only openjdk 8 headless | awk '{print $1}';
 
+	apt-get -y update;
+	apt-get -y install openjdk-8-jre-headless;
 
-apt-cache search --names-only openjdk 8 headless | awk '{print $1}';
+elif [ $(which yum 2>'/dev/null'; echo $?;) -eq 0 ]; then
+	#
+	# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+	#   |-->  java-$(version)-openjdk-headless
+	#
+	
+	# yum search java headless 1.8 --exclude=*debug*
 
-
-# ------------------------------------------------------------
-#
-### Java Standard Edition (SE8) Package Names
-#
-###   Debian, Ubuntu, etc.
-#      openjdk-8-jre-headless
-#
-###   Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
-#      java-1.8.0-openjdk-headless
-#
-# ------------------------------------------------------------
+	yum -y check-update;
+	yum -y install java-1.8.0-openjdk-headless;
 
 fi;
-
-# ------------------------------------------------------------
-#
-# Install Java CLI (e.g. "Headless")
-#
-
-apt-get -y update && apt-get -y install openjdk-8-jre-headless 2>'/dev/null' || yum -y check-update && yum -y install java-1.8.0-openjdk-headless 2>'/dev/null';
-
 
 
 # ------------------------------------------------------------
@@ -48,5 +36,7 @@ apt-get -y update && apt-get -y install openjdk-8-jre-headless 2>'/dev/null' || 
 # Citation(s)
 #
 #   linode.com  |  "Install Java on Centos 7"  |  https://www.linode.com/docs/development/java/install-java-on-centos/#install-java-runtime-environment-java-jre
+#
+#   openjdk.java.net  |  "How to download and install prebuilt OpenJDK packages"  |  https://openjdk.java.net/install/
 #
 # ------------------------------------------------------------

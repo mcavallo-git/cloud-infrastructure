@@ -29,11 +29,8 @@ else
 	#  |--> Fail-out if UFW does NOT exist as local service
 	#
 	SERVICE_NAME="ufw";
-	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -z "${SERVICE_MATCHES}" ]; then
-		echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";
-		exit 1;
-	else
+	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		# ------------------------------------------------------------
 		#
 		# UFW | IPv6 Pinging
@@ -101,9 +98,13 @@ else
 		# Restart necessary service(s)
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_UFW} -eq 1 ]; then
-			/bin/systemctl restart "ufw";
-			# /bin/systemctl status "ufw";
+			SERVICE_NAME="ufw";
+			/bin/systemctl restart "${SERVICE_NAME}";
+			# /bin/systemctl status "${SERVICE_NAME}";
 		fi;
+	else
+		echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";
+		exit 1;
 	fi;
 fi;
 

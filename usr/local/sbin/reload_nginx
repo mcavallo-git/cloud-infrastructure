@@ -22,12 +22,9 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-
 	SERVICE_NAME="nginx";
-	SERVICE_ENABLED_LIST=$(/bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^(.+)\.service$/\1/p' 2> '/dev/null';);
-	SERVICE_MATCHES=$(echo "${SERVICE_ENABLED_LIST}" | awk "/^${SERVICE_NAME}$/{print \$0}");
-
-	if [ -n "${SERVICE_MATCHES}" ]; then
+	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
 		# Service found to exist locally
 

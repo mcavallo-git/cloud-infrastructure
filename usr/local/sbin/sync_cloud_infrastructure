@@ -914,11 +914,8 @@ else
 		if [ ${ARGS_SYNC_JENKINS} -eq 1 ] && [ ${RESTART_SERVICE_JENKINS} -eq 0 ] && [ -x "/usr/sbin/service" ]; then
 
 			SERVICE_NAME="jenkins";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo -e "\n""Info: Skipped Jenkins config-sync (not found as a local service)";
-
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
 				# ------------------------------------------------------------
 				#
@@ -1020,6 +1017,10 @@ else
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 			fi;
+
+		else
+			# Service not found locally
+			echo -e "\n""Info: Skipped Jenkins config-sync (not found as a local service)";
 
 		fi;
 
@@ -1132,21 +1133,23 @@ else
 		# Restart Service (if needed)  -->  cron
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+			# ------------------------------------------------------------
 			SERVICE_NAME="cron";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/bin/systemctl restart "${SERVICE_NAME}";
 				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
+			# ------------------------------------------------------------
 			SERVICE_NAME="crond";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/bin/systemctl restart "${SERVICE_NAME}";
 				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
 
@@ -1156,12 +1159,12 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_JENKINS} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="jenkins";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/bin/systemctl restart "${SERVICE_NAME}";
 				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
 
@@ -1170,11 +1173,11 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="nginx";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/usr/local/sbin/reload_nginx;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
 
@@ -1184,12 +1187,12 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="sshd";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/bin/systemctl restart "${SERVICE_NAME}";
 				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
 
@@ -1199,15 +1202,15 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_UFW} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="ufw";
-			SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
-			else
+			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/bin/systemctl restart "${SERVICE_NAME}";
 				if [ -n "$(which ${SERVICE_NAME} 2>'/dev/null';)" ]; then
 					ufw reload;
 				fi;
 				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			else
+				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
 

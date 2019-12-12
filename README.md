@@ -53,7 +53,7 @@ This file (on GitHub):
 		</li><br />
 		<li>
 			<h6>Modify a given Linux-Instance's SSH-configuration by calling the following:</h6><br />
-			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.no_mfa" && LOCAL_FILE="${SSHD_CONFIG}.no_mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; /bin/systemctl restart "sshd";</code></pre></li>
+			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.no_mfa" && LOCAL_FILE="${SSHD_CONFIG}.no_mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /bin/systemctl restart "${SERVICE_NAME}";</code></pre></li>
 	</ol>
 <hr /></details></li>
 
@@ -68,7 +68,7 @@ This file (on GitHub):
 			<h6>Follow Duo's updated installation guide for their pam_duo module, which may be found @ <b>https://duo.com/docs/duounix</b> → refer to section titled: <b>Install pam_duo</b></h6></li><br />
 		<li>
 			<h6>Once previous step is complete, run the following line of code to modify the ssh configuration script by [ backing-up the existing script ] & [ updating the script to require public-key AND multifactor authentication ]:</h6>
-			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.mfa" && LOCAL_FILE="${SSHD_CONFIG}.mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; /bin/systemctl restart "sshd";</code></pre>
+			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.mfa" && LOCAL_FILE="${SSHD_CONFIG}.mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /bin/systemctl restart "${SERVICE_NAME}";</code></pre>
 		</li>
 	</ol>
 <hr /></details></li>

@@ -57,8 +57,8 @@ else
 	# Determine if the Jenkins service already exists locally
 
 	SERVICE_NAME="jenkins";
-	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -z "${SERVICE_MATCHES}" ]; then
+	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		# ------------------------------------------------------------
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			# Debian, Ubuntu, etc.
@@ -85,8 +85,8 @@ else
 
 	# ------------------------------------------------------------
 	SERVICE_NAME="jenkins";
-	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -z "${SERVICE_MATCHES}" ]; then
+	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		EXIT_CODE=1;
 		# Jenkins Service STILL not detected after install-attempt
 		echo -e "\n""Error:  Jenkins service not detected after install attempt";

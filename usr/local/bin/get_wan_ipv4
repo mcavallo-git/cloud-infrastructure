@@ -43,7 +43,7 @@ if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"
 #
 
 if [ -v THIS_WAN_IPV4 ] && [ -n "${THIS_WAN_IPV4}" ]; then
-	echo "${THIS_WAN_IPV4}";
+	echo -n "${THIS_WAN_IPV4}";
 	exit 0;
 else
 	exit 1;

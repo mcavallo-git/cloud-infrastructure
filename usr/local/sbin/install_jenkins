@@ -59,23 +59,20 @@ else
 	SERVICE_NAME="jenkins";
 	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
 	if [ -z "${SERVICE_MATCHES}" ]; then
-
 		# ------------------------------------------------------------
-		
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			# Debian, Ubuntu, etc.
-			PACKAGE_NAME="openjdk-8-jre-headless" && apt-get -y update && apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8
+			PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.
 			wget -q -O - "https://pkg.jenkins.io/debian-stable/jenkins.io.key" | sudo apt-key add -; # Import Jenkins' official GPG Key
 			deb "https://pkg.jenkins.io/debian-stable" binary/; # Add Jenkins' package repository
-			PACKAGE_NAME="jenkins" && apt-get -y update && apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
-
+			PACKAGE_NAME="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
 
 		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
-			PACKAGE_NAME="java-1.8.0-openjdk-headless" && yum -y check-update && yum -y install "${PACKAGE_NAME}"; # Install Java SE8
+			PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Java SE8 for Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
 			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
-			PACKAGE_NAME="jenkins" && yum -y check-update && yum -y install "${PACKAGE_NAME}"; # Install Jenkins
+			PACKAGE_NAME="jenkins"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Jenkins
 
 		fi;
 

@@ -73,25 +73,7 @@ else
 			PACKAGE_NAME="java-1.8.0-openjdk-headless" && yum -y check-update && yum -y install "${PACKAGE_NAME}"; # Install Java SE8
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
 			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
-
-		fi;
-
-		# Install Jenkins
-		if [ $(apt list --installed 2>/dev/null | grep -h "^${APT_PKG_JENKINS}\/" | wc -l) -eq 0 ]; then
-
-			# Download Jenkins' GnuPG Public-Key (to match & verify jenkins' download/repository against)
-			JENKINS_GPG_KEY_URL="https://pkg.jenkins.io/debian-stable/jenkins.io.key";
-			wget -q -O - "${JENKINS_GPG_KEY_URL}" | apt-key add -;
-			# Setup Jenkins' package repository in APT
-			JENKINS_APT_SOURCE_FILEPATH="/etc/apt/sources.list.d/jenkins.list";
-			JENKINS_APT_SOURCE_CONTENTS="deb https://pkg.jenkins.io/debian-stable binary/";
-			if [ ! -f "/etc/apt/sources.list.d/jenkins.list" ] || [ "$(cat ${JENKINS_APT_SOURCE_FILEPATH})" != "${JENKINS_APT_SOURCE_CONTENTS}" ]; then
-				echo "${JENKINS_APT_SOURCE_CONTENTS}" > "${JENKINS_APT_SOURCE_FILEPATH}";
-			fi;
-			# Install the Jenkins package from newly added package-repo
-			echo -e "\n""Info: Installing Jenkins";
-			echo -e "  |--> Calling  [ apt-get -y update && apt-get -y install \"${APT_PKG_JENKINS}\"; ]  ...""\n";
-			apt-get -y update && apt-get -y install "${APT_PKG_JENKINS}";
+			PACKAGE_NAME="jenkins" && yum -y check-update && yum -y install "${PACKAGE_NAME}"; # Install Jenkins
 
 		fi;
 

@@ -1,34 +1,55 @@
 #!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_wan_ipv4" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+# ------------------------------------------------------------
+# Determine WAN IPv4
+#
+
+
+# START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
+# REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
 
 # External servers to resolve WAN-IP through
-SERVER_1="https://icanhazip.com";
-SERVER_2="https://ipecho.net/plain";
-SERVER_3="https://ident.me";
-SERVER_4="https://bot.whatismyipaddress.com";
+unset IP_RESOLVERS; declare -a IP_RESOLVERS; # [Re-]Instantiate bash array
+IP_RESOLVERS+=("https://icanhazip.com");
+IP_RESOLVERS+=("https://ipecho.net/plain");
+IP_RESOLVERS+=("https://ident.me");
+IP_RESOLVERS+=("https://bot.whatismyipaddress.com");
 
-THIS_WAN_IP="";
-THIS_HOST="";
-
-# Get current WAN-IP via PHP running on BNet Servers
+THIS_WAN_IPv4="";
 RESPONSE_SRVR="";
 LENGTH_WAN_IP="";
-declare -a IP_RESOLVERS=("SERVER_1" "SERVER_2" "SERVER_3" "SERVER_4");
-RESOLVERS_NO_DUPES=($(echo "${IP_RESOLVERS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-for EACH_SRVR in "${RESOLVERS_NO_DUPES[@]}"; do
-	if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
+
+# Get current WAN IPv4
+for EACH_SRVR in "${IP_RESOLVERS[@]}"; do
+	if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
 		RESPONSE_SRVR="${!EACH_SRVR}";
-		THIS_WAN_IP=$(curl -L -s "${RESPONSE_SRVR}");
-		LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IP}" | wc -c);
+		THIS_WAN_IPv4=$(curl -L -s "${RESPONSE_SRVR}");
+		LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IPv4}" | wc -c);
 	fi;
 done;
 
 # Output Status: PASS or FAIL
-if [ -z "${THIS_WAN_IP}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
+if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
 	# Error: Clear Variables
 	RESPONSE_SRVR="";
-	THIS_WAN_IP="";
+	THIS_WAN_IPv4="";
 	LENGTH_WAN_IP="";
-	THIS_HOST="$(hostname)";
 	# Error: Show Message
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to resolve WAN-IP";
 	# Error: Throw 'bad' return-code
@@ -37,10 +58,10 @@ else
 	# Success - Show Message
 	if [ "${1}" == "verbose" ]; then
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IP}\" via \"${RESPONSE_SRVR}\" ";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
 		echo "";
 	fi;
-	echo "${THIS_WAN_IP}";
+	echo -n "${THIS_WAN_IPv4}";
 	# Success - Throw 'good' return-code
 	exit 0;
 fi;

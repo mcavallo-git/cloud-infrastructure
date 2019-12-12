@@ -921,7 +921,7 @@ else
 			SERVICE_NAME="jenkins";
 			SERVICE_MATCHES=$(service --status-all 2>/dev/null | sed --regexp-extended --quiet --expression='s/^\ \[ (\+|\-) \]\ \ ('${SERVICE_NAME}')$/\2/p');
 			if [ -z "${SERVICE_MATCHES}" ]; then
-				echo -e "\n""Info: Skipped NGINX config-sync (not found as a local service)";
+				echo -e "\n""Info: Skipped Jenkins config-sync (not found as a local service)";
 
 			else
 

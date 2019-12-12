@@ -6,7 +6,7 @@
 
 
 SYSTEMCTL_ENABLEDS=$(systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' 2> '/dev/null';);
-if [ -n "${SYSTEMCTL_RAW_OUTPUT}" ]; then
+if [ -n "${SYSTEMCTL_ENABLEDS}" ]; then
 	SYSTEMCTL_SERVICES=$(echo "${SYSTEMCTL_ENABLEDS}" | sed -rne 's/^(.+)\.service$/\1/p';);
 	echo "${SYSTEMCTL_SERVICES}";
 fi;

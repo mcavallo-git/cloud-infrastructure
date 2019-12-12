@@ -136,6 +136,7 @@ else
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
 		READ_TIMEOUT=60;
+		echo "";
 		read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then

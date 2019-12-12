@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_enabled_services" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+
+systemctl list-unit-files --state=enabled --no-legend;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   askubuntu.com  |  "How to list all enabled services from systemctl?"  |  https://askubuntu.com/a/795245
+#
+# ------------------------------------------------------------

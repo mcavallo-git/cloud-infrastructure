@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_installed_packages" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+
+apt list --installed || rpm --query --all 2> '/dev/null';
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   www.cyberciti.biz  |  "How to use yum command on CentOS/RHEL"  |  https://www.cyberciti.biz/faq/rhel-centos-fedora-linux-yum-command-howto/
+#
+# ------------------------------------------------------------

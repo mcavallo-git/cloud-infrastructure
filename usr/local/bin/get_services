@@ -1,33 +1,48 @@
 #!/bin/bash
 #
-# LOCAL_BIN="/usr/local/bin/get_services" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+# LOCAL_SBIN="/usr/local/sbin/get_services" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-
-if [ -z "$1" ]; then
-	# Show all services
-	# SERVICE_LIST_ALL=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null');
-	/bin/systemctl list-unit-files --no-legend --no-pager --full | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
-
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
 else
-	#	Search for one, specific service
-	SERVICE_NAME="${1}";
-	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -n "${SERVICE_MATCHES}" ]; then
-		# If service IS found: Show service & exit with return-code 0
-		/bin/systemctl status "${SERVICE_MATCHES}" --no-pager --full;
-		exit 0;
+	# ------------------------------------------------------------
+	# systemctl daemon-reload
+	#     Reload systemd manager configuration
+	#     This will rerun all generators (see systemd.generator(7)), reload all unit files, and recreate the entire dependency tree
+	#     While the daemon is being reloaded, all sockets systemd listens on behalf of user configuration will stay accessible
+	/bin/systemctl daemon-reload;
+
+	if [ -z "$1" ]; then
+		# Show all services
+		# SERVICE_LIST_ALL=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null');
+		/bin/systemctl list-unit-files --no-legend --no-pager --full | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
+
 	else
-		# If service is NOT found: Alert user & exit with return-code 1
-		echo "Error:  Service \"${1}\" not found locally";
-		exit 1;
+		#	Search for one, specific service
+		SERVICE_NAME="${1}";
+		SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+		if [ -n "${SERVICE_MATCHES}" ]; then
+			# If service IS found: Show service & exit with return-code 0
+			/bin/systemctl status "${SERVICE_MATCHES}" --no-pager --full;
+			exit 0;
+		else
+			# If service is NOT found: Alert user & exit with return-code 1
+			echo "Error:  Service \"${1}\" not found locally";
+			exit 1;
+		fi;
+
 	fi;
 
+	###	List only services matching a given state, such as "enabled"
+	### /bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
+
 fi;
-
-###	List only services matching a given state, such as "enabled"
-### /bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
-
 
 # ------------------------------------------------------------
 # SERVICE NAMING-CONVENTION/NAME-SYNTAX
@@ -49,8 +64,10 @@ fi;
 #
 #   askubuntu.com  |  "How to list all enabled services from systemctl?"  |  https://askubuntu.com/a/795245
 #
+#   cyberciti.biz  |  "Red Hat / CentOS Check and List Running Services Linux Command"  |  https://www.cyberciti.biz/faq/check-running-services-in-rhel-redhat-fedora-centoslinux/
+#
 #   linux.die.net  |  "services(5) - Linux man page"  |  https://linux.die.net/man/5/services
 #
-#   www.cyberciti.biz  |  "Red Hat / CentOS Check and List Running Services Linux Command"  |  https://www.cyberciti.biz/faq/check-running-services-in-rhel-redhat-fedora-centoslinux/
+#   unix.stackexchange.com  |  "What does “systemctl daemon-reload” do?"  |  https://unix.stackexchange.com/a/364787
 #
 # ------------------------------------------------------------

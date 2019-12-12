@@ -12,15 +12,15 @@ if [ -z "$1" ]; then
 else
 	#	Search for one, specific service
 	SERVICE_NAME="${1}";
-	SERVICE_LIST_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -z "${SERVICE_LIST_MATCHES}" ]; then
-		# If service is NOT found: Alert user & exit with return-code 1
-		echo "Error:  Service \"${1}\" not found locally";
-		exit 1;
-	else
+	SERVICE_MATCHES=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
+	if [ -n "${SERVICE_MATCHES}" ]; then
 		# If service IS found: Show service & exit with return-code 0
 		systemctl status "${SERVICE_LIST_MATCHES}" --no-pager --full;
 		exit 0;
+	else
+		# If service is NOT found: Alert user & exit with return-code 1
+		echo "Error:  Service \"${1}\" not found locally";
+		exit 1;
 	fi;
 
 fi;

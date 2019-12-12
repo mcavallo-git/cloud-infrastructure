@@ -23,17 +23,17 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	SERVICE_NAME="nginx";
-	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
 		# Service found to exist locally
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"${SERVICE_NAME}\"; ] (before reload)...";
-		# /bin/systemctl status "${SERVICE_NAME}";
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (before reload)...";
+		# /usr/sbin/service "${SERVICE_NAME}" status;
 
 		if [ -f "/run/nginx.pid" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
-			nginx -t && sleep 1 && /bin/systemctl reload "${SERVICE_NAME}";
+			nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" reload;
 		else
 			# Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
 			PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
@@ -44,11 +44,11 @@ else
 			fi;
 			# Start nginx service, again
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
-			 nginx -t && sleep 1 && /bin/systemctl start "${SERVICE_NAME}";
+			 nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" start;
 		fi;
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /bin/systemctl status \"${SERVICE_NAME}\"; ] (after reload)...";
-		# /bin/systemctl status "${SERVICE_NAME}";
+		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (after reload)...";
+		# /usr/sbin/service "${SERVICE_NAME}" status;
 		
 	else
 	

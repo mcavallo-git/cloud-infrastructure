@@ -63,7 +63,7 @@ else
 	else
 
 		# Stop the target service
-		/bin/systemctl stop "${SERVICE_NAME}"; RET_CODE=$?;
+		/usr/sbin/service "${SERVICE_NAME}" stop; RET_CODE=$?;
 		if [ "${RET_CODE}" != "0" ]; then
 			echo "";
 			echo "ERROR:";
@@ -84,7 +84,7 @@ else
 			# Link the old logs dir to the new logs dir with a symbolic link
 			ln -sf "${DIR_ARCH}/${SERVICE_NAME}" "${DIR_LOGS}/${SERVICE_NAME}";
 			# Start the target service
-			/bin/systemctl start "${SERVICE_NAME}";
+			/usr/sbin/service "${SERVICE_NAME}" start;
 
 			### Archive each log-file found (which is not the latest logfile, as-to avoid collisions with application file-access)
 			# for EACH_FILE in $(find "${DIR_LOGS}/${SERVICE_NAME}/" -type f -name "${GLOB_PATTERN}"); do

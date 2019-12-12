@@ -26,10 +26,10 @@ else
 	else
 		#	Search for one, specific service
 		SERVICE_NAME="${1}";
-		SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+		SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 			# If service IS found: Show service & exit with return-code 0
-			/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+			/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			exit 0;
 		else
 			# If service is NOT found: Alert user & exit with return-code 1

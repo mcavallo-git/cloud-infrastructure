@@ -187,12 +187,12 @@ else
 			test -f "${LATEST_ARCHIVE_PLUGINS}" && \
 			cd $(dirname "${LATEST_ARCHIVE_PLUGINS}") && \
 			7z x $(basename "${LATEST_ARCHIVE_PLUGINS}") && \
-			/bin/systemctl stop "${SERVICE_NAME}" && \
+			/usr/sbin/service "${SERVICE_NAME}" stop && \
 			mv "${JENKINS_HOME}/plugins" "${BAK_CURRENT_PLUGINS}" && \
 			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${BAK_CURRENT_PLUGINS}" && \
 			mv "$(dirname "${LATEST_ARCHIVE_PLUGINS}")/${JENKINS_HOME}/plugins" "${JENKINS_HOME}/plugins" && \
 			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${JENKINS_HOME}/plugins" && \
-			/bin/systemctl start "${SERVICE_NAME}" && \
+			/usr/sbin/service "${SERVICE_NAME}" start && \
 			rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
 			df -h ".";
 		fi;

@@ -83,7 +83,7 @@ else
 	# ------------------------------------------------------------
 	# Remove Jenkins' Service
 	SERVICE_NAME="jenkins";
-	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		echo -e "\n""Info: Removing Jenkins' Service";
 		read -p "  |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress

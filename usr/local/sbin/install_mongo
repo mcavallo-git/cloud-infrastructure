@@ -79,7 +79,7 @@ else
 		chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongodb";
 		chmod 0755 "/var/lib/mongodb";
 		SERVICE_NAME="mongod";
-		/bin/systemctl start "${SERVICE_NAME}";
+		/usr/sbin/service "${SERVICE_NAME}" start;
 
 		# ------------------------------------------------------------
 		# Setup Bind-IP as [ Loopback-IPv4,LAN-IPv4 ] instead of just the [ Loopback-IPv4 ]
@@ -89,7 +89,7 @@ else
 			sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  bindIp: 127.0.0.1/c\  bindIp: 127.0.0.1,${THIS_BIND_TARGET}  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting." "/etc/mongod.conf";
 			cat "/etc/mongod.conf";
 			SERVICE_NAME="mongod";
-			/bin/systemctl restart "${SERVICE_NAME}";
+			/usr/sbin/service "${SERVICE_NAME}" restart;
 		fi;
 
 		# ------------------------------------------------------------
@@ -118,7 +118,7 @@ security:
 }' "/etc/mongod.conf";
 				cat "/etc/mongod.conf";
 				SERVICE_NAME="mongod";
-				/bin/systemctl restart "${SERVICE_NAME}";
+				/usr/sbin/service "${SERVICE_NAME}" restart;
 			elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then
 				if [ ! -f "${NEW_KEYFILE}" ]; then
 					echo "Error:  keyFile not found at path \"${CURRENT_KEYFILE}\"";
@@ -132,7 +132,7 @@ security:
 						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  keyFile:/c\  keyFile: ${NEW_KEYFILE}" "/etc/mongod.conf";
 						cat "/etc/mongod.conf";
 						SERVICE_NAME="mongod";
-						/bin/systemctl restart "${SERVICE_NAME}";
+						/usr/sbin/service "${SERVICE_NAME}" restart;
 					fi;
 				fi;
 			else

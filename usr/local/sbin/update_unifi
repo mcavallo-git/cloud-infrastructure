@@ -24,7 +24,7 @@ else
 	# ------------------------------------------------------------
 
 	SERVICE_NAME="unifi";
-	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
 		# Show service status
 		echo "";
@@ -41,8 +41,8 @@ else
 		echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
 
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /bin/systemctl restart \"${SERVICE_NAME}\"; ]...";
-		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /bin/systemctl restart "${SERVICE_NAME}";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
+		DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
 
 
 		# Show service status

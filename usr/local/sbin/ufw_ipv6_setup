@@ -29,7 +29,7 @@ else
 	#  |--> Fail-out if UFW does NOT exist as local service
 	#
 	SERVICE_NAME="ufw";
-	SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		# ------------------------------------------------------------
 		#
@@ -99,8 +99,8 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_UFW} -eq 1 ]; then
 			SERVICE_NAME="ufw";
-			/bin/systemctl restart "${SERVICE_NAME}";
-			# /bin/systemctl status "${SERVICE_NAME}";
+			/usr/sbin/service "${SERVICE_NAME}" restart;
+			# /usr/sbin/service "${SERVICE_NAME}" status;
 		fi;
 	else
 		echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";

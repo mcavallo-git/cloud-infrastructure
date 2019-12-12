@@ -914,7 +914,7 @@ else
 		if [ ${ARGS_SYNC_JENKINS} -eq 1 ] && [ ${RESTART_SERVICE_JENKINS} -eq 0 ] && [ -x "/usr/sbin/service" ]; then
 
 			SERVICE_NAME="jenkins";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
 				# ------------------------------------------------------------
@@ -1135,19 +1135,19 @@ else
 		if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			# ------------------------------------------------------------
 			SERVICE_NAME="cron";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				/bin/systemctl restart "${SERVICE_NAME}";
-				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 			# ------------------------------------------------------------
 			SERVICE_NAME="crond";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				/bin/systemctl restart "${SERVICE_NAME}";
-				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
@@ -1159,10 +1159,10 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_JENKINS} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="jenkins";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				/bin/systemctl restart "${SERVICE_NAME}";
-				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
@@ -1173,7 +1173,7 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="nginx";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 				/usr/local/sbin/reload_nginx;
 			else
@@ -1187,10 +1187,10 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="sshd";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				/bin/systemctl restart "${SERVICE_NAME}";
-				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+				/usr/sbin/service "${SERVICE_NAME}" restart;
+				/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
@@ -1202,13 +1202,13 @@ else
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_UFW} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
 			SERVICE_NAME="ufw";
-			SERVICE_RET_CODE=$(/bin/systemctl status "${SERVICE_NAME}" --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				/bin/systemctl restart "${SERVICE_NAME}";
+				/usr/sbin/service "${SERVICE_NAME}" restart;
 				if [ -n "$(which ${SERVICE_NAME} 2>'/dev/null';)" ]; then
 					ufw reload;
 				fi;
-				/bin/systemctl status "${SERVICE_NAME}" --no-pager --full;
+				/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 			else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;

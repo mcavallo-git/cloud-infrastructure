@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_wan_ipv4" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+
+fi;
+
+# ------------------------------------------------------------
+# Determine WAN IPv4
+#
+
+START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
+
+# ------------------------------------------------------------
+# External server(s) to resolve WAN-IP through
+#
+RESOLVER_1="https://icanhazip.com";
+RESOLVER_2="https://ipecho.net/plain";
+RESOLVER_3="https://ident.me";
+RESOLVER_4="https://bot.whatismyipaddress.com";
+
+### Get WAN-Outgoing IPv4
+if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
+if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
+if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
+if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
+
+# REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+
+# ------------------------------------------------------------
+# Exit with appropriate return-code
+#
+
+if [ -v THIS_WAN_IPV4 ] && [ -n "${THIS_WAN_IPV4}" ]; then
+	echo "${THIS_WAN_IPV4}";
+	exit 0;
+else
+	exit 1;
+fi;
+
+#------------------------------------------------------------
+#
+# Citation(s)
+#
+#   domain  |  "title"  |  url
+#
+#------------------------------------------------------------

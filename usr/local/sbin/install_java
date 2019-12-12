@@ -21,39 +21,15 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	#
 	# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
-	#
-	if [ 0 -eq 1 ]; then
-
-
-	test $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 && apt-get -y update && apt-get -y install openjdk-8-jre-headless; test $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 && yum -y check-update && yum -y install java-1.8.0-openjdk-headless; # Install Java SE8 (one-liner)
-
-
-	fi;
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		#
-		# Debian, Ubuntu, etc.
-		#   |-->  openjdk-$(version)-jre-headless
-		#
-
-		# apt-cache search --names-only openjdk 8 headless | awk '{print $1}';
-
-		apt-get -y update;
-		apt-get -y install openjdk-8-jre-headless;
-
+		# Debian, Ubuntu, etc.  -->  openjdk-$(version)-jre-headless
+		apt-get -y update && apt-get -y install openjdk-8-jre-headless; # VIEW OTHER HEADLESS PKGS:  apt-cache search --names-only openjdk 8 headless | awk '{print $1}';
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		#
-		# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
-		#   |-->  java-$(version)-openjdk-headless
-		#
-		
-		# yum search java headless 1.8 --exclude=*debug*
-
-		yum -y check-update;
-		yum -y install java-1.8.0-openjdk-headless;
-
+		# Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.  -->  java-$(version)-openjdk-headless
+		yum -y check-update && yum -y install java-1.8.0-openjdk-headless; # VIEW OTHER HEADLESS PKGS:  yum search java headless 1.8 --exclude=*debug*
 	fi;
+
 
 fi;
 

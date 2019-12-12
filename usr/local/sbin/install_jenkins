@@ -58,7 +58,7 @@ else
 
 	SERVICE_NAME="jenkins";
 	SERVICE_MATCHES=$(/bin/systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${SERVICE_NAME}$/{print \$0}" | sort 2> '/dev/null';);
-	if [ -n "${SERVICE_MATCHES}" ]; then
+	if [ -z "${SERVICE_MATCHES}" ]; then
 
 		# ------------------------------------------------------------
 		

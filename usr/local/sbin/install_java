@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_java" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Search for available packages
+#
+if [ 0 -eq 1 ]; then
+#
+# The openjdk-headless package contains a minimal implementation of the JDK for executing Java applications on the command line
+#
+yum search openjdk 8 headless
+yum search java headless 1.8 --exclude=*debug*
+
+# apt-cache search java headless
+# apt-cache search openjdk 8 headless
+
+
+apt-cache search --names-only openjdk 8 headless | awk '{print $1}';
+
+
+# ------------------------------------------------------------
+#
+### Java Standard Edition (SE8) Package Names
+#
+###   Debian, Ubuntu, etc.
+#      openjdk-8-jre-headless
+#
+###   Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+#      java-1.8.0-openjdk-headless
+#
+# ------------------------------------------------------------
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Install Java CLI (e.g. "Headless")
+#
+
+apt-get -y update && apt-get -y install openjdk-8-jre-headless 2>'/dev/null' || yum -y check-update && yum -y install java-1.8.0-openjdk-headless 2>'/dev/null';
+
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   linode.com  |  "Install Java on Centos 7"  |  https://www.linode.com/docs/development/java/install-java-on-centos/#install-java-runtime-environment-java-jre
+#
+# ------------------------------------------------------------

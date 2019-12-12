@@ -101,20 +101,29 @@ else
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
 
-	SERVICE_NAME="firewalld";
-	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	FIREWALL_SERVICE="firewalld";
+	SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		# Open necessary firewall port(s)
-		SERVICE_ENABLED_GREP=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full | grep '; enabled');
+		SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
 		if [ -n "${SERVICE_ENABLED_GREP}" ]; then
-			systemctl enable firewalld; \
-			systemctl start firewalld; \
-			firewall-cmd --set-default-zone=public; \
-			firewall-cmd --permanent --zone=public --add-service={ssh,mongodb}; \
-			firewall-cmd --permanent --add-port=27017/tcp; \
-			firewall-cmd --permanent --add-port=22/tcp; \
-			firewall-cmd --reload; \
-			firewall-cmd --list-all;
+			echo "";
+			echo "------------------------------------------------------------";
+			firewall-cmd --info-service="${SERVICE_NAME}";
+			echo "------------------------------------------------------------";
+			echo "";
+			READ_TIMEOUT=60; read -p "Open ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+			echo "";
+			if [ ${RETURN_CODE_READ} -gt 128 ]; then
+				echo -e "Response timed out after ${READ_TIMEOUT}s";
+			elif [ -z "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+				echo -e "\n""Info: Confirmed - Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
+				firewall-cmd --reload;
+				firewall-cmd --list-all;
+			else
+				echo "Denied - Skipping firewall configuration for \"${SERVICE_NAME}\" service";
+			fi;
 		fi;
 
 	else
@@ -135,9 +144,8 @@ else
 	fi;
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
-		READ_TIMEOUT=60;
 		echo "";
-		read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+		READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
 			echo -e "Response timed out after ${READ_TIMEOUT}s";

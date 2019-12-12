@@ -13,7 +13,7 @@ else
 	MATCHED_SERVICE=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | awk "/^${1}$/{print \$0}" | sort 2> '/dev/null';);
 	if [ -z "${MATCHED_SERVICE}" ]; then
 		# If service is NOT found: Alert user & exit with return-code 1
-		echo "Service \"${1}\" not found locally";
+		echo "Error:  Service \"${1}\" not found locally";
 		exit 1;
 	else
 		# If service IS found: Show service & exit with return-code 0

@@ -135,13 +135,13 @@ else
 	fi;
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
-		CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
 		READ_TIMEOUT=60;
 		read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
 			echo -e "Response timed out after ${READ_TIMEOUT}s";
 		elif [ -z "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+			CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
 			echo -e "\n""Info: Confirmed - Downloading Jenkins config from \"cloud-infrastructure\" repository";
 			echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
 			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";

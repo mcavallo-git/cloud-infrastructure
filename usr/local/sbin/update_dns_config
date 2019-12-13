@@ -239,10 +239,10 @@ else
 					# LAN Netmask
 					if [ $(cat "${NMCLI_CONF}" | grep 'PREFIX=' | wc -l;) -gt 0 ]; then
 						echo "";
-						sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_NETMASK}\"" "${NMCLI_CONF}";
+						sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_PREFIX}\"" "${NMCLI_CONF}";
 					else
 						echo "";
-						echo "PREFIX=\"${THIS_LAN_NETMASK}\"" >> "${NMCLI_CONF}";
+						echo "PREFIX=\"${THIS_LAN_PREFIX}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Boot Protocol

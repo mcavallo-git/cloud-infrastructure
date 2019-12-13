@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_unifi" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_unifi" -O "/usr/local/sbin/install_unifi" -q && chmod 0755 "/usr/local/sbin/install_unifi" && /usr/local/sbin/install_unifi;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Instantiate runtime variables
+
+	echo "";
+	READ_TIMEOUT=60; read -p "Install Unifi service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+	echo "";
+	if [ ${RETURN_CODE_READ} -gt 128 ]; then
+		echo -e "Response timed out after ${READ_TIMEOUT}s";
+	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+		echo -e "\n""Info: Confirmed - Attempting to instakll Unifi service...""\n";
+
+		# Install pre-requisite package(s)
+		apt-get -y update; apt-get -y install apt-transport-https ca-certificates openjdk-8-jre-headless wget;
+
+		# Add the Unifi package repository
+		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee "/etc/apt/sources.list.d/100-ubnt-unifi.list";
+
+		# Import Unifi's official GPG Key
+		wget -O "/etc/apt/trusted.gpg.d/unifi-repo.gpg" "https://dl.ui.com/unifi/unifi-repo.gpg";
+
+		# Install Unifi for Debian, Ubuntu, etc.
+		apt-get -y update; apt-get -y install unifi;
+
+		# Direct user to browser-insterface (to continue installation)
+		echo -e "\n""   Open a browser to  [ https://$(hostname):8443 ]  to manage this unifi instance""\n";
+
+	else
+		echo "Denied - Skipping command";
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   help.ubnt.com  |  "UniFi - How to Install and Update via APT on Debian or Ubuntu"  |  https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-and-Update-via-APT-on-Debian-or-Ubuntu
+#
+# ------------------------------------------------------------

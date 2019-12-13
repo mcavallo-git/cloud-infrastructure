@@ -185,10 +185,11 @@ else
 	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 
 	# Network config filepaths
-	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
+	ETC_DHCPCD_CONF="/etc/dhcpcd.conf"; # DHCPCD Service Config-File
 	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
 	NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
 	NETWORK_SYSCONF="/etc/sysconfig/network";
+	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
 
 	# Rename/Remove old network config filepath
 	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then if [ -f "${DEBIAN_NETWORK_CONF}"]; then rm -f "${OLD_DEBIAN_CONF}"; else mv -f "${OLD_DEBIAN_CONF}" "${DEBIAN_NETWORK_CONF}"; fi; fi;
@@ -531,6 +532,20 @@ else
 					echo "      gateway ${THIS_GATEWAY_IPV4}" >> "${DEBIAN_NETWORK_CONF}";
 					echo "" >> "${DEBIAN_NETWORK_CONF}";
 					# ------------------------------------------------------------
+					# Set /etc/dhcpcd.conf
+					if [ -f "${ETC_DHCPCD_CONF}" ]; then
+						sed_remove_whitespace_lines='/^\s*$/d';
+						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^# static IP configuration/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^interface ${THIS_LAN_NIC}/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static ip_address=/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static routers=/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static domain_name_servers=/d" "${ETC_DHCPCD_CONF}";
+						echo "# static IP configuration" >> "${ETC_DHCPCD_CONF}";
+						echo "interface ${THIS_LAN_NIC}" >> "${ETC_DHCPCD_CONF}";
+						echo "static ip_address=${SET_STATIC_IPV4}" >> "${ETC_DHCPCD_CONF}";
+						echo "static routers=${THIS_GATEWAY_IPV4}" >> "${ETC_DHCPCD_CONF}";
+						echo "static domain_name_servers=${DNS_LOOKUP_1}" >> "${ETC_DHCPCD_CONF}";
+					fi;
 				fi;
 			fi;
 

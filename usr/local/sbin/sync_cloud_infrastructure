@@ -97,6 +97,7 @@ else
 	ARGS_SYNC_JENKINS=0;
 	ARGS_SYNC_NGINX=0;
 	ARGS_SYNC_SSH_CONFIG=0;
+	ARGS_SYNC_TIMEZONE=0;
 	ARGS_SYNC_UFW=0;
 
 	RESTART_SERVICE_CRON=0;
@@ -149,6 +150,7 @@ else
 				ARGS_SYNC_JENKINS=1;
 				ARGS_SYNC_NGINX=1;
 				ARGS_SYNC_SSH_CONFIG=1;
+				ARGS_SYNC_TIMEZONE=1;
 				ARGS_SYNC_UFW=1;
 			fi;
 
@@ -180,6 +182,10 @@ else
 				ARGS_SYNC_SSH_CONFIG=1; # Parse SSH-Config calls
 			fi;
 
+			if [ "${EACH_ARG}" == "-z" ] || [ "${EACH_ARG}" == "--timezone" ]; then
+				ARGS_SYNC_TIMEZONE=1; # Parse Timezone-Config calls
+			fi;
+
 			if [ "${EACH_ARG}" == "--ufw" ]; then
 				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
@@ -202,6 +208,7 @@ else
 		echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
 		echo "Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
 		echo "Debug:  ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
+		echo "Debug:  ARGS_SYNC_TIMEZONE = [ ${ARGS_SYNC_TIMEZONE} ]";
 		echo "Debug:  ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
 
 	fi;
@@ -658,6 +665,22 @@ else
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					fi;
+				fi;
+			fi;
+		fi;
+
+
+		# ------------------------------------------------------------
+		# Sync Timezone
+		TZ="America/Chicago";
+		if [ ${ARGS_SYNC_TIMEZONE} -eq 1 ] && [ "$(cat /etc/timezone;)" != "${TZ}" ]; then
+				echo -e "\n";
+				echo "Info: Request to set Timezone to \"${TZ}\"";
+				read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				echo "";
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
+					echo $TZ > "/etc/timezone";
 				fi;
 			fi;
 		fi;

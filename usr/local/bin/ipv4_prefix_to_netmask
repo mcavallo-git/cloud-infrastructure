@@ -1,0 +1,15 @@
+#!/bin/bash
+
+while IFS="/" read IP S; do
+	M=$(( 0xffffffff ^ ((1 << (32-S)) -1) ));
+	echo "$IP netmask $(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))";
+done;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   unix.com  |  "How to change ip addressing format from CIDR notation to netmask and vice versa?"  |  https://www.unix.com/302927657-post2.html?s=3a597f119bd3ffbdc37eb461463a0e09
+#
+# ------------------------------------------------------------

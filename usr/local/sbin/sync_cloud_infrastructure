@@ -221,7 +221,7 @@ else
 
 	# Debian-specific packages
 	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		REQUIRED_PKGS_ARRAY+=("cron");
+		REQUIRED_PKGS_ARRAY+=("cron"); # Debian distros - include the cron package
 	fi;
 	# Determine if any required packages are missing
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
@@ -238,13 +238,12 @@ else
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# Debian distros (Ubuntu, Raspbian, etc.)
 			echo -e "\n""Info: Calling [ apt-get update -y && apt-get install -y ${MISSING_PKGS_ARRAY[@]}; ]...";
-			apt-get update; apt-get install -y ${MISSING_PKGS_ARRAY[@]};
-			REQUIRED_PKGS_ARRAY+=("cron"); # Debian distros - include the cron package
+			apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
 
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# RHEL, CentOS
 			echo -e "\n""Info: Calling [ yum check-update -y && yum install -y ${MISSING_PKGS_ARRAY[@]}; ]...";
-			yum check-update -y; yum install -y ${MISSING_PKGS_ARRAY[@]};
+			yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]};
 
 		elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# Alpine
@@ -260,9 +259,18 @@ else
 			fi;
 		done;
 		if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
-			echo -e "\n""Warning : Attempting fallback installation-method for package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
-			echo "Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
-			yum check-update -y && yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			echo -e "\n""Warning : Attempting fallback package installation-method";
+			RET_CODE=1
+			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
+				echo "Info:  Calling [ apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; ]...";
+				apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+				echo "Info:  Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
+				yum -y check-update; yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
+				echo "Info:  Calling [ apk update -y; apk add -y bc dos2unix git rsync vim wget; ]...";
+				apk update -y; apk add -y bc dos2unix git rsync vim wget; RET_CODE=$?;
+			fi;
 			if [ ${RET_CODE} -ne 0 ]; then 
 				echo -e "\n""Error: Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
 				sleep 60;

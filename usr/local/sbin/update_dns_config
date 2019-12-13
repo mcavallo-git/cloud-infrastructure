@@ -172,17 +172,19 @@ else
 	if [ "${IS_LINUX}" != "1" ]; then echo -e "\n""ERROR:  Must run in a Linux-based environment"; exit 1; fi;
 
 	# Detect current IP Config
-	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;); \
-	THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p" | head -n 1;); \
-	THIS_LAN_NETMASK=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\7/p" | head -n 1;); \
-	THIS_LAN_IPV4=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\9/p" | head -n 1;); \
-	THIS_GATEWAY_IPV4=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\2/p" | head -n 1;); \
-	THIS_LAN_NIC=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\3/p" | head -n 1;); \
-	test -z "${THIS_LAN_IPV4}" && THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' | head -n 1 2>'/dev/null';); \
-	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' | head -n 1 2>'/dev/null';); \
-	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;); \
+	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;);
+	THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p" | head -n 1;);
+	THIS_LAN_PREFIX=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\7/p" | head -n 1;);
+	THIS_LAN_IPV4=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\9/p" | head -n 1;);
+	THIS_GATEWAY_IPV4=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\2/p" | head -n 1;);
+	THIS_LAN_NIC=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\3/p" | head -n 1;);
+	test -z "${THIS_LAN_IPV4}" && THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' | head -n 1 2>'/dev/null';);
+	test -z "${THIS_LAN_PREFIX}" && THIS_LAN_PREFIX=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' | head -n 1 2>'/dev/null';);
+	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;);
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
-
+	test -n "${THIS_LAN_PREFIX}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_NETMASK})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
+	
+	
 	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then rm -f "${OLD_DEBIAN_CONF}"; fi;
 
 	# Network config filepaths
@@ -653,6 +655,8 @@ fi;
 
 # ------------------------------------------------------------
 # Citation(s)
+#
+#   linuxconfig.org  |  "How to setup a Static IP address on Debian Linux"  |  https://linuxconfig.org/how-to-setup-a-static-ip-address-on-debian-linux
 #
 #   reddit.com  |  "What DNS servers to use?"  |  https://www.reddit.com/r/privacy/comments/8mx6pe/what_dns_servers_to_use/
 #

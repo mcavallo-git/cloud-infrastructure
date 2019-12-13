@@ -3,6 +3,14 @@
 # LOCAL_SBIN="/usr/local/sbin/update_dns_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then
+# Example Call(s)
+
+/usr/local/sbin/update_dns_config --static-ip "10.0.0.10"; # Set IPv4 as static to 10.0.0.10
+
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -175,9 +183,11 @@ else
 	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;); \
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
 
+	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then rm -f "${OLD_DEBIAN_CONF}"; fi;
+
 	# Network config filepaths
 	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
-	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; # AWS default cloud-config
+	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
 	NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
 	NETWORK_SYSCONF="/etc/sysconfig/network";
 
@@ -437,10 +447,8 @@ else
 			#
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifup";
-			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""${BOX_CHECK} Passed  [which \"${REQUIRED_METHOD_NAME}\";] ";
-			else
-				echo -e "\n""${BOX_XMARK} Failed [which \"${REQUIRED_METHOD_NAME}\";] ";
+			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+				echo -e "\n""Error:  Failed [ which \"${REQUIRED_METHOD_NAME}\"; ] ";
 				echo -e "\n""Please install required package via:";
 				echo -e "\n""  > apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\";";
 				echo -e "\n""  > reboot;";
@@ -448,11 +456,9 @@ else
 			fi;
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifdown";
-			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""${BOX_CHECK} Passed  [which \"${REQUIRED_METHOD_NAME}\";] ";
-			else
-				echo -e "\n""${BOX_XMARK} Failed [which \"${REQUIRED_METHOD_NAME}\";] ";
-				echo -e "\n""Please install required package via:";
+			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+				echo -e "\n""Error:  Failed [ which \"${REQUIRED_METHOD_NAME}\"; ] ";
+				echo -e "\n""        Please install required package via:";
 				echo -e "\n""  > apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\";";
 				echo -e "\n""  > reboot;";
 				echo ""; exit 1;

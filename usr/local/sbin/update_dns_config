@@ -236,7 +236,7 @@ else
 						echo "GATEWAY=\"${THIS_GATEWAY_IPV4}\"" >> "${NMCLI_CONF}";
 					fi;
 
-					# LAN Netmask
+					# LAN Prefix (2-digit representation of Netmask)
 					if [ $(cat "${NMCLI_CONF}" | grep 'PREFIX=' | wc -l;) -gt 0 ]; then
 						echo "";
 						sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_PREFIX}\"" "${NMCLI_CONF}";

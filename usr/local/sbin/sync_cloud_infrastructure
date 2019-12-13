@@ -584,7 +584,6 @@ else
 		#
 		# /etc/ssh/sshd_config
 		#
-		### RESTART LAN IPV4
 		if [ -n "$(/usr/local/bin/get_lan_ipv4 | grep 10.0.0.10;)" ] && [ "$(/usr/local/bin/get_wan_ipv4;)" == "$(dig +short r3.mcavallo.com;)" ]; then
 			SSHD_CONFIG_PASS_RESET="/etc/ssh/sshd_config.reset-password";
 			cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_RESET}" "/etc/ssh/sshd_config";

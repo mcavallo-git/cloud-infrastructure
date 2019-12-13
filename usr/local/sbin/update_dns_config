@@ -182,7 +182,7 @@ else
 	test -z "${THIS_LAN_PREFIX}" && THIS_LAN_PREFIX=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' | head -n 1 2>'/dev/null';);
 	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;);
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
-	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_NETMASK})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
+	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 
 	# Network config filepaths
 	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources

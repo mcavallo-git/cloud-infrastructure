@@ -19,7 +19,7 @@ ClientAliveCountMax 10
 
 ClientAliveInterval 30
 
-DenyUsers boneal
+DenyUsers pi
 
 IgnoreRhosts yes
 
@@ -85,31 +85,33 @@ X11Forwarding no
 ForceCommand internal-sftp
 
 #
-### addgroup --system "sftp_jailed_users"; # Add SFTP jail group
+# addgroup --system "sftp_jailed_users"; # Add SFTP jail group
 #
-### usermod -G "sftp_jailed_users" "USERNAME"; # Apply SFTP jail (to user)
+# usermod -G "sftp_jailed_users" "USERNAME"; # Apply SFTP jail (to user)
 #
 # ------------------------------------------------------------
-#   SFTP over Port-24
+### SFTP over Port-24
 #
 # Match User SFTP_USER_1,SFTP_USER_2 LocalPort 24
 #   AuthenticationMethods publickey
 #   AllowAgentForwarding no
 #   X11Forwarding no
 #   ForceCommand internal-sftp
-# 
+#
 #
 # ------------------------------------------------------------
-#   BackEnd Automation Users (logins from external APIs)
-# 
+### BackEnd Automation Users (logins from external APIs)
+#
 # Match User JENKINS_NODE_USER Address 1.2.3.4 LocalPort 22
 #   AuthenticationMethods publickey
-# 
+#
 # Match User BACKUP_USER Address 1.2.3.4 LocalPort 22
 #   AuthenticationMethods publickey
-# 
+#
+#
 # ------------------------------------------------------------
-# Citation(s)
+#
+#  Citation(s)
 #
 #    Documentation
 #      --> https://freebsd.org/cgi/man.cgi?sshd_config(5)

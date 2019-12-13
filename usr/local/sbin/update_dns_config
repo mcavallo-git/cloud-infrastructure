@@ -191,7 +191,7 @@ else
 	NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
 	NETWORK_SYSCONF="/etc/sysconfig/network";
 
-	# Remove old network config filepath
+	# Rename/Remove old network config filepath
 	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then if [ -f "${DEBIAN_NETWORK_CONF}"]; then rm -f "${OLD_DEBIAN_CONF}"; else mv -f "${OLD_DEBIAN_CONF}" "${DEBIAN_NETWORK_CONF}"; fi; fi;
 
 	if [ -n "${NMCLI_CONF}" ]; then

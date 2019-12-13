@@ -169,7 +169,7 @@ else
 	# Kernel-Info
 	IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
 	IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
-	if [ "${IS_LINUX}" != "1" ]; then echo -e "\n""ERROR:  Must run in a Linux-based environment"; exit 1; fi;
+	if [ "${IS_LINUX}" != "1" ]; then echo -e "\n""Error:  Must run in a Linux-based environment"; exit 1; fi;
 
 	# Detect current IP Config
 	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;);
@@ -362,12 +362,12 @@ else
 			echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; /etc/init.d/network restart; ] )";
 			read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo -e "\n""Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
+				echo -e "\n""Info:  Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
 				nmcli connection reload;
 				/etc/init.d/network restart;
 				# service NetworkManager restart;
 			else
-				echo -e "\n""Postponing NetworkManager restart";
+				echo -e "\n""Info:  Postponing NetworkManager restart";
 				exit 1;
 			fi;
 
@@ -400,13 +400,13 @@ else
 		FILE_TO_BACKUP="${ETC_RESOLVCONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
 			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
+			echo -e "\n""Info:  Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
 			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 		FILE_TO_BACKUP="${DEBIAN_NETWORK_CONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
 			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
+			echo -e "\n""Info:  Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
 			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 
@@ -433,9 +433,8 @@ else
 				echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
 			else
 				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Please install required package via:";
-				echo -e "\n""  > apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\";";
-				echo -e "\n""  > reboot;";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
 				echo ""; exit 1;
 			fi;
 
@@ -450,28 +449,26 @@ else
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifup";
 			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Failed [ which \"${REQUIRED_METHOD_NAME}\"; ] ";
-				echo -e "\n""Please install required package via:";
-				echo -e "\n""  > apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\";";
-				echo -e "\n""  > reboot;";
+				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
 				echo ""; exit 1;
 			fi;
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifdown";
 			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Failed [ which \"${REQUIRED_METHOD_NAME}\"; ] ";
-				echo -e "\n""        Please install required package via:";
-				echo -e "\n""  > apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\";";
-				echo -e "\n""  > reboot;";
+				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
 				echo ""; exit 1;
 			fi;
 
 			# show "${ETC_RESOLVCONF}" file (configuration before-start)
-			echo -e "\n""Calling [cat \"${ETC_RESOLVCONF}\"]";
+			echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
 			echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
 
 			# show DNS_NAMESRVR_1,2,3 & Domain-search vars
-			echo -e "\n""Attempting to configure $(hostname) to use the following DNS Next-Hops:";
+			echo -e "\n""Info:  Attempting to configure $(hostname) to use the following DNS Next-Hops:";
 			echo "${DASHES}";
 			echo "DNS_NAMESRVR_1 = \"${DNS_NAMESRVR_1}\"";
 			echo "DNS_NAMESRVR_2 = \"${DNS_NAMESRVR_2}\"";
@@ -481,7 +478,7 @@ else
 
 			# Create the eth0 config file (if it is a valid filepath yet doesnt exist)
 			if [ -n "${DEBIAN_NETWORK_CONF}" ] && [ ! -f "${DEBIAN_NETWORK_CONF}" ]; then
-				echo -e "\n""Calling [echo \"\" > \"${DEBIAN_NETWORK_CONF}\";]...";
+				echo -e "\n""Info:  Calling [echo \"\" > \"${DEBIAN_NETWORK_CONF}\";]...";
 				echo "" > "${DEBIAN_NETWORK_CONF}";
 			fi;
 
@@ -530,11 +527,11 @@ else
 
 			if [ -n "${DNS_LOOKUP_1}" ] && [ -n "${DNS_LOOKUP_2}" ] && [ -n "${DNS_LOOKUP_3}" ] && [ -n "${ACTION_DOMAIN_RESOLUTION}" ]; then # all variables are not null
 
-				echo -e "\n""\"${DEBIAN_NETWORK_CONF}\"'s DNS settings are up-to-date";
+				echo -e "\n""Info:  \"${DEBIAN_NETWORK_CONF}\"'s DNS settings are up-to-date";
 				
 			else # at least one DNS-IP/Hostname is missing
 
-				echo -e "\n""Updating DNS Servers which build out of file \"${DEBIAN_NETWORK_CONF}\"";
+				echo -e "\n""Info:  Updating DNS Servers which build out of file \"${DEBIAN_NETWORK_CONF}\"";
 				
 				# "dns-search"
 				if [ -n "${DNS_SEARCH_DOMAIN}" ] && [ "${ACTION_DOMAIN_RESOLUTION}" == "SET" ]; then
@@ -551,8 +548,7 @@ else
 					fi;
 
 				else
-					echo -e "\n""Skipping Setting: Local domain-name resolution (${ETC_RESOLVCONF} setting 'search ...')";
-					echo "Skip Reason: Required variable 'DNS_SEARCH_DOMAIN' is undefined/empty (holds domain-name string)";
+					echo -e "\n""Info:  Skipping update for resolvconf's local domain-name resolution (\$DNS_SEARCH_DOMAIN is undefined/empty)";
 
 				fi;
 				
@@ -580,12 +576,12 @@ else
 				echo "Updating Hostname-Resolving Service \"systemd-resolve\" via associated config-file \"${SystemResolveConf}\" ...";
 				CAN_USE_SYSRESOLVE_STATUS="$(systemd-resolve --help | grep status)";
 				
-				echo -e "\n""Calling [cat \"${SystemResolveConf}\";] (BEFORE EDITS)";
+				echo -e "\n""Info:  Calling [cat \"${SystemResolveConf}\";] (BEFORE EDITS)";
 				echo "${DASHES}"; cat "${SystemResolveConf}"; echo "${DASHES}";
 
 				if [ -n "${CAN_USE_SYSRESOLVE_STATUS}" ]; then
 					# Show "systemd-resolve --status" command's output BEFORE-EDITS (shows live DNS setup)
-					echo -e "\n""Calling [systemd-resolve --status] (BEFORE EDITS)";
+					echo -e "\n""Info:  Calling [systemd-resolve --status] (BEFORE EDITS)";
 					echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
 				fi;
 
@@ -596,7 +592,7 @@ else
 
 				sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${SystemResolveConf}";
 				if [ -d "${SystemNetworkConfDir}" ]; then
-					echo -e "\n""Searching directory for config-files: \"${SystemNetworkConfDir}\"...";
+					echo -e "\n""Info:  Searching \"${SystemNetworkConfDir}\" for DNS config-files...";
 					for EachNetworkFile in ${SystemNetworkConfDir}/*; do
 						if [ -f "${EachNetworkFile}" ]; then
 							echo "Applying DNS Configuration to Network File: \"${EachNetworkFile}\"";
@@ -611,30 +607,36 @@ else
 
 
 			if [ "${REFRESH_DNS_FILE}" == "1" ]; then
-				# take down the main network interface & bring it back up (in one statement)
-				echo -e "\n""Calling [ifdown -a && ifup -a;]...";
-				echo "(takes down the main network interface & bring it back up, in one statement)...";
+				# Take down the main network interface & bring it back up (in one statement)
+				echo -e "\n""Info:  Calling [ ifdown -a && ifup -a; ] (takes down the main network interface & bring it back up, in one statement)...";
 				echo "${DASHES}"; ifdown -a && ifup -a; echo "${DASHES}";
-				
-				# give the (virtual) NIC a few seconds to grab a connection
-				sleep 5;
-				
-				# refresh the resolvconf DNS file
-				echo -e "\n""Calling [resolvconf -u]...";
+
+				# Allow the networking service ample time to refresh
+				sleep 2;
+
+				# Restart the networking service
+				echo -e "\n""Info:  Calling [ /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); ]...";
+				echo "${DASHES}"; /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); echo "${DASHES}"; 
+
+				# Allow the networking service ample time to refresh
+				sleep 2;
+
+				# Reload the configuration into resolvconf's DNS file
+				echo -e "\n""Info:  Calling [ resolvconf -u ]...";
 				echo "${DASHES}"; resolvconf -u; echo "${DASHES}";
 				echo "";
 
 				if [ -f "${SystemResolveConf}" ]; then
 					# Show "systemd-resolve --status" command's output AFTER-EDITS (shows live DNS setup)
-					echo -e "\n""Restarting local DNS resolution-service via [service systemd-resolved restart;]";
+					echo -e "\n""Info:  Restarting local DNS resolution-service via [service systemd-resolved restart;]";
 					echo "${DASHES}"; service systemd-resolved restart; echo "${DASHES}";
 					
-					echo -e "\n""Calling [cat \"${SystemResolveConf}\";]";
+					echo -e "\n""Info:  Calling [cat \"${SystemResolveConf}\";]";
 					echo "${DASHES}"; cat "${SystemResolveConf}"; echo "${DASHES}";
 
 					if [ -n "${CAN_USE_SYSRESOLVE_STATUS}" ]; then
 						# Show "systemd-resolve --status" command's output AFTER-EDITS (shows live DNS setup)
-						echo -e "\n""Calling [systemd-resolve --status]";
+						echo -e "\n""Info:  Calling [systemd-resolve --status]";
 						echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
 					fi;
 				fi;
@@ -657,15 +659,15 @@ else
 	sleep 2;
 
 	if [ -f "${DEBIAN_NETWORK_CONF}" ]; then
-		echo -e "\n""Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
+		echo -e "\n""Info:  Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
 		echo "${DASHES}"; cat "${DEBIAN_NETWORK_CONF}"; echo "${DASHES}";
 	elif [ -f "${NMCLI_CONF}" ]; then
-		echo -e "\n""Calling [cat \"${NMCLI_CONF}\"]";
+		echo -e "\n""Info:  Calling [cat \"${NMCLI_CONF}\"]";
 		echo "${DASHES}"; cat "${NMCLI_CONF}"; echo "${DASHES}";
 	fi;
 
 	if [ -f "${ETC_RESOLVCONF}" ]; then
-		echo -e "\n""Calling [cat \"${ETC_RESOLVCONF}\"]";
+		echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
 		echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
 	fi;
 

@@ -3,6 +3,16 @@
 # LOCAL_SBIN="/usr/local/sbin/add_user" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then
+#
+# Example Call
+#
+
+env USER_NAME="cavalol" USER_GNAME="cavalol" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" add_user;
+
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #

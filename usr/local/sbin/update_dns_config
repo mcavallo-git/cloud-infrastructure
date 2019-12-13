@@ -516,12 +516,13 @@ else
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					# ------------------------------------------------------------
-					# Local LAN IPv4 Address
 					echo "" > "${DEBIAN_NETWORK_CONF}";
+					# Loopback Address
 					echo "# The loopback network interface" >> "${DEBIAN_NETWORK_CONF}";
 					echo "auto lo" >> "${DEBIAN_NETWORK_CONF}";
 					echo "iface lo inet loopback" >> "${DEBIAN_NETWORK_CONF}";
 					echo "" >> "${DEBIAN_NETWORK_CONF}";
+					# LAN Address
 					echo "# The primary network interface" >> "${DEBIAN_NETWORK_CONF}";
 					echo "allow-hotplug eth0" >> "${DEBIAN_NETWORK_CONF}";
 					echo "iface ${THIS_LAN_NIC} inet static" >> "${DEBIAN_NETWORK_CONF}";

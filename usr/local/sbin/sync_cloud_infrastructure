@@ -584,12 +584,6 @@ else
 		#
 		# /etc/ssh/sshd_config
 		#
-		if [ -n "$(/usr/local/bin/get_lan_ipv4 | grep 10.0.0.10;)" ] && [ "$(/usr/local/bin/get_wan_ipv4;)" == "$(dig +short r3.mcavallo.com;)" ]; then
-			SSHD_CONFIG_PASS_RESET="/etc/ssh/sshd_config.reset-password";
-			cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_RESET}" "/etc/ssh/sshd_config";
-			RESTART_SERVICE_SSH=1;
-		fi;
-
 		if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
 			if [ -z "$(which ssh 2>'/dev/null')" ]; then
@@ -602,7 +596,6 @@ else
 				SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_MFA}" "${SSHD_CONFIG_MFA}";
 				SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_NO_MFA}" "${SSHD_CONFIG_NO_MFA}";
 				SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_AUTH}" "${SSHD_CONFIG_PASS_AUTH}";
-				SSHD_CONFIG_PASS_RESET="${SSHD_CONFIG_LIVE}.reset-password"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_RESET}" "${SSHD_CONFIG_PASS_RESET}";
 
 				if [ -d "/etc/ssh/authorized_keys" ] && [ "$(find /etc/ssh/authorized_keys -type f | wc -l;)" != "0" ]; then
 					# At least one SSH-Key exists in the standard keyfile directory (/etc/ssh/authorized_keys)

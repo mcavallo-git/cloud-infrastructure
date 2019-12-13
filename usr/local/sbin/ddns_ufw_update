@@ -53,9 +53,7 @@ else
 	#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 	#        |--> Example:   tcp:22:demo.example.com
 	#
-	if [ -v RUNTIME_SERVICE_USERS ]; then unset RUNTIME_SERVICE_USERS; fi; # [Re-]Instantiate bash array (if-set) via unset + declare
-	if [ -v RUNTIME_SERVICE_USERS[@] ]; then unset RUNTIME_SERVICE_USERS; fi; # [Re-]Instantiate bash array (if-set) via unset + declare
-	declare -A RUNTIME_SERVICE_USERS;
+	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
 	RUNTIME_SERVICE_USERS+=(["sshd"]="root");
 	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");
 	# RUNTIME_SERVICE_USERS+=(["java"]="jenkins");
@@ -199,18 +197,18 @@ else
 
 			else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
-				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.hosts";
+				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.ufw";
 
 				if [ ! -f "${EACH_HOSTS_FILE}" ]; then
-					echo -e "\n""Error: Whitelist hosts-file for service \"${EACH_SERVICE}\" not found @ filepath \"${EACH_HOSTS_FILE}\"";
+					echo -e "\n""Error: Whitelist hosts file for service \"${EACH_SERVICE}\" not found @ filepath \"${EACH_HOSTS_FILE}\"";
 					echo "  |--> Skipping Whitelist for Service \"${EACH_HOSTS_FILE}\"";
 
 				else
 
 					echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
-					echo "  |-> Using whitelist-file \"${EACH_HOSTS_FILE}\"";
+					echo "  |-> Using whitelist file \"${EACH_HOSTS_FILE}\"";
 
-					# Iterate-over each line in the whitelist-file
+					# Iterate-over each line in the whitelist file
 					sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
 						if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
@@ -255,7 +253,7 @@ else
 									echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
 									# exit 1;
 								fi;
-								# Remove old whitelist-rule(s)
+								# Remove old whitelist rule(s)
 								if [ -n "${OLD_RESOLVED_IPV4}" ]; then
 									if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
 										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};

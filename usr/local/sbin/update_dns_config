@@ -184,14 +184,15 @@ else
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
 	test -n "${THIS_LAN_PREFIX}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_NETMASK})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 	
-	
-	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then rm -f "${OLD_DEBIAN_CONF}"; fi;
 
 	# Network config filepaths
 	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
 	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
 	NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
 	NETWORK_SYSCONF="/etc/sysconfig/network";
+
+	# Remove old network config filepath
+	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then if [ -f "${DEBIAN_NETWORK_CONF}"]; then rm -f "${OLD_DEBIAN_CONF}"; else mv -f "${OLD_DEBIAN_CONF}" "${DEBIAN_NETWORK_CONF}"; fi; fi;
 
 	if [ -n "${NMCLI_CONF}" ]; then
 

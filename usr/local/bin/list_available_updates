@@ -6,7 +6,17 @@
 
 if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	# ------------------------------------------------------------
+	# Get Installed Packages
+	#
+	YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
+	# ------------------------------------------------------------
+	# Get Available Packages
+	#
+	YUM_LIST_UPDATES=$(yum list updates | grep -v '^Loaded' | grep -v '^Updated Packages';);
+	#
+	# ------------------------------------------------------------
 	# Table Header
+	#
 	if [ -z "${COLUMNS}" ]; then
 		COLUMNS=100;
 	fi;
@@ -14,10 +24,10 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	HEADER=$(printf "%-${MAX_CHARS}s" "Name")$(printf "%-${MAX_CHARS}s" "Version-Installed")$(printf "%-${MAX_CHARS}s" "Version-Available");
 	echo -e "${HEADER}\n";
 	printf "%${COLUMNS}s" | tr " " "-";
+	echo "";
 	# ------------------------------------------------------------
 	# Table Body
-	YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
-	YUM_LIST_UPDATES=$(yum list updates | grep -v '^Loaded' | grep -v '^Updated Packages';);
+	#
 	echo "${YUM_LIST_UPDATES}" | while read -r -d $'\n' EACH_LINE; do
 		EACH_PKG_NAME="$(echo "${EACH_LINE}" | awk '{print $1}' 2>'/dev/null';)";
 		EACH_VER_INSTALD=$(echo "${YUM_LIST_INSTALLED}" | grep "^${EACH_PKG_NAME} " | awk '{print $2}' | tail -n 1 2>'/dev/null';);
@@ -27,8 +37,8 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 			echo "${PACKAGE_INFO}";
 		fi;
 	done;
-
 fi;
+
 
 # ------------------------------------------------------------
 #

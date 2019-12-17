@@ -5,8 +5,7 @@
 # ------------------------------------------------------------
 
 if [ -n "$(which yum 2>'/dev/null';)" ]; then
-
-	MAX_CHARS=$((${COLUMNS}/3));
+	MAX_CHARS=$(echo "${COLUMNS}/3" | bc);
 	HEADER=$(printf "%-${MAX_CHARS}s" "Name")$(printf "%-${MAX_CHARS}s" "Version-Installed")$(printf "%-${MAX_CHARS}s" "Version-Available");
 	echo "${HEADER}";
 	printf "%${COLUMNS}s" | tr " " "-";
@@ -22,7 +21,6 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 			echo "${PACKAGE_INFO}";
 		fi;
 	done;
-
 fi;
 
 # ------------------------------------------------------------

@@ -23,12 +23,14 @@ else
 	# ------------------------------------------------------------
 	# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
 	PACKAGE_NAME="chrony";
+	SERVICE_NAME="${PACKAGE_NAME}d";
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Java SE8 for Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 	fi;
 	timedatectl set-ntp yes;
+	systemctl restart "${SERVICE_NAME}";
 fi;
 
 

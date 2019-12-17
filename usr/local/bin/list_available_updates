@@ -22,7 +22,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	fi;
 	MAX_CHARS=$((${COLUMNS}/3));
 	HEADER=$(printf "%-${MAX_CHARS}s" "Name")$(printf "%-${MAX_CHARS}s" "Version-Installed")$(printf "%-${MAX_CHARS}s" "Version-Available");
-	echo -e "${HEADER}\n";
+	echo "${HEADER}";
 	printf "%${COLUMNS}s" | tr " " "-";
 	echo "";
 	# ------------------------------------------------------------

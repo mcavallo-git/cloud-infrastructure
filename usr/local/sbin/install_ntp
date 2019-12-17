@@ -46,6 +46,9 @@ else
 			hwclock --systohc;
 			timedatectl set-ntp yes;
 		fi;
+		# ------------------------------------------------------------
+		# Show the final status of the system date & time
+		timedatectl status;
 	fi;
 fi;
 

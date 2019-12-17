@@ -50,7 +50,9 @@ else
 				read -p "$(date +'%Y-%m-%d %H:%M:%S') Add  [ ${PRIMARY_NTP_SUGGESTION} ]  as primary NTP source, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					echo "Calling  [ sed -i\".$(date +'%Y%m%d_%H%M%S').bak\" -r -e \"/^server ${CURRENT_NTP_PRIMARY_SERVER} *$/{\" -e \"i\\server ${PRIMARY_NTP_SUGGESTION}\" -e \"}\" \"${PACKAGE_CONF}\"; ]  ...";
 					sed -i".$(date +'%Y%m%d_%H%M%S').bak" -r -e "/^server ${CURRENT_NTP_PRIMARY_SERVER} *$/{" -e "i\\server ${PRIMARY_NTP_SUGGESTION}" -e "}" "${PACKAGE_CONF}";
+
 					echo "Calling  [ cat \"${PACKAGE_CONF}\"; ]  ...";
 					echo "------------------------------------------------------------";
 					cat "${PACKAGE_CONF}";

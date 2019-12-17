@@ -535,11 +535,11 @@ else
 					# Set /etc/dhcpcd.conf
 					if [ -f "${ETC_DHCPCD_CONF}" ]; then
 						sed_remove_whitespace_lines='/^\s*$/d';
-						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^# static IP configuration/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^interface ${THIS_LAN_NIC}/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static ip_address=/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static routers=/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^static domain_name_servers=/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^# static IP configuration/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^interface ${THIS_LAN_NIC}/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static ip_address=/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static routers=/d" "${ETC_DHCPCD_CONF}";
+						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static domain_name_servers=/d" "${ETC_DHCPCD_CONF}";
 						echo "# static IP configuration" >> "${ETC_DHCPCD_CONF}";
 						echo "interface ${THIS_LAN_NIC}" >> "${ETC_DHCPCD_CONF}";
 						echo "static ip_address=${SET_STATIC_IPV4}" >> "${ETC_DHCPCD_CONF}";

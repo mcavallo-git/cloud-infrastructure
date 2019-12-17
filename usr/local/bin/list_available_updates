@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/list_available_updates" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
 
 MAX_CHARS=$((${COLUMNS}/3));
 HEADER=$(printf "%-${MAX_CHARS}s" 'Name')$(printf "%-${MAX_CHARS}s" 'Version-Installed')$(printf "%-${MAX_CHARS}s" 'Version-Available');
@@ -16,3 +20,12 @@ echo "${YUM_LIST_UPDATES}" | while read -r -d $'\n' EACH_LINE; do
 		echo "${PACKAGE_INFO}";
 	fi;
 done;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "How can I repeat a character in Bash?"  |  https://stackoverflow.com/a/5349796
+#
+# ------------------------------------------------------------

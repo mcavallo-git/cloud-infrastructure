@@ -27,18 +27,22 @@ else
 	echo "";
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
 		PACKAGE_NAME="chrony";
-		SERVICE_NAME="${PACKAGE_NAME}d";
+		SERVICE_NAME="chronyd";
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.
+			apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Debian, Ubuntu, etc.
 		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Java SE8 for Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+			yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 		fi;
+		# ------------------------------------------------------------
+		# Sync the system clock to NTP Server(s)
 		timedatectl set-ntp yes;
 		systemctl restart "${SERVICE_NAME}";
 		echo "";
 		read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 		echo "";
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			# ------------------------------------------------------------
+			# Sync the hardware clock to NTP Server(s)
 			hwclock --systohc;
 			timedatectl set-ntp yes;
 		fi;
@@ -50,8 +54,6 @@ fi;
 #
 # Citation(s)
 #
-#   linode.com  |  "Install Java on Centos 7"  |  https://www.linode.com/docs/development/java/install-java-on-centos/#install-java-runtime-environment-java-jre
-#
-#   openjdk.java.net  |  "How to download and install prebuilt OpenJDK packages"  |  https://openjdk.java.net/install/
+#   codingbee.net  |  "NTP – Keeping System time in sync on CentOS/RHEL 7"  |  https://codingbee.net/rhcsa/ntp-keeping-system-time-in-sync-on-centos-rhel-7
 #
 # ------------------------------------------------------------

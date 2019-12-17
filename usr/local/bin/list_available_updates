@@ -6,7 +6,7 @@
 
 if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	MAX_CHARS=$(echo "${COLUMNS}/3" | bc);
-	HEADER=$(printf "%-${MAX_CHARS}s" "Name")$(printf "%-${MAX_CHARS}s" "Version-Installed")$(printf "%-${MAX_CHARS}s" "Version-Available");
+	HEADER="$(printf %-${MAX_CHARS}s 'Name')$(printf %-${MAX_CHARS}s 'Version-Installed')$(printf %-${MAX_CHARS}s 'Version-Available')";
 	echo "${HEADER}";
 	printf "%${COLUMNS}s" | tr " " "-";
 	YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
@@ -17,7 +17,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 		EACH_VER_INSTALD=$(echo "${YUM_LIST_INSTALLED}" | grep "^${EACH_PKG_NAME} " | awk '{print $2}' | tail -n 1 2>'/dev/null';);
 		EACH_VER_UPDATES="$(echo "${EACH_LINE}" | awk '{print $2}' | tail -n 1 2>'/dev/null';)";
 		if [ -n "${EACH_VER_UPDATES}" ] && [ -n "${EACH_VER_INSTALD}" ]; then
-			PACKAGE_INFO=$(printf "%-${MAX_CHARS}s" "${EACH_PKG_NAME}")$(printf "%-${MAX_CHARS}s" "${EACH_VER_INSTALD}")$(printf "%-${MAX_CHARS}s" "${EACH_VER_UPDATES}");
+			PACKAGE_INFO="$(printf %-${MAX_CHARS}s ${EACH_PKG_NAME})$(printf %-${MAX_CHARS}s ${EACH_VER_INSTALD})$(printf %-${MAX_CHARS}s ${EACH_VER_UPDATES})";
 			echo "${PACKAGE_INFO}";
 		fi;
 	done;

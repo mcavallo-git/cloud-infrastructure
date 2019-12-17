@@ -22,7 +22,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
-	PACKAGE_NAME="ntp";
+	PACKAGE_NAME="chrony";
 	SERVICE_NAME="ntpd";
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.

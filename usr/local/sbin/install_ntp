@@ -21,13 +21,17 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
+	#
 	# Install NTP (Time Sync) package "chrony"
+	#
 	echo "";
 	read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 	echo "";
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
 		# ------------------------------------------------------------
+		#
 		# Sync the system clock to NTP Server(s)
+		#
 		PACKAGE_NAME="chrony";
 		PACKAGE_CONF="/etc/chrony.conf";
 		SERVICE_NAME="chronyd";
@@ -39,13 +43,14 @@ else
 		timedatectl set-ntp yes;
 		systemctl restart "${SERVICE_NAME}";
 		# ------------------------------------------------------------
+		#
 		# Optionally, add a suggested NTP server as primary NTP server
+		#
 		PRIMARY_NTP_SUGGESTION="time.google.com";
 		if [ -f "${PACKAGE_CONF}" ]; then
 			CURRENT_NTP_SERVER_LINES="$(cat ${PACKAGE_CONF} | grep '^server ' | awk '{print $2}' 2>'/dev/null';)";
 			if [ -n "${CURRENT_NTP_SERVER_LINES}" ] && [ $(echo "${CURRENT_NTP_SERVER_LINES}" | grep "^${PRIMARY_NTP_SUGGESTION}$" | wc -l 2>'/dev/null';) -eq 0 ]; then
 				CURRENT_NTP_PRIMARY_SERVER=$(echo "${CURRENT_NTP_SERVER_LINES}" | head -n 1;);
-
 				echo "";
 				read -p "$(date +'%Y-%m-%d %H:%M:%S') Add  [ ${PRIMARY_NTP_SUGGESTION} ]  as primary NTP source, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 				echo "";
@@ -60,7 +65,9 @@ else
 			fi;
 		fi;
 		# ------------------------------------------------------------
+		#
 		# Optionally, sync the hardware clock to NTP Server(s)
+		#
 		echo "";
 		read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 		echo "";
@@ -69,7 +76,9 @@ else
 			timedatectl set-ntp yes;
 		fi;
 		# ------------------------------------------------------------
+		#
 		# Show the final status of the system date & time
+		#
 		echo "Calling  [ chronyc tracking; ]  ...";
 		echo "------------------------------------------------------------";
 		chronyc tracking;
@@ -78,6 +87,7 @@ else
 		echo "------------------------------------------------------------";
 		timedatectl status;
 		echo "------------------------------------------------------------";
+		# ------------------------------------------------------------
 	fi;
 fi;
 

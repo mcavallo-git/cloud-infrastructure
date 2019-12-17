@@ -10,7 +10,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	fi;
 	MAX_CHARS=$((${COLUMNS}/3));
 	HEADER=$(printf "%-${MAX_CHARS}s" "Name")$(printf "%-${MAX_CHARS}s" "Version-Installed")$(printf "%-${MAX_CHARS}s" "Version-Available");
-	echo "${HEADER}";
+	echo -e "${HEADER}\n";
 	printf "%${COLUMNS}s" | tr " " "-";
 	YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
 	YUM_LIST_UPDATES=$(yum list updates | grep -v '^Loaded' | grep -v '^Updated Packages';);

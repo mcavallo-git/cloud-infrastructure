@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/certbot_renew_all" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_renew_all" -O "/usr/local/sbin/certbot_renew_all" -q && chmod 0755 "/usr/local/sbin/certbot_renew_all" && /usr/local/sbin/certbot_renew_all;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Default to dry-run mode (require force-confirmation)
+	#
+	if [ -z "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
+		certbot renew --noninteractive --force-renewal;
+	
+	else
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
+		certbot renew --noninteractive --force-renewal --dry-run;
+
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   guides.wp-bullet.com  |  "Let’s Encrypt Wildcard SSL nginx for WordPress Ubuntu 18.04"  |  https://guides.wp-bullet.com/lets-encrypt-wildcard-ssl-nginx-for-wordpress-ubuntu-18-04/
+#
+#   medium.com  |  "How to obtain a wildcard ssl certificate from Let’s Encrypt and setup Nginx to use wildcard subdomain"  |  https://medium.com/@utkarsh_verma/how-to-obtain-a-wildcard-ssl-certificate-from-lets-encrypt-and-setup-nginx-to-use-wildcard-cfb050c8b33f
+#
+#   packages.debian.org  |  "Package: dpkg-dev (1.19.7) - Debian package development tools"  |  https://packages.debian.org/sid/dpkg-dev
+#
+# ------------------------------------------------------------

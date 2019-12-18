@@ -46,15 +46,23 @@ else
 		# ------------------------------------------------------------
 		#
 		#
-		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			add-apt-repository ppa:certbot/certbot;
-			apt-get -y update;
-			apt-get -y install python-certbot-nginx;
-			apt-get -y install nginx;
-		fi;
+		echo "";
+		echo "Info:  Required package(s):  [ certbot, nginx ]";
+		read -p "  |--> Install/Update these package(s), now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+		echo "";
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+		
+			if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+				add-apt-repository ppa:certbot/certbot;
+				apt-get -y update;
+				apt-get -y install python-certbot-nginx;
+				apt-get -y install nginx;
+			fi;
 
-		# certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
-		certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --nginx --preferred-challenges dns-01 certonly;
+			# certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
+			certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --nginx --preferred-challenges dns-01 certonly;
+
+		fi;
 
 	fi;
 

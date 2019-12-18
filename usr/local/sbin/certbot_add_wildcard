@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/certbot_add_wildcard" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "/usr/local/sbin/certbot_add_wildcard" -q && chmod 0755 "/usr/local/sbin/certbot_add_wildcard" && /usr/local/sbin/certbot_add_wildcard;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# 
+	# Use $1 as domain name for wildcard cert
+	#
+	if [ -z "$1" ]; then
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Call using domain name (for wildcard certificate) as first argument (\$1), such as:  [ certbot_add_wildcard example.com ]";
+		exit 1;
+	else
+
+		DOMAIN_NAME="$1";
+
+		# ------------------------------------------------------------
+		#
+		#
+		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+			add-apt-repository ppa:certbot/certbot;
+			apt-get -y update;
+			apt-get -y install python-certbot-nginx;
+			apt-get -y install nginx;
+		fi;
+
+		certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
+
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   medium.com  |  "How to obtain a wildcard ssl certificate from Let’s Encrypt and setup Nginx to use wildcard subdomain"  |  https://medium.com/@utkarsh_verma/how-to-obtain-a-wildcard-ssl-certificate-from-lets-encrypt-and-setup-nginx-to-use-wildcard-cfb050c8b33f
+#
+#   guides.wp-bullet.com  |  "Let’s Encrypt Wildcard SSL nginx for WordPress Ubuntu 18.04"  |  https://guides.wp-bullet.com/lets-encrypt-wildcard-ssl-nginx-for-wordpress-ubuntu-18-04/
+#
+# ------------------------------------------------------------

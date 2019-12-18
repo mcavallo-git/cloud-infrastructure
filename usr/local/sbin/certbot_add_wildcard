@@ -54,7 +54,7 @@ else
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
 		
 			if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-				add-apt-repository ppa:certbot/certbot;
+				add-apt-repository -y ppa:certbot/certbot;
 				apt-get -y update;
 				apt-get -y install python-certbot-nginx;
 				apt-get -y install nginx;

@@ -15,7 +15,9 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.work/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.work/chain.pem";
 	location / {
-		return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+		return 302 https://${subdomain}mcavallo.com${request_uri};
+		# return 302 https://github.com/mcavallo-git/Coding; # Redirect to github
+		# return 302 https://bitbucket.org/%7B266b630f-8096-4ed2-8828-364b067bbf37%7D/; # Redirect to BitBucket
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

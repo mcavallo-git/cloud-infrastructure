@@ -64,8 +64,7 @@ else
 				# Install required package(s)
 				apt-get -y install python-certbot-nginx;
 				# apt-get -y install nginx-full;
-				# apt-get -y clean;
-				# apt -y autoremove;
+				# apt-get -y clean && apt -y autoremove;
 			fi;
 
 			certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;

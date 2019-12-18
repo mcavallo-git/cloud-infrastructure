@@ -68,8 +68,8 @@ else
 				apt -y autoremove;
 			fi;
 
-			# certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
-			certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --nginx --preferred-challenges dns-01 certonly;
+			certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
+			# certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --nginx --preferred-challenges dns-01 certonly;
 
 		fi;
 

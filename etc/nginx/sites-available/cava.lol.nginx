@@ -31,22 +31,7 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="cava.lol"; \
-# certbot --nginx \
-# -d ${DN} \
-# -d cashapp.${DN} \
-# -d cv.${DN} \
-# -d git.${DN} \
-# -d linkedin.${DN} \
-# -d linux.${DN} \
-# -d paypal.${DN} \
-# -d resume.${DN} \
-# -d sync.${DN} \
-# -d venmo.${DN} \
-# -d windows.${DN} \
-# -d www.${DN} \
-# ;
-
+# DN="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DN} --manual --preferred-challenges dns-01 certonly;
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)

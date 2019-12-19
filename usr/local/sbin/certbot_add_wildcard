@@ -71,7 +71,9 @@ else
 		fi;
 
 		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DOMAIN_NAME} --manual --preferred-challenges dns-01 certonly;
+			certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
+			# certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
+
 		fi;
 
 	fi;

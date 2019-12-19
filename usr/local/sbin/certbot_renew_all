@@ -32,15 +32,28 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Default to dry-run mode (require force-confirmation)
-	#
-	if [ -z "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
-		certbot renew --noninteractive --force-renewal;
-	
+	# Requires certbot package
+	if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command 'certbot' not found";
+		echo "";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please install certbot, then re-run this script";
+		echo "";
+		exit 1;
 	else
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
-		certbot renew --noninteractive --force-renewal --dry-run;
+
+		if [ -n "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
+			# 
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
+			certbot renew --noninteractive --force-renewal;
+
+		else
+			# Fallback to dry-run mode, otherwise (default method)
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
+			certbot renew --noninteractive --force-renewal --dry-run;
+
+		fi;
 
 	fi;
 

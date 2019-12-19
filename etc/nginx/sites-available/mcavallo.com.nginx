@@ -88,11 +88,6 @@ server {
 		return 302 https://venmo.com/cavalol;
 	}
 	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain ~* "^windows$") {
-		return 302 tps://github.com/mcavallo-git/Coding#workstation-installs;
-	}
-	# ------------------------------------------------------------
 	location / {
 		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
 	}

@@ -32,9 +32,8 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Requires certbot package
+	# Require that certbot be installed, already
 	if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-
 		echo "";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command 'certbot' not found";
 		echo "";
@@ -42,17 +41,15 @@ else
 		echo "";
 		exit 1;
 	else
-
+	# ------------------------------------------------------------
 		if [ -n "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
-			# 
+			# Allow a force-command to skip the dry-run mode
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
 			certbot renew --noninteractive --force-renewal;
-
 		else
 			# Fallback to dry-run mode, otherwise (default method)
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
 			certbot renew --noninteractive --force-renewal --dry-run;
-
 		fi;
 
 	fi;

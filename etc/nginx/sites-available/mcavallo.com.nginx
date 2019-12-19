@@ -58,12 +58,12 @@ server {
 	location / {
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "cashapp.") {
+		if ($subdomain ~* "^cashapp$") {
 			return 302 https://cash.me/mcavallo;
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		# if ($subdomain = "cv.") {
+		# if ($subdomain ~* "^cv$") {
 		# 	root /var/www/html/wordpress; # webroot
 		# 	index index.php;
 		# 	location / {
@@ -81,33 +81,34 @@ server {
 		# }
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "git|repos.") {
+		if ($subdomain ~* "^git|repos$") {
 			return 302 https://github.com/mcavallo-git/repositories;
 			# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "linkedin.") {
+		if ($subdomain ~* "^linkedin$") {
 			return 302 https://linkedin.com/in/matt-cavallo;
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "linux.") {
+		if ($subdomain ~* "^linux$") {
 			return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "paypal.") {
+		if ($subdomain ~* "^paypal$") {
 			return 302 https://www.paypal.me/cavalol; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		# if ($subdomain = "resume.") {
+		# if ($subdomain ~* "^resume$") {
 		# 	return 302 https://cv.mcavallo.com;
 		# }
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "sync.") {
+		if ($subdomain ~* "^sync$") {
+			if ($http_user_agent ~* "^curl") {
 			### Bash Module Sync
 			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 			#
@@ -116,7 +117,7 @@ server {
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "sync-ps.") {
+		if ($subdomain ~* "^sync-ps$") {
 			### PowerShell Module Sync
 			return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 			#
@@ -125,7 +126,7 @@ server {
 		}
 		# ------------------------------------------------------------
 		#              ~* [case-insensitive regex]
-		if ($subdomain = "venmo.") {
+		if ($subdomain ~* "^venmo$") {
 			return 302 https://venmo.com/cavalol;
 		}
 		# ------------------------------------------------------------

@@ -15,99 +15,101 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "cashapp") {
-		return 302 https://cash.me/mcavallo;
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	# if ($subdomain = "cv") {
-	# 	root /var/www/html/wordpress; # webroot
-	# 	index index.php;
-	# 	location / {
-	# 		try_files $uri $uri/ /index.php?$args;
-	# 	}
-	# 	location ~* \.php$ { #  *.php requests
-	# 		try_files $uri $uri/ /index.php?$args;
-	# 		fastcgi_read_timeout 120;
-	# 		fastcgi_index   index.php;
-	# 		include         fastcgi_params;
-	# 		fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-	# 		fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
-	# 		fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
-	# 	}
-	# }
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "git|repos") {
-		return 302 https://github.com/mcavallo-git/repositories;
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "linkedin") {
-		return 302 https://linkedin.com/in/matt-cavallo;
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "linux") {
-		return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "paypal") {
-		return 302 https://www.paypal.me/cavalol; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	# if ($subdomain = "resume") {
-	# 	return 302 https://cv.mcavallo.com;
-	# }
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "sync") {
-		### Bash Module Sync
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		#
-		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
-		#
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "sync-ps") {
-		### PowerShell Module Sync
-		return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		#
-		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
-		#
-	}
-	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
-	if ($subdomain = "venmo") {
-		return 302 https://venmo.com/cavalol;
-	}
-	# ------------------------------------------------------------
-	# if ($request_uri = "/") {
-	# 	return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
-	# }
-	if ($request_uri = "/cloud-infrastructure") {
-		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
-	}
-	if ($request_uri = "/coding") {
-		return 302 "https://github.com/mcavallo-git/coding";
-	}
-	if ($request_uri = "/good-credit") {
-		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
-	}
-	if ($request_uri = "/linux") {
-		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
-	}
-	if ($request_uri = "/pc") {
-		return 302 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
-	}
-	if ($request_uri = "/repos") {
-		return 302 "https://github.com/mcavallo-git/repositories";
+	location / {
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "cashapp") {
+			return 302 https://cash.me/mcavallo;
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		# if ($subdomain = "cv") {
+		# 	root /var/www/html/wordpress; # webroot
+		# 	index index.php;
+		# 	location / {
+		# 		try_files $uri $uri/ /index.php?$args;
+		# 	}
+		# 	location ~* \.php$ { #  *.php requests
+		# 		try_files $uri $uri/ /index.php?$args;
+		# 		fastcgi_read_timeout 120;
+		# 		fastcgi_index   index.php;
+		# 		include         fastcgi_params;
+		# 		fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+		# 		fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+		# 		fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
+		# 	}
+		# }
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "git|repos") {
+			return 302 https://github.com/mcavallo-git/repositories;
+			# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "linkedin") {
+			return 302 https://linkedin.com/in/matt-cavallo;
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "linux") {
+			return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "paypal") {
+			return 302 https://www.paypal.me/cavalol; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		# if ($subdomain = "resume") {
+		# 	return 302 https://cv.mcavallo.com;
+		# }
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "sync") {
+			### Bash Module Sync
+			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+			#
+			# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
+			#
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "sync-ps") {
+			### PowerShell Module Sync
+			return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+			#
+			# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
+			#
+		}
+		# ------------------------------------------------------------
+		#              ~* [case-insensitive regex]
+		if ($subdomain = "venmo") {
+			return 302 https://venmo.com/cavalol;
+		}
+		# ------------------------------------------------------------
+		if ($request_uri = "/") {
+			return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+		}
+		if ($request_uri = "/cloud-infrastructure") {
+			return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
+		}
+		if ($request_uri = "/coding") {
+			return 302 "https://github.com/mcavallo-git/coding";
+		}
+		if ($request_uri = "/good-credit") {
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+		}
+		if ($request_uri = "/linux") {
+			return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
+		}
+		if ($request_uri = "/pc") {
+			return 302 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
+		}
+		if ($request_uri = "/repos") {
+			return 302 "https://github.com/mcavallo-git/repositories";
+		}
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

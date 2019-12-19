@@ -107,10 +107,10 @@ server {
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
 	if ($subdomain ~* "^sync.$") {
-		# if ($http_user_agent ~* "^curl") {
-			### Bash Module Sync
-			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		# }
+		### Bash Module Sync
+		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+		#
+		# curl -ssL cava.lol | bash
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
 		#

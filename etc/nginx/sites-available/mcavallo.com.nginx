@@ -106,15 +106,21 @@ server {
 	# }
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
-	# location ~* "^sync$" {
-	if ($subdomain ~* "^sync.$") {
+	location ~* "^sync$" {
 		if ($http_user_agent ~* "^curl") {
-		### Bash Module Sync
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+			### Bash Module Sync
+			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		}
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
 		#
+		if ($http_user_agent !~* "^curl") {
+			### PowerShell Module Sync
+			return 302 https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+			#
+			# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
+			#
+		}
 	}
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]

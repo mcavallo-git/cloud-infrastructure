@@ -1,53 +1,5 @@
 # ------------------------------------------------------------
 #
-#==--  sync.mcavallo.com
-#
-
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name sync.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		keepalive_timeout 0;
-		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-	}
-	# ------------------------------------------------------------
-	# Bash Module Sync
-	location ~* "^/[\d\.]*\.?(ba)?sh$" {
-		keepalive_timeout 0;
-		add_header 'Content-Type' 'text/plain';
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
-		#
-		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
-		#
-	}
-	# ------------------------------------------------------------
-	# PowerShell Module Sync
-	location ~* "^/[\d\.]*\.?ps(m)?(1)?$" {
-		keepalive_timeout 0;
-		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
-		add_header 'Content-Type' 'text/plain';
-		#
-		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; Start-Process PowerShell.exe $(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)") -Verb RunAs;
-		#
-		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
-		#
-	}
-
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
 #==--  mcavallo.com
 #==--  www.mcavallo.com
 #
@@ -56,7 +8,6 @@ server {
 	listen 443 ssl http2;
 	listen [::]:80;
 	listen [::]:443 ssl http2;
-	# server_name ~^(?<subdomain>\w+\.)?mcavallo\.com$;
 	server_name ~^(?<subdomain>www\.)?mcavallo\.com$;
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
@@ -64,6 +15,87 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^cashapp$") {
+		return 302 https://cash.me/mcavallo;
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^cv$") {
+		root /var/www/html/wordpress; # webroot
+		index index.php;
+		location / {
+			try_files $uri $uri/ /index.php?$args;
+		}
+		location ~* \.php$ { #  *.php requests
+			try_files $uri $uri/ /index.php?$args;
+			fastcgi_read_timeout 120;
+			fastcgi_index   index.php;
+			include         fastcgi_params;
+			fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+			fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+			fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
+		}
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^git|repos$") {
+		return 302 https://github.com/mcavallo-git/repositories;
+		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^linkedin$") {
+		return 302 https://linkedin.com/in/matt-cavallo;
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^linux$") {
+		return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^paypal$") {
+		return 302 https://www.paypal.me/cavalol; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^resume$") {
+		return 302 https://cv.mcavallo.com;
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^sync$") {
+		### Bash Module Sync
+		keepalive_timeout 0;
+		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
+		#
+		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
+		#
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^sync-ps$") {
+		### PowerShell Module Sync
+		keepalive_timeout 0;
+		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
+		add_header 'Content-Type' 'text/plain';
+		#
+		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
+		#
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^venmo$") {
+		return 302 https://venmo.com/cavalol;
+	}
+	# ------------------------------------------------------------
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^windows$") {
+		return 302 tps://github.com/mcavallo-git/Coding#workstation-installs;
+	}
+	# ------------------------------------------------------------
 	location / {
 		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
 	}
@@ -84,227 +116,6 @@ server {
 	}
 	location /repos {
 		return 302 "https://github.com/mcavallo-git/repositories";
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  cashapp.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name cashapp.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://cash.me/mcavallo;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  cv.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name cv.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	root /var/www/html/wordpress; # webroot
-	index index.php;
-	location / {
-		try_files $uri $uri/ /index.php?$args;
-	}
-	location ~* \.php$ { #  *.php requests
-		try_files $uri $uri/ /index.php?$args;
-		fastcgi_read_timeout 120;
-		fastcgi_index   index.php;
-		include         fastcgi_params;
-		fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-		fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
-		fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  git.mcavallo.com
-#==--  repos.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	# server_name git.mcavallo.com;
-	server_name ~^(?<subdomain>git|repos\.)?mcavallo\.com$;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://github.com/mcavallo-git/repositories;
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  linkedin.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name linkedin.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://linkedin.com/in/matt-cavallo; # LinkedIn
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  linux.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name linux.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  paypal.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name paypal.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://www.paypal.me/cavalol; # Note: https://paypal.me/cavalol/25 will request $25
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  resume.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name resume.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://cv.mcavallo.com;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  venmo.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name venmo.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://venmo.com/cavalol;
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
-}
-
-
-# ------------------------------------------------------------
-#
-#==--  windows.mcavallo.com
-#
-server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name windows.mcavallo.com;
-	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	location / {
-		return 302 https://github.com/mcavallo-git/Coding#workstation-installs;
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }

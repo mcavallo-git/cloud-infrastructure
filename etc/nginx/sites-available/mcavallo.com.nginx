@@ -106,7 +106,7 @@ server {
 	# }
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
-	location ~* "^sync$" {
+	location ~* "^/sync$" {
 		if ($http_user_agent ~* "^curl") {
 			### Bash Module Sync
 			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;

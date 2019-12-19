@@ -88,25 +88,25 @@ server {
 		return 302 https://venmo.com/cavalol;
 	}
 	# ------------------------------------------------------------
-	location / {
+	if ($request_uri = "/") {
 		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
 	}
-	location /cloud-infrastructure {
+	if ($request_uri = "/cloud-infrastructure") {
 		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
 	}
-	location /coding {
+	if ($request_uri = "/coding") {
 		return 302 "https://github.com/mcavallo-git/coding";
 	}
-	location /good-credit {
+	if ($request_uri = "/good-credit") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
 	}
-	location /linux {
+	if ($request_uri = "/linux") {
 		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
 	}
-	location /pc {
+	if ($request_uri = "/pc") {
 		return 302 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
 	}
-	location /repos {
+	if ($request_uri = "/repos") {
 		return 302 "https://github.com/mcavallo-git/repositories";
 	}
 	include "/etc/nginx/nginx_error_locations.conf";

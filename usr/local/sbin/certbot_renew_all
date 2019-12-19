@@ -43,7 +43,7 @@ else
 	else
 	# ------------------------------------------------------------
 		if [ -n "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
-			# Allow a force-command to skip the dry-run mode
+			# Allow a force-command to skip dry-run mode
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
 			certbot renew --noninteractive --force-renewal;
 		else

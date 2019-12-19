@@ -68,7 +68,7 @@ server {
 	#              ~* [case-insensitive regex]
 	if ($subdomain ~* "^sync$") {
 		### Bash Module Sync
-		keepalive_timeout 0;
+		# keepalive_timeout 0;
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
@@ -78,7 +78,7 @@ server {
 	#              ~* [case-insensitive regex]
 	if ($subdomain ~* "^sync-ps$") {
 		### PowerShell Module Sync
-		keepalive_timeout 0;
+		# keepalive_timeout 0;
 		proxy_pass https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec;
 		add_header 'Content-Type' 'text/plain';
 		#

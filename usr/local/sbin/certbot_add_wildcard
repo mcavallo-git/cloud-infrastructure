@@ -44,6 +44,9 @@ else
 		DOMAIN_NAME="$1";
 
 		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+			echo "";
+			echo "Info:  Using certbot command:  [ $(which certbot;) ]  ...";
+		else
 			# echo "Info:  Required package(s):  [ nginx-full, python-certbot-nginx ]";
 			echo "";
 			echo "Info:  Required package(s):  [ python-certbot-nginx ]";

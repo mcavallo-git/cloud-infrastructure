@@ -90,9 +90,9 @@ else
 	ARGS_COUNT=${#ARGS[@]};
 
 	ARGS_CHECK_WSL=0;
-	ARGS_CRONJOB="";
 	ARGS_DEBUG_MODE=0;
-	ARGS_REMOVE_CRONJOBS=0;
+	ARGS_CRONJOB_REMOVE=0;
+	ARGS_CRONJOB_SYNC=0;
 	ARGS_SYNC_DDNS=0;
 	ARGS_SYNC_JENKINS=0;
 	ARGS_SYNC_NGINX=0;
@@ -125,17 +125,19 @@ else
 
 			# Parse cronjob calls
 			if [ "${EACH_ARG}" == "--cron" ]; then
-				if [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "sync" ]; then # --cron sync
-					ARGS_CRONJOB="SYNC";
-				elif [ -z "${ARGS_CRONJOB}" ] && [ "${NEXT_ARG}" == "remove" ]; then # --cron remove
-					ARGS_REMOVE_CRONJOBS=1;
+				if [ "${NEXT_ARG}" == "remove" ] && [ ${ARGS_CRONJOB_SYNC} -eq 0 ]; then
+					# Remove cronjobs
+					ARGS_CRONJOB_REMOVE=1;
+				elif [ "${NEXT_ARG}" == "sync" ] && [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+					# Sync cronjobs
+					ARGS_CRONJOB_SYNC=1;
 				else
-					if [ -n "${ARGS_CRONJOB}" ]; then
-						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument:   Multiple instances of \"--cron\" detected";
-					else
-						echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument:   ${EACH_ARG} ${NEXT_ARG}";
-					fi;
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Setup sync cron-job(s) via \"--cron sync\". Setup jenkins cron-job(s) via \"--cron jenkins\". To remove associated cron-jobs, use \"--cron remove\"";
+					# Error - Show user valid argument syntax
+					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
+					echo "                        |";
+					echo "                        |--> Sync cron-job(s) via \"--cron sync\" argument";
+					echo "                        |--> Remove synced cron-job(s) via \"--cron remove\" argument";
+					echo "";
 					exit 1;
 				fi;
 			fi;
@@ -143,9 +145,9 @@ else
 			# Use "--all" inline-arg. to sync all modules
 			if [ "${EACH_ARG}" == "--all" ]; then
 				ARGS_CHECK_WSL=1;
-				ARGS_CRONJOB="SYNC";
 				ARGS_DEBUG_MODE=1;
-				ARGS_REMOVE_CRONJOBS=0;
+				ARGS_CRONJOB_REMOVE=0;
+				ARGS_CRONJOB_SYNC=1;
 				# ARGS_SYNC_DDNS=1;
 				ARGS_SYNC_JENKINS=1;
 				ARGS_SYNC_NGINX=1;
@@ -155,7 +157,7 @@ else
 			fi;
 
 			if [ "${EACH_ARG}" == "--remove-cronjobs" ] || [ "${EACH_ARG}" == "--remove" ]; then
-				ARGS_REMOVE_CRONJOBS=1; # Parse remove-cronjobs calls
+				ARGS_CRONJOB_REMOVE=1; # Parse remove-cronjobs calls
 			fi;
 
 			if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
@@ -201,9 +203,9 @@ else
 		echo "Debug:  ARGS_COUNT = [ ${ARGS_COUNT} ]";
 		echo "";
 		echo "Debug:  ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
-		echo "Debug:  ARGS_CRONJOB = [ ${ARGS_CRONJOB} ]";
 		echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
-		echo "Debug:  ARGS_REMOVE_CRONJOBS = [ ${ARGS_REMOVE_CRONJOBS} ]";
+		echo "Debug:  ARGS_CRONJOB_REMOVE = [ ${ARGS_CRONJOB_REMOVE} ]";
+		echo "Debug:  ARGS_CRONJOB_SYNC = [ ${ARGS_CRONJOB_SYNC} ]";
 		echo "Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
 		echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
 		echo "Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
@@ -371,7 +373,7 @@ else
 			WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
 			if [ ! -n "${WIN32_USR_LOCAL}" ]; then
 				echo "";
-				echo "Error --> Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+				echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
 				exit 1;
 			else
 				DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
@@ -464,7 +466,7 @@ else
 		EXIT_CODE=1;
 
 		echo "";
-		echo "Error --> Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+		echo "Error:  Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 		# Error-out if any required source directories are missing
@@ -472,11 +474,11 @@ else
 
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
 			echo "";
-			echo "Error --> Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+			echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
 		fi;
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
 			echo "";
-			echo "Error --> Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+			echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 		fi;
 
 	else
@@ -725,7 +727,7 @@ else
 						RESTART_SERVICE_SSH=1;
 
 						# Sync Cronjob Automation:  UFW DDNS Updates
-						if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
+						if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
 							CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
 							echo -e "\n""Info: Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
 							BENCHMARK_START=$(date +'%s.%N');
@@ -748,38 +750,38 @@ else
 		#
 		# /etc/cron.d/...
 		#
-		if [ "${ARGS_CRONJOB}" == "SYNC" ]; then
+		if [ ${ARGS_CRONJOB_SYNC} -eq 1 ]; then
 			RESTART_SERVICE_CRON=1;
-			if [ "${ARGS_CRONJOB}" == "SYNC" ]; then
 
-				# ------------------------------------------------------------
-				#
-				# /etc/cron.d/CRON_sync_cloud_infrastructure
-				#
-				DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
-				SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-				FILE_PERMS="0644"; DIR_PERMS="0644";
-				echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-				BENCHMARK_START=$(date +'%s.%N');
-				rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-				chown -R "root:root" "${DESTINATION_PATH}";
-				find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
-				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
-				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+			# ------------------------------------------------------------
+			#
+			# /etc/cron.d/CRON_sync_cloud_infrastructure
+			#
+			DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
+			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+			FILE_PERMS="0644"; DIR_PERMS="0644";
+			echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+			BENCHMARK_START=$(date +'%s.%N');
+			rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+			chown -R "root:root" "${DESTINATION_PATH}";
+			find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+			find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
+			if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+			BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
-				# ------------------------------------------------------------
-				#
-				# /etc/cron.d/CRON_update_dns_config
-				#
-				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
-					DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
+			# ------------------------------------------------------------
+			#
+			# /etc/cron.d/CRON_certbot_renew_all
+			#
+			if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+				if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+					DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
 					if [ -f "${DESTINATION_PATH}" ]; then
 						REPLY="y";
 					else
-						echo ""; read -p "Setup DNS-Server Sync (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+						echo ""; read -p "Setup SSL/TLS (HTTPS) certificate auto-renewal (Weekly, Sundays @ 06:10 AM) via \"certbot_renew_all\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					fi;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
@@ -798,60 +800,88 @@ else
 						echo "Info: Skipped DNS-Server Sync";
 					fi;
 				fi;
+			fi;
 
-				# ------------------------------------------------------------
-				#
-				# /etc/cron.d/CRON_update_system
-				#
-				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
-					DESTINATION_PATH="/etc/cron.d/CRON_update_system";
-					if [ -f "${DESTINATION_PATH}" ]; then
-						REPLY="y";
-					else
-						echo ""; read -p "Setup Automatic Updates (every Sunday @ 04:10 AM) via \"update_system\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-					fi;
+			# ------------------------------------------------------------
+			#
+			# /etc/cron.d/CRON_update_dns_config
+			#
+			if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+				DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
+				if [ -f "${DESTINATION_PATH}" ]; then
+					REPLY="y";
+				else
+					echo ""; read -p "Setup DNS-Server Sync (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+				fi;
+				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+					FILE_PERMS="0644"; DIR_PERMS="0644";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+					chown -R "root:root" "${DESTINATION_PATH}";
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
+					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+				else
+					echo "Info: Skipped DNS-Server Sync";
+				fi;
+			fi;
 
-					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-						BENCHMARK_START=$(date +'%s.%N');
-						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-						chown -R "root:root" "${DESTINATION_PATH}";
-						find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
-						find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
-						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-					else
-						echo "Info: Skipped Automatic Updates";
-					fi;
+			# ------------------------------------------------------------
+			#
+			# /etc/cron.d/CRON_update_system
+			#
+			if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+				DESTINATION_PATH="/etc/cron.d/CRON_update_system";
+				if [ -f "${DESTINATION_PATH}" ]; then
+					REPLY="y";
+				else
+					echo ""; read -p "Setup Automatic Updates (Weekly, Sunday @ 04:10 AM) via \"update_system\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 				fi;
 
-				# ------------------------------------------------------------
-				#
-				# /etc/cron.d/CRON_raspi_hw_monitor
-				#
-				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
-					RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
-					if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
-						DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
-						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
-						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
-						BENCHMARK_START=$(date +'%s.%N');
-						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-						chown -R "root:root" "${DESTINATION_PATH}";
-						find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
-						find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
-						if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-						dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-						BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-					fi;
+				if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+					FILE_PERMS="0644"; DIR_PERMS="0644";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+					chown -R "root:root" "${DESTINATION_PATH}";
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
+					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+				else
+					echo "Info: Skipped Automatic Updates";
 				fi;
+			fi;
 
+			# ------------------------------------------------------------
+			#
+			# /etc/cron.d/CRON_raspi_hw_monitor
+			#
+			if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+				RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
+				if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
+					DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
+					SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+					FILE_PERMS="0644"; DIR_PERMS="0644";
+					echo -e "\n""Info: Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+					BENCHMARK_START=$(date +'%s.%N');
+					rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+					chown -R "root:root" "${DESTINATION_PATH}";
+					find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \;; # chmod directories
+					find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
+					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+					BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+				fi;
 			fi;
 
 		fi;
@@ -920,7 +950,7 @@ else
 		#
 		# /etc/cron.d/CRON_ddns_updater
 		#
-		if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
+		if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
 			if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
 				# Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
 				CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
@@ -985,7 +1015,7 @@ else
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 
-				if [ ${ARGS_REMOVE_CRONJOBS} -eq 0 ]; then
+				if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
 
 					# ------------------------------------------------------------
 					#
@@ -1115,7 +1145,7 @@ else
 
 		fi;
 
-		if [ ${ARGS_REMOVE_CRONJOBS} == 1 ]; then
+		if [ ${ARGS_CRONJOB_REMOVE} -eq 1 ]; then
 			#
 			# --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
 			#

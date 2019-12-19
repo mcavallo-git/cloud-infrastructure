@@ -66,7 +66,7 @@ server {
 	# }
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
-	if ($subdomain ~* "^sync$") {
+	if ($subdomain ~* "^sync") {
 		### Bash Module Sync
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		#

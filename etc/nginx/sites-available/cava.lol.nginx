@@ -14,10 +14,6 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-	#              ~* [case-insensitive regex]
-	if ($subdomain ~* "^goog") {
-		return 302 https://google.com;
-	}
 	location / {
 		return 302 https://${subdomain}mcavallo.com${request_uri};
 	}

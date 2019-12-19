@@ -14,9 +14,12 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+	#              ~* [case-insensitive regex]
+	if ($subdomain ~* "^goog") {
+		return 302 https://google.com
+	}
 	location / {
 		return 302 https://${subdomain}mcavallo.com${request_uri};
-		# return 302 https://${subdomain}mcavallo.com${is_args}${args};
 	}
 	include "/etc/nginx/nginx_error_locations.conf";
 }
@@ -52,6 +55,10 @@ server {
 # ------------------------------------------------------------
 # Citation(s)
 #
+#   nginx.org  |  "Module ngx_http_rewrite_module"  |  https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#if
+#
 #   stackoverflow.com  |  "How to get subdomain of URL in NGINX"  |  https://stackoverflow.com/a/39563133
+#
+#   stackoverflow.com  |  "how to use a variable inside a nginx “if” regular expression"  |  https://stackoverflow.com/a/5859926
 #
 # ------------------------------------------------------------

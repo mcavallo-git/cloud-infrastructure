@@ -31,7 +31,8 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DN} --manual --preferred-challenges dns-01 certonly;
+# DN1="mcavallo.com"; DN2="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN1} -d *.${DN1} -d ${DN2} -d *.${DN2} --manual --preferred-challenges dns-01 certonly;
+#
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)

@@ -315,15 +315,18 @@ server {
 #
 # DN="mcavallo.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
 #
+#
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="mcavallo.com"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d *.${DN} --manual --preferred-challenges dns-01 certonly;
+# DN1="mcavallo.com"; DN2="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN1} -d *.${DN1} -d ${DN2} -d *.${DN2} --manual --preferred-challenges dns-01 certonly;
+#
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)
 #
 # DN="mcavallo.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
 #
 # ------------------------------------------------------------
 ### Remove Domain & Cert
@@ -332,6 +335,7 @@ server {
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
 # FQDN="mcavallo.com"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; certbot certificates;
+#
 #
 # ------------------------------------------------------------
 # Citation(s)

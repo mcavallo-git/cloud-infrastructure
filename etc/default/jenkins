@@ -5,6 +5,14 @@
 #   |--> Filepath:   /etc/default/jenkins
 #   
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then
+	# Debug the values output by this script:
+
+SRC_PATH="/etc/sysconfig/jenkins" && if [ -f "${SRC_PATH}" ]; then source "${SRC_PATH}"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi; \
+SRC_PATH="/etc/default/jenkins" && if [ -f "${SRC_PATH}" ]; then source "${SRC_PATH}"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi;
+
+fi;
+# ------------------------------------------------------------
 
 # JAVA_ARGS & JENKINS_ARGS are picked up by the Jenkins service-instantiator @ "/etc/init.d/jenkins" and passed directly to the java & jenkins runtimes, respectively
 JENKINS_ARGS="";
@@ -40,7 +48,6 @@ JENKINS_HARDWARE_REQUIRED_MEMORY_MB=1024;
 TOTAL_MEMORY_MB=$(free -m | grep 'Mem:' | awk '{print $2}');
 
 if [ ${TOTAL_MEMORY_MB} -lt ${JENKINS_HARDWARE_REQUIRED_MEMORY_MB} ]; then
-
 
 XMX__MAX_MEMORY_POOL=${JENKINS_HARDWARE_REQUIRED_MEMORY_MB};
 

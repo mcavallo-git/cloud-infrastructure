@@ -43,13 +43,13 @@ JENKINS_LOG="/var/log/${NAME}/${NAME}.log";  # /var/log/jenkins/jenkins.log
 
 # ------------------------------------------------------------
 
-JENKINS_HARDWARE_REQUIRED_MEMORY_MB=1024;
+JENKINS_REQUIRED_MEMORY_MB=1024;
 
 TOTAL_MEMORY_MB=$(free -m | grep 'Mem:' | awk '{print $2}');
 
-if [ ${TOTAL_MEMORY_MB} -lt ${JENKINS_HARDWARE_REQUIRED_MEMORY_MB} ]; then
+if [ ${TOTAL_MEMORY_MB} -lt ${JENKINS_REQUIRED_MEMORY_MB} ]; then
 
-XMX__MAX_MEMORY_POOL=${JENKINS_HARDWARE_REQUIRED_MEMORY_MB};
+XMX__MAX_MEMORY_POOL=${JENKINS_REQUIRED_MEMORY_MB};
 
 else
 

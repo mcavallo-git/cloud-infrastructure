@@ -50,6 +50,7 @@ TOTAL_MEMORY_MB=$(free -m | grep 'Mem:' | awk '{print $2}');
 if [ ${TOTAL_MEMORY_MB} -lt $(echo "${JENKINS_REQUIRED_MEMORY_MB} * 2" | bc;) ]; then
 
 XMX__MAX_MEMORY_POOL=${JENKINS_REQUIRED_MEMORY_MB};
+
 XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
 
 else

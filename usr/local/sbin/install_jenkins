@@ -82,16 +82,26 @@ else
 
 	fi;
 
-	### Create Java Font-Configuration files https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
-	### The runtime uses the first of the following files it finds:
-	###        JavaHome/lib/fontconfig.OS.Version.properties
-	###        JavaHome/lib/fontconfig.OS.Version.bfc
-	###        JavaHome/lib/fontconfig.OS.properties
-	###        JavaHome/lib/fontconfig.OS.bfc
-	###        JavaHome/lib/fontconfig.Version.properties
-	###        JavaHome/lib/fontconfig.Version.bfc
-	###        JavaHome/lib/fontconfig.properties
-	###        JavaHome/lib/fontconfig.bfc
+
+	# ------------------------------------------------------------
+	# Show Java runtime-version
+	if [ $(which java 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+		java -version;
+
+		### The JAVA runtime uses the first of the following files it finds:
+		###        JavaHome/lib/fontconfig.OS.Version.properties
+		###        JavaHome/lib/fontconfig.OS.Version.bfc
+		###        JavaHome/lib/fontconfig.OS.properties
+		###        JavaHome/lib/fontconfig.OS.bfc
+		###        JavaHome/lib/fontconfig.Version.properties
+		###        JavaHome/lib/fontconfig.Version.bfc
+		###        JavaHome/lib/fontconfig.properties
+		###        JavaHome/lib/fontconfig.bfc
+
+		JAVA_HOME=$(su jenkins --shell="/bin/bash" --command="echo \$JAVA_HOME";);
+
+	fi;
+
 
 
 	# ------------------------------------------------------------

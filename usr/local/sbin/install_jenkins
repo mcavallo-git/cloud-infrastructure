@@ -82,6 +82,17 @@ else
 
 	fi;
 
+	### Create Java Font-Configuration files https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
+	### The runtime uses the first of the following files it finds:
+	###        JavaHome/lib/fontconfig.OS.Version.properties
+	###        JavaHome/lib/fontconfig.OS.Version.bfc
+	###        JavaHome/lib/fontconfig.OS.properties
+	###        JavaHome/lib/fontconfig.OS.bfc
+	###        JavaHome/lib/fontconfig.Version.properties
+	###        JavaHome/lib/fontconfig.Version.bfc
+	###        JavaHome/lib/fontconfig.properties
+	###        JavaHome/lib/fontconfig.bfc
+
 
 	# ------------------------------------------------------------
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
@@ -171,6 +182,8 @@ fi;
 # Citation(s)
 #
 #   digitalocean.com  |  "How To Install Jenkins on Ubuntu 16.04"  |  https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-16-04
+#
+#   docs.oracle.com  |  "Font Configuration Files"  |  https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
 #
 #   hub.docker.com  |  "docker hub - Jenkins Continuous Integration and Delivery server"  |  https://hub.docker.com/r/jenkins/jenkins
 #

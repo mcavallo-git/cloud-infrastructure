@@ -29,11 +29,15 @@ else
 	if [ -f "/usr/local/bin/get_os" ] && [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
 		source /usr/local/bin/get_os 1>'/dev/null' 2>&1;
 
+		echo "";
 		echo "Info:  Creating file \"/var/run/reboot-required\"...";
 		sudo touch "/var/run/reboot-required";
 
+		echo "";
+		echo "Info:  To finish shutting down, close its associated terminal (close the ${THIS_DISTRO} window on the Windows host)";
+
 		# Exit Gracefully
-		echo "Info:  Please close this ${THIS_DISTRO} terminal (in Windows) to shutdown its virtualized environment";
+		echo "";
 		exit 0;
 
 	else

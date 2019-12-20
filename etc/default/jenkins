@@ -6,10 +6,10 @@
 #   
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then
-	# Debug the values output by this script:
+# Debug the values output by this script:
 
-SRC_PATH="/etc/sysconfig/jenkins" && if [ -f "${SRC_PATH}" ]; then source "${SRC_PATH}"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi; \
-SRC_PATH="/etc/default/jenkins" && if [ -f "${SRC_PATH}" ]; then source "${SRC_PATH}"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi;
+if [ -f "/etc/default/jenkins" ]; then source "/etc/default/jenkins"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi;
+if [ -f "/etc/sysconfig/jenkins" ]; then source "/etc/sysconfig/jenkins"; echo -e "\n\n\$JAVA_ARGS=[${JAVA_ARGS}]\n\n\$JENKINS_ARGS=[${JENKINS_ARGS}]\n\n"; fi;
 
 fi;
 # ------------------------------------------------------------

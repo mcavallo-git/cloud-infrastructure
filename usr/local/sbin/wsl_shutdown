@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/wsl_reboot" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	#
+	# WSL (Windows Subsystem for Linux)
+	#  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
+	#       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
+	#
+	if [ -f "/usr/local/bin/get_os" ] && [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
+		source /usr/local/bin/get_os 1>'/dev/null' 2>&1;
+
+		echo "Info:  Creating file \"/var/run/reboot-required\"...";
+		sudo touch "/var/run/reboot-required";
+
+		# Exit Gracefully
+		echo "Info:  Please close and re-open this ${THIS_DISTRO} terminal (in Windows)";
+		exit 0;
+
+	fi;
+fi;

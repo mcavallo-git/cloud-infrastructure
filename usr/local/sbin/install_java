@@ -32,7 +32,12 @@ else
 	# ------------------------------------------------------------
 	# Show Java runtime-version
 	if [ $(which java 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		java -version;
+		echo "";
+		echo "------------------------------------------------------------";
+		echo "Into:  Calling [ java -XshowSettings:properties -version; ]...";
+		java -XshowSettings:properties -version;
+		# java -version;
+		echo "------------------------------------------------------------";
 	fi;
 
 

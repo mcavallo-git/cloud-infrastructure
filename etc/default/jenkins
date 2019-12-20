@@ -24,10 +24,14 @@ JENKINS_ENABLE_ACCESS_LOG="yes";
 JENKINS_HOME="/var/lib/${NAME}";
 
 # location of the jenkins war file
-JENKINS_WAR="/usr/share/${NAME}/${NAME}.war";
+if [ -f "/usr/share/${NAME}/${NAME}.war" ]; then
+	JENKINS_WAR="/usr/share/${NAME}/${NAME}.war"; # /usr/share/jenkins/jenkins.war
+elif [ -f "/usr/lib/${NAME}/${NAME}.war" ]; then
+	JENKINS_WAR="/usr/lib/${NAME}/${NAME}.war"; # /usr/lib/jenkins/jenkins.war
+fi;
 
 # Log-location.  this may be a syslog facility.priority
-JENKINS_LOG="/var/log/${NAME}/${NAME}.log";
+JENKINS_LOG="/var/log/${NAME}/${NAME}.log";  # /var/log/jenkins/jenkins.log
 
 # ------------------------------------------------------------
 

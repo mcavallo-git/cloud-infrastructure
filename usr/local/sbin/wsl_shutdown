@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LOCAL_SBIN="/usr/local/sbin/wsl_reboot" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+# LOCAL_SBIN="/usr/local/sbin/wsl_shutdown" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #
@@ -33,7 +33,7 @@ else
 		sudo touch "/var/run/reboot-required";
 
 		# Exit Gracefully
-		echo "Info:  Please close and re-open this ${THIS_DISTRO} terminal (in Windows)";
+		echo "Info:  Please close this ${THIS_DISTRO} terminal (in Windows) to shutdown its virtualized environment";
 		exit 0;
 
 	fi;

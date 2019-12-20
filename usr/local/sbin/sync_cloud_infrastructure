@@ -1170,12 +1170,12 @@ else
 		fi;
 
 		# ------------------------------------------------------------
-		# Create Symbolic Link(s), as-needed
+		# SYMBOLIC LINKS
 		# ------------------------------------------------------------
 		LN_TO="/usr/local/sbin/sync_cloud_infrastructure"; LN_FROM="/usr/local/sbin/sync_Cloud_infrastructure"; if [ -f "${LN_TO}" ] && [ ! -h "${LN_FROM}" ]; then ln -sf "${LN_TO}" "${LN_FROM}"; fi; # Added 20191220-145307
 
 		# ------------------------------------------------------------
-		# Remove old/renamed scripts (if found to exist)
+		# DELETE OLD FILES
 		# ------------------------------------------------------------
 		#   / usr / local / bin
 		TO_DEL="/usr/local/bin/docker_check_installation_status"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;

@@ -159,6 +159,7 @@ MAXOPENFILES=8192;
 
 # port for HTTP connector (default 8080; disable with -1)
 HTTP_PORT=8080;
+JENKINS_ARGS="${JENKINS_ARGS} --httpPort=${HTTP_PORT}"; # /var/cache/jenkins/war
 
 # servlet context, important if you want to use apache proxying
 PREFIX="/${NAME}";
@@ -173,7 +174,8 @@ PREFIX="/${NAME}";
 # --webroot=~/.jenkins/war
 # --prefix=$PREFIX
 
-JENKINS_ARGS="${JENKINS_ARGS} --webroot=/var/cache/${NAME}/war --httpPort=${HTTP_PORT}"; # /var/cache/jenkins/war
+WEBROOT="/var/cache/${NAME}/war"; # /var/cache/jenkins/war
+JENKINS_ARGS="${JENKINS_ARGS} --webroot=${WEBROOT}";
 
 # Trim leading/trailing whitespace
 

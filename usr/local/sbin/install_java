@@ -29,6 +29,13 @@ else
 	fi;
 
 
+	# ------------------------------------------------------------
+	# Show Java runtime-version
+	if [ $(which java 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+		java -version;
+	fi;
+
+
 fi;
 
 
@@ -39,5 +46,7 @@ fi;
 #   linode.com  |  "Install Java on Centos 7"  |  https://www.linode.com/docs/development/java/install-java-on-centos/#install-java-runtime-environment-java-jre
 #
 #   openjdk.java.net  |  "How to download and install prebuilt OpenJDK packages"  |  https://openjdk.java.net/install/
+#
+#   umd.edu  |  "Finding and Setting JAVA HOME"  |  http://sbndev.astro.umd.edu/wiki/Finding_and_Setting_JAVA_HOME
 #
 # ------------------------------------------------------------

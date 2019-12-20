@@ -36,5 +36,10 @@ else
 		echo "Info:  Please close this ${THIS_DISTRO} terminal (in Windows) to shutdown its virtualized environment";
 		exit 0;
 
+	else
+		# Non-WSL Environment detected
+		echo "Info:  Skipping shutdown (unable to detect WSL environment)";
+		exit 1;
+
 	fi;
 fi;

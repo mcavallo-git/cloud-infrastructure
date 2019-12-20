@@ -47,9 +47,10 @@ JENKINS_REQUIRED_MEMORY_MB=1024;
 
 TOTAL_MEMORY_MB=$(free -m | grep 'Mem:' | awk '{print $2}');
 
-if [ ${TOTAL_MEMORY_MB} -lt ${JENKINS_REQUIRED_MEMORY_MB} ]; then
+if [ ${TOTAL_MEMORY_MB} -lt $(echo "${JENKINS_REQUIRED_MEMORY_MB} * 2" | bc;) ]; then
 
 XMX__MAX_MEMORY_POOL=${JENKINS_REQUIRED_MEMORY_MB};
+XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
 
 else
 
@@ -63,9 +64,9 @@ MEMORY_ALLOCATION_MB="${THREE_QUARTERS_TOTAL_MEMORY_MB}";
 JAVA_REQUIRED_MEMORY_LCD=1024;
 XMX__MAX_MEMORY_POOL=$(echo "${MEMORY_ALLOCATION_MB} - ( ${MEMORY_ALLOCATION_MB} % ${JAVA_REQUIRED_MEMORY_LCD} )" | bc;);
 
-fi;
-
 XMS__INITIAL_HEAP_MEMORY=$(echo "${XMX__MAX_MEMORY_POOL} / 2" | bc;);
+
+fi;
 
 # ------------------------------------------------------------
 

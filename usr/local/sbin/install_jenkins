@@ -85,25 +85,12 @@ else
 
 	# ------------------------------------------------------------
 	if [ $(which java 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		# Show Java runtime-version
-		java -version;
-
-		### The JAVA runtime uses the first of the following files it finds:
-		###        JavaHome/lib/fontconfig.OS.Version.properties
-		###        JavaHome/lib/fontconfig.OS.Version.bfc
-		###        JavaHome/lib/fontconfig.OS.properties
-		###        JavaHome/lib/fontconfig.OS.bfc
-		###        JavaHome/lib/fontconfig.Version.properties
-		###        JavaHome/lib/fontconfig.Version.bfc
-		###        JavaHome/lib/fontconfig.properties
-		###        JavaHome/lib/fontconfig.bfc
 
 		# Show local Java runtime's settings/properties
 		JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
 		
 		# Locate $JAVA_HOME (local Java runtime's home-directory)
 		LOCAL_JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -rne 's/^\s*java.home = (.+)\s*$/\1/p';); echo "LOCAL_JAVA_HOME = [ ${LOCAL_JAVA_HOME} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
-		fi;
 
 	fi;
 

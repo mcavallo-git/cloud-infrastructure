@@ -67,29 +67,36 @@ else
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Debian, Ubuntu, etc.
 			# ------------------------------------------------------------
 			# Install Java
-			# PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.
+			# PACKAGE_APT="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Java SE8 for Debian, Ubuntu, etc.
 			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 			# ------------------------------------------------------------
 			# Install Fonts (Requirement for Jenkins)
 			sudo apt-get install ttf-dejavu
-			PACKAGE_NAME="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
+			PACKAGE_APT="ttf-dejavu"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Fonts
+			PACKAGE_APT="xvfb"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Fonts
 			# ------------------------------------------------------------
 			# Install Jenkins
 			wget -q -O - "https://pkg.jenkins.io/debian-stable/jenkins.io.key" | sudo apt-key add -; # Import Jenkins' official GPG Key
 			deb "https://pkg.jenkins.io/debian-stable" binary/; # Add Jenkins' package repository
-			PACKAGE_NAME="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
+			PACKAGE_APT="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Jenkins
 
 
 		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 			# ------------------------------------------------------------
 			# Install Java
-			# PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Java SE8 for Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+			# PACKAGE_YUM="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Java SE8 for Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
+			# ------------------------------------------------------------
+			# Install Fonts (Requirement for Jenkins)
+			sudo apt-get install ttf-dejavu
+			PACKAGE_YUM="dejavu-sans-fonts"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
+			PACKAGE_YUM="fontconfig"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
+			PACKAGE_YUM="xorg-x11-server-Xvfb"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
 			# ------------------------------------------------------------
 			# Install Jenkins
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
 			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
-			PACKAGE_NAME="jenkins"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Jenkins
+			PACKAGE_YUM="jenkins"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Jenkins
 
 
 		fi;

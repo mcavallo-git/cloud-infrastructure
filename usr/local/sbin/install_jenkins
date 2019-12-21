@@ -70,10 +70,15 @@ else
 			# PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Java SE8 for Debian, Ubuntu, etc.
 			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 			# ------------------------------------------------------------
+			# Install Fonts (Requirement for Jenkins)
+			sudo apt-get install ttf-dejavu
+			PACKAGE_NAME="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
+			# ------------------------------------------------------------
 			# Install Jenkins
 			wget -q -O - "https://pkg.jenkins.io/debian-stable/jenkins.io.key" | sudo apt-key add -; # Import Jenkins' official GPG Key
 			deb "https://pkg.jenkins.io/debian-stable" binary/; # Add Jenkins' package repository
 			PACKAGE_NAME="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Install Jenkins
+
 
 		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 			# ------------------------------------------------------------
@@ -85,6 +90,7 @@ else
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
 			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
 			PACKAGE_NAME="jenkins"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Install Jenkins
+
 
 		fi;
 
@@ -189,5 +195,7 @@ fi;
 #   pkg.jenkins.io  |  "Jenkins Debian packages"  |  https://pkg.jenkins.io/debian-stable/
 #
 #   pkg.jenkins.io  |  "RedHat Linux RPM packages for Jenkins"  |  https://pkg.jenkins.io/redhat-stable/
+#
+#   wiki.jenkins.io  |  "Jenkins got java.awt.headless problem"  |  https://wiki.jenkins.io/display/JENKINS/Jenkins+got+java.awt.headless+problem
 #
 # ------------------------------------------------------------

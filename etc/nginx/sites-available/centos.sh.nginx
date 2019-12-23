@@ -17,7 +17,6 @@ server {
 	location / {
 		if ($http_user_agent !~* "^curl") {
 			return 302 "https://wiki.centos.org/Download";
-			# proxy_pass https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/sync.sh;
 		}
 		if ($request_uri != "/") {
 			# return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/$request_uri";

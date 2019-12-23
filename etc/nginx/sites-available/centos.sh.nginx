@@ -16,10 +16,10 @@ server {
 	ssl_trusted_certificate "/etc/letsencrypt/live/centos.sh/chain.pem";
 	location / {
 		if ($http_user_agent !~* "^curl") {
-			return 302 "https://wiki.centos.org/Download";
+			return 302 https://wiki.centos.org/Download;
 		}
 		if ($http_user_agent ~* "^curl") {
-			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure";
+			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
 		}
 	}
 

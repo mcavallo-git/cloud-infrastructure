@@ -2,6 +2,17 @@
 #
 # LB="/usr/local/bin/get_permissions" && echo "" > "${LB}" && vi "${LB}" && chmod 0755 "${LB}";
 #
+# ------------------------------------------------------------
+# Run as a 1-liner command
+if [ 0 -eq 1 ]; then
+
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_permissions" -O "/usr/local/bin/get_permissions" && chmod 0755 "/usr/local/bin/get_permissions";
+
+
+fi;
+# ------------------------------------------------------------
+#
 
 STAT_PATH=$(eval echo ${1});
 

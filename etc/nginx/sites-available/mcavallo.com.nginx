@@ -1,4 +1,5 @@
 log_format mcavallo ''
+'------------------------------------------------------------\n'
 '---subdomain---\n'
 'subdomain              =>  $subdomain \n'
 '---HEADERS---\n'
@@ -34,6 +35,10 @@ log_format mcavallo ''
 'request_uri            =>  $request_uri \n'
 '[request_body]:\n'
 '[$request_body]\n'
+'---COOKIES---\n'
+'uid_got                =>  $uid_got \n'
+'uid_reset              =>  $uid_reset \n'
+'uid_set                =>  $uid_set \n'
 '';
 
 # ------------------------------------------------------------

@@ -136,12 +136,12 @@ else
 		EXIT_CODE=0;
 
 		# Show Jenkins' service status
-		echo -e "\n""Info: Showing Jenkins' Service-Status";
+		echo -e "\n""Info:  Showing Jenkins' Service-Status";
 		echo -e "  |--> Calling  [ /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full; ]  ...""\n";
 		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
 		# Show Jenkins' networking ports
-		echo -e "\n""Info: Showing Jenkins' Ports which are in-use";
+		echo -e "\n""Info:  Showing Jenkins' Ports which are in-use";
 		echo -e "  |--> Calling  [ ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort'; ]  ...""\n";
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
@@ -156,7 +156,7 @@ else
 				echo "------------------------------------------------------------";
 				firewall-cmd --info-service="${SERVICE_NAME}";
 				echo "------------------------------------------------------------";
-				echo -e "\n""Info: Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				echo -e "\n""Info:  Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
 				firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
 				firewall-cmd --reload;
 				firewall-cmd --list-all;

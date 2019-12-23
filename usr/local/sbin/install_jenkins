@@ -189,7 +189,7 @@ else
 		# elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 		
 		CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
-		echo -e "\n""Info: Confirmed - Downloading Jenkins config from \"cloud-infrastructure\" repository";
+		echo -e "\n""Info:  Downloading Jenkins config from \"cloud-infrastructure\" repository";
 		echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
 		mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
 		wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;

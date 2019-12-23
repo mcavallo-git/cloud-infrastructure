@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/list_installed_packages" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+if [ -n "$(which yum 2>'/dev/null';)" ]; then
+
+	INSTALLED_PACKAGES=$(yum list installed | sed -rne 's/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p';);
+
+	echo "${INSTALLED_PACKAGES}";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   -
+#
+# ------------------------------------------------------------

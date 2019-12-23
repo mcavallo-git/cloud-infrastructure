@@ -22,9 +22,11 @@ server {
 			return 302 https://${subdomain}mcavallo.com${request_uri};
 		}
 	}
+
 	# include "/etc/nginx/nginx_error_locations.conf";
 	error_page 400 401 402 403 404 https://$host;
 	error_page 500 502 503 504 https://$host;
+
 }
 
 

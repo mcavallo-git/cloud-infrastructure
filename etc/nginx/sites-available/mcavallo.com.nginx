@@ -164,7 +164,7 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN1="mcavallo.com"; DN2="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN1} -d *.${DN1} -d ${DN2} -d *.${DN2} --manual --preferred-challenges dns-01 certonly;
+# DN="mcavallo.com"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN} -d *.${DN} --manual --preferred-challenges dns-01 certonly;
 #
 #
 # ------------------------------------------------------------
@@ -174,7 +174,7 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Remove Domain & Revoke Certificate(s)
+### Remove Domain(s) & Revoke Certificate(s)
 ###   |--> Deletes NGINX Files & Symlinks
 ###   |--> Deletes LetsEncrypt Files
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)

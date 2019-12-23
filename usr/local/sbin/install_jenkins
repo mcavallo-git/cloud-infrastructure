@@ -88,8 +88,8 @@ else
 			# ------------------------------------------------------------
 			# Install Fonts (Requirement for Jenkins)
 			PACKAGE_YUM="dejavu-sans-fonts"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
-			# PACKAGE_YUM="fontconfig"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
-			# PACKAGE_YUM="xorg-x11-server-Xvfb"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
+			PACKAGE_YUM="fontconfig"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
+			PACKAGE_YUM="xorg-x11-server-Xvfb"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
 			# ------------------------------------------------------------
 			# Install Jenkins
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository

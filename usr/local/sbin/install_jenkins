@@ -66,7 +66,8 @@ else
 		echo -e "Response timed out after ${READ_TIMEOUT}s";
 		exit 1;
 	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-		echo -e "\n""Info:  Thank you for your confirmation - proceeding...\n";
+		echo -e "\n""Proceeding...\n";
+		sleep 1;
 	else
 		echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
 		exit 1;

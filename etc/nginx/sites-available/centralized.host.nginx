@@ -138,7 +138,9 @@ server {
 		return 302 https://$host/safeRestart;
 	}
 	if ($scheme != "https") { return 301 https://$host$request_uri; }
-	include "/etc/nginx/nginx_error_locations.conf";
+	# include "/etc/nginx/nginx_error_locations.conf";
+	error_page 400 401 402 403 404 https://$host;
+	error_page 500 502 503 504 https://$host;
 }
 
 # ------------------------------------------------------------

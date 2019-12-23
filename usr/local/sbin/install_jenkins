@@ -121,6 +121,10 @@ else
 
 	fi;
 
+	# ------------------------------------------------------------
+	# Kick-off the Jenkins service
+	# ------------------------------------------------------------
+
 
 	# fi;
 
@@ -209,7 +213,7 @@ else
 	# Restart the service
 	/usr/sbin/service "${SERVICE_NAME}" restart;
 
-	systemctl status "${SERVICE_NAME}";
+	/usr/sbin/service "${SERVICE_NAME}" status;
 
 	exit ${EXIT_CODE};
 

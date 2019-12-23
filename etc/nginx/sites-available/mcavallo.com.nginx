@@ -162,9 +162,9 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Create LetsEncrypt Certs
+### Create Wildcard LetsEncrypt Certs
 #
-# DN="mcavallo.com"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN} -d *.${DN} --manual --preferred-challenges dns-01 certonly;
+# DN="mcavallo.com"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}";
 #
 #
 # ------------------------------------------------------------

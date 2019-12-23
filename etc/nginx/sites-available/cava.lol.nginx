@@ -35,13 +35,7 @@ server {
 # ------------------------------------------------------------
 ### Create Wildcard LetsEncrypt Certs
 #
-# DN="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN} -d *.${DN} --manual --preferred-challenges dns-01 certonly;
-#
-#
-# ------------------------------------------------------------
-### Rebuild NGINX host (to undo any changes certbot made)
-#
-# DN="cava.lol"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+# DN="cava.lol"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}";#
 #
 #
 # ------------------------------------------------------------

@@ -121,17 +121,12 @@ else
 
 	fi;
 
-	exit;
 
 	# ------------------------------------------------------------
 	# Kick-off the Jenkins service
 	# ------------------------------------------------------------
+	service "${SERVICE_NAME}" start;
 
-
-	# fi;
-
-
-	sleep 3;
 
 	# ------------------------------------------------------------
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);

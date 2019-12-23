@@ -31,12 +31,7 @@ server {
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
-# DN="mcavallo.work"; \
-# certbot --nginx \
-# -d ${DN} \
-# -d git.${DN} \
-# -d www.${DN} \
-# ;
+# DN="mcavallo.work"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}";
 #
 # ------------------------------------------------------------
 ### Rebuild NGINX host (to undo any changes certbot made)

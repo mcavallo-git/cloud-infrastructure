@@ -42,6 +42,8 @@ else
 	SERVICE_NAME="jenkins";
 
 	EXIT_CODE=1;
+	
+	SERVICE_RESTART_REQD=0;
 
 	APT_PKG_JDK="default-jdk-headless";
 	APT_PKG_JRE="default-jre-headless";
@@ -55,15 +57,28 @@ else
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
+
+	echo "------------------------------------------------------------";
+	echo "";
+	READ_TIMEOUT=60; read -p "(Prerequisite) Do you accept the opening of this workstation/server's firewall on port 8080 to allow users to access the ${SERVICE_NAME} service? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+	echo "";
+	if [ ${RETURN_CODE_READ} -gt 128 ]; then
+		echo -e "Response timed out after ${READ_TIMEOUT}s";
+		exit 1;
+	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+		echo -e "\n""Info:  Thank you for your confirmation - proceeding...\n";
+	else
+		echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
+		exit 1;
+	fi;
+
 	# ------------------------------------------------------------
 	# Check for the Jenkins service locally
 	# SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 	# if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 	# 	# Jenkins is already installed
 	# 	echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
-
 	# else
-
 
 	# ------------------------------------------------------------
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Debian, Ubuntu, etc.
@@ -80,7 +95,7 @@ else
 		wget -q -O - "https://pkg.jenkins.io/debian-stable/jenkins.io.key" | sudo apt-key add -; # Import Jenkins' official GPG Key
 		deb "https://pkg.jenkins.io/debian-stable" binary/; # Add Jenkins' package repository
 		PACKAGE_APT="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Jenkins
-
+		SERVICE_RESTART_REQD=1;
 
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 
@@ -90,10 +105,10 @@ else
 		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 
 		# ------------------------------------------------------------
-		# Install Fonts (Requirement for Jenkins)
-		PACKAGE_YUM="dejavu-sans-fonts";    if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; fi; # Install Fonts
-		PACKAGE_YUM="fontconfig";           if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; fi; # Install Fonts
-		PACKAGE_YUM="xorg-x11-server-Xvfb"; if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; fi; # Install Fonts
+		# Install Fonts (Requirement for Jenkins)SERVICE_RESTART_REQD=1; 
+		PACKAGE_YUM="dejavu-sans-fonts";    if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; SERVICE_RESTART_REQD=1; fi; # Install Fonts
+		PACKAGE_YUM="fontconfig";           if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; SERVICE_RESTART_REQD=1; fi; # Install Fonts
+		PACKAGE_YUM="xorg-x11-server-Xvfb"; if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then yum -y check-update; yum -y install "${PACKAGE_YUM}"; SERVICE_RESTART_REQD=1; fi; # Install Fonts
 
 		# ------------------------------------------------------------
 		# Install Jenkins
@@ -101,6 +116,7 @@ else
 			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
 			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
 			yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Jenkins
+			SERVICE_RESTART_REQD=1;
 		fi;
 
 	fi;
@@ -137,19 +153,11 @@ else
 				echo "------------------------------------------------------------";
 				firewall-cmd --info-service="${SERVICE_NAME}";
 				echo "------------------------------------------------------------";
-				echo "";
-				READ_TIMEOUT=60; read -p "Open ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-				echo "";
-				if [ ${RETURN_CODE_READ} -gt 128 ]; then
-					echo -e "Response timed out after ${READ_TIMEOUT}s";
-				elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-					echo -e "\n""Info: Confirmed - Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
-					firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
-					firewall-cmd --reload;
-					firewall-cmd --list-all;
-				else
-					echo "Denied - Skipping firewall configuration for \"${SERVICE_NAME}\" service";
-				fi;
+				echo -e "\n""Info: Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
+				firewall-cmd --reload;
+				firewall-cmd --list-all;
+				SERVICE_RESTART_REQD=1;
 			fi;
 		fi;
 
@@ -172,21 +180,28 @@ else
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
 		echo "";
-		READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		echo "";
-		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo -e "Response timed out after ${READ_TIMEOUT}s";
-		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
-			echo -e "\n""Info: Confirmed - Downloading Jenkins config from \"cloud-infrastructure\" repository";
-			echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
-			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
-			wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
-			chmod 0644 "${JENKINS_CONFIG_PATH}";
-			/usr/sbin/service "${SERVICE_NAME}" restart;
-		else
-			echo "Denied - Skipping Jenkins config-file sync";
-		fi;
+		# READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+		# echo "";
+		# if [ ${RETURN_CODE_READ} -gt 128 ]; then
+		# 	echo -e "Response timed out after ${READ_TIMEOUT}s";
+		# elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+		
+		CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
+		echo -e "\n""Info: Confirmed - Downloading Jenkins config from \"cloud-infrastructure\" repository";
+		echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
+		mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
+		wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
+		chmod 0644 "${JENKINS_CONFIG_PATH}";
+		SERVICE_RESTART_REQD=1;
+		
+		# else
+		# 	echo "Denied - Skipping Jenkins config-file sync";
+		# fi;
+	fi;
+
+	# If a service restart is required, then do so, here
+	if [ ${SERVICE_RESTART_REQD} -ne 0 ]; then
+		/usr/sbin/service "${SERVICE_NAME}" restart;
 	fi;
 
 	systemctl status jenkins;

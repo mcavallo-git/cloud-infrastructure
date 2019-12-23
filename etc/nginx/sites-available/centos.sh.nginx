@@ -18,11 +18,8 @@ server {
 		if ($http_user_agent !~* "^curl") {
 			return 302 "https://wiki.centos.org/Download";
 		}
-		if ($request_uri != "/") {
-			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/$request_uri";
-		}
-		if ($request_uri = "/") {
-			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+		if ($http_user_agent ~* "^curl") {
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure";
 		}
 	}
 

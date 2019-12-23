@@ -122,9 +122,7 @@ else
 
 	fi;
 
-
 	# fi;
-
 
 	sleep 3;
 
@@ -145,16 +143,16 @@ else
 		echo "";
 
 		FIREWALL_SERVICE="firewalld";
-		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+		SERVICE_RET_CODE=$(/usr/sbin/service "firewalld" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 			# Open necessary firewall port(s)
-			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
+			SERVICE_ENABLED_GREP=$(/usr/sbin/service "firewalld" status --no-pager --full | grep '; enabled');
 			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
 				echo "";
 				echo "------------------------------------------------------------";
 				firewall-cmd --info-service="${SERVICE_NAME}";
 				echo "------------------------------------------------------------";
-				echo -e "\n""Info: Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				echo -e "\n""Info: Opening ports for \"${SERVICE_NAME}\" service in \"firewalld\" service...\n";
 				firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
 				firewall-cmd --reload;
 				firewall-cmd --list-all;
@@ -168,7 +166,6 @@ else
 		echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
 	fi;
-
 
 	# ------------------------------------------------------------
 	# Sync jenkins-config to cloud-infrastructure repo (require user confirmation)
@@ -202,6 +199,10 @@ else
 
 	# If a service restart is required, then do so, here
 	if [ ${SERVICE_RESTART_REQD} -ne 0 ]; then
+		# Make sure to add the port opening
+		if [ $(which firewall-cmd 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+			firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}"; firewall-cmd --reload;
+		fi;
 		/usr/sbin/service "${SERVICE_NAME}" restart;
 	fi;
 

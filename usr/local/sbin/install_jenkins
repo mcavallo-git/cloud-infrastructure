@@ -71,7 +71,6 @@ else
 			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 			# ------------------------------------------------------------
 			# Install Fonts (Requirement for Jenkins)
-			sudo apt-get install ttf-dejavu
 			PACKAGE_APT="ttf-dejavu"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Fonts
 			PACKAGE_APT="xvfb"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Fonts
 			# ------------------------------------------------------------
@@ -88,7 +87,6 @@ else
 			wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q && chmod 0755 "/usr/local/sbin/install_java" && /usr/local/sbin/install_java;
 			# ------------------------------------------------------------
 			# Install Fonts (Requirement for Jenkins)
-			sudo apt-get install ttf-dejavu
 			PACKAGE_YUM="dejavu-sans-fonts"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
 			# PACKAGE_YUM="fontconfig"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts
 			# PACKAGE_YUM="xorg-x11-server-Xvfb"; yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Fonts

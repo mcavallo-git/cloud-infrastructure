@@ -202,6 +202,10 @@ else
 
 	# If a service restart is required, then do so, here
 	if [ ${SERVICE_RESTART_REQD} -ne 0 ]; then
+		# Make sure to add the port opening
+		if [ $(which firewall-cmd 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+			firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}"; firewall-cmd --reload;
+		fi;
 		/usr/sbin/service "${SERVICE_NAME}" restart;
 	fi;
 

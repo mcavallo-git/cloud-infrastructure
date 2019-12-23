@@ -11,9 +11,9 @@ server {
 	if ($scheme != "https") {
 		return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
-	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+	ssl_certificate "/etc/letsencrypt/live/cava.lol/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
 	location / {
 		if ($http_user_agent ~* "^curl") {
 			return 302 https://sync.mcavallo.com;  # curl -ssL cava.lol | bash
@@ -33,9 +33,9 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Create LetsEncrypt Certs
+### Create Wildcard LetsEncrypt Certs
 #
-# DN1="mcavallo.com"; DN2="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN1} -d *.${DN1} -d ${DN2} -d *.${DN2} --manual --preferred-challenges dns-01 certonly;
+# DN="cava.lol"; certbot --server https://acme-v02.api.letsencrypt.org/directory -d ${DN} -d *.${DN} --manual --preferred-challenges dns-01 certonly;
 #
 #
 # ------------------------------------------------------------

@@ -50,7 +50,7 @@ server {
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
-	# access_log "/var/log/nginx/mcavallo-verbose.log" mcavallo;
+	access_log "/var/log/nginx/mcavallo-verbose.log" mcavallo;
 	# access_log "/var/log/nginx/mcavallo-thin.log" thin;
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";

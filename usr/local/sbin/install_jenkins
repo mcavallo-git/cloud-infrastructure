@@ -201,7 +201,9 @@ else
 
 	# Make sure to add the port opening
 	if [ $(which firewall-cmd 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
-		firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}"; firewall-cmd --reload;
+		firewall-cmd --permanent --zone=public --add-service="${SERVICE_NAME}";
+		firewall-cmd --permanent --add-port=8080/tcp;
+		firewall-cmd --reload;
 	fi;
 
 	# Restart the service

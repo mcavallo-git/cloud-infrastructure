@@ -14,12 +14,18 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/centos.sh/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/centos.sh/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/centos.sh/chain.pem";
+	location "/download" {
+		return 302 "https://wiki.centos.org/Download"; # Download CentOS Linux ISO images
+	}
 	location / {
-		if ($http_user_agent ~* "^curl") {
-			return 302 https://sync.mcavallo.com;  # curl -ssL centos.sh | bash
-		}
 		if ($http_user_agent !~* "^curl") {
-			return 302 https://${subdomain}mcavallo.com${request_uri};
+			return 302 "https://wiki.centos.org/Download";
+		}
+		if ($request_uri != "/") {
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/$request_uri";
+		}
+		if ($request_uri = "/") {
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 		}
 	}
 	include "/etc/nginx/nginx_error_locations.conf";

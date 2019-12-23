@@ -7,7 +7,7 @@
 #
 if [ 0 -eq 1 ]; then
 
-DN="DOMAIN.TLD"; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "/usr/local/sbin/certbot_add_wildcard" -q && chmod 0755 "/usr/local/sbin/certbot_add_wildcard"; /usr/local/sbin/certbot_add_wildcard "${DN}";
+DN="DOMAIN.TLD"; OD="${HOME}"; if [ -w "/usr/local/sbin" ]; then OD="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${OD}/certbot_add_wildcard" -O "${OD}/certbot_add_wildcard" -q && chmod 0755 "${OD}/certbot_add_wildcard"; ${OD}/certbot_add_wildcard "${DN}";
 
 fi;
 #

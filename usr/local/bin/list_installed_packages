@@ -11,7 +11,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 	if [ $# -gt 0 ]; then
 		# Determine if argument $1 (if given) exists/is-installed as a local package
 		CHECK_FOR_LOCAL_PKG=$(yum list installed | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
-		if [ -n "${CHECK_FOR_LOCAL_PKG}" ]; then
+		if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
 			echo "Package \"${1}\" not found, locally";
 			RET_CODE=1;
 		else

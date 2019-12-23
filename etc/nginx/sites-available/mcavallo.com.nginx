@@ -168,12 +168,6 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Rebuild NGINX host (to undo any changes certbot made)
-#
-# DN="mcavallo.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
-#
-#
-# ------------------------------------------------------------
 ### Remove Domain(s) & Revoke Certificate(s)
 ###   |--> Deletes NGINX Files & Symlinks
 ###   |--> Deletes LetsEncrypt Files

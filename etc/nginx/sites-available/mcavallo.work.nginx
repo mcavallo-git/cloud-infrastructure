@@ -24,30 +24,16 @@ server {
 
 
 # ------------------------------------------------------------
-### Enable NGINX host
+### Enable NGINX Host
 #
 # DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
 #
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
 # DN="mcavallo.work"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
 #
-# ------------------------------------------------------------
-### Rebuild NGINX host (to undo any changes certbot made)
-#
-# DN="mcavallo.work"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
-#
-# ------------------------------------------------------------
-###	Debug -> Ensure NGINX is routing as-intended
-#
-# http://mcavallo.work
-# http://git.mcavallo.work
-# http://www.mcavallo.work
-#
-# https://mcavallo.work
-# https://git.mcavallo.work
-# https://www.mcavallo.work
 #
 # ------------------------------------------------------------
 ### Remove Domain & Revoke Certificate(s)

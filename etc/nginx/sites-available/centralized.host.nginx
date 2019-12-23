@@ -142,26 +142,16 @@ server {
 }
 
 # ------------------------------------------------------------
-### Enable NGINX host
+### Enable NGINX Host
 #
 # DN="centralized.host"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
 #
 # ------------------------------------------------------------
 ### Create LetsEncrypt Certs
 #
 # DN="centralized.host"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
 #
-#
-# ------------------------------------------------------------
-###	Debug -> Ensure NGINX is routing as-intended
-#
-# http://centralized.host
-# http://jenkins.centralized.host
-# http://www.centralized.host
-#
-# https://centralized.host
-# https://jenkins.centralized.host
-# https://www.centralized.host
 #
 # ------------------------------------------------------------
 ### Remove Domain & Revoke Certificate(s)

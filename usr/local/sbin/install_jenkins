@@ -48,8 +48,6 @@ else
 
 	SERVICE_NAME="jenkins";
 
-	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
-
 	EXIT_CODE=1;
 	
 	SERVICE_RESTART_REQD=0;
@@ -274,12 +272,14 @@ else
 	### /usr/sbin/service "${SERVICE_NAME}" status;
 
 
-	# Tail the Jenkins Logfile until the Password is given
-	echo "";
-	SED_TAIL_UNTIL='/***************************/ q';
+	# Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
+	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
+	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+	if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
+	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-	echo "";
 	sleep 2;
+	fi;
 
 
 	# ------------------------------------------------------------

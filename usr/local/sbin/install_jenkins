@@ -278,16 +278,13 @@ else
 	if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
 		SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
 		tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-		sleep 5;
+		sleep 1;
 	fi;
 
 
 	# ------------------------------------------------------------
 
-
-	clear;
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-
 
 	# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
 	echo "*************************************************************";

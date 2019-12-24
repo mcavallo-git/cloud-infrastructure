@@ -278,7 +278,7 @@ else
 	if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
 		SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
 		tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-		sleep 2;
+		sleep 5;
 	fi;
 
 

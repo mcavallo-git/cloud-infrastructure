@@ -310,10 +310,9 @@ else
 	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${SERVICE_LOGFILE}" |  grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | tail -n 1;);
 	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${SERVICE_LOGFILE}";
 
+	# sleep 10;
 
-	sleep 10;
-
-	exit ${EXIT_CODE};
+	# exit ${EXIT_CODE};
 
 fi;
 

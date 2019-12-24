@@ -48,6 +48,8 @@ else
 
 	SERVICE_NAME="jenkins";
 
+	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
+
 	EXIT_CODE=1;
 	
 	SERVICE_RESTART_REQD=0;
@@ -272,6 +274,13 @@ else
 	### /usr/sbin/service "${SERVICE_NAME}" status;
 
 
+	# Tail the Jenkins Logfile until the Password is given
+	echo "";
+	SED_TAIL_UNTIL='/***************************/ q';
+	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
+	echo "";
+	sleep 2;
+
 	# ------------------------------------------------------------
 
 	clear;
@@ -292,10 +301,9 @@ else
 
 
 	# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
-	LOGFILE_JENKINS="/var/log/jenkins/jenkins.log";
-	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | head -n 1;);
-	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | tail -n 1;);
-	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${LOGFILE_JENKINS}";
+	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | head -n 1;);
+	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | tail -n 1;);
+	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${SERVICE_LOGFILE}";
 
 
 	exit ${EXIT_CODE};

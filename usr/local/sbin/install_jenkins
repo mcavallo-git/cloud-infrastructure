@@ -275,12 +275,16 @@ else
 	# Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
 	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
 	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
-	if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
-		SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
-		tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-		sleep 1;
-	fi;
+	# if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
+	# 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
+	# 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
+	# 	sleep 1;
+	# fi;
 
+	while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
+		sleep 2;
+		echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
+	done;
 
 	# ------------------------------------------------------------
 

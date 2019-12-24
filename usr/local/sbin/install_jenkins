@@ -275,6 +275,14 @@ else
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "Info: Job finished after ${BENCHMARK_DELTA}s";
 
+
+	# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
+	LOGFILE_JENKINS="/var/log/jenkins/jenkins.log"; \
+	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | head -n 1;); \
+	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | tail -n 1;); \
+	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${LOGFILE_JENKINS}";
+
+
 	# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
 	if [ -f "$(which get_lan_ipv4)" ]; then
 		echo "";

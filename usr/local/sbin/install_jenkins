@@ -276,22 +276,20 @@ else
 
 	clear;
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
-	echo "Info: Job finished after ${BENCHMARK_DELTA}s";
 
 
 	# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
+	echo "*************************************************************";
+	echo "*************************************************************";
+	echo "*************************************************************";
+	echo "";
+	echo "This script's net runtime was ${BENCHMARK_DELTA}s";
+	echo "";
 	if [ -f "$(which get_lan_ipv4)" ]; then
-		echo "*************************************************************";
-		echo "*************************************************************";
-		echo "*************************************************************";
-		echo "";
-		echo "Job finished after ${BENCHMARK_DELTA}s";
-		echo "";
 		echo "To begin using Jenkins, open a web browser to http://$(get_lan_ipv4):8080";
 		echo "";
 	fi;
 
-	echo "Info: Job finished after ${BENCHMARK_DELTA}s";
 
 	# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
 	LOGFILE_JENKINS="/var/log/jenkins/jenkins.log";

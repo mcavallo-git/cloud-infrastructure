@@ -273,7 +273,7 @@ else
 	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
 	echo "Info: Job finished after ${BENCHMARK_DELTA}s";
 
-	# Display the IPv4 of this server as a suggestion for the user to get logged into Jenkins
+	# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
 	if [ -f "$(which get_lan_ipv4)" ]; then
 		echo "";
 		echo "";

@@ -277,9 +277,9 @@ else
 
 
 	# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
-	LOGFILE_JENKINS="/var/log/jenkins/jenkins.log"; \
-	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | head -n 1;); \
-	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | tail -n 1;); \
+	LOGFILE_JENKINS="/var/log/jenkins/jenkins.log";
+	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | head -n 1;);
+	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${LOGFILE_JENKINS}" | grep '\*\*\*\*\*\*\*\*\*\*' | awk '{print $1}' | tail -n 1;);
 	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${LOGFILE_JENKINS}";
 
 

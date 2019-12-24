@@ -42,6 +42,8 @@ else
 	#
 	# Instantiate runtime variables
 
+	BENCHMARK_START=$(date +'%s.%N');
+
 	SERVICE_NAME="jenkins";
 
 	EXIT_CODE=1;
@@ -273,6 +275,10 @@ else
 	# echo "";
 	# THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';); # THIS_IPv4
 	# echo "";
+
+	BENCHMARK_DELTA=$(echo "$(date +'%s.%N') - ${BENCHMARK_START}" | bc);
+	echo "Info: Job finished after ${BENCHMARK_DELTA}s";
+	sleep 30;
 
 	exit ${EXIT_CODE};
 

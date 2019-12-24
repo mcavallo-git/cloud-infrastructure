@@ -32,12 +32,15 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Instantiate runtime variables
-
+	#
 	# Docker-based installs:
 	#	"/usr/local/bin/create_docker_jenkins"
 	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
 	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins:alpine
+	#
+	# ------------------------------------------------------------
+	#
+	# Instantiate runtime variables
 
 	SERVICE_NAME="jenkins";
 
@@ -57,22 +60,56 @@ else
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
+	# ------------------------------------------------------------
+	# Parse inline arguments (passed to current script)
 
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
-	echo "";
-	READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-	echo "";
-	if [ ${RETURN_CODE_READ} -gt 128 ]; then
-		echo -e "Response timed out after ${READ_TIMEOUT}s";
-		exit 1;
-	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-		echo -e "\n""Proceeding...\n";
-		sleep 1;
-	else
-		echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
-		exit 1;
+	ARGS=("$@");
+	ARGS_COUNT=${#ARGS[@]};
+
+	ARGS_FORCE_AGREE=0;
+	
+	# Walk through any inline-arguments passed to this function
+	for (( i=0;i<$ARGS_COUNT;i++ )); do
+
+		EACH_ARG=${ARGS[${i}]};
+
+		# Check if this is the last inline-argument or if there are more to follow
+		if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
+			NEXT_ARG="";
+		else
+			NEXT_ARG=${ARGS[$((${i}+1))]};
+			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+				NEXT_ARG="";
+			fi;
+		fi;
+
+		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+			if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "--force" ]; then
+				ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
+			fi;
+
+		fi;
+
+	done;
+
+	if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+		echo "------------------------------------------------------------";
+		echo "";
+		echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
+		echo "";
+		READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+		echo "";
+		if [ ${RETURN_CODE_READ} -gt 128 ]; then
+			echo -e "Response timed out after ${READ_TIMEOUT}s";
+			exit 1;
+		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+			echo -e "\n""Proceeding...\n";
+			sleep 1;
+		else
+			echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
+			exit 1;
+		fi;
 	fi;
 
 	# ------------------------------------------------------------
@@ -202,23 +239,28 @@ else
 	fi;
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
-		echo "";
-		# READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		# echo "";
-		# if [ ${RETURN_CODE_READ} -gt 128 ]; then
-		# 	echo -e "Response timed out after ${READ_TIMEOUT}s";
-		# elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-		
-		CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
-		echo -e "\n""Info:  Downloading Jenkins config from \"cloud-infrastructure\" repository";
-		echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
-		mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
-		wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
-		chmod 0644 "${JENKINS_CONFIG_PATH}";
-		
-		# else
-		# 	echo "Denied - Skipping Jenkins config-file sync";
-		# fi;
+		if [ ${ARGS_FORCE_AGREE} -eq 0]; then
+			# Not Forced
+			echo "";
+			READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+			echo "";
+		else
+			# Forced (Skipped)
+			RETURN_CODE_READ=0;
+			REPLY="y";
+		fi;
+		if [ ${RETURN_CODE_READ} -gt 128 ]; then
+			echo -e "Response timed out after ${READ_TIMEOUT}s";
+		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+			CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
+			echo -e "\n""Info:  Downloading & Syncing Jenkins config from \"cloud-infrastructure\" repository";
+			echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
+			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
+			wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
+			chmod 0644 "${JENKINS_CONFIG_PATH}";
+		else
+			echo "Denied - Skipping Jenkins config-file sync";
+		fi;
 	fi;
 
 	# Restart the service

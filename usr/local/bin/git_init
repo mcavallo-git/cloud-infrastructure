@@ -226,7 +226,7 @@ if [ ! -d "${HOME}/.ssh" ]; then
 fi;
 
 # Gather SSH Public Keys for target Hostname
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling public keys for hostname \"${REMOTE_HOST}\":";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
 ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts";
 # ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
 

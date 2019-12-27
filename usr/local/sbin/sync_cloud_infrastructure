@@ -1145,6 +1145,7 @@ else
 
 		fi;
 
+
 		if [ ${ARGS_CRONJOB_REMOVE} -eq 1 ]; then
 			#
 			# --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
@@ -1173,6 +1174,7 @@ else
 		# SYMBOLIC LINKS
 		# ------------------------------------------------------------
 		LN_TO="/usr/local/sbin/sync_cloud_infrastructure"; LN_FROM="/usr/local/sbin/sync_Cloud_infrastructure"; if [ -f "${LN_TO}" ] && [ ! -h "${LN_FROM}" ]; then ln -sf "${LN_TO}" "${LN_FROM}"; fi; # Added 20191220-145307
+
 
 		# ------------------------------------------------------------
 		# DELETE OLD FILES
@@ -1243,6 +1245,7 @@ else
 				echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 			fi;
 		fi;
+
 
 		# ------------------------------------------------------------
 		# Restart Service (if needed)  -->  nginx

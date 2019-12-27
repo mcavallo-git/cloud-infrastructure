@@ -48,13 +48,15 @@ else
 
 	SERVICE_NAME="jenkins";
 
+	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
+
+	SERVICE_INITIAL_TOKEN="/var/lib/jenkins/secrets/initialAdminPassword";
+
+	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+
 	EXIT_CODE=1;
 	
 	SERVICE_RESTART_REQD=0;
-
-	APT_PKG_JDK="default-jdk-headless";
-	APT_PKG_JRE="default-jre-headless";
-	APT_PKG_JENKINS="jenkins";
 
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
@@ -273,8 +275,6 @@ else
 
 
 	# Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
-	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
-	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
 	# if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
 	# 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
 	# 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";

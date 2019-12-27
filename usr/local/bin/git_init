@@ -227,8 +227,8 @@ fi;
 
 # Gather SSH Public Keys for target Hostname
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
-ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts";
-# ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
+# ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts"; # Enforce public-key checking
+ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
 
 
 # Clone repo (if non existent)
@@ -237,8 +237,8 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 	FIRST_CLONE_OF_REPO="1";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
 	cd "${GIT_LOCAL_CEILING}";
-	# export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
-	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\"";
+	export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
+	# export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\"";
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;
@@ -260,7 +260,8 @@ fi;
 #
 # [config]  core.sshcommand
 # ${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
-${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\"";
+${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no";
+# ${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\"";
 #
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then

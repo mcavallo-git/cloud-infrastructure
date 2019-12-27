@@ -48,7 +48,7 @@ else
 
 	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
 
-	SERVICE_INITIAL_TOKEN="/var/lib/jenkins/secrets/initialAdminPassword";
+	SERVICE_TOKEN_FILEPATH="/var/lib/jenkins/secrets/initialAdminPassword";
 
 	SERVICE_RESTART_REQD=0;
 	
@@ -227,7 +227,7 @@ else
 
 	else
 		EXIT_CODE=1;
-		# Jenkins Service STILL not detected after install-attempt
+		# ERROR - Jenkins Service STILL not detected after install-attempt
 		echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
 	fi;
@@ -267,56 +267,88 @@ else
 		fi;
 	fi;
 
-	# Restart the service
+	# Start/Restart the service (will build the Jenkins service from the ground-up if it was just installed)
 	/usr/sbin/service "${SERVICE_NAME}" restart;
 	### /usr/sbin/service "${SERVICE_NAME}" status;
 
-	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
-
+	# ------------------------------------------------------------
+	#
+	# ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+	# echo "*************************************************************";
+	# echo "*************************************************************";
+	# echo "*************************************************************";
 	# Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
 	# if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
 	# 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
 	# 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
 	# 	sleep 1;
 	# fi;
+	# while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
+	# 	sleep 2;
+	# 	echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
+	# done;
+	#
 
-	while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
-		sleep 2;
-		echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
+	echo "Waiting for \"${SERVICE_TOKEN_FILEPATH}\" to be created w/ initial Jenkins admin token (password)";
+	
+	CURRENT_WAIT_DURATION=0;
+	
+	MAX_WAIT_DURATION=120;
+	
+	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+
+	while [ ! -f "${SERVICE_TOKEN_FILEPATH}" ] && [ ${CURRENT_WAIT_DURATION} -lt ${MAX_WAIT_DURATION} ]; do
+		CURRENT_WAIT_DURATION=$((${CURRENT_WAIT_DURATION}+1));
+		sleep 1;
 	done;
+	sleep 1;
 
 	clear;
+	
+	SERVICE_INITIAL_TOKEN="";
+	SERVICE_TOKEN_ECHO="";
+	if [ -f "${SERVICE_TOKEN_FILEPATH}" ]; then
+		# Read-in the initial token
+		SERVICE_INITIAL_TOKEN=$(cat "${SERVICE_TOKEN_FILEPATH}");
+		SERVICE_TOKEN_ECHO="Contents of \"${SERVICE_TOKEN_FILEPATH}\":   ${SERVICE_INITIAL_TOKEN}";
+	elif [ -n "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
+		# Attempt to parse the token from Jenkins' logfile
+		JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | head -n 1;);
+		JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${SERVICE_LOGFILE}" |  grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | tail -n 1;);
+		SERVICE_TOKEN_ECHO="$(sed -n ${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p ${SERVICE_LOGFILE};)";
+		# SERVICE_INITIAL_TOKEN="$(sed -n ${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p ${SERVICE_LOGFILE};)";
+	fi;
 
-	# ------------------------------------------------------------
+	if [ -n "${SERVICE_TOKEN_ECHO}" ]; then
 
-	BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-
-	# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
-	echo "*************************************************************";
-	echo "*************************************************************";
-	echo "*************************************************************";
-	echo "";
-	echo "This script's net runtime was ${BENCHMARK_DELTA}s";
-	echo "";
-	if [ -f "$(which get_lan_ipv4)" ]; then
-		echo "To begin using Jenkins, open a web browser to http://$(get_lan_ipv4):8080";
+		# ------------------------------------------------------------
+		# Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
 		echo "";
+		echo "*************************************************************";
+		echo "";
+		if [ -f "$(which get_lan_ipv4)" ]; then
+			echo "To begin using Jenkins, open a web browser to http://$(get_lan_ipv4):8080";
+			echo "";
+		fi;
+
+		# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
+		echo "Initial admin token (required to activate new Jenkins service):";
+		echo "${SERVICE_TOKEN_ECHO}";
+		echo "";
+	else
+		EXIT_CODE=1;
+		# ERROR - Jenkins initial admin token not found
+		echo -e "\n""Error:  Unable to locate jenkins token (required to activate new Jenkins service)";
+
 	fi;
 
 
-		# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
-	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
-	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
-	JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | head -n 1;);
-	JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${SERVICE_LOGFILE}" |  grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | tail -n 1;);
-	sed -n "${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p" "${SERVICE_LOGFILE}";
-
+	echo "*************************************************************";
 	echo "";
+	BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+	echo "End of Line - Net runtime was ${BENCHMARK_DELTA}s";
 	echo "";
-
-	# sleep 60;
-
-	# exit ${EXIT_CODE};
+	exit ${EXIT_CODE};
 
 fi;
 

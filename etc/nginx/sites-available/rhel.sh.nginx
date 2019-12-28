@@ -1,0 +1,61 @@
+# ------------------------------------------------------------
+#
+#==--  rhel.sh
+#
+server {
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
+	server_name ~^(?<subdomain>\w+\.)?rhel\.sh$;
+	if ($scheme != "https") {
+		return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
+	}
+	ssl_certificate "/etc/letsencrypt/live/rhel.sh/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/rhel.sh/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/rhel.sh/chain.pem";
+	location / {
+		if ($http_user_agent !~* "^curl") {
+			return 302 https://developers.redhat.com/products/rhel/download;
+		}
+		if ($http_user_agent ~* "^curl") {
+			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
+		}
+	}
+
+	include "/etc/nginx/nginx_error_locations.conf";
+
+}
+
+
+# ------------------------------------------------------------
+### Enable NGINX Host
+#
+# DN="rhel.sh"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
+#
+# ------------------------------------------------------------
+### Create Wildcard LetsEncrypt Certs
+#
+# DN="rhel.sh"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;#
+#
+#
+# ------------------------------------------------------------
+### Remove Domain & Revoke Certificate(s)
+###   |--> Deletes NGINX Files & Symlinks
+###   |--> Deletes LetsEncrypt Files
+###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
+#
+# FQDN="rhel.sh"; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; certbot certificates;
+#
+#
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   nginx.org  |  "Module ngx_http_rewrite_module"  |  https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#if
+#
+#   stackoverflow.com  |  "How to get subdomain of URL in NGINX"  |  https://stackoverflow.com/a/39563133
+#
+#   stackoverflow.com  |  "how to use a variable inside a nginx “if” regular expression"  |  https://stackoverflow.com/a/5859926
+#
+# ------------------------------------------------------------

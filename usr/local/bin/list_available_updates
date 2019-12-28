@@ -37,6 +37,11 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
 			echo "${PACKAGE_INFO}";
 		fi;
 	done;
+
+elif [ -n "$(which apt 2>'/dev/null';)" ]; then
+	apt list --upgradable;
+	# apt-get -u upgrade --assume-no;
+
 fi;
 
 
@@ -45,5 +50,7 @@ fi;
 # Citation(s)
 #
 #   stackoverflow.com  |  "How can I repeat a character in Bash?"  |  https://stackoverflow.com/a/5349796
+#
+#   unix.stackexchange.com  |  "List available updates but do not install them"  |  https://unix.stackexchange.com/a/19472
 #
 # ------------------------------------------------------------

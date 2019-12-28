@@ -25,9 +25,9 @@ else
 	#
 	#  Linux - Fetch, Pull, & Install updates (system & package)
 	#
+	THIS_SCRIPT=$(basename "${0}");
+	THIS_DIRNAME=$(dirname "${0}");
 	if [ "$(date +%A)" == "Sunday" ] || [ "${1}" == "now" ]; then
-		THIS_SCRIPT=$(basename "${0}");
-		THIS_DIRNAME=$(dirname "${0}");
 		echo "------------------------------------------------------------";
 		echo "";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | Starting \"${THIS_SCRIPT}\"";

@@ -539,7 +539,8 @@ fi;
 
 # # Strings
 # KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
-# KEY="core.autocrlf";   VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # # Unsets
 # KEY="core.sshcommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
 # KEY="commit.gpgsign";                "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
@@ -566,6 +567,9 @@ fi;
 # KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="core.sshcommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"${GIT_SSH_OPTS}";     git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="core.autocrlf";    VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="core.eol";         VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="color.ui";         VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # Booleans
 # KEY="commit.gpgsign";   VAL="true";                                    git config --global --replace-all --bool "${KEY}" "${VAL}";
 #
@@ -770,9 +774,11 @@ fi;
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-
-			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";                 git config --local --replace-all "${KEY}" "${VAL}";
-
+			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
+			KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+			KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+			KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 			if [ -z "${GPG_KEY_ID}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
@@ -837,7 +843,12 @@ for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		# Strings
 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
+		KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+
+		KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+		KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
@@ -874,7 +885,11 @@ if [ -f "${GIT_SSH_PERSONAL}" ]; then
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";                 git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
+			KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+			KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+			KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 			if [ -z "${GPG_KEY_ID}" ]; then
 				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
@@ -929,7 +944,11 @@ for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 		GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 		echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 		# Strings
-		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
+		KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+		KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+		KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else
@@ -965,7 +984,11 @@ for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 		# Strings
 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";                 git config --local --replace-all "${KEY}" "${VAL}";
+		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
+		KEY="core.autocrlf";   VAL=$(if [[ $REPO == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+		KEY="core.eol";        VAL="lf";     "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+		KEY="color.ui";        VAL="auto";   "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 		if [ -z "${GPG_KEY_ID}" ]; then
 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 		else

@@ -424,17 +424,17 @@ else
 		WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
 		if [ -d "${WSL_DIR}" ]; then
 			# Current User 
-			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
-				ln -sf "${WSL_DIR}" "${HOME}/man";
+			if [ -d "${HOME}" ] && [ ! -h "${HOME}/$(basename ${WSL_DIR})" ]; then
+				ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
 			fi;
 			if [ -v SUDO_USER ]; then
 				# Sudoer User (also create link in default user's homedir)
 				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 				if [ -d "${SUDOER_HOMEDIR}" ]; then
-					if [ ! -h "${SUDOER_HOMEDIR}/man" ]; then
-						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/man";
+					if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
+						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 					fi;
-					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/man";
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 				fi;
 			fi;
 		fi;
@@ -443,17 +443,17 @@ else
 		WSL_DIR="${WIN32_HOMEDIR}/Desktop";
 		if [ -d "${WSL_DIR}" ]; then
 			# Current User 
-			if [ -d "${HOME}" ] && [ ! -h "${HOME}/man" ]; then
-				ln -sf "${WSL_DIR}" "${HOME}/Desktop";
+			if [ -d "${HOME}" ] && [ ! -h "${HOME}/$(basename ${WSL_DIR})" ]; then
+				ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
 			fi;
 			if [ -v SUDO_USER ]; then
 				# Sudoer User (also create link in default user's homedir)
 				SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 				if [ -d "${SUDOER_HOMEDIR}" ]; then
-					if [ ! -h "${SUDOER_HOMEDIR}/Desktop" ]; then
-						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/Desktop";
+					if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
+						ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 					fi;
-					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/Desktop";
+					chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 				fi;
 			fi;
 		fi;

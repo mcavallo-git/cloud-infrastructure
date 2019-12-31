@@ -128,6 +128,8 @@ server {
 		#
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync-ps.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#
+		# New-Item -Path ("${Env:TEMP}\sync_cloud_infrastructure.ps1") -Value (($(New-Object Net.WebClient).DownloadString("https://sync-ps.mcavallo.com/ps"))) | Out-Null; PowerShell -NoProfile -ExecutionPolicy Bypass ("${Env:TEMP}\sync_cloud_infrastructure.ps1"); Remove-Item -Path ("${Env:TEMP}\sync_cloud_infrastructure.ps1");
+		#
 	}
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]

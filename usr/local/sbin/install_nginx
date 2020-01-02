@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_nginx" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner
+#
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx" -O "/usr/local/sbin/install_nginx" -q && chmod 0755 "/usr/local/sbin/install_nginx" && /usr/local/sbin/install_nginx;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Install NGINX Web Server
+
+	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+		###  Install NGINX (Debian, Ubuntu, etc.)  ## https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04
+
+		nginx -v;
+		service nginx status;
+
+		apt-get -y update;
+		apt-get -y install "dpkg-dev";
+		add-apt-repository ppa:nginx/stable;
+
+		apt-get -y update;
+		apt-get -y install "nginx-full";
+
+	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+		###  Install NGINX (Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.)  ##  https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
+
+		yum -y check-update;
+		yum -y install "epel-release";
+
+		yum -y check-update;
+		yum -y install "nginx-full";
+		# yum -y install "nginx";
+
+	fi;
+
+	# ------------------------------------------------------------
+	# Setup NGINX
+	if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+
+		# Check Service Status
+		nginx -v;
+		service nginx status;
+
+		# Update Diffie-Hellman Parameter
+		if [ ! -f "/etc/ssl/certs/dhparam.pem" ]; then
+			DH_KEY_SIZE_BITS=2048;
+			echo "Creating Diffie-Hellman parameter with key size of [ ${DH_KEY_SIZE_BITS}-bit ] @ filepath \"/etc/ssl/certs/dhparam.pem\"...";
+			openssl dhparam -out "/etc/ssl/certs/dhparam.pem" ${DH_KEY_SIZE_BITS};
+		fi;
+
+	fi;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   www.digitalocean.com  |  "How To Install Nginx on Ubuntu 16.04 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04
+#
+#   www.digitalocean.com  |  "How To Install Nginx on CentOS 7 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
+#
+# ------------------------------------------------------------

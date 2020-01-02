@@ -70,7 +70,7 @@ else
 				echo -e "\n""Info:  Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
 				ALLOW_SERVICES="http,https" && \
 				firewall-cmd --set-default-zone=public && \
-				firewall-cmd --permanent --zone=public --add-service={${ALLOW_SERVICES}} && \
+				firewall-cmd --permanent --zone=public --add-service={http,https} && \
 				firewall-cmd --reload && \
 				firewall-cmd --list-all;
 

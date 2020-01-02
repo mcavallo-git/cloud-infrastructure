@@ -34,6 +34,10 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
+	# Install Jenkins CI/CD Server
+	SERVICE_NAME="jenkins";
+
+	# ------------------------------------------------------------
 	#
 	# Docker-based installs:
 	#	"/usr/local/bin/create_docker_jenkins"
@@ -43,8 +47,6 @@ else
 	# ------------------------------------------------------------
 	#
 	# Instantiate runtime variables
-
-	SERVICE_NAME="jenkins";
 
 	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
 
@@ -207,6 +209,7 @@ else
 		ps aux | grep -v 'grep' | grep 'jenkins' | grep -v 'color=auto' | grep 'httpPort';
 		echo "";
 
+		# Configure the Firewall as-needed
 		FIREWALL_SERVICE="firewalld";
 		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then

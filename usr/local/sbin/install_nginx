@@ -24,8 +24,7 @@ else
 	# Install NGINX Web Server
 	SERVICE_NAME="nginx";
 
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then 
-		# Debian, Ubuntu, etc.
+	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Debian, Ubuntu, etc.
 		apt-get -y update; apt-get -y install "dpkg-dev";
 		add-apt-repository "ppa:nginx/stable";
 		apt-get -y update; apt-get -y install "nginx-full";
@@ -40,12 +39,15 @@ else
 
 	# ------------------------------------------------------------
 	# Setup NGINX
-	if [ $(which "${SERVICE_NAME}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
-		# Check Service Status
+		# ------------------------------------------------------------
+		# Check the NGINX service's status
 		nginx -v;
 		/usr/sbin/service "${SERVICE_NAME}" status;
 
+		# ------------------------------------------------------------
 		# Update Diffie-Hellman Parameter
 		if [ ! -f "/etc/ssl/certs/dhparam.pem" ]; then
 			DH_KEY_SIZE_BITS=2048;
@@ -53,24 +55,40 @@ else
 			openssl dhparam -out "/etc/ssl/certs/dhparam.pem" ${DH_KEY_SIZE_BITS};
 		fi;
 
+		# ------------------------------------------------------------
+		# Configure the Firewall as-needed
+		FIREWALL_SERVICE="firewalld";
+		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+			# Open necessary firewall port(s)
+			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
+			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
+				echo "";
+				echo "------------------------------------------------------------";
+				firewall-cmd --info-service="${SERVICE_NAME}";
+				echo "------------------------------------------------------------";
+				echo -e "\n""Info:  Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				firewall-cmd --set-default-zone=public;
+				firewall-cmd --permanent --zone=public --add-service="{http,https}";
+				firewall-cmd --reload;
+				firewall-cmd --list-all;
+			fi;
+		fi;
+
+		# ------------------------------------------------------------
+		# (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
+		if [ 0 -eq 1 ]; then
+			if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Debian, Ubuntu, etc.
+				add-apt-repository "ppa:maxmind/ppa";
+				apt -y update;
+				apt -y install geoip-database geoip-database-extra php-geoip;
+				apt -y install geoipupdate;
+				# Locate the geoip database(s)
+				dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
+			fi;
+		fi;
+
 	fi;
-
-
-	if [ 0 -eq 1 ]; then
-	# ------------------------------------------------------------
-	# Install Geo-IP Module
-		# Module ngx_stream_geoip_module  :::  http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
-		# Module ngx_http_geoip_module  :::  http://nginx.org/en/docs/http/ngx_http_geoip_module.html
-		add-apt-repository ppa:maxmind/ppa;
-		apt -y update;
-		apt -y install geoip-database geoip-database-extra php-geoip;
-		apt -y install geoipupdate;
-		apt-get -y clean; apt -y autoremove;
-
-		# locate the geoip databases
-		dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
-	fi;
-
 
 fi;
 
@@ -78,6 +96,10 @@ fi;
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   nginx.org  |  "Module ngx_http_geoip_module"  |  https://nginx.org/en/docs/http/ngx_http_geoip_module.html
+#
+#   nginx.org  |  "Module ngx_stream_geoip_module"  |  https://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
 #
 #   www.digitalocean.com  |  "How To Install Nginx on Ubuntu 16.04 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04
 #

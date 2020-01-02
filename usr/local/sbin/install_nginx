@@ -68,11 +68,12 @@ else
 				firewall-cmd --info-service="${SERVICE_NAME}";
 				echo "------------------------------------------------------------";
 				echo -e "\n""Info:  Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
-				HOSTED_SERVICES="http,https";
-				firewall-cmd --set-default-zone=public;
-				firewall-cmd --permanent --zone=public --add-service={${HOSTED_SERVICES}};
-				firewall-cmd --reload;
+				ALLOW_SERVICES="http,https" && \
+				firewall-cmd --set-default-zone=public && \
+				firewall-cmd --permanent --zone=public --add-service={${ALLOW_SERVICES}} && \
+				firewall-cmd --reload && \
 				firewall-cmd --list-all;
+
 			fi;
 		fi;
 

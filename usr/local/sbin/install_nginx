@@ -55,9 +55,10 @@ else
 
 	fi;
 
+
+	if [ 0 -eq 1 ]; then
 	# ------------------------------------------------------------
 	# Install Geo-IP Module
-	if [ 0 -eq 1 ]; then
 		# Module ngx_stream_geoip_module  :::  http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
 		# Module ngx_http_geoip_module  :::  http://nginx.org/en/docs/http/ngx_http_geoip_module.html
 		add-apt-repository ppa:maxmind/ppa;
@@ -69,6 +70,7 @@ else
 		# locate the geoip databases
 		dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
 	fi;
+
 
 fi;
 

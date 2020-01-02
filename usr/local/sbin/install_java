@@ -22,6 +22,8 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
+	SERVICE_NAME="java";
+
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Debian, Ubuntu, etc.
 		# APT_PKG_JDK="default-jdk-headless";
@@ -32,7 +34,8 @@ else
 
 	# ------------------------------------------------------------
 	# Setup Java
-	if [ $(which java 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
 		# Show local Java runtime's settings/properties
 		JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1

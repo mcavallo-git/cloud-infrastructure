@@ -246,7 +246,7 @@ else
 	fi;
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
-		if [ ${ARGS_FORCE_AGREE} -eq 0]; then
+		if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 			# Not Forced
 			echo "";
 			READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;

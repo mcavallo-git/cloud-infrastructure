@@ -310,7 +310,7 @@ else
 	if [ -f "${SERVICE_TOKEN_FILEPATH}" ]; then
 		# Read-in the initial token
 		SERVICE_INITIAL_TOKEN=$(cat "${SERVICE_TOKEN_FILEPATH}");
-		SERVICE_TOKEN_ECHO="Contents of \"${SERVICE_TOKEN_FILEPATH}\":   ${SERVICE_INITIAL_TOKEN}";
+		SERVICE_TOKEN_ECHO="Contents of \"${SERVICE_TOKEN_FILEPATH}\":  [ ${SERVICE_INITIAL_TOKEN} ]";
 	elif [ -n "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
 		# Attempt to parse the token from Jenkins' logfile
 		JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | head -n 1;);
@@ -333,7 +333,7 @@ else
 
 		# Find the default admin password for the user (so they don't have to go digging through a logfile for it)
 		echo "Initial admin token (required to activate new Jenkins service):";
-		echo "${SERVICE_TOKEN_ECHO}";
+		echo -e "${SERVICE_TOKEN_ECHO}";
 		echo "";
 	else
 		EXIT_CODE=1;

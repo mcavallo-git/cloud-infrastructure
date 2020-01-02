@@ -22,6 +22,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Install NGINX Web Server
+	SERVICE_NAME="nginx";
 
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		###  Install NGINX (Debian, Ubuntu, etc.)  ## https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04
@@ -45,15 +46,17 @@ else
 		yum -y check-update;
 		yum -y install "nginx";
 
+		/usr/sbin/service "${SERVICE_NAME}" status;
+
 	fi;
 
 	# ------------------------------------------------------------
 	# Setup NGINX
-	if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+	if [ $(which "${SERVICE_NAME}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 
 		# Check Service Status
 		nginx -v;
-		service nginx status;
+		/usr/sbin/service "${SERVICE_NAME}" status;
 
 		# Update Diffie-Hellman Parameter
 		if [ ! -f "/etc/ssl/certs/dhparam.pem" ]; then

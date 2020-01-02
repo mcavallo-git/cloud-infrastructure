@@ -91,7 +91,7 @@ else
 
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-			if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "--force" ]; then
+			if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
 				ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
 			fi;
 

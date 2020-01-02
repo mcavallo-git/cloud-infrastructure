@@ -24,31 +24,19 @@ else
 	# Install NGINX Web Server
 	SERVICE_NAME="nginx";
 
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		###  Install NGINX (Debian, Ubuntu, etc.)  ## https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04
+	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then 
+		# Debian, Ubuntu, etc.
+		apt-get -y update; apt-get -y install "dpkg-dev";
+		add-apt-repository "ppa:nginx/stable";
+		apt-get -y update; apt-get -y install "nginx-full";
 
-		nginx -v;
-		service nginx status;
-
-		apt-get -y update;
-		apt-get -y install "dpkg-dev";
-		add-apt-repository ppa:nginx/stable;
-
-		apt-get -y update;
-		apt-get -y install "nginx-full";
-
-	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		###  Install NGINX (Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.)  ##  https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
-
-		yum -y check-update;
-		yum -y install "epel-release";
-
-		yum -y check-update;
-		yum -y install "nginx";
-
-		/usr/sbin/service "${SERVICE_NAME}" status;
+	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+		yum -y check-update; yum -y install "epel-release";
+		yum -y check-update; yum -y install "nginx";
 
 	fi;
+
+	/usr/sbin/service "${SERVICE_NAME}" start;
 
 	# ------------------------------------------------------------
 	# Setup NGINX
@@ -65,6 +53,21 @@ else
 			openssl dhparam -out "/etc/ssl/certs/dhparam.pem" ${DH_KEY_SIZE_BITS};
 		fi;
 
+	fi;
+
+	# ------------------------------------------------------------
+	# Install Geo-IP Module
+	if [ 0 -eq 1 ]; then
+		# Module ngx_stream_geoip_module  :::  http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
+		# Module ngx_http_geoip_module  :::  http://nginx.org/en/docs/http/ngx_http_geoip_module.html
+		add-apt-repository ppa:maxmind/ppa;
+		apt -y update;
+		apt -y install geoip-database geoip-database-extra php-geoip;
+		apt -y install geoipupdate;
+		apt-get -y clean; apt -y autoremove;
+
+		# locate the geoip databases
+		dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
 	fi;
 
 fi;

@@ -168,12 +168,12 @@ else
 						# Update config file(s) 
 						if [ "${SERVICE_CONF1_STATUS,,}" != "disabled" ]; then
 							if [ -f "${SERVICE_CONF1_PATH}" ]; then
-								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF1_PATH}";
+								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF1_PATH}";
 							fi;
 						fi;
 						if [ "${SERVICE_CONF2_STATUS,,}" != "disabled" ]; then
 							if [ -f "${SERVICE_CONF2_PATH}" ]; then
-								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF2_PATH}";
+								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF2_PATH}";
 							fi;
 						fi;
 						REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
@@ -224,12 +224,12 @@ else
 						# Update config file(s)
 						if [ "${SERVICE_CONF1_STATUS,,}" != "enforcing" ]; then
 							if [ -f "${SERVICE_CONF1_PATH}" ]; then
-								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
+								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
 							fi;
 						fi;
 						if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
 							if [ -f "${SERVICE_CONF2_PATH}" ]; then
-								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
+								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
 							fi;
 						fi;
 						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
@@ -285,7 +285,7 @@ else
 				# semanage login -l;
 
 				# Backup & Restart the audit logfile
-				# cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_$(date +'%Y-%m-%d_%H-%M-%S').log"; echo "" > "/var/log/audit/audit.log";
+				# cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_${START_TIMESTAMP}.log"; echo "" > "/var/log/audit/audit.log";
 
 				# Check Selinux error logs specifically for lines mentioning 'nginx' and 'denied'
 				# cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
@@ -293,6 +293,13 @@ else
 			fi;
 
 		fi;
+
+		# Output all Selinux settings to a file
+		LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
+		/usr/sbin/getsebool -a 1>"${LOGFILE_SEBOOL}" 2>&1;
+		echo "";
+		echo "Info:  Verbose Selinux config output to logfile:";
+		echo "${LOGFILE_SEBOOL}";
 
 		# ------------------------------------------------------------
 		# Reboot Server (if needed) --> Require user confirmation

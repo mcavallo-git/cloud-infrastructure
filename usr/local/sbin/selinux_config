@@ -218,23 +218,23 @@ else
 				# if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
 				# Selinux - Get status
 
-				echo "";
+				echo "------------------------------------------------------------";
 				echo "Command [ sestatus ] returned the following status:";
 				sestatus;
 
-				echo "";
+				echo "------------------------------------------------------------";
 				echo "Command [ getenforce ] returned the following status:";
 				getenforce;
 
-				echo "";
+				echo "------------------------------------------------------------";
 				echo "Filepath [ ${SERVICE_CONF1_PATH} ] contains the following setting:";
 				echo "${SERVICE_CONF1_STATUS}";
 
-				echo "";
+				echo "------------------------------------------------------------";
 				echo "Filepath [ ${SERVICE_CONF2_PATH} ] contains the following setting:";
 				echo "${SERVICE_CONF2_STATUS}";
 
-				echo "";
+				echo "------------------------------------------------------------";
 
 				EXIT_CODE=0;
 

@@ -127,7 +127,7 @@ else
 	# else
 
 	# ------------------------------------------------------------
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Debian, Ubuntu, etc.
+	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Debian, Ubuntu, etc.
 
 		# ------------------------------------------------------------
 		# Install Java
@@ -149,7 +149,7 @@ else
 		PACKAGE_APT="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Jenkins
 
 
-	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
 
 		# ------------------------------------------------------------
 		# Install Java

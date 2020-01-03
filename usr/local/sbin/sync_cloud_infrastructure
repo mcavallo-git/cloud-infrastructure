@@ -229,8 +229,10 @@ else
 	REQUIRED_PKGS_ARRAY+=("wget");
 
 	# Debian-specific packages
-	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		REQUIRED_PKGS_ARRAY+=("cron"); # Debian distros - include the cron package
+	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+		REQUIRED_PKGS_ARRAY+=("cron");
+	elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+		REQUIRED_PKGS_ARRAY+=("bind-utils");
 	fi;
 	# Determine if any required packages are missing
 	for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do

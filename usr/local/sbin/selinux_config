@@ -179,6 +179,7 @@ else
 							REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
 						fi;
 					fi;
+
 				fi;
 
 
@@ -208,16 +209,28 @@ else
 							exit 1;
 						fi;
 					fi;
-					if [ -f "${SERVICE_CONF1_PATH}" ]; then
-						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
-					fi;
-					if [ -f "${SERVICE_CONF2_PATH}" ]; then
-						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
-					fi;
-					setenforce 1; EXIT_CODE=$?;
-					if [ ${EXIT_CODE} -eq 0 ]; then
+
+					if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ] || [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
+						# Update config file(s) 
+						if [ "${SERVICE_CONF1_STATUS,,}" != "enforcing" ]; then
+							if [ -f "${SERVICE_CONF1_PATH}" ]; then
+								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
+							fi;
+						fi;
+						if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
+							if [ -f "${SERVICE_CONF2_PATH}" ]; then
+								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
+							fi;
+						fi;
 						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+					else
+						# Set Selinux enforcement-setting
+						setenforce 1; EXIT_CODE=$?;
+						if [ ${EXIT_CODE} -eq 0 ]; then
+							REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+						fi;
 					fi;
+
 				fi;
 
 

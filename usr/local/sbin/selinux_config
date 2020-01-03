@@ -142,7 +142,7 @@ else
 
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
 					# Selinux already disabled in every config-file, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="Selinux already disabled in every config-file, but still awaiting reboot to finish disabling Selinux";
+					REBOOT_REQUIRED_MSG="Selinux is already configured as disabled, but requires machine to be rebooted";
 					EXIT_CODE=0;
 
 				else
@@ -198,7 +198,7 @@ else
 
 				elif [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
 					# Selinux already enabled in every location, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="Selinux already enabled in every config-file, but still awaiting reboot to finish enabling Selinux";
+					REBOOT_REQUIRED_MSG="Selinux is already configured as enabled, but requires machine to be rebooted";
 					EXIT_CODE=0;
 
 				else

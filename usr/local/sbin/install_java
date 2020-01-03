@@ -29,7 +29,7 @@ else
 		# APT_PKG_JDK="default-jdk-headless";
 		# APT_PKG_JRE="default-jre-headless";
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, etc.
+		PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 	fi;
 
 	# ------------------------------------------------------------

@@ -298,7 +298,7 @@ else
 		# Reboot Server (if needed) --> Require user confirmation
 		if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
 			echo "";
-			echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  ${REBOOT_REQUIRED_MSG}";
+			echo "Info:  ${REBOOT_REQUIRED_MSG}";
 			read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then

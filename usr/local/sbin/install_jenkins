@@ -236,9 +236,9 @@ else
 					echo "------------------------------------------------------------";
 					firewall-cmd --info-service=jenkins;
 					echo "------------------------------------------------------------";
-					echo -e "\n""Info:  Opening ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
+					echo -e "\n""Info:  Opening ports for \"jenkins\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
 					firewall-cmd --set-default-zone=public;
-					firewall-cmd --permanent --zone=public --add-service={jenkins};
+					firewall-cmd --permanent --zone=public --add-service=jenkins;
 					firewall-cmd --reload;
 					firewall-cmd --list-all;
 				fi;

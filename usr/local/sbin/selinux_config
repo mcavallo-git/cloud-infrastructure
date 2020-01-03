@@ -172,6 +172,9 @@ else
 							fi;
 						fi;
 						REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+					elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
+						# Still awaiting reboot
+						REBOOT_REQUIRED_MSG="You must reboot this machine to finish disabling Selinux";
 					else
 						# Set Selinux enforcement-setting
 						setenforce 0; EXIT_CODE=$?;
@@ -211,7 +214,7 @@ else
 					fi;
 
 					if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ] || [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
-						# Update config file(s) 
+						# Update config file(s)
 						if [ "${SERVICE_CONF1_STATUS,,}" != "enforcing" ]; then
 							if [ -f "${SERVICE_CONF1_PATH}" ]; then
 								sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
@@ -223,6 +226,9 @@ else
 							fi;
 						fi;
 						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+					elif [ $(selinuxenabled; echo $?;) -eq 1 ]; then
+						# Still awaiting reboot
+						REBOOT_REQUIRED_MSG="You must reboot this machine to finish enabling Selinux";
 					else
 						# Set Selinux enforcement-setting
 						setenforce 1; EXIT_CODE=$?;

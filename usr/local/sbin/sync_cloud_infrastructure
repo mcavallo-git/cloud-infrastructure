@@ -279,30 +279,44 @@ else
 
 		fi;
 
-		unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # Packages which failed to be installed (but are required to continue)
+		# Verify that all required packages (which are needed later in this script) are installed as-intended
+		unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
 		for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
-			if [ "$(which ${EACH_REQUIRED_PKG} 1>'/dev/null' 2>&1; echo $?;)" != "0" ]; then
-				FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+			if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+				# Query Debian's Package-Manager for each package
+				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+					FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+				fi;
+			elif [ $(which rpm 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+				# Query RHEL's Package-Manager for each package
+				if [ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+					FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+				fi;
+			else # Other distros
+				if [ "$(which ${EACH_REQUIRED_PKG} 1>'/dev/null' 2>&1; echo $?;)" != "0" ]; then
+					FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+				fi;
 			fi;
 		done;
+
 		if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
-			echo -e "\n""Warning : Attempting fallback package installation-method";
-			RET_CODE=1
-			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
-				echo "Info:  Calling [ apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; ]...";
-				apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
-			elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
-				echo "Info:  Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
-				yum -y check-update; yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
-			elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
-				echo "Info:  Calling [ apk update -y; apk add -y bc dos2unix git rsync vim wget; ]...";
-				apk update -y; apk add -y bc dos2unix git rsync vim wget; RET_CODE=$?;
-			fi;
-			if [ ${RET_CODE} -ne 0 ]; then 
+			# echo -e "\n""Warning : Attempting fallback (manual/hardcode) package installation-method";
+			# RET_CODE=1
+			# if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
+			# 	echo "Info:  Calling [ apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; ]...";
+			# 	apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			# elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+			# 	echo "Info:  Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
+			# 	yum -y check-update; yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
+			# elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
+			# 	echo "Info:  Calling [ apk update -y; apk add -y bc dos2unix git rsync vim wget; ]...";
+			# 	apk update -y; apk add -y bc dos2unix git rsync vim wget; RET_CODE=$?;
+			# fi;
+			# if [ ${RET_CODE} -ne 0 ]; then 
 				echo -e "\n""Error: Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
 				sleep 60;
 				exit 1;
-			fi;
+			# fi;
 		fi;
 		
 	fi;

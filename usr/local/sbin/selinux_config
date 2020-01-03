@@ -218,10 +218,23 @@ else
 				# if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
 				# Selinux - Get status
 
-				# getenforce; # Returns only "Enforcing" or "Disabled"
+				echo "";
+				echo "Info:  Calling [ getenforce; ]...";
+				getenforce;
+
+				echo "";
+				echo "Info:  Calling [ sestatus; ]...";
 				sestatus;
 
-				# selinuxenabled; echo $?;
+				echo "";
+				echo "Setting contained in Selinux config-file \"${SERVICE_CONF1_PATH}\"...";
+				echo "${SERVICE_CONF1_STATUS}";
+
+				echo "";
+				echo "Setting contained in Selinux config-file \"${SERVICE_CONF2_PATH}\"...";
+				echo "${SERVICE_CONF2_STATUS}";
+
+				echo "";
 
 				EXIT_CODE=0;
 

@@ -225,7 +225,7 @@ else
 	REQUIRED_PKGS_ARRAY+=("dos2unix");
 	REQUIRED_PKGS_ARRAY+=("git");
 	REQUIRED_PKGS_ARRAY+=("rsync");
-	REQUIRED_PKGS_ARRAY+=("vim");
+	REQUIRED_PKGS_ARRAY+=("vim-common");
 	REQUIRED_PKGS_ARRAY+=("wget");
 
 	# Debian-specific packages
@@ -282,12 +282,12 @@ else
 		# Verify that all required packages (which are needed later in this script) are installed as-intended
 		unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
 		for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
-			if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				# Query Debian's Package-Manager for each package
 				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
 					FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
 				fi;
-			elif [ $(which rpm 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+			elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 				# Query RHEL's Package-Manager for each package
 				if [ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
 					FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");

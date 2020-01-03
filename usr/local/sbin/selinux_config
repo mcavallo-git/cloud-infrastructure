@@ -219,19 +219,19 @@ else
 				# Selinux - Get status
 
 				echo "";
-				echo "Info:  Calling [ sestatus; ]...";
+				echo "[ sestatus ] shows the following status:";
 				sestatus;
 
 				echo "";
-				echo "Info:  Calling [ getenforce; ]...";
+				echo "[ getenforce ] shows the following status:";
 				getenforce;
 
 				echo "";
-				echo "Setting contained in Selinux config-file \"${SERVICE_CONF1_PATH}\"...";
+				echo "[ ${SERVICE_CONF1_PATH} ] shows the following status:";
 				echo "${SERVICE_CONF1_STATUS}";
 
 				echo "";
-				echo "Setting contained in Selinux config-file \"${SERVICE_CONF2_PATH}\"...";
+				echo "[ ${SERVICE_CONF2_PATH} ] shows the following status:";
 				echo "${SERVICE_CONF2_STATUS}";
 
 				echo "";

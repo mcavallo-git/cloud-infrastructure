@@ -246,11 +246,15 @@ else
 				# Selinux - Get status
 
 				echo "------------------------------------------------------------";
-				echo "Command [ sestatus ] returned the following status:";
+				echo "Command [ selinuxenabled; echo $?; ] returned:";
+				selinuxenabled; echo $?;
+
+				echo "------------------------------------------------------------";
+				echo "Command [ sestatus ] returned:";
 				sestatus;
 
 				echo "------------------------------------------------------------";
-				echo "Command [ getenforce ] returned the following status:";
+				echo "Command [ getenforce ] returned:";
 				getenforce;
 
 				echo "------------------------------------------------------------";

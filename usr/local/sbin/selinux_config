@@ -128,11 +128,10 @@ else
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Disable
-
 				if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 					echo "------------------------------------------------------------";
 					echo "";
-					echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
+					echo "Warning:  This will disable Selinux on this system (and may restrict access to necessary services, such as SSH)";
 					echo "";
 					READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 					echo "";
@@ -143,7 +142,7 @@ else
 						echo -e "\n""Proceeding...\n";
 						sleep 1;
 					else
-						echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
+						echo "Denied - Exiting...";
 						exit 1;
 					fi;
 				fi;
@@ -158,7 +157,24 @@ else
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Enable
-
+				if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+					echo "------------------------------------------------------------";
+					echo "";
+					echo "Warning:  This will enable Selinux on this system (and may restrict access to necessary services, such as SSH)";
+					echo "";
+					READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+					echo "";
+					if [ ${RETURN_CODE_READ} -gt 128 ]; then
+						echo -e "Response timed out after ${READ_TIMEOUT}s";
+						exit 1;
+					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+						echo -e "\n""Proceeding...\n";
+						sleep 1;
+					else
+						echo "Denied - Exiting...";
+						exit 1;
+					fi;
+				fi;
 				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
 				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
 				setenforce 1; EXIT_CODE=$?;
@@ -170,8 +186,8 @@ else
 				# ------------------------------------------------------------
 				# Selinux - Get status
 
-				getenforce;
-				# sestatus;  # Alternate-approach
+				# getenforce; # Returns only "Enforcing" or "Disabled"
+				# sestatus;
 
 				EXIT_CODE=0;
 

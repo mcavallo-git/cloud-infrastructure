@@ -120,7 +120,7 @@ Error:  Exactly one option must be selected from the following options:
 
 		if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
 			# ERROR - Invalid action selected
-			echo -e "\n""${ERROR_INVALID_ACTION}""\n";
+			echo "${ERROR_INVALID_ACTION}";
 			EXIT_CODE=1;
 
 		else

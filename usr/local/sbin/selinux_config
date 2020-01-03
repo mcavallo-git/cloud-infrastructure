@@ -135,7 +135,7 @@ else
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Disable
-				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS^^}" -eq "DISABLED" ] && [ "${SERVICE_CONF2_STATUS^^}" -eq "DISABLED" ]; then
+				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
 					# Selinux already disabled
 					echo -e "\n""Info:  Selinux is already disabled";
 					EXIT_CODE=0;
@@ -174,7 +174,7 @@ else
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Enable
-				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS^^}" -eq "ENFORCING" ] && [ "${SERVICE_CONF2_STATUS^^}" -eq "ENFORCING" ]; then
+				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
 					# Selinux already enabled
 					echo -e "\n""Info:  Selinux is already enabled";
 					EXIT_CODE=0;

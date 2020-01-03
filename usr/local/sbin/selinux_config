@@ -246,7 +246,7 @@ else
 				# Selinux - Get status
 
 				echo "------------------------------------------------------------";
-				echo "Command [ selinuxenabled; echo \"$? (+ added interpretation)\"; ] returned:";
+				echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
 				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
 					echo "1 (Selinux is DISABLED - persists until reboot)";
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then

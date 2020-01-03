@@ -251,9 +251,9 @@ else
 				echo "------------------------------------------------------------";
 				echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
 				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
-					echo "1 (Selinux is DISABLED - persists until reboot)";
+					echo "1 (Selinux is DISABLED - updating this requires a reboot)";
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
-					echo "0 (Selinux is ENABLED - persists until reboot)";
+					echo "0 (Selinux is ENABLED - updating this requires a reboot)";
 				else
 					selinuxenabled; echo $?;
 				fi;

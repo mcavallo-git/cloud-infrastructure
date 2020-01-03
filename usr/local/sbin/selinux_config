@@ -247,7 +247,13 @@ else
 
 				echo "------------------------------------------------------------";
 				echo "Command [ selinuxenabled; echo $?; ] returned:";
-				selinuxenabled; echo $?;
+				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
+					echo "0 (Selinux is disabled - persists until reboot)";
+				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
+					echo "0 (Selinux is enabled - persists until reboot)";
+				else
+					selinuxenabled; echo $?;
+				fi;
 
 				echo "------------------------------------------------------------";
 				echo "Command [ sestatus ] returned:";

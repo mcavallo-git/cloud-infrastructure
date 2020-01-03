@@ -296,6 +296,9 @@ else
 
 		# Output all Selinux settings to a file
 		LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
+		echo "------------------------------------------------------------" > "${LOGFILE_SEBOOL}";
+		echo "SELinux Boolean Directives - https://wiki.centos.org/TipsAndTricks/SelinuxBooleans" >> "${LOGFILE_SEBOOL}";
+		echo "------------------------------------------------------------" >> "${LOGFILE_SEBOOL}";
 		/usr/sbin/getsebool -a 1>"${LOGFILE_SEBOOL}" 2>&1;
 		chown "root:root" "${LOGFILE_SEBOOL}";
 		chmod 0600 "${LOGFILE_SEBOOL}";

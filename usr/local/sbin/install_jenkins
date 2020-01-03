@@ -222,13 +222,13 @@ else
 				if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
 					echo "";
 					echo "------------------------------------------------------------";
-					firewall-cmd --info-service={jenkins};
+					firewall-cmd --info-service=jenkins;
 					firewall-cmd --info-service={http,https};
 					echo "------------------------------------------------------------";
 					echo -e "\n""Info:  Opening ports for \"{http,https}\" service & closing ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
 					firewall-cmd --set-default-zone=public;
 					firewall-cmd --permanent --zone=public --add-service={http,https};
-					firewall-cmd --permanent --zone=public --remove-service={jenkins};
+					firewall-cmd --permanent --zone=public --remove-service=jenkins;
 					firewall-cmd --reload;
 					firewall-cmd --list-all;
 				else

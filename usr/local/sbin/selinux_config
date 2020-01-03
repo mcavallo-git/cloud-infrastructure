@@ -34,14 +34,14 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Selinux - Disable, Enable, Get-Status, Troubleshoot
+	# SELinux - Disable, Enable, Get-Status, Troubleshoot
 	
 	EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
 
-	# Only run in Selinux-compatible environments
-	if [ $(which getenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which setenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which selinuxenabled 2>'/dev/null' | wc -l;) -eq 0 ]; then
-		# ERROR - Selinux not detected
-		echo -e "\n""Error:  Selinux not detected""\n";
+	# Only run in SELinux-compatible environments
+	if [ $(which getenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which setenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+		# ERROR - SELinux not detected
+		echo -e "\n""Error:  SELinux not detected""\n";
 		EXIT_CODE=1;
 	
 	else
@@ -98,15 +98,15 @@ else
 				fi;
 
 				if [ "${EACH_ARG}" == "-d" ] || [ "${EACH_ARG}" == "--disable" ]; then
-					ARGS_SELINUX_DISABLE=1; # Disable Selinux
+					ARGS_SELINUX_DISABLE=1; # Disable SELinux
 				fi;
 
 				if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
-					ARGS_SELINUX_ENABLE=1; # Enable Selinux
+					ARGS_SELINUX_ENABLE=1; # Enable SELinux
 				fi;
 	
 				if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
-					ARGS_SELINUX_STATUS=1; # Get Selinux status
+					ARGS_SELINUX_STATUS=1; # Get SELinux status
 				fi;
 	
 			fi;
@@ -128,28 +128,28 @@ else
 
 		else
 
-			# Determine the enabled/disabled status defined in Selinux's config-file(s)
+			# Determine the enabled/disabled status defined in SELinux's config-file(s)
 			SERVICE_CONF1_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF1_PATH}";);
 			SERVICE_CONF2_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF2_PATH}";);
 
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
-				# Selinux - Disable
+				# SELinux - Disable
 				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
-					# Selinux already disabled in every location
-					echo "Info:  Selinux is already disabled";
+					# SELinux already disabled in every location
+					echo "Info:  SELinux is already disabled";
 					EXIT_CODE=0;
 
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
-					# Selinux already disabled in every config-file, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="Selinux is already configured as disabled, but requires machine to be rebooted";
+					# SELinux already disabled in every config-file, but still awaiting reboot
+					REBOOT_REQUIRED_MSG="SELinux is already configured as disabled, but requires machine to be rebooted";
 					EXIT_CODE=0;
 
 				else
-					# Selinux NOT already disabled in every location
+					# SELinux NOT already disabled in every location
 					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 						echo "";
-						echo "Warning:  This will DISABLE Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "Warning:  This will DISABLE SELinux on this system (and may restrict access to necessary services, such as SSH)";
 						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 						echo "";
 						if [ ${RETURN_CODE_READ} -gt 128 ]; then
@@ -176,12 +176,12 @@ else
 								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF2_PATH}";
 							fi;
 						fi;
-						REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+						REBOOT_REQUIRED_MSG="Reboot required to finish disabling SELinux";
 					else
-						# Set Selinux enforcement-setting
+						# Set SELinux enforcement-setting
 						setenforce 0; EXIT_CODE=$?;
 						if [ ${EXIT_CODE} -eq 0 ]; then
-							REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+							REBOOT_REQUIRED_MSG="Reboot required to finish disabling SELinux";
 						fi;
 					fi;
 
@@ -190,22 +190,22 @@ else
 
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
-				# Selinux - Enable
+				# SELinux - Enable
 				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
-					# Selinux already enabled in every location
-					echo "Info:  Selinux is already enabled";
+					# SELinux already enabled in every location
+					echo "Info:  SELinux is already enabled";
 					EXIT_CODE=0;
 
 				elif [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
-					# Selinux already enabled in every location, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="Selinux is already configured as enabled, but requires machine to be rebooted";
+					# SELinux already enabled in every location, but still awaiting reboot
+					REBOOT_REQUIRED_MSG="SELinux is already configured as enabled, but requires machine to be rebooted";
 					EXIT_CODE=0;
 
 				else
-					# Selinux NOT already enabled in every location
+					# SELinux NOT already enabled in every location
 					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 						echo "";
-						echo "Warning:  This will ENABLE Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "Warning:  This will ENABLE SELinux on this system (and may restrict access to necessary services, such as SSH)";
 						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 						echo "";
 						if [ ${RETURN_CODE_READ} -gt 128 ]; then
@@ -232,12 +232,12 @@ else
 								sed --in-place=".${START_TIMESTAMP}.bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
 							fi;
 						fi;
-						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+						REBOOT_REQUIRED_MSG="Reboot required to finish enabling SELinux";
 					else
-						# Set Selinux enforcement-setting
+						# Set SELinux enforcement-setting
 						setenforce 1; EXIT_CODE=$?;
 						if [ ${EXIT_CODE} -eq 0 ]; then
-							REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+							REBOOT_REQUIRED_MSG="Reboot required to finish enabling SELinux";
 						fi;
 					fi;
 				fi;
@@ -246,14 +246,14 @@ else
 			else
 				# ------------------------------------------------------------
 				# if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
-				# Selinux - Get status
+				# SELinux - Get status
 
 				echo "------------------------------------------------------------";
 				echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
 				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
-					echo "1 (Selinux is DISABLED - updating this requires a reboot)";
+					echo "1 (SELinux is DISABLED - updating this requires a reboot)";
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
-					echo "0 (Selinux is ENABLED - updating this requires a reboot)";
+					echo "0 (SELinux is ENABLED - updating this requires a reboot)";
 				else
 					selinuxenabled; echo $?;
 				fi;
@@ -287,14 +287,14 @@ else
 				# Backup & Restart the audit logfile
 				# cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_${START_TIMESTAMP}.log"; echo "" > "/var/log/audit/audit.log";
 
-				# Check Selinux error logs specifically for lines mentioning 'nginx' and 'denied'
+				# Check SELinux error logs specifically for lines mentioning 'nginx' and 'denied'
 				# cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
 
 			fi;
 
 		fi;
 
-		# Output all Selinux settings to a file
+		# Output all SELinux settings to a file
 		LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
 		echo "------------------------------------------------------------" > "${LOGFILE_SEBOOL}";
 		echo "SELinux Boolean Directives - https://wiki.centos.org/TipsAndTricks/SelinuxBooleans" >> "${LOGFILE_SEBOOL}";
@@ -303,7 +303,7 @@ else
 		chown "root:root" "${LOGFILE_SEBOOL}";
 		chmod 0600 "${LOGFILE_SEBOOL}";
 		echo "";
-		echo "Info:  A copy of current Selinux settings were output to logfile:";
+		echo "Info:  A copy of current SELinux settings were output to logfile:";
 		echo "${LOGFILE_SEBOOL}";
 		echo "";
 

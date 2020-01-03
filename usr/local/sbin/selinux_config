@@ -1,0 +1,219 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/selinux_config" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner
+#
+if [ 0 -eq 1 ]; then
+
+# wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config" -O "/usr/local/sbin/selinux_config" -q && chmod 0755 "/usr/local/sbin/selinux_config" && /usr/local/sbin/selinux_config;
+
+curl -ssL cava.lol | bash; selinux_config --enable;
+
+fi;
+#
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Selinux - Disable, Enable, Get-Status, Troubleshoot
+	
+	EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
+
+	# Only run in Selinux-compatible environments
+	if [ $(which getenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which setenforce 2>'/dev/null' | wc -l;) -eq 0 ]; then
+		# ERROR - Selinux not detected
+		echo -e "\n""Error:  Selinux not detected""\n";
+		EXIT_CODE=1;
+	
+	else
+		# ------------------------------------------------------------
+		# Instantiate runtime variables
+
+		SERVICE_LOGFILE="/var/log/audit/audit.log";
+
+		REBOOT_REQUIRED_MSG="";
+
+		START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+		START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+		# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+		# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+		# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+		START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+		START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+
+		BENCHMARK_START=${START_SECONDS_NANOSECONDS};
+
+		# ------------------------------------------------------------
+		# Parse inline arguments (passed to current script)
+
+		ARGS=("$@");
+		ARGS_COUNT=${#ARGS[@]};
+
+		ARGS_FORCE_AGREE=0;
+		ARGS_SELINUX_ENABLE=0;
+		ARGS_SELINUX_DISABLE=0;
+		ARGS_SELINUX_STATUS=0;
+		
+		# Walk through any inline-arguments passed to this function
+		for (( i=0;i<$ARGS_COUNT;i++ )); do
+
+			EACH_ARG=${ARGS[${i}]};
+
+			# Check if this is the last inline-argument or if there are more to follow
+			if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
+				NEXT_ARG="";
+			else
+				NEXT_ARG=${ARGS[$((${i}+1))]};
+				if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+					NEXT_ARG="";
+				fi;
+			fi;
+
+			if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+				if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
+					ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
+				fi;
+
+				if [ "${EACH_ARG}" == "-d" ] || [ "${EACH_ARG}" == "--disable" ]; then
+					ARGS_SELINUX_DISABLE=1; # Disable Selinux
+				fi;
+
+				if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
+					ARGS_SELINUX_ENABLE=1; # Enable Selinux
+				fi;
+	
+				if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
+					ARGS_SELINUX_STATUS=1; # Get Selinux status
+				fi;
+	
+			fi;
+
+		done;
+
+		ERROR_INVALID_ACTION="Error:  Exactly one option must be selected out of { --disable (-d), --enable (-e), --status (-s) }";
+
+		if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
+			# ERROR - Invalid action selected
+			echo -e "\n""${ERROR_INVALID_ACTION}""\n";
+			EXIT_CODE=1;
+
+		else
+
+			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
+				# ------------------------------------------------------------
+				# Selinux - Disable
+
+				if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+					echo "------------------------------------------------------------";
+					echo "";
+					echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
+					echo "";
+					READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+					echo "";
+					if [ ${RETURN_CODE_READ} -gt 128 ]; then
+						echo -e "Response timed out after ${READ_TIMEOUT}s";
+						exit 1;
+					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+						echo -e "\n""Proceeding...\n";
+						sleep 1;
+					else
+						echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
+						exit 1;
+					fi;
+				fi;
+				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
+				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
+				setenforce 0; EXIT_CODE=$?;
+				REBOOT_REQUIRED_MSG=" Reboot required to finish disabling Selinux";
+
+
+			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
+				# ------------------------------------------------------------
+				# Selinux - Enable
+
+				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
+				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
+				setenforce 1; EXIT_CODE=$?;
+				REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+
+			else # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
+				# ------------------------------------------------------------
+				# Selinux - Get status
+
+				getenforce;
+				# sestatus;  # Alternate-approach
+
+				EXIT_CODE=0;
+
+				# ------------------------------------------------------------
+				# Inspection / Troubleshooting
+
+				# View a list of mappings between SELinux and Linux user accounts 
+				# semanage login -l;
+
+				# Backup & Restart the audit logfile
+				# cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_$(date +'%Y-%m-%d_%H-%M-%S').log"; echo "" > "/var/log/audit/audit.log";
+
+				# Check Selinux error logs specifically for lines mentioning 'nginx' and 'denied'
+				# cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
+
+			fi;
+
+		fi;
+
+		# ------------------------------------------------------------
+		# Reboot Server (if needed) --> Require user confirmation
+		if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
+			echo "";
+			echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  ${REBOOT_REQUIRED_MSG}";
+			read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+			echo "";
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				reboot now;
+			fi;
+		fi;
+
+	fi;
+
+	exit ${EXIT_CODE};
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   access.redhat.com  |  "Chapter 3. SELinux Contexts Red Hat Enterprise Linux 6 | Red Hat Customer Portal"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/chap-security-enhanced_linux-selinux_contexts
+#
+#   access.redhat.com  |  "4.2. Analyzing SELinux denial messages"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/using_selinux/troubleshooting-problems-related-to-selinux_using-selinux#analyzing-an-already-found-selinux-denial_troubleshooting-problems-related-to-selinux
+#
+#   access.redhat.com  |  "5.6. SELinux Contexts – Labeling Files Red Hat Enterprise Linux 6 | Red Hat Customer Portal"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-working_with_selinux-selinux_contexts_labeling_files
+#
+#   stackoverflow.com  |  "(13: Permission denied) while connecting to upstream:[nginx]"  |  https://stackoverflow.com/a/24830777
+#
+#   wiki.centos.org  |  "TipsAndTricks/SelinuxBooleans - CentOS Wiki"  |  https://wiki.centos.org/TipsAndTricks/SelinuxBooleans
+#
+#   wiki.centos.org  |  "HowTos/SELinux - CentOS Wiki"  |  https://wiki.centos.org/HowTos/SELinux
+#
+#   www.nginx.com  |  "Modifying SELinux Settings for Full NGINX and NGINX Plus Functionality"  |  https://www.nginx.com/blog/using-nginx-plus-with-selinux/
+#
+# ------------------------------------------------------------

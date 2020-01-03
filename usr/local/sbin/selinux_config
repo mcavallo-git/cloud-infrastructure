@@ -144,7 +144,9 @@ else
 				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
 				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
 				setenforce 0; EXIT_CODE=$?;
-				REBOOT_REQUIRED_MSG=" Reboot required to finish disabling Selinux";
+				if [ ${EXIT_CODE} -eq 0 ]; then
+					REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+				fi;
 
 
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
@@ -154,7 +156,9 @@ else
 				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
 				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
 				setenforce 1; EXIT_CODE=$?;
-				REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+				if [ ${EXIT_CODE} -eq 0 ]; then
+					REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+				fi;
 
 			else # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
 				# ------------------------------------------------------------

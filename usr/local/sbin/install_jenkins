@@ -213,18 +213,35 @@ else
 		FIREWALL_SERVICE="firewalld";
 		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-			# Open necessary firewall port(s)
 			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
 			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
-				echo "";
-				echo "------------------------------------------------------------";
-				firewall-cmd --info-service={jenkins};
-				echo "------------------------------------------------------------";
-				echo -e "\n""Info:  Opening ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
-				firewall-cmd --set-default-zone=public && \
-				firewall-cmd --permanent --zone=public --add-service={jenkins} && \
-				firewall-cmd --reload && \
-				firewall-cmd --list-all;
+				# Open necessary firewall port(s)
+			
+				NGINX_SVC_RET_CODE=$(/usr/sbin/service "nginx" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+				HTTPD_SVC_RET_CODE=$(/usr/sbin/service "httpd" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+				if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
+					echo "";
+					echo "------------------------------------------------------------";
+					firewall-cmd --info-service={jenkins};
+					firewall-cmd --info-service={http,https};
+					echo "------------------------------------------------------------";
+					echo -e "\n""Info:  Opening ports for \"{http,https}\" service & closing ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
+					firewall-cmd --set-default-zone=public;
+					firewall-cmd --permanent --zone=public --add-service={http,https};
+					firewall-cmd --permanent --zone=public --remove-service={jenkins};
+					firewall-cmd --reload;
+					firewall-cmd --list-all;
+				else
+					echo "";
+					echo "------------------------------------------------------------";
+					firewall-cmd --info-service={jenkins};
+					echo "------------------------------------------------------------";
+					echo -e "\n""Info:  Opening ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
+					firewall-cmd --set-default-zone=public;
+					firewall-cmd --permanent --zone=public --add-service={jenkins};
+					firewall-cmd --reload;
+					firewall-cmd --list-all;
+				fi;
 			fi;
 		fi;
 

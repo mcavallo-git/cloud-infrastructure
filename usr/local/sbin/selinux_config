@@ -135,7 +135,7 @@ else
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Disable
-				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ $(echo ${SERVICE_CONF1_STATUS} | grep -i '^disabled$'; echo $?;) -eq 0 ]; then
+				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS^^}" -eq "DISABLED" ] && [ "${SERVICE_CONF2_STATUS^^}" -eq "DISABLED" ]; then
 					# Selinux already disabled
 					echo -e "\n""Info:  Selinux is already disabled";
 					EXIT_CODE=0;
@@ -174,7 +174,7 @@ else
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Enable
-				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ $(echo ${SERVICE_CONF1_STATUS} | grep -i '^enforcing$'; echo $?;) -eq 0 ]; then
+				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS^^}" -eq "ENFORCING" ] && [ "${SERVICE_CONF2_STATUS^^}" -eq "ENFORCING" ]; then
 					# Selinux already enabled
 					echo -e "\n""Info:  Selinux is already enabled";
 					EXIT_CODE=0;
@@ -266,6 +266,8 @@ fi;
 #   access.redhat.com  |  "5.6. SELinux Contexts – Labeling Files Red Hat Enterprise Linux 6 | Red Hat Customer Portal"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-working_with_selinux-selinux_contexts_labeling_files
 #
 #   stackoverflow.com  |  "(13: Permission denied) while connecting to upstream:[nginx]"  |  https://stackoverflow.com/a/24830777
+#
+#   stackoverflow.com  |  "Case insensitive comparison of strings in shell script"  |  https://stackoverflow.com/a/19411918
 #
 #   wiki.centos.org  |  "TipsAndTricks/SelinuxBooleans - CentOS Wiki"  |  https://wiki.centos.org/TipsAndTricks/SelinuxBooleans
 #

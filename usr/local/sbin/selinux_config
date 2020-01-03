@@ -39,7 +39,7 @@ else
 	EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
 
 	# Only run in Selinux-compatible environments
-	if [ $(which getenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which setenforce 2>'/dev/null' | wc -l;) -eq 0 ]; then
+	if [ $(which getenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which setenforce 2>'/dev/null' | wc -l;) -eq 0 ] || [ $(which selinuxenabled 2>'/dev/null' | wc -l;) -eq 0 ]; then
 		# ERROR - Selinux not detected
 		echo -e "\n""Error:  Selinux not detected""\n";
 		EXIT_CODE=1;
@@ -50,6 +50,9 @@ else
 
 		SERVICE_LOGFILE="/var/log/audit/audit.log";
 
+		SERVICE_CONF1_PATH="/etc/selinux/config";
+		SERVICE_CONF2_PATH="/etc/sysconfig/selinux";
+		
 		REBOOT_REQUIRED_MSG="";
 
 		START_SECONDS_NANOSECONDS=$(date +'%s.%N');
@@ -125,61 +128,87 @@ else
 
 		else
 
+			# Determine the enabled/disabled status defined in Selinux's config-file(s)
+			SERVICE_CONF1_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF1_PATH}";);
+			SERVICE_CONF2_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF2_PATH}";);
+
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Disable
-				if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
-					echo "------------------------------------------------------------";
-					echo "";
-					echo "Warning:  This will disable Selinux on this system (and may restrict access to necessary services, such as SSH)";
-					echo "";
-					READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-					echo "";
-					if [ ${RETURN_CODE_READ} -gt 128 ]; then
-						echo -e "Response timed out after ${READ_TIMEOUT}s";
-						exit 1;
-					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-						echo -e "\n""Proceeding...\n";
-						sleep 1;
-					else
-						echo "Denied - Exiting...";
-						exit 1;
+				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ $(echo ${SERVICE_CONF2_STATUS} | grep -i '^disabled$'; echo $?;) -eq 0 ]; then
+					# Selinux already disabled
+					echo -e "\n""Info:  Selinux is already disabled";
+					EXIT_CODE=0;
+					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+						echo "------------------------------------------------------------";
+						echo "";
+						echo "Warning:  This will disable Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "";
+						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+						echo "";
+						if [ ${RETURN_CODE_READ} -gt 128 ]; then
+							echo -e "Response timed out after ${READ_TIMEOUT}s";
+							exit 1;
+						elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+							echo -e "\n""Proceeding...\n";
+							sleep 1;
+						else
+							echo "Denied - Exiting...";
+							exit 1;
+						fi;
 					fi;
-				fi;
-				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
-				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${CONF_FILE}"; fi;
-				setenforce 0; EXIT_CODE=$?;
-				if [ ${EXIT_CODE} -eq 0 ]; then
-					REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+					if [ -f "${SERVICE_CONF1_PATH}" ]; then
+						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF1_PATH}";
+					fi;
+					if [ -f "${SERVICE_CONF2_PATH}" ]; then
+						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=disabled" "${SERVICE_CONF2_PATH}";
+					fi;
+
+					setenforce 0; EXIT_CODE=$?;
+					if [ ${EXIT_CODE} -eq 0 ]; then
+						REBOOT_REQUIRED_MSG="Reboot required to finish disabling Selinux";
+					fi;
 				fi;
 
 
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
 				# ------------------------------------------------------------
 				# Selinux - Enable
-				if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
-					echo "------------------------------------------------------------";
-					echo "";
-					echo "Warning:  This will enable Selinux on this system (and may restrict access to necessary services, such as SSH)";
-					echo "";
-					READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-					echo "";
-					if [ ${RETURN_CODE_READ} -gt 128 ]; then
-						echo -e "Response timed out after ${READ_TIMEOUT}s";
-						exit 1;
-					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-						echo -e "\n""Proceeding...\n";
-						sleep 1;
-					else
-						echo "Denied - Exiting...";
-						exit 1;
+				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ $(echo ${SERVICE_CONF2_STATUS} | grep -i '^enforcing$'; echo $?;) -eq 0 ]; then
+					# Selinux already enabled
+					echo -e "\n""Info:  Selinux is already enabled";
+					EXIT_CODE=0;
+
+				else
+					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+						echo "------------------------------------------------------------";
+						echo "";
+						echo "Warning:  This will enable Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "";
+						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+						echo "";
+						if [ ${RETURN_CODE_READ} -gt 128 ]; then
+							echo -e "Response timed out after ${READ_TIMEOUT}s";
+							exit 1;
+						elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+							echo -e "\n""Proceeding...\n";
+							sleep 1;
+						else
+							echo "Denied - Exiting...";
+							exit 1;
+						fi;
 					fi;
-				fi;
-				CONF_FILE="/etc/selinux/config"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
-				CONF_FILE="/etc/sysconfig/selinux"; if [ -f "${CONF_FILE}" ]; then sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${CONF_FILE}"; fi; \
-				setenforce 1; EXIT_CODE=$?;
-				if [ ${EXIT_CODE} -eq 0 ]; then
-					REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+					if [ -f "${SERVICE_CONF1_PATH}" ]; then
+						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF1_PATH}";
+					fi;
+					if [ -f "${SERVICE_CONF2_PATH}" ]; then
+						sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^SELINUX=/c\SELINUX=enforcing" "${SERVICE_CONF2_PATH}";
+					fi;
+					setenforce 1; EXIT_CODE=$?;
+					if [ ${EXIT_CODE} -eq 0 ]; then
+						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
+					fi;
+
 				fi;
 
 			else # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
@@ -188,6 +217,8 @@ else
 
 				# getenforce; # Returns only "Enforcing" or "Disabled"
 				# sestatus;
+
+				# selinuxenabled; echo $?;
 
 				EXIT_CODE=0;
 

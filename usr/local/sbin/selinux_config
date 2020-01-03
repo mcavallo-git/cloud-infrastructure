@@ -298,7 +298,7 @@ else
 		LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
 		/usr/sbin/getsebool -a 1>"${LOGFILE_SEBOOL}" 2>&1;
 		chown "root:root" "${LOGFILE_SEBOOL}";
-		chmod 0700 "${LOGFILE_SEBOOL}";
+		chmod 0600 "${LOGFILE_SEBOOL}";
 		echo "";
 		echo "Info:  A copy of current Selinux settings were output to logfile:";
 		echo "${LOGFILE_SEBOOL}";

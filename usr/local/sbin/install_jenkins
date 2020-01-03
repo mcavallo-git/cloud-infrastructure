@@ -222,7 +222,6 @@ else
 				if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
 					echo "";
 					echo "------------------------------------------------------------";
-					firewall-cmd --info-service=jenkins;
 					firewall-cmd --info-service=http;
 					firewall-cmd --info-service=https;
 					echo "------------------------------------------------------------";
@@ -235,7 +234,7 @@ else
 				else
 					echo "";
 					echo "------------------------------------------------------------";
-					firewall-cmd --info-service={jenkins};
+					firewall-cmd --info-service=jenkins;
 					echo "------------------------------------------------------------";
 					echo -e "\n""Info:  Opening ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
 					firewall-cmd --set-default-zone=public;

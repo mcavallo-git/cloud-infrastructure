@@ -218,9 +218,9 @@ else
 			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
 				echo "";
 				echo "------------------------------------------------------------";
-				firewall-cmd --info-service="${SERVICE_NAME}";
+				firewall-cmd --info-service={jenkins};
 				echo "------------------------------------------------------------";
-				echo -e "\n""Info:  Opening ports for \"${SERVICE_NAME}\" service in \"${FIREWALL_SERVICE}\" service...\n";
+				echo -e "\n""Info:  Opening ports for \"{jenkins}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
 				firewall-cmd --set-default-zone=public && \
 				firewall-cmd --permanent --zone=public --add-service={jenkins} && \
 				firewall-cmd --reload && \

@@ -81,7 +81,7 @@ else
 			if [ $(selinuxenabled; echo $?;) -eq 0 ]; then
 				# SELinux is currently enabled
 				SELINUX_BOOL_WEBSERVER="httpd_can_network_connect";
-				if $(/usr/sbin/getsebool ${SELINUX_BOOL_WEBSERVER} | grep 'on$' | wc -l;) -eq 0 ]; then 
+				if [ $(getsebool ${SELINUX_BOOL_WEBSERVER} | grep 'on$' | wc -l;) -eq 0 ]; then 
 					# SELinux Web-Server boolean is currently disabled --> enable it
 					echo -e "\n""Info:  Setting SELinux boolean parameter \"${SELINUX_BOOL_WEBSERVER}\" to \"on\"\n";
 					setsebool -P ${SELINUX_BOOL_WEBSERVER} "on";

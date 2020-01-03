@@ -1125,12 +1125,15 @@ else
 						# The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
 						ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
 						echo "  |--> Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
-					elif [ -L "${Each_SitesEnabled}" ]; then
-						# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
-						unlink "${Each_SitesEnabled}";
-						# echo "  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
-					# else
-						# echo "  |--> Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+					else
+						rm -f "${Each_SitesAvailable}";
+						if [ -L "${Each_SitesEnabled}" ]; then
+							# If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
+							unlink "${Each_SitesEnabled}";
+							# 	echo "  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-resolved-IPv4 & Current WAN IPv4)";
+							# else
+							# 	echo "  |--> Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+						fi;
 					fi;
 				done;
 

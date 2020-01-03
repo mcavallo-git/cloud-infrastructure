@@ -110,7 +110,13 @@ else
 
 		done;
 
-		ERROR_INVALID_ACTION="Error:  Exactly one option must be selected out of { --disable (-d), --enable (-e), --status (-s) }";
+		ERROR_INVALID_ACTION="
+Error:  Exactly one option must be selected from the following options:
+             --disable
+             --enable
+             --status
+";
+
 
 		if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
 			# ERROR - Invalid action selected

@@ -1110,11 +1110,20 @@ else
 				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+
+				# Ensure that the Diffie-Hellman parameter for DHE ciphersuites exists
 				DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
 				DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
 				if [ ! -f "${DH_PARAM_FILEPATH}" ]; then
 					echo "  |--> Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
 					openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
+				fi;
+
+				# Set the environment-specific web-server runtime user
+				if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+					sed -i 's|user www-data;|user www-data;|g' "/etc/nginx/nginx.conf";
+				elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+					sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
 				fi;
 
 				# Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match

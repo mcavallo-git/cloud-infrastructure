@@ -144,7 +144,7 @@ else
 					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 						echo "------------------------------------------------------------";
 						echo "";
-						echo "Warning:  This will disable Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "Warning:  This will DISABLE Selinux on this system (and may restrict access to necessary services, such as SSH)";
 						echo "";
 						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 						echo "";
@@ -185,7 +185,7 @@ else
 					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 						echo "------------------------------------------------------------";
 						echo "";
-						echo "Warning:  This will enable Selinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "Warning:  This will ENABLE Selinux on this system (and may restrict access to necessary services, such as SSH)";
 						echo "";
 						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 						echo "";

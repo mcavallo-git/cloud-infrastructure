@@ -210,11 +210,12 @@ else
 					if [ ${EXIT_CODE} -eq 0 ]; then
 						REBOOT_REQUIRED_MSG="Reboot required to finish enabling Selinux";
 					fi;
-
 				fi;
 
-			else # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
+
+			else
 				# ------------------------------------------------------------
+				# if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
 				# Selinux - Get status
 
 				# getenforce; # Returns only "Enforcing" or "Disabled"

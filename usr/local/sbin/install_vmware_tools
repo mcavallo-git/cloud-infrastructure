@@ -7,6 +7,14 @@ yum -y install open-vm-tools;
 # echo "To use VMware Tools, manually run   [ /usr/bin/vmware-user ]";
 
 
+echo "";
+echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  Reboot required to finish installing VMWare-Tools";
+read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+echo "";
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	reboot now;
+fi;
+
 # ------------------------------------------------------------
 #
 # Citation(s)

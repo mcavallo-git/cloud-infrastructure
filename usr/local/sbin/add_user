@@ -81,13 +81,13 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [ ${SET_SYSTEM_USER} -eq 1] && [ -v USER_UID ]; then
+	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_UID ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ User ID ] & [ System User ]";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate User IDs for System users";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
-	elif [ ${SET_SYSTEM_USER} -eq 1] && [ -v USER_GID ]; then
+	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_GID ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ Group ID ] & [ System User ]";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate Group IDs for System users";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";

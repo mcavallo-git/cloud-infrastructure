@@ -122,20 +122,22 @@ else
 		# ------------------------------------------------------------
 		# GROUP-CREATION
 
-		
-		if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
-			# Group-Add Command
-			GROUPADD_ARR=(groupadd);
-			# Group-ID
-			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
-				GROUPADD_ARR+=(--gid ${USER_GID});
+		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
+			# Non System Users
+			if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
+				# Group-Add Command
+				GROUPADD_ARR=(groupadd);
+				# Group-ID
+				if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+					GROUPADD_ARR+=(--gid ${USER_GID});
+				fi;
+				# Group Name
+				GROUPADD_ARR+=("${USER_GNAME}");
+				# Create the Group
+				echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
+				${GROUPADD_ARR[@]};
+				USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
 			fi;
-			# Group Name
-			GROUPADD_ARR+=("${USER_GNAME}");
-			# Create the Group
-			echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
-			${GROUPADD_ARR[@]};
-			USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
 		fi;
 
 		# ------------------------------------------------------------

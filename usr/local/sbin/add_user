@@ -170,11 +170,7 @@ else
 			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
 				USERADD_ARR+=(--gid ${USER_GID});
 			elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
-				if [[ "${USER_NAME}" == "${USER_GNAME}" ]]; then
-					USERADD_ARR+=(--user-group); # Username & groupname are the same
-				else
-					USERADD_ARR+=(--gid "${USER_GNAME}");
-				fi;
+				USERADD_ARR+=(--gid "${USER_GNAME}");
 			fi;
 
 		fi;

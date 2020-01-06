@@ -65,6 +65,9 @@ else
 	# Options - Password
 	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
 
+	# Set the user as a System User (uses useradd's --system arg)
+	SET_SYSTEM_USER="${SET_SYSTEM_USER:-0}";
+
 	# Options - Sudo
 	ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS:-0}";
 	SUDO_REQUIRES_PASS="${SUDO_REQUIRES_PASS:-0}";
@@ -74,7 +77,19 @@ else
 	# ------------------------------------------------------------
 
 	if [ -z "${USER_NAME}" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: \$USER_NAME is empty/unset";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  \$USER_NAME is empty/unset";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+		exit 1;
+
+	elif [ ${SET_SYSTEM_USER} -eq 1] && [ -v USER_UID ]; then
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ User ID ] & [ System User ]";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate User IDs for System users";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+		exit 1;
+
+	elif [ ${SET_SYSTEM_USER} -eq 1] && [ -v USER_GID ]; then
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ Group ID ] & [ System User ]";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate Group IDs for System users";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
@@ -83,8 +98,7 @@ else
 			&& [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
 			&& [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
 			&& [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
-
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
@@ -93,8 +107,7 @@ else
 			&& [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
 			&& [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
 			&& [ "$(getent group ${USER_GID} | cut -d: -f1;)" != "${USER_GNAME}" ]; then
-
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 

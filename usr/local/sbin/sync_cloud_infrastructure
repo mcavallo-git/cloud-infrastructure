@@ -1215,41 +1215,36 @@ else
 			fi;
 
 			# ------------------------------------------------------------
-			# SYMBOLIC LINKS
-			# ------------------------------------------------------------
-			LN_TO="/usr/local/sbin/sync_cloud_infrastructure"; LN_FROM="/usr/local/sbin/sync_Cloud_infrastructure"; if [ -f "${LN_TO}" ] && [ ! -h "${LN_FROM}" ]; then ln -sf "${LN_TO}" "${LN_FROM}"; fi; # Added 20191220-145307
-
-
-			# ------------------------------------------------------------
-			# DELETE OLD FILES
+			# DELETE OLD FILES / UNLINK OLD SYMLINKS
 			# ------------------------------------------------------------
 
 			#   / usr / local / bin
-			TO_DEL="/usr/local/bin/docker_check_installation_status"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/bin/get_enabled_services"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
-			TO_DEL="/usr/local/bin/get_services"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
-			TO_DEL="/usr/local/bin/get_wan_ip"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/bin/docker_check_installation_status"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/bin/docker_list_volume_maps.sh"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/bin/get_enabled_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+			TO_DEL="/usr/local/bin/get_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+			TO_DEL="/usr/local/bin/get_wan_ip"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
 			#   / usr / local / sbin
-			TO_DEL="/usr/local/sbin/install_devops_packages"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/install_minio_mc"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/install_mongod"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/install_utilities"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/install_vmware-tools"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/jenkins-config-export"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/sudoer_edit"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/sync_config_gpg_git"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/sync_gpg_git_config"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
-			TO_DEL="/usr/local/sbin/sync_upd"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-			TO_DEL="/usr/local/sbin/wsl_reboot"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20191220-164752
+			TO_DEL="/usr/local/sbin/install_devops_packages"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/install_minio_mc"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/install_mongod"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/install_utilities"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/install_vmware-tools"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/jenkins-config-export"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/sudoer_edit"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/sync_Cloud_infrastructure"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2020-01-06
+			TO_DEL="/usr/local/sbin/sync_config_gpg_git"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/sync_gpg_git_config"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+			TO_DEL="/usr/local/sbin/sync_upd"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/update_bins_from_sftp"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+			TO_DEL="/usr/local/sbin/wsl_reboot"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20191220-164752
 
 			#   / etc / ddns /
-			TO_DEL="/etc/ddns_ufw_update/whitelist-java.hosts"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
-			TO_DEL="/etc/ddns_ufw_update/whitelist-nginx.hosts"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
-			TO_DEL="/etc/ddns_ufw_update/whitelist-sshd.hosts"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
+			TO_DEL="/etc/ddns_ufw_update/whitelist-java.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
+			TO_DEL="/etc/ddns_ufw_update/whitelist-nginx.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
+			TO_DEL="/etc/ddns_ufw_update/whitelist-sshd.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
 
 
 			# ------------------------------------------------------------

@@ -66,7 +66,7 @@ else
 	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
 
 	# Set the user as a System User (uses useradd's --system arg)
-	SET_SYSTEM_USER="${SET_SYSTEM_USER:-0}";
+	SET_SYSTEM_USER=${SET_SYSTEM_USER:-0};
 
 	# Options - Sudo
 	ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS:-0}";
@@ -153,16 +153,30 @@ else
 			USERADD_ARR+=(--create-home);
 		fi;
 
-		# User ID
-		if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_ARR+=(--uid ${USER_UID});
-		fi;
+		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
+			# System Users
+			USERADD_ARR+=(--system);
 
-		# User Default Group (Group-ID/Group-Name)
-		if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
-			USERADD_ARR+=(--gid ${USER_GID});
-		elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
-			USERADD_ARR+=(--gid "${USER_GNAME}");
+
+		else
+			# Non System Users
+		
+			# User ID
+			if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
+				USERADD_ARR+=(--uid ${USER_UID});
+			fi;
+
+			# User Default Group (Group-ID/Group-Name)
+			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+				USERADD_ARR+=(--gid ${USER_GID});
+			elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
+				if [[ "${USER_NAME}" == "${USER_GNAME}" ]]; then
+					USERADD_ARR+=(--user-group); # Username & groupname are the same
+				else
+					USERADD_ARR+=(--gid "${USER_GNAME}");
+				fi;
+			fi;
+
 		fi;
 
 		# User Shell

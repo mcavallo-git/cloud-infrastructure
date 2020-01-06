@@ -122,7 +122,7 @@ else
 		# ------------------------------------------------------------
 		# GROUP-CREATION
 
-		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
+		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
 			# Non System Users
 			if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
 				# Group-Add Command

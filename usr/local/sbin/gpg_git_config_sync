@@ -706,7 +706,11 @@ fi;
 		COMMIT_NAME="";
 		SSH_KEY="";
 		GPG_KEY_ID="";
+
+		# ------------------------------------------------------------
+
 		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+
 			# Use Primary ID Array values, first
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
@@ -730,7 +734,9 @@ fi;
 					fi;
 				fi;
 			fi;
-		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+
+		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then  # ------------------------------------------------------------
+
 			# Fall back to Secondary ID Array values
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
@@ -754,7 +760,10 @@ fi;
 					fi;
 				fi;
 			fi;
+
 		fi;
+
+		# ------------------------------------------------------------
 
 		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ] && [ -n "${SSH_KEY}" ]; then
 

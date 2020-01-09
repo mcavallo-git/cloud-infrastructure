@@ -730,9 +730,7 @@ fi;
 					fi;
 				fi;
 			fi;
-		fi;
-		
-		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
 			# Fall back to Secondary ID Array values
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");

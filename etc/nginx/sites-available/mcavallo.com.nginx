@@ -19,7 +19,7 @@ server {
 	# ------------------------------------------------------------
 	#        ~* [case-insensitive regex]
 	location ~* ^/meta$ {
-		if ($subdomain ~* "^api.$") {
+		if ("$subdomain$request_uri" ~* "^api.meta$") {
 			return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
 		}
 		if ($subdomain !~* "^api.$") {

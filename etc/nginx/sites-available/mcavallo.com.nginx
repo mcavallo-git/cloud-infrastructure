@@ -20,7 +20,7 @@ server {
 	#        ~* [case-insensitive regex]
 	location ~* ^/meta$ {
 		if ($subdomain ~* "^api.$") {
-			return 200 "rz.mcavallo.net,usg.mcavallo.net,lt.mcavallo.work,ws.mcavallo.work";
+			return 200 "rz.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
 		}
 		if ($subdomain !~* "^api.$") {
 			return 302 https://$host;

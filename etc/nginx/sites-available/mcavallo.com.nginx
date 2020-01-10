@@ -1,7 +1,18 @@
 # ------------------------------------------------------------
 #
+#==--  Determine if request will need to be redirected
+#
+
+map "$hostname:$request_uri" $redirect_action {
+	default 0;
+	"~*mcavallo.com:meta$" 1;
+}
+
+
+# ------------------------------------------------------------
+#
 #==--  mcavallo.com
-#==--  www.mcavallo.com
+#==--  *.mcavallo.com
 #
 server {
 	listen 80;
@@ -12,7 +23,7 @@ server {
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
-	access_log "/var/log/nginx/mcavallo-verbose.log" excessive;
+	access_log "/var/log/nginx/access_$host.excessive.log" excessive;
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
@@ -125,9 +136,7 @@ server {
 	if ($request_uri = "/repos") {
 		return 302 "https://github.com/mcavallo-git/repositories";
 	}
-
 	include "/etc/nginx/nginx_error_locations.conf";
-
 }
 
 
@@ -155,16 +164,20 @@ server {
 # ------------------------------------------------------------
 # Citation(s)
 #
-#   nginx.org  |  "Alphabetical index of variables"  |  http://nginx.org/en/docs/varindex.html
+#   nginx.org  |  "Alphabetical index of variables"  |  https://nginx.org/en/docs/varindex.html
 #
-#   nginx.org  |  "NGINX - Core Module Variables"  |  http://nginx.org/en/docs/http/ngx_http_core_module.html#variables
+#   nginx.org  |  "NGINX - Core Module Variables"  |  https://nginx.org/en/docs/http/ngx_http_core_module.html#variables
 #
 #   serverfault.com  |  "Nginx redirect non-existant files on https to http with try_files"  |  https://serverfault.com/a/411955
 #
 #   serverfault.com  |  "Reply with 200 from Nginx config without serving a file"  |  https://serverfault.com/a/491817
 #
+#   serversforhackers.com  |  "Mapping Headers in Nginx"  |  https://serversforhackers.com/c/nginx-mapping-headers
+#
 #   stackoverflow.com  |  "nginx reverse proxy disable cache"  |  https://stackoverflow.com/a/56257749
 #
 #   stackoverflow.com  |  "Disable nginx cache for JavaScript files"  |  https://stackoverflow.com/a/45285696
+#
+#   www.digitalocean.com  |  "conditional within an "if" in Nginx | DigitalOcean"  |  https://www.digitalocean.com/community/questions/conditional-within-an-if-in-nginx?answer=42998
 #
 # ------------------------------------------------------------

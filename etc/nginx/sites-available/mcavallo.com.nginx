@@ -5,7 +5,7 @@
 
 map "$hostname:$request_uri" $redirect_action {
 	default 0;
-	"~*mcavallo.com:meta$" meta;
+	"~*mcavallo.com:meta$" meta;  # ~* [case-insensitive regex]
 }
 
 
@@ -28,14 +28,9 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 	# ------------------------------------------------------------
-	#        ~* [case-insensitive regex]
-	location ~* ^/meta$ {
-		if ($subdomain ~* "^api.$") {
-			return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
-		}
-		if ($subdomain !~* "^api.$") {
-			return 302 https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure; # GitHub
-		}
+	#                    ~ [case-sensitive regex]
+	if ($redirect_action ~ "^meta$") {
+		return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
 	}
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]

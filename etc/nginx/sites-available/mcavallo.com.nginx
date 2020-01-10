@@ -20,6 +20,14 @@ server {
 	#        ~* [case-insensitive regex]
 	location ~* ^/meta$ {
 		if ($subdomain ~* "^api.$") {
+			map “$hostname:$httpcookie” $passtoproxy {
+				default 0;
+				“~*zencocoon.com:?!authtoken” 1;
+			}
+			if ($passtoproxy) {
+				proxy_pass http://www.zencocoon.com;
+				break;
+			}
 			return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
 		}
 		if ($subdomain !~* "^api.$") {

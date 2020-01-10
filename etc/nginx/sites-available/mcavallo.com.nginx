@@ -1,46 +1,3 @@
-log_format mcavallo ''
-'------------------------------------------------------------\n'
-'---subdomain---\n'
-'subdomain              =>  $subdomain \n'
-'---HEADERS---\n'
-'body_bytes_sent        =>  $body_bytes_sent \n'
-'content_type           =>  $content_type \n'
-'host                   =>  $host \n'
-'hostname               =>  $hostname \n'
-'http_referer           =>  $http_referer \n'
-'http_upgrade           =>  $http_upgrade \n'
-'http_user_agent        =>  $http_user_agent \n'
-'remote_addr            =>  $remote_addr \n'
-'remote_port            =>  $remote_port \n'
-'scheme                 =>  $scheme \n'
-'server_addr            =>  $server_addr \n'
-'server_name            =>  $server_name \n'
-'server_port            =>  $server_port \n'
-'server_protocol        =>  $server_protocol \n'
-'ssl_cipher             =>  $ssl_cipher \n'
-'ssl_client_cert        =>  $ssl_client_cert \n'
-'ssl_client_fingerprint =>  $ssl_client_fingerprint \n'
-'ssl_client_verify      =>  $ssl_client_verify \n'
-'ssl_protocol           =>  $ssl_protocol \n'
-'ssl_server_name        =>  $ssl_server_name \n'
-'status                 =>  $status \n'
-'time_local             =>  $time_local \n'
-'uri                    =>  $uri \n'
-'---BODY---\n'
-'request                =>  $request \n'
-'request_body_file      =>  $request_body_file \n'
-'request_completion     =>  $request_completion \n'
-'request_length         =>  $request_length \n'
-'request_method         =>  $request_method \n'
-'request_uri            =>  $request_uri \n'
-'[request_body]:\n'
-'[$request_body]\n'
-'---COOKIES---\n'
-'uid_got                =>  $uid_got \n'
-'uid_reset              =>  $uid_reset \n'
-'uid_set                =>  $uid_set \n'
-'';
-
 # ------------------------------------------------------------
 #
 #==--  mcavallo.com
@@ -55,8 +12,7 @@ server {
 	if ($scheme != "https") {
 		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
-	access_log "/var/log/nginx/mcavallo-verbose.log" mcavallo;
-	# access_log "/var/log/nginx/mcavallo-thin.log" thin;
+	access_log "/var/log/nginx/mcavallo-verbose.log" excessive;
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";

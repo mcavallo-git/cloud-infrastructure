@@ -16,6 +16,17 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
+
+	#        ~* [case-insensitive regex]
+	location ~* ^/meta$ {
+		if ($subdomain ~* "^api.$") {
+			return 200 "";
+		}
+		if ($subdomain !~* "^api.$") {
+			return 302 https://$host;
+		}
+	}
+
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
 	if ($subdomain ~* "^cashapp.$") {
@@ -29,6 +40,7 @@ server {
 	# 	location / {
 	# 		try_files $uri $uri/ /index.php?$args;
 	# 	}
+	#		         ~* [case-insensitive regex]
 	# 	location ~* \.php$ { #  *.php requests
 	# 		try_files $uri $uri/ /index.php?$args;
 	# 		fastcgi_read_timeout 120;

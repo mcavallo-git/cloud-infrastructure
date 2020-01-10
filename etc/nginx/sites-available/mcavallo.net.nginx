@@ -4,16 +4,16 @@
 #
 server {
 	listen 80;
-	# listen 443 ssl http2;
+	listen 443 ssl http2;
 	listen [::]:80;
-	# listen [::]:443 ssl http2;
+	listen [::]:443 ssl http2;
 	server_name ~^(?<subdomain>\w+\.)?mcavallo\.net$;
 	if ($scheme != "https") {
 		return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
-	# ssl_certificate "/etc/letsencrypt/live/mcavallo.net/fullchain.pem";
-	# ssl_certificate_key "/etc/letsencrypt/live/mcavallo.net/privkey.pem";
-	# ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.net/chain.pem";
+	ssl_certificate "/etc/letsencrypt/live/mcavallo.net/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.net/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.net/chain.pem";
 	location / {
 		if ($http_user_agent !~* "^curl") {
 			return 302 https://mcavallo.com;

@@ -16,7 +16,7 @@ server {
 	ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-
+	# ------------------------------------------------------------
 	#        ~* [case-insensitive regex]
 	location ~* ^/meta$ {
 		if ($subdomain ~* "^api.$") {
@@ -26,7 +26,6 @@ server {
 			return 302 https://$host;
 		}
 	}
-
 	# ------------------------------------------------------------
 	#              ~* [case-insensitive regex]
 	if ($subdomain ~* "^cashapp.$") {

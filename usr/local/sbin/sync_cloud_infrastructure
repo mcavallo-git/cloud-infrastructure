@@ -706,6 +706,7 @@ else
 									&& RESTART_SERVICE_SSH=1;
 								BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 								test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+
 							elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 							
 								# Use public-keys (separate per-user) which match filepath syntax:  [ /etc/ssh/authorized_keys/USERNAME ]
@@ -737,6 +738,7 @@ else
 							fi;
 						fi;
 					fi;
+
 				fi;
 			fi;
 

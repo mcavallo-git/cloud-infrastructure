@@ -5,12 +5,12 @@
 # See the sshd_config(5) manpage for details
 #
 
-## AddressFamily
-## Specifies which address family should be used by sshd(8). Valid arguments are ''any'', ''inet'' (use IPv4 only), or ''inet6'' (use IPv6 only). The default is ''any''.
+### AddressFamily - Specifies which address family should be used by sshd(8). Valid arguments are ''any'', ''inet'' (use IPv4 only), or ''inet6'' (use IPv6 only). The default is ''any''.
 AddressFamily inet
 
 AllowTcpForwarding no
 
+### AuthenticationMethods - The available authentication methods are: "gssapi-with-mic", "hostbased", "keyboard-interactive", "none" (used for access to password-less accounts when PermitEmptyPasswords is enabled), "password"	and "publickey".
 AuthenticationMethods publickey,keyboard-interactive
 
 AuthorizedKeysFile /etc/ssh/authorized_keys/%u

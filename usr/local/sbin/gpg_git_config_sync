@@ -687,14 +687,14 @@ fi;
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 		if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
 			# Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip' 2>/dev/null;);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip' 2>/dev/null;);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z\_\.\-]+)\/([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip' 2>/dev/null;);
+			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		else
 			# Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\1/ip' 2>/dev/null;);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\2/ip' 2>/dev/null;);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z\_\.\-]+@([a-z\_\.\-]+):([a-z\_\.\-]+)\/([a-z\_\.\-]+).git$/\3/ip' 2>/dev/null;);
+			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		fi;
 		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 
@@ -710,7 +710,6 @@ fi;
 		# ------------------------------------------------------------
 
 		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
-
 			# Use Primary ID Array values, first
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
@@ -734,10 +733,10 @@ fi;
 					fi;
 				fi;
 			fi;
+		fi;
 
-		elif [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then  # ------------------------------------------------------------
-
-			# Fall back to Secondary ID Array values
+		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+			# Fallback to Secondary ID Array values
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
 			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
@@ -760,10 +759,10 @@ fi;
 					fi;
 				fi;
 			fi;
+		fi;
 
-		else
+		if [ -z "${SSH_KEY}" ]; then
 			echo "  |--> No Sync-Array found matching \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
-
 		fi;
 
 		# ------------------------------------------------------------

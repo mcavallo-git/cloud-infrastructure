@@ -636,7 +636,7 @@ else
 			if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
 				if [ -z "$(which ssh 2>'/dev/null')" ]; then
-					echo "Info:  Skipped SSH-Config Update (command \"ssh\" not found)";
+					echo "Info:  Skipped SSH Config-Update (command \"ssh\" not found)";
 
 				else
 					
@@ -669,8 +669,11 @@ else
 						echo -e "\n""Info:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 						echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
-					elif [ -d "/etc/ssh/authorized_keys/" ] && [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -gt 0 ]; then
-						echo -e "\n""Info:  Skipped SSH-Config Update (must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ] )";
+					elif [ ! -d "/home/" ] || [ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
+						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one user other than root to access this workstation (with home directory within  [ /home/. ] )";
+
+					elif [ ! -d "/etc/ssh/authorized_keys/" ] || [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
+						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ] )";
 
 					else
 						# At least one Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
@@ -683,7 +686,7 @@ else
 						read -p "  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
 						if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 							# User declined the config-update
-							echo "Info:  Skipped SSH-Config Update (canceled by user)";
+							echo "Info:  Skipped SSH Config-Update (canceled by user)";
 						else
 							# User accepted/confirmed the config-update
 							echo -e "\n""Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";

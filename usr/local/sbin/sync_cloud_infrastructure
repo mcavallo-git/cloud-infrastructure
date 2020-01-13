@@ -686,7 +686,7 @@ else
 						echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
 						echo "  |";
 						read -p "  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
-						echo -e "\n";
+						# echo -e "\n";
 						if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 							# User declined the config-update
 							echo -e "\n""Info:  Skipped SSH Config-Update (canceled by user)";

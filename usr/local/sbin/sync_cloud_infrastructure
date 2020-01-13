@@ -670,9 +670,11 @@ else
 						echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
 					elif [ ! -d "/home/" ] || [ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
+						# Need another user other than root to SSH into this machine --> No user directories found in /home/.
 						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one user other than root to access this workstation (with home directory within  [ /home/. ] )";
 
 					elif [ ! -d "/etc/ssh/authorized_keys/" ] || [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
+						# Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
 						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ] )";
 
 					else

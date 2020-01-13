@@ -689,13 +689,14 @@ else
 						echo -e "\n";
 						if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 							# User declined the config-update
-							echo -e "\n""Info:  Skipped SSH Config-Update (canceled by user)";
+							echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+
 						else
 							# User accepted/confirmed the config-update
-							echo -e "\n""Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
+							echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 
 							if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-								echo "  |-> Using config from file \"${SSHD_CONFIG_REPLACEMENT}\"";
+								echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_REPLACEMENT}\"";
 								
 								# Backup & Update the sshd_config (SSH Server) file
 								BENCHMARK_START=$(date +'%s.%N');

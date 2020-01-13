@@ -708,7 +708,7 @@ else
 								test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 							elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-							
+
 								# Use public-keys (separate per-user) which match filepath syntax:  [ /etc/ssh/authorized_keys/USERNAME ]
 								BENCHMARK_START=$(date +'%s.%N');
 								sed -r -i".$(date +'%Y%m%d_%H%M%S').bak" \

@@ -61,9 +61,9 @@ else
 		ARCH_PRIVKEY="/etc/${DNS_AUTHORITY}/archive/${DOMAIN_NAME}/${EPITHET}.privkey.pem"; vi "${ARCH_PRIVKEY}";
 
 		### Onces certificates have been placed as-intended, create STATIC symbolic links to them from the "live" certs directory:
-		ln -sf "${ARCH_CHAIN}" "/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/chain.pem";
-		ln -sf "${ARCH_FULLCHAIN}" "/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/fullchain.pem";
-		ln -sf "${ARCH_PRIVKEY}" "/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/privkey.pem";
+		LIVE_CHAIN="/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/chain.pem"; ln -sf "${ARCH_CHAIN}" "${LIVE_CHAIN}";
+		LIVE_FULLCHAIN="/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/fullchain.pem"; ln -sf "${ARCH_FULLCHAIN}" "${LIVE_FULLCHAIN}";
+		LIVE_PRIVKEY="/etc/${DNS_AUTHORITY}/live/${DOMAIN_NAME}/privkey.pem"; ln -sf "${ARCH_PRIVKEY}" "${LIVE_PRIVKEY}";
 
 		### Set file/directory permissions & ownership
 		find "/etc/${DNS_AUTHORITY}" -type d -print0 | xargs -0 chmod 0755; # Set directory permissions
@@ -71,6 +71,17 @@ else
 		find "/etc/${DNS_AUTHORITY}" -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 chmod 0700; # Match permissions approach used by Let's Encrypt / CertBot
 		find "/etc/${DNS_AUTHORITY}" -type f -iname '*privkey*' -print0 | xargs -0 chmod 0600; # Set private-key permissions
 		chown -R "root:root" "/etc/${DNS_AUTHORITY}/";
+
+		echo "";
+		echo "------------------------------------------------------------";
+		echo "The SSL certificate(s) may be referenced in a local NGINX server { ... } block via:";
+		echo "";
+		echo "	ssl_certificate \"/etc/letsencrypt/live/cava.sh/fullchain.pem\"; ";
+		echo "	ssl_certificate_key \"/etc/letsencrypt/live/cava.sh/privkey.pem\"; ";
+		echo "	ssl_trusted_certificate \"/etc/letsencrypt/live/cava.sh/chain.pem\"; ";
+		echo "";
+		echo "------------------------------------------------------------";
+		echo "";
 
 	fi;
 

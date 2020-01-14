@@ -94,10 +94,14 @@ else
 			# Remove Service
 			SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 			if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-				echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
-				apt-get -y purge "${SERVICE_NAME}";
-				echo "  |--> Calling [ update-rc.d \"${SERVICE_NAME}\" remove -f; ]...";
-				update-rc.d "${SERVICE_NAME}" remove -f;
+				if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+					echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
+					apt-get -y purge "${SERVICE_NAME}";
+				fi;
+				if [ $(which update-rc.d 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+					echo "  |--> Calling [ update-rc.d \"${SERVICE_NAME}\" remove -f; ]...";
+					update-rc.d "${SERVICE_NAME}" remove -f;
+				fi;
 				echo "  |--> Calling [ /bin/systemctl daemon-reload; ]...";
 				/bin/systemctl daemon-reload;
 				echo "  |--> Calling [ /bin/systemctl reset-failed; ]...";

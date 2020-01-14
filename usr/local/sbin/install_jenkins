@@ -102,7 +102,8 @@ else
 	if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 		echo "------------------------------------------------------------";
 		echo "";
-		echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
+		echo "Info:  This will install the Jenkins CI/CD service";
+		# echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
 		echo "";
 		READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";

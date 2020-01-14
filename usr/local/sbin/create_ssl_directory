@@ -85,6 +85,10 @@ else
 
 	fi;
 
+	if [ -n "$(which reload_nginx 2>'/dev/null';)" ]; then
+		reload_nginx;
+	fi;
+
 fi;
 
 # ------------------------------------------------------------

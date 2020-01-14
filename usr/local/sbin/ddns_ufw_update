@@ -44,8 +44,11 @@ else
 		DEBUG_MODE=0;
 	fi;
 
-	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update";
-	mkdir -p "${DIRNAME_LOCAL_CONFIG}";
+	# Script's working-directory
+	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
+
+	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
+	UFW_CONFIG_FILEPATH="/etc/default/ufw";
 
 	# File containing hosts to allow through UFW
 	#  |--> All lines in given whitelist file must be in a specific format/syntax
@@ -64,37 +67,36 @@ else
 	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
 
-	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
-	UFW_CONFIG_FILEPATH="/etc/default/ufw";
-
 	# ------------------------------------------------------------
 	# Function to add a rule to UFW
 	add_rule() {
-		local proto=$1;
-		local port=$2;
-		local ip=$3;
-		local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
-		local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
+		if [ -n "$(which ufw 2>'/dev/null';)" ]; then
+			local proto=$1;
+			local port=$2;
+			local ip=$3;
+			local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
+			local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
 
-		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "Debug: -> IN FUNCTION [ add_rule()  ]";
-			echo "Debug: -> proto = [ ${proto} ]";
-			echo "Debug: -> port = [ ${port} ]";
-			echo "Debug: -> ip = [ ${ip} ]";
-			echo "Debug: -> regex = [ ${regex} ]";
-			echo "Debug: -> rule = [ ${rule} ]";
-		fi;
-
-		# If rule doesn't exist, then add (allow) it to UFW's ruleset
-		if [ -z "${rule}" ]; then
-			echo -e "\n""Info: Adding Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
-			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
-			echo "  |--> Call: [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
-			/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
-		else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug: Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
+				echo "Debug: -> IN FUNCTION [ add_rule()  ]";
+				echo "Debug: -> proto = [ ${proto} ]";
+				echo "Debug: -> port = [ ${port} ]";
+				echo "Debug: -> ip = [ ${ip} ]";
+				echo "Debug: -> regex = [ ${regex} ]";
+				echo "Debug: -> rule = [ ${rule} ]";
+			fi;
+
+			# If rule doesn't exist, then add (allow) it to UFW's ruleset
+			if [ -z "${rule}" ]; then
+				echo -e "\n""Info: Adding Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				echo "  |--> Call: [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
+				/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
+			else
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "Debug: Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
+					echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				fi;
 			fi;
 		fi;
 	}
@@ -103,35 +105,37 @@ else
 	# ------------------------------------------------------------
 	# Function to delete a rule from UFW
 	delete_rule() {
-		local proto=$1;
-		local port=$2;
-		local ip=$3;
-		local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
-		local rule=$(ufw status numbered | grep ${regex});
+		if [ -n "$(which ufw 2>'/dev/null';)" ]; then
+			local proto=$1;
+			local port=$2;
+			local ip=$3;
+			local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
+			local rule=$(ufw status numbered | grep ${regex});
 
-		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "Debug: -> IN FUNCTION [ delete_rule()  ]";
-			echo "Debug: -> proto = [ ${proto} ]";
-			echo "Debug: -> port = [ ${port} ]";
-			echo "Debug: -> ip = [ ${ip} ]";
-			echo "Debug: -> regex = [ ${regex} ]";
-			echo "Debug: -> rule = [ ${rule} ]";
-		fi;
-
-		# If rule exists, then remove (delete) it from UFW's ruleset
-		if [ -n "${rule}" ]; then
-			echo -e "\n""Info: Deleting Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
-			echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
-			echo "  |--> Call: [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
-			/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
-			# ex) /usr/sbin/ufw allow proto tcp from any to any port 80,443
-
-		else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
-				echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				echo "Debug: -> IN FUNCTION [ delete_rule()  ]";
+				echo "Debug: -> proto = [ ${proto} ]";
+				echo "Debug: -> port = [ ${port} ]";
+				echo "Debug: -> ip = [ ${ip} ]";
+				echo "Debug: -> regex = [ ${regex} ]";
+				echo "Debug: -> rule = [ ${rule} ]";
 			fi;
 
+			# If rule exists, then remove (delete) it from UFW's ruleset
+			if [ -n "${rule}" ]; then
+				echo -e "\n""Info: Deleting Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
+				echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				echo "  |--> Call: [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
+				/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
+				# ex) /usr/sbin/ufw allow proto tcp from any to any port 80,443
+
+			else
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "Debug: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
+					echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				fi;
+
+			fi;
 		fi;
 	}
 
@@ -139,29 +143,32 @@ else
 	# ------------------------------------------------------------
 	# Main Runtime
 	#
-	
-	# Set UFW Defaults --> Incoming Requests
-	CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-	DESIRED_DEFAULT_INPUT_POLICY="DROP";
-	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
-		/usr/sbin/ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
-		# sed --in-place --regexp-extended --expression="/^DEFAULT_INPUT_POLICY/c\DEFAULT_INPUT_POLICY=\"${DESIRED_DEFAULT_INPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
-	fi;
+	if [ -f "${UFW_CONFIG_FILEPATH}" ]; then
+		
+		# Set UFW Defaults --> Incoming Requests
+		CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+		DESIRED_DEFAULT_INPUT_POLICY="DROP";
+		if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+			/usr/sbin/ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
+			# sed --in-place --regexp-extended --expression="/^DEFAULT_INPUT_POLICY/c\DEFAULT_INPUT_POLICY=\"${DESIRED_DEFAULT_INPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+		fi;
 
-	# Set UFW Defaults --> Outgoing Requests
-	CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-	DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
-	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
-		/usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
-		# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
-	fi;
+		# Set UFW Defaults --> Outgoing Requests
+		CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+		DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
+		if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
+			/usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
+			# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+		fi;
 
-	# Set UFW Defaults --> ROuted Requests
-	CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-	DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
-	if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
-		# /usr/sbin/ufw default skip routed;
-		sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+		# Set UFW Defaults --> ROuted Requests
+		CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+		DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
+		if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+			# /usr/sbin/ufw default skip routed;
+			sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+		fi;
+
 	fi;
 
 	# ------------------------------------------------------------
@@ -193,7 +200,7 @@ else
 
 			if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
 				# Service does NOT exist locally - do NOT whitelist associated ports/hosts
-				echo -e "\n""Info: Skipping UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
+				echo -e "\n""Info: Skipping Firewall (ufw) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
 
 			else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
@@ -205,11 +212,13 @@ else
 
 				else
 
-					echo -e "\n""Info: Applying UFW (Firewall) Whitelisting for \"${EACH_SERVICE}\" Service";
+					echo -e "\n""Info: Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE}\" Service";
 					echo "  |-> Using whitelist file \"${EACH_HOSTS_FILE}\"";
 
 					# Iterate-over each line in the whitelist file
-					sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | sed '/^[[:space:]]*#/d' | while read EACH_WHITELIST_LINE;	do
+					sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | \
+					sed '/^[[:space:]]*#/d' | \
+					while read EACH_WHITELIST_LINE;	do
 						if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
 							# Define the location of the file to output resolved ipv4's to
@@ -243,8 +252,10 @@ else
 								CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
 								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
 								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
-									# IPv4 resolved successfully - Add whitelist rule for NGINX
-									echo "allow ${CURRENT_RESOLVED_IPv4}; # ${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
+									if [ -d "${NGINX_CONF_DDNS}" ]; then
+										# IPv4 resolved successfully - Add whitelist rule for NGINX (if NGINX directory exists)
+										echo "allow ${CURRENT_RESOLVED_IPv4}; # ${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
+									fi;
 								else
 									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
 									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
@@ -285,10 +296,12 @@ else
 
 	done;
 
-
 	# ------------------------------------------------------------
 	# Set ownership & privileges for the logging directory & sub-contents
-	chown -R "syslog:adm" "${LOGDIR}";
+	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+		chown -R "syslog:adm" "${LOGDIR}";
+	fi;
+
 	find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
 	find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
 

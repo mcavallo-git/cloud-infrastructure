@@ -2,13 +2,13 @@
 #
 #==--  Determine if request will need to be redirected
 #
-
-map "$hostname:$request_uri" $redirect_action {
-	default 0;
-	"~*mcavallo.com:meta$" meta;  # ~* [case-insensitive regex]
-}
-
-
+# 
+# map "$hostname:$request_uri" $redirect_action {
+# 	default 0;
+# 	"~*mcavallo.com:meta$" meta;  # ~* [case-insensitive regex]
+# }
+# 
+# 
 # ------------------------------------------------------------
 #
 #==--  mcavallo.com
@@ -88,7 +88,7 @@ server {
 		### Bash Module Sync
 		return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec;
 		#
-		# curl -ssL cava.lol | bash
+		# curl -ssL centos.sh | bash
 		#
 		# curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
 		#

@@ -24,7 +24,15 @@ else
 	# ------------------------------------------------------------
 	SERVICE_NAME="nginx";
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+	if [ ${SERVICE_RET_CODE} -eq 1 ]; then
+		# Service NOT found to exist locally
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+
+	else
+		if [ ${SERVICE_RET_CODE} -ne 0 ]; then
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
+			/usr/sbin/service "${SERVICE_NAME}" restart;
+		fi;
 
 		# Service found to exist locally
 
@@ -49,11 +57,6 @@ else
 
 		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (after reload)...";
 		# /usr/sbin/service "${SERVICE_NAME}" status;
-		
-	else
-	
-		# Service NOT found to exist locally
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
 	fi;
 fi;

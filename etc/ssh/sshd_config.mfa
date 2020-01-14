@@ -5,14 +5,17 @@
 # See the sshd_config(5) manpage for details
 #
 
+### AddressFamily - Specifies which address family should be used by sshd(8). Valid arguments are ''any'', ''inet'' (use IPv4 only), or ''inet6'' (use IPv6 only). The default is ''any''.
 AddressFamily inet
 
 AllowTcpForwarding no
 
+### AuthenticationMethods - The available authentication methods are: "gssapi-with-mic", "hostbased", "keyboard-interactive", "none" (used for access to password-less accounts when PermitEmptyPasswords is enabled), "password"	and "publickey".
 AuthenticationMethods publickey,keyboard-interactive
 
 AuthorizedKeysFile /etc/ssh/authorized_keys/%u
 
+### ChallengeResponseAuthentication - Specifies whether challenge-response authentication is allowed (e.g. via PAM or through authentication styles supported in login.conf(5)) The	default	is yes.
 ChallengeResponseAuthentication yes
 
 ClientAliveCountMax 3
@@ -114,6 +117,7 @@ ForceCommand internal-sftp
 #  Citation(s)
 #
 #    Documentation
+#      --> https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/deployment_guide/s1-ssh-configuration
 #      --> https://freebsd.org/cgi/man.cgi?sshd_config(5)
 #      --> https://www.openssh.com/manual.html
 #      --> https://linux.die.net/man/5/sshd_config

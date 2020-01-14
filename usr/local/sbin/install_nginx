@@ -28,14 +28,26 @@ else
 		apt-get -y update; apt-get -y install "dpkg-dev";
 		add-apt-repository "ppa:nginx/stable";
 		apt-get -y update; apt-get -y install "nginx-full";
-
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		yum -y check-update; yum -y install "epel-release";
 		yum -y check-update; yum -y install "nginx";
-
 	fi;
 
-	/usr/sbin/service "${SERVICE_NAME}" start;
+
+	# ------------------------------------------------------------
+	# Autostart the NGINX service on bootup (as well as right now)
+	#
+	if \
+		[ "$(systemctl is-enabled ${SERVICE_NAME}.service 2>/dev/null;)" != "enabled" ] || \
+		[ "$(systemctl is-active ${SERVICE_NAME}.service 2>/dev/null;)" != "active" ] || \
+		[ $(systemctl is-enabled ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ] || \
+		[ $(systemctl is-active ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ]; \
+	then
+		echo "Info:  Service \"${SERVICE_NAME}\" is not both \"enabled\" and \"active\", currently";
+		echo "Info:  Calling  [ systemctl enable \"${SERVICE_NAME}.service\" --now; ]  ...";
+		systemctl enable "${SERVICE_NAME}.service" --now; # "enable --now" autostarts service at bootup && starts service immediately
+	fi;
+
 
 	# ------------------------------------------------------------
 	# Setup NGINX

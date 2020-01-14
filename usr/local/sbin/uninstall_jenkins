@@ -110,6 +110,13 @@ else
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
+			# Remove "/etc/cron.d/CRON_jenkins_*"
+			REMOVE_PATHS="/etc/cron.d/CRON_${SERVICE_NAME}_*";
+			if [ -e "${REMOVE_PATHS}" ]; then
+				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+				rm -rf "${REMOVE_PATHS}";
+			fi;
+
 			# Remove "/etc/systemd/system/jenkins"
 			REMOVE_PATHS="/etc/systemd/system/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then

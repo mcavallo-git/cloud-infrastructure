@@ -49,10 +49,6 @@ else
 			
 			EXIT_CODE=1;
 
-			APT_PKG_JDK="default-jdk-headless";
-			APT_PKG_JRE="default-jre-headless";
-			APT_PKG_JENKINS="jenkins";
-
 			START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 			START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 			# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);

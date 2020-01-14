@@ -105,35 +105,42 @@ else
 
 			# Remove "/etc/default/jenkins"
 			REMOVE_PATHS="/etc/default/${SERVICE_NAME}";
-			if [ -f "${REMOVE_PATHS}" ]; then
+			if [ -e "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/etc/systemd/system/jenkins"
 			REMOVE_PATHS="/etc/systemd/system/${SERVICE_NAME}";
-			if [ -f "${REMOVE_PATHS}" ]; then
+			if [ -e "${REMOVE_PATHS}" ]; then
+				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+				rm -rf "${REMOVE_PATHS}";
+			fi;
+
+			# Remove "/usr/lib/jenkins"
+			REMOVE_PATHS="/usr/lib/${SERVICE_NAME}";
+			if [ -e "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/cache/jenkins"
 			REMOVE_PATHS="/var/cache/${SERVICE_NAME}";
-			if [ -f "${REMOVE_PATHS}" ]; then
+			if [ -e "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/lib/jenkins"
 			REMOVE_PATHS="/var/lib/${SERVICE_NAME}";
-			if [ -f "${REMOVE_PATHS}" ]; then
+			if [ -e "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/log/jenkins"
 			REMOVE_PATHS="/var/log/${SERVICE_NAME}";
-			if [ -f "${REMOVE_PATHS}" ]; then
+			if [ -e "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;

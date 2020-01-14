@@ -103,6 +103,13 @@ else
 				update-rc.d "${SERVICE_NAME}" remove -f;
 			fi;
 
+			# Remove "/etc/default/jenkins"
+			REMOVE_PATHS="/etc/default/${SERVICE_NAME}";
+			if [ -f "${REMOVE_PATHS}" ]; then
+				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+				rm -rf "${REMOVE_PATHS}";
+			fi;
+
 			# Remove "/etc/systemd/system/jenkins"
 			REMOVE_PATHS="/etc/systemd/system/${SERVICE_NAME}";
 			if [ -f "${REMOVE_PATHS}" ]; then
@@ -110,15 +117,15 @@ else
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
-			# Remove "/var/lib/jenkins"
-			REMOVE_PATHS="/var/lib/${SERVICE_NAME}";
+			# Remove "/var/cache/jenkins"
+			REMOVE_PATHS="/var/cache/${SERVICE_NAME}";
 			if [ -f "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
-			# Remove "/var/cache/jenkins"
-			REMOVE_PATHS="/var/cache/${SERVICE_NAME}";
+			# Remove "/var/lib/jenkins"
+			REMOVE_PATHS="/var/lib/${SERVICE_NAME}";
 			if [ -f "${REMOVE_PATHS}" ]; then
 				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
 				rm -rf "${REMOVE_PATHS}";

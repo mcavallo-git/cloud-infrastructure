@@ -124,6 +124,13 @@ else
 				rm -rf "${REMOVE_PATHS}";
 			fi;
 
+			# Remove "/var/log/jenkins"
+			REMOVE_PATHS="/var/log/${SERVICE_NAME}";
+			if [ -f "${REMOVE_PATHS}" ]; then
+				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+				rm -rf "${REMOVE_PATHS}";
+			fi;
+
 			echo "  |--> Calling [ /bin/systemctl daemon-reload; ]...";
 			/bin/systemctl daemon-reload;
 			echo "  |--> Calling [ /bin/systemctl reset-failed; ]...";

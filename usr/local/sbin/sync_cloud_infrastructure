@@ -1286,6 +1286,10 @@ else
 			TO_DEL="/etc/ddns_ufw_update/whitelist-nginx.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
 			TO_DEL="/etc/ddns_ufw_update/whitelist-sshd.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
 
+			# / var / cache / jenkins / war /
+			TO_DEL="/var/cache/jenkins/war/Jenkins Artwork (jenkins.io).url"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+			TO_DEL="/var/cache/jenkins/war/Jenkins Material Theme (GitHub).url"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+
 
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  cron

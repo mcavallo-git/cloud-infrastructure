@@ -149,7 +149,7 @@ else
 					# SELinux NOT already disabled in every location
 					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
 						echo "";
-						echo "Warning:  This will DISABLE SELinux on this system (and may restrict access to necessary services, such as SSH)";
+						echo "Warning:  This will DISABLE SELinux on this system (and may allow unwarranted access to necessary services, such as SSH)";
 						READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 						echo "";
 						if [ ${RETURN_CODE_READ} -gt 128 ]; then

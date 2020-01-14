@@ -33,7 +33,7 @@ else
 	# ------------------------------------------------------------
 	# Instantiate runtime variables
 
-	START_SECONDS_NANOSECONDS=$(date +'%s.%N')
+	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
 	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
@@ -564,8 +564,8 @@ else
 					### Bash - Disable "You have new mail in /var/spool/mail/..." alerts
 					BENCHMARK_START=$(date +'%s.%N');
 					echo -e "\n""Info:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
-					sed -i".$(date +'%Y%m%d_%H%M%S').bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
-					sed -i".$(date +'%Y%m%d_%H%M%S').bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
+					sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
+					sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
 					BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 				fi;
@@ -645,6 +645,7 @@ else
 					SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_MFA}" "${SSHD_CONFIG_MFA}";
 					SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_NO_MFA}" "${SSHD_CONFIG_NO_MFA}";
 					SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_AUTH}" "${SSHD_CONFIG_PASS_AUTH}";
+					SSHD_CONFIG_SED="${SSHD_CONFIG_LIVE}.sed";
 
 					if [ -d "/etc/ssh/authorized_keys" ] && [ "$(find /etc/ssh/authorized_keys -type f | wc -l;)" != "0" ]; then
 						# At least one SSH-Key exists in the standard keyfile directory (/etc/ssh/authorized_keys)
@@ -679,65 +680,90 @@ else
 
 					else
 						# At least one Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
-						echo -e "\n""!!! Warning !!!";
-						echo "  |";
-						echo "  |--> Update to SSH Configuration Requested";
-						echo "  |";
-						echo "  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
-						echo "  |";
-						read -p "  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
-						echo "  |";
-						if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
-							# User declined the config-update
-							echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+						ECHO_SSH_WARNING="";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n!!! Warning !!!";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |--> Update to SSH Configuration Requested";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
+						ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
+						ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  ";
 
-						else
-							# User accepted/confirmed the config-update
-							echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
-
-							if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+						if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+							# Require user-confirmation to proceed with config-update
+							echo -e "${ECHO_SSH_WARNING}";
+							read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 -r; # Await single keypress
+							echo "  |";
+							if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
+								# User declined the config-update
+								echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+							else
+								# User accepted/confirmed the config-update
+								echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 								echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_REPLACEMENT}\"";
-								
 								# Backup & Update the sshd_config (SSH Server) file
 								BENCHMARK_START=$(date +'%s.%N');
-								mv "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
+								cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
 									&& wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master${SSHD_CONFIG_REPLACEMENT}" -O "${SSHD_CONFIG_REPLACEMENT}" -q \
 									&& chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
 									&& cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
 									&& RESTART_SERVICE_SSH=1;
 								BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 								test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
-							elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-
-								# Use public-keys (separate per-user) which match filepath syntax:  [ /etc/ssh/authorized_keys/USERNAME ]
-								BENCHMARK_START=$(date +'%s.%N');
-								sed -r -i".$(date +'%Y%m%d_%H%M%S').bak" \
-									-e "/^#?AuthorizedKeysFile/c\AuthorizedKeysFile /etc/ssh/authorized_keys/%u" \
-									-e "/^#?AuthenticationMethods/c\AuthenticationMethods publickey" \
-									-e "/^#?ChallengeResponseAuthentication/c\ChallengeResponseAuthentication no" \
-									-e "/^#?LogLevel/c\LogLevel INFO" \
-									-e "/^#?PasswordAuthentication/c\PasswordAuthentication no" \
-									-e "/^#?PermitEmptyPasswords/c\PermitEmptyPasswords no" \
-									-e "/^#?PermitRootLogin/c\PermitRootLogin no" \
-									-e "/^#?PubkeyAuthentication/c\PubkeyAuthentication yes" \
-									-e "/^#?SyslogFacility/c\SyslogFacility AUTH" \
-									-e "/^#?TCPKeepAlive/c\TCPKeepAlive no" \
-									-e "/^#?UseDNS/c\UseDNS no" \
-									-e "/^#?UsePAM/c\UsePAM yes" \
-									"/etc/ssh/sshd_config";
-								# Remove duplicated lines in a target file (while keeping one copy of each line)
-								NO_DUPES="/etc/ssh/sshd_config";
-								TEMP_SSHD="/tmp/$(basename ${NO_DUPES})_$(date +'%s.%N')";
-								tac "${NO_DUPES}" > "${TEMP_SSHD}-2";
-								cat -n "${TEMP_SSHD}-2" | sort -uk2 | sort -nk1 | cut -f2- > "${TEMP_SSHD}-3";
-								tac "${TEMP_SSHD}-3" > "${NO_DUPES}";
-								RESTART_SERVICE_SSH=1;
-								BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-								test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
 							fi;
+
+						elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+
+							# Amongst other things, disable the "root" user and require that users login with SSH private keys (deny password-based login)
+							BENCHMARK_START=$(date +'%s.%N');
+							cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_SED}";
+							chmod 0644 "${SSHD_CONFIG_SED}";
+							sed -r -i \
+								-e "/^#?AuthorizedKeysFile/c\AuthorizedKeysFile /etc/ssh/authorized_keys/%u" \
+								-e "/^#?AuthenticationMethods/c\AuthenticationMethods publickey" \
+								-e "/^#?ChallengeResponseAuthentication/c\ChallengeResponseAuthentication no" \
+								-e "/^#?LogLevel/c\LogLevel INFO" \
+								-e "/^#?PasswordAuthentication/c\PasswordAuthentication no" \
+								-e "/^#?PermitEmptyPasswords/c\PermitEmptyPasswords no" \
+								-e "/^#?PermitRootLogin/c\PermitRootLogin no" \
+								-e "/^#?PubkeyAuthentication/c\PubkeyAuthentication yes" \
+								-e "/^#?SyslogFacility/c\SyslogFacility AUTH" \
+								-e "/^#?TCPKeepAlive/c\TCPKeepAlive no" \
+								-e "/^#?UseDNS/c\UseDNS no" \
+								-e "/^#?UsePAM/c\UsePAM yes" \
+								"${SSHD_CONFIG_SED}";
+
+							# Remove duplicated lines in a target file (while keeping one copy of each line)
+							echo "$(tac ${SSHD_CONFIG_SED};)" > "${SSHD_CONFIG_SED}";
+							echo "$(cat -n ${SSHD_CONFIG_SED} | sort -uk2 | sort -nk1 | cut -f2-;)" > "${SSHD_CONFIG_SED}";
+							echo "$(tac ${SSHD_CONFIG_SED};)" > "${SSHD_CONFIG_SED}";
+
+							# Update the service's config-file only if its checksum is not the same as the updated config-file's checksum
+							CHECKSUM_SOURCE=$(cat "${SSHD_CONFIG_LIVE}" | cksum | cut -d" " -f1;);
+							CHECKSUM_UPDATED=$(cat "${SSHD_CONFIG_SED}" | cksum | cut -d" " -f1;);
+							if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_UPDATED}" ]; then
+								# Require user-confirmation to proceed with config-update
+								echo -e "${ECHO_SSH_WARNING}";
+								read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 -r; # Await single keypress
+								echo "  |";
+								if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
+									# User declined the config-update
+									echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+								else
+									# User accepted/confirmed the config-update
+									echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
+									echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_SED}\"";
+									cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
+										&& cp -f "${SSHD_CONFIG_SED}" "${SSHD_CONFIG_LIVE}" \
+										&& RESTART_SERVICE_SSH=1;
+								fi;
+							else
+								echo -e "\n""Info:  Skipped SSH Config-Update (checksum already equal to \"${SSHD_CONFIG_SED}\")";
+							fi;
+							BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+							test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 						fi;
+
 					fi;
 
 				fi;

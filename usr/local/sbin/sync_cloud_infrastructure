@@ -1291,23 +1291,28 @@ else
 			# Restart Service (if needed)  -->  cron
 			# ------------------------------------------------------------
 			if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
+				CRON_SVC_FOUND=0; CRON_SVC_NAMES="";
 				# ------------------------------------------------------------
 				SERVICE_NAME="cron";
 				SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 				if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+					CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
+					CRON_SVC_NAMES="${SERVICE_NAME}";
 					/usr/sbin/service "${SERVICE_NAME}" restart;
 					/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
-				else
-					echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 				fi;
 				# ------------------------------------------------------------
 				SERVICE_NAME="crond";
 				SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 				if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+					CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
+					CRON_SVC_NAMES="${SERVICE_NAME}";
 					/usr/sbin/service "${SERVICE_NAME}" restart;
 					/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
-				else
-					echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+				fi;
+				# ------------------------------------------------------------
+				if [ ${CRON_SVC_FOUND} -eq 0 ]; then
+					echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
 				fi;
 			fi;
 

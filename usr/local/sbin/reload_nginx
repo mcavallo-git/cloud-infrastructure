@@ -32,7 +32,6 @@ else
 		if [ ${SERVICE_RET_CODE} -ne 0 ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
 			/usr/sbin/service "${SERVICE_NAME}" restart;
-
 		fi;
 
 		# Service found to exist locally

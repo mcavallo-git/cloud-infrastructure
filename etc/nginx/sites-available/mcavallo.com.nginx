@@ -101,7 +101,8 @@ server {
 		#
 		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -Force -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://sync-ps.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#
-		# New-Item -Force -Path ("${Env:TEMP}\sync_cloud_infrastructure.ps1") -Value (($(New-Object Net.WebClient).DownloadString("https://sync-ps.mcavallo.com/ps"))) | Out-Null; PowerShell -NoProfile -ExecutionPolicy Bypass ("${Env:TEMP}\sync_cloud_infrastructure.ps1"); Remove-Item -Path ("${Env:TEMP}\sync_cloud_infrastructure.ps1");
+		# (Direct to GitHub - required for older PowerShell versions using TLS 1.0)
+		# Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -Force -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 		#
 	}
 	# ------------------------------------------------------------

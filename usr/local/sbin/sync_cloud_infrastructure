@@ -612,9 +612,9 @@ else
 
 			# ------------------------------------------------------------
 			#
-			# /etc/ddns_ufw_update
+			# /etc/whitelist.d
 			#
-			DESTINATION_PATH="/etc/ddns_ufw_update";
+			DESTINATION_PATH="/etc/whitelist.d";
 			SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 			FILE_PERMS="0644"; DIR_PERMS="0755";
 			echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";

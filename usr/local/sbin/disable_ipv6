@@ -58,7 +58,7 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
 		echo "${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
 		/sbin/sysctl "${DISABLE_IPV6_ALL}" ${APPLY_DISABLE};
-		RELOAD_SYSCTL="${APPLY_DISABLE}";
+		RELOAD_SYSCTL="1";
 	fi;
 
 	DISABLE_IPV6_DEF="net.ipv6.conf.default.disable_ipv6";
@@ -81,7 +81,7 @@ else
 	if [ -n "${RELOAD_SYSCTL}" ]; then
 		chmod 0644 "${CONF_DISABLE_IPV6}";
 		chown root:root "${CONF_DISABLE_IPV6}";
-		sysctl --system;
+		sysctl --system; # Load settings from all system configuration files.
 	else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
 	fi;

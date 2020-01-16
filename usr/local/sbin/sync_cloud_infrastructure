@@ -233,6 +233,7 @@ else
 		REQUIRED_PKGS_ARRAY+=("cron");
 	elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		REQUIRED_PKGS_ARRAY+=("bind-utils");
+		REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");
 	fi;
 
 	# Determine if any required packages are missing

@@ -112,6 +112,9 @@ JAVA_ARGS="-Xms${XMS__INITIAL_HEAP_MEMORY} -Xmx${XMX__MAX_MEMORY_POOL}";
 # JAVA_ARGS="${JAVA_ARGS} -XX:MaxPermSize=768m"; # DEPRECATED
 # JAVA_ARGS="${JAVA_ARGS} -XX:PermSize=768m"; # DEPRECATED
 
+# Allow nodes to connect via hostname
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.TcpSlaveAgentListener.hostName";
+
 # Allow graphs etc. to work even when an X server is present
 JAVA_ARGS="${JAVA_ARGS} -Djava.awt.headless=true";
 

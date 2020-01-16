@@ -1226,6 +1226,11 @@ else
 					if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 
+					if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+						# Allow files to be read without selinux blocking them
+						chcon -Rt httpd_sys_content_t "${DESTINATION_PATH}";
+					fi;
+
 					# Ensure that the Diffie-Hellman parameter for DHE ciphersuites exists
 					DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
 					DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)

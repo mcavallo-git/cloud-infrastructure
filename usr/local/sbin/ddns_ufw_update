@@ -45,7 +45,7 @@ else
 	fi;
 
 	# Script's working-directory
-	DIRNAME_LOCAL_CONFIG="/etc/ddns_ufw_update"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
+	DIRNAME_LOCAL_CONFIG="/etc/whitelist.d"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
 
 	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
 	UFW_CONFIG_FILEPATH="/etc/default/ufw";
@@ -203,11 +203,11 @@ else
 
 			if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
 				# Service does NOT exist locally - do NOT whitelist associated ports/hosts
-				echo -e "\n""Info: Skipping Firewall (ufw) Whitelisting for \"${EACH_SERVICE}\" Service (not found locally)";
+				echo -e "\n""Info: Skipping whitelisting for service \"${EACH_SERVICE}\" (not found locally)";
 
 			else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
-				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/whitelist-${EACH_SERVICE}.ufw";
+				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE}";
 
 				if [ ! -f "${EACH_HOSTS_FILE}" ]; then
 					echo -e "\n""Error: Whitelist hosts file for service \"${EACH_SERVICE}\" not found @ filepath \"${EACH_HOSTS_FILE}\"";

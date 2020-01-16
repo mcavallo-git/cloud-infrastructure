@@ -1321,9 +1321,7 @@ else
 			TO_DEL="${DELDIR}/wsl_reboot"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20191220-164752
 
 			DELDIR="/etc/ddns_ufw_update";
-			TO_DEL="${DELDIR}/whitelist-java.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
-			TO_DEL="${DELDIR}/whitelist-nginx.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
-			TO_DEL="${DELDIR}/whitelist-sshd.hosts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-13_08-59-12
+			if [ -d "${DELDIR}" ]; then rm -rf "${DELDIR}" fi; # Added 20200115-223014 - Moved to /etc/whitelist.d
 
 			DELDIR="/etc/nginx/conf.vendor";
 			TO_DEL="${DELDIR}/LAN_subnets.conf"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-192658

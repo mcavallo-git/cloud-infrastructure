@@ -589,9 +589,13 @@ else
 				find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
 				if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
 				dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-				update-ca-trust extract; ## Update for Rhel/Centos
 				BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 				test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+
+				## Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
+				update-ca-trust force-enable;
+				update-ca-trust extract; ## Update for Rhel/Centos
+
 			fi;
 
 

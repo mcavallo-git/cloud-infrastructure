@@ -50,11 +50,14 @@ else
 		RELOAD_SYSCTL="1";
 	fi;
 
+	ALL_SYSCTL="$(/sbin/sysctl --all 2>/dev/null;)";
+
 	# Rules to ensure get applied to sysctl in current environment & on every boot henceforth
 	DISABLE_IPV6_ALL="net.ipv6.conf.all.disable_ipv6";
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_ALL} | grep ${APPLY_DISABLE})" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
 		echo "${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+		/sbin/sysctl "${DISABLE_IPV6_ALL}" ${APPLY_DISABLE};
 		RELOAD_SYSCTL="${APPLY_DISABLE}";
 	fi;
 
@@ -62,6 +65,7 @@ else
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_DEF} | grep ${APPLY_DISABLE})" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
 		echo "${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+		/sbin/sysctl "${DISABLE_IPV6_DEF}" ${APPLY_DISABLE};
 		RELOAD_SYSCTL="1";
 	fi;
 
@@ -69,6 +73,7 @@ else
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_LO} | grep ${APPLY_DISABLE})" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_LO} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
 		echo "${DISABLE_IPV6_LO} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+		/sbin/sysctl "${DISABLE_IPV6_LO}" ${APPLY_DISABLE};
 		RELOAD_SYSCTL="1";
 	fi;
 

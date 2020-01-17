@@ -239,8 +239,6 @@ else
 					firewall-cmd --set-default-zone=public;
 					firewall-cmd --permanent --zone=public --add-service={http,https};
 					firewall-cmd --permanent --zone=public --remove-service=jenkins;
-					firewall-cmd --reload;
-					firewall-cmd --list-all;
 				else
 					echo "";
 					echo "------------------------------------------------------------";
@@ -249,9 +247,13 @@ else
 					echo -e "\n""Info:  Opening ports for \"jenkins\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
 					firewall-cmd --set-default-zone=public;
 					firewall-cmd --permanent --zone=public --add-service=jenkins;
-					firewall-cmd --reload;
-					firewall-cmd --list-all;
 				fi;
+				firewall-cmd --permanent --new-service=jenkins_jnlp;
+				firewall-cmd --permanent --service=jenkins_jnlp --set-short="jenkins_jnlp" --add-port=8443/tcp;
+				firewall-cmd --permanent --zone=public --add-service=jenkins_jnlp;
+				firewall-cmd --set-default-zone=public;
+				firewall-cmd --reload;
+				firewall-cmd --list-all;
 			fi;
 		fi;
 

@@ -565,7 +565,7 @@ fi;
 # Strings
 # KEY="user.name";        VAL="${GLOBAL_COMMIT_NAME}";                   git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --replace-all "${KEY}" "${VAL}";
-# KEY="core.sshcommand";  VAL="ssh -i \"${GLOBAL_COMMIT_SSH_KEY}\"${GIT_SSH_OPTS}";     git config --global --replace-all "${KEY}" "${VAL}";
+# KEY="core.sshcommand";  VAL="ssh -4 -i '${GLOBAL_COMMIT_SSH_KEY}'${GIT_SSH_OPTS}"     git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="core.autocrlf";    VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
 # KEY="core.eol";         VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -617,44 +617,63 @@ fi;
 
 # if [ 0 -eq 1 ]; then
 
-	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
+	echo "------------------------------------------------------------"
+	echo ""
+	echo "Beginning Exclusions search..."
 
 	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
-	EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
-	EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
-	EXCLUDED_HOMEDIRS+=(["${HOME}/OneDrive"]="");
+	# AppData
+	if [ -d "${HOME}/AppData" ]; then
+		EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
+	fi;
+	# DropBox
+	if [ -d "${HOME}/Dropbox" ]; then
+		EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
+	fi;
+	# Google Drive
+	if [ -d "${HOME}/Google Drive" ]; then
+		EXCLUDED_HOMEDIRS+=(["${HOME}/Google Drive"]="");
+	fi;
+	# iCloud (Apple)
+	if [ -d "${HOME}/iCloudDrive" ]; then
+		EXCLUDED_HOMEDIRS+=(["${HOME}/iCloudDrive"]="");
+	fi;
 
 	#
 	# Exclude OneDrive Dirs
 	#   |--> Note: Running 'find' against OneDrive files causes them to be downloaded (if cloud synced), effectively ruining the functionality of OneDrive's "Files On-Demand" feature
 	#
-	ONEDRIVE_ENV_VAR="OneDrive";
-	SHAREPOINT_SLICE="OneDrive - ";
-
-	printenv \
-	| grep -i "${ONEDRIVE_ENV_VAR}" \
-	| sed --quiet --regexp-extended --expression='s/^([a-zA-Z0-9]+)=(.+)$/\2/pi' \
+	REGKEY_ONEDRIVE_BUSINESS="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Business1\ScopeIdToMountPointPathCache";  # OneDrive for Business
+	REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
+	PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
+	PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
+	DIRS_ONEDRIVE_BUSINESS=$(PowerShell -Command "${PS1_ONEDRIVE_BUSINESS}";);
+	DIRS_ONEDRIVE_PERSONAL=$(PowerShell -Command "${PS1_ONEDRIVE_PERSONAL}";);
+	
+	echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" \
 	| while read -r EACH_PATH; do
-		# Check for each Excluded path
+
+		# Verify each path exists before excluding it (otherwise it doesn't matter)
 		EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
 		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
 		if [ -d "${EACH_PATH_LINUX}" ]; then
 			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
-		fi;
-		#
-		# OneDrive for Business
-		#   |--> Enterprise Users' Personal-OneDrives are located in directory  [ ${HOME}/OneDrive - [BUSINESS_NAME] ]
-		#   |--> Enterprise Users' Personal-OneDrives are located in directory  [ ${HOME}/[BUSINESS_NAME] ]
-		#
-		EACH_SHAREPOINT_PATH="${EACH_PATH_LINUX//${SHAREPOINT_SLICE}/}";
-		if [ "${EACH_PATH_LINUX}" != "${EACH_SHAREPOINT_PATH}" ] && [ -d "${EACH_SHAREPOINT_PATH}" ]; then
-			EXCLUDED_HOMEDIRS+=(["${EACH_SHAREPOINT_PATH}"]="");
+			DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
+			if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
+				EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
+			fi;
 		fi;
 
 	done;
 
+	EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+
 	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
+
+	echo "------------------------------------------------------------"
+	echo ""
+	echo "Beginning Home-Dir search..."
 
 	# Get all dirs within current user's home-dir
 	find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
@@ -667,6 +686,7 @@ fi;
 		done;
 
 		if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
+			echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
 			# Not an excluded directory - search it for directories with name ".git"
 			find "${EACH_HOMEDIR}" \
 			-maxdepth 4 \
@@ -720,9 +740,12 @@ fi;
 					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
 					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+					EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+					# SSH_KEY="${EACH_SSH_KEY_WIN32}";
+					SSH_KEY="${EACH_SSH_KEY_LINUX}";
 					COMMIT_EMAIL="${TEST_EMAIL}";
 					COMMIT_NAME="${TEST_FULLNAME}";
-					SSH_KEY="${TEST_SSH_KEY}";
 					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
 					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
@@ -746,9 +769,12 @@ fi;
 					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
 					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+					EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+					EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+					# SSH_KEY="${EACH_SSH_KEY_WIN32}";
+					SSH_KEY="${EACH_SSH_KEY_LINUX}";
 					COMMIT_EMAIL="${TEST_EMAIL}";
 					COMMIT_NAME="${TEST_FULLNAME}";
-					SSH_KEY="${TEST_SSH_KEY}";
 					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
 					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
 					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
@@ -783,7 +809,7 @@ fi;
 			# Strings
 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+			KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
 			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
 			KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
 			KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -852,7 +878,7 @@ exit 0;
 # 		# Strings
 # 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-# 		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+# 		KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 # 		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
 # 		KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -893,7 +919,7 @@ exit 0;
 # 			# Strings
 # 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 # 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+# 			KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 # 			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
 # 			KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
 # 			KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -954,7 +980,7 @@ exit 0;
 # 		# Strings
 # 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-# 		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+# 		KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 # 		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
 # 		KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -994,7 +1020,7 @@ exit 0;
 # 		# Strings
 # 		KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-# 		KEY="core.sshcommand"; VAL="ssh -i \"${SSH_KEY}\"${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+# 		KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 # 		# Strings - Formatting (Line-Endings/Syntax-Highlighting)
 # 		KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
@@ -1038,17 +1064,7 @@ exit 0;
 #
 #	Citation(s)
 #
-#		www.gpg4win.org  |  "Upated Installed - Gpg4win"  |  https://www.gpg4win.org/thanks-for-download.html
-#
-#		www.gpg4win.org  |  "The Gpg4win Compendium"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium.html
-#
-#		www.gpg4win.org  |  "22 Files and settings in Gpg4win"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium_28.html
-#
-#		superuser.com  |  "Where is my gpgconf file on Windows?"  |  https://superuser.com/questions/1068980
-#
-#		superuser.com  |  "How to prevent gpg-agent from timing out during passphrase collection?"  |  https://superuser.com/questions/1172804
-#
-#		superuser.com  |  "How to name openssh public and private key pairs?"  |  https://superuser.com/a/1261644
+#		docs.microsoft.com  |  "reg query - Returns a list of the next tier of subkeys and entries that are located under a specified subkey in the registry."  |  https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-query
 #
 #		github.com  |  "Signing Git commit with GPG ask passphrase everytime"  |  https://github.com/fish-shell/fish-shell/issues/4665#issuecomment-359020584
 #
@@ -1059,5 +1075,17 @@ exit 0;
 #		riseup.net  |  "OpenPGP Best Practices"  |  https://riseup.net/en/security/message-security/openpgp/best-practices
 #
 #		riseup.net  |  "Managing OpenPGP Keys"  |  https://riseup.net/en/security/message-security/openpgp/gpg-keys
+#
+#		superuser.com  |  "Where is my gpgconf file on Windows?"  |  https://superuser.com/questions/1068980
+#
+#		superuser.com  |  "How to prevent gpg-agent from timing out during passphrase collection?"  |  https://superuser.com/questions/1172804
+#
+#		superuser.com  |  "How to name openssh public and private key pairs?"  |  https://superuser.com/a/1261644
+#
+#		www.gpg4win.org  |  "Upated Installed - Gpg4win"  |  https://www.gpg4win.org/thanks-for-download.html
+#
+#		www.gpg4win.org  |  "The Gpg4win Compendium"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium.html
+#
+#		www.gpg4win.org  |  "22 Files and settings in Gpg4win"  |  https://www.gpg4win.org/doc/en/gpg4win-compendium_28.html
 #
 # ------------------------------------------------------------

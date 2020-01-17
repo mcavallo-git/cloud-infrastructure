@@ -112,14 +112,37 @@ JAVA_ARGS="-Xms${XMS__INITIAL_HEAP_MEMORY} -Xmx${XMX__MAX_MEMORY_POOL}";
 # JAVA_ARGS="${JAVA_ARGS} -XX:MaxPermSize=768m"; # DEPRECATED
 # JAVA_ARGS="${JAVA_ARGS} -XX:PermSize=768m"; # DEPRECATED
 
-# Allow nodes to connect via hostname
-JAVA_ARGS="${JAVA_ARGS} -Dhudson.TcpSlaveAgentListener.hostName";
-
 # Allow graphs etc. to work even when an X server is present
 JAVA_ARGS="${JAVA_ARGS} -Djava.awt.headless=true";
 
 # Make jenkins listen on IPv4 address
 # JAVA_ARGS="${JAVA_ARGS} -Djava.net.preferIPv4Stack=true";
+
+# ------------------------------------------------------------
+
+# Host name that Jenkins advertises to its clients. Especially useful when running Jenkins behind a reverse proxy.
+# JAVA_ARGS="${JAVA_ARGS} -Dhudson.TcpSlaveAgentListener.hostName";
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.TcpSlaveAgentListener.hostName=https://gvs-jnks.getacvideo.com";
+
+# Port that Jenkins advertises to its clients. Especially useful when running Jenkins behind a reverse proxy.
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.TcpSlaveAgentListener.port=8080";
+
+### true to disable Jenkins CLI via JNLP and HTTP (SSHD can still be enabled)
+JAVA_ARGS="${JAVA_ARGS} -Djenkins.CLI.disabled=false";
+
+### false to disable the JNLP3 agent protocol, true to enable it. Otherwise it's randomly enabled/disabled to A/B test it.
+JAVA_ARGS="${JAVA_ARGS} -Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true";
+
+### true to disable Nio for JNLP slaves
+# JAVA_ARGS="${JAVA_ARGS} -Djenkins.slaves.NioChannelSelector.disabled=false";
+
+### Frequency of pings between the master and slaves, in seconds
+# JAVA_ARGS="${JAVA_ARGS} -Dhudson.slaves.ChannelPinger.pingIntervalSeconds=0";
+
+### Timeout for each ping between the master and slaves, in seconds
+# JAVA_ARGS="${JAVA_ARGS} -Dhudson.slaves.ChannelPinger.pingTimeoutSeconds=0";
+
+# ------------------------------------------------------------
 
 # Explicit Garbage Collection (added 2019-08-21_12-56-38 by MCavallo)
 #  |-->  https://docs.oracle.com/en/java/javase/11/gctuning/other-considerations.html
@@ -127,10 +150,9 @@ JAVA_ARGS="${JAVA_ARGS} -Djava.awt.headless=true";
 # JAVA_ARGS="${JAVA_ARGS} -Dsun.rmi.dgc.client.gcInterval=3600000";
 # JAVA_ARGS="${JAVA_ARGS} -Dsun.rmi.dgc.server.gcInterval=3600000";
 
-# [Debian/Ubuntu] based distributions (if file is in /etc/default/...)
-# JAVA_ARGS="${JAVA_ARGS}";
+# ------------------------------------------------------------
 
-# [RedHat Linux] based distributions (if file is in /etc/default/...)
+# Pass-through java arguments to Jenkins
 JENKINS_JAVA_OPTIONS="${JAVA_ARGS}";
 
 PIDFILE="/var/run/${NAME}/${NAME}.pid"; # /var/run/jenkins/jenkins.pid
@@ -195,6 +217,8 @@ JENKINS_ARGS="$(echo -e "${JENKINS_ARGS}" | sed -e 's/^[[:space:]]*//' -e 's/[[:
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   wiki.jenkins.io  |  "Features controlled by system properties - Jenkins - Jenkins Wiki"  |  https://wiki.jenkins.io/display/JENKINS/Features+controlled+by+system+properties
 #
 #   jenkins.io  |  "Tuning Jenkins GC For Responsiveness and Stability with Large Instances"  |  https://jenkins.io/blog/2016/11/21/gc-tuning/
 #

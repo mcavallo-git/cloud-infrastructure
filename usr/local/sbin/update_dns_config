@@ -642,7 +642,9 @@ else
 
 				# Restart the networking service
 				echo -e "\n""Info:  Calling [ /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); ]...";
-				echo "${DASHES}"; /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); echo "${DASHES}"; 
+				echo "${DASHES}";
+				/bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;);
+				echo "${DASHES}"; 
 
 				# Allow the networking service ample time to refresh
 				sleep 2;

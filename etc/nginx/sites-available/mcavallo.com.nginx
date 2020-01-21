@@ -202,7 +202,6 @@ server {
 	if ($subdomain ~* "^sync-ps.$") {
 		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
-	
 
 	if ($request_uri ~* "^/$") {
 		return 301 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";

@@ -4,10 +4,10 @@
 #
 
 HOST_NAME="";
-if [ -n "$1" ]; then
+if [ -z "$1" ]; then
 	echo "";
 	read -p "Enter HTTP Host as arg. \$1 " -t 60 -r;
-	HOST_NAME="{REPLY}";
+	HOST_NAME="${REPLY}";
 else
 	HOST_NAME="$1";
 fi;

@@ -5,7 +5,7 @@ SERVER="";
 if [ -z "$1" ]; then
 	echo "";
 	read -p "HTTP host to test: " -t 60 -r;
-	SERVER="{REPLY}";
+	SERVER="${REPLY}";
 else
 	SERVER="$1";
 fi;

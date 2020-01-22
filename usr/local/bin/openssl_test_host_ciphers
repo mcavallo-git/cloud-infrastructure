@@ -2,7 +2,7 @@
 
 # OpenSSL requires the port number
 SERVER="";
-if [ -n "$1" ]; then
+if [ -z "$1" ]; then
 	echo "";
 	read -p "HTTP host to test: " -t 60 -r;
 	SERVER="{REPLY}";

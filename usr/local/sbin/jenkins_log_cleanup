@@ -30,7 +30,7 @@ else
 	# MAX_AGE_DAYS=14;
 	MAX_AGE_DAYS=90;
 
-	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
+	JENKINS_UNAME=$(ps aux | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS} " | awk {'print $1'});
 
 	DASHES="------------------------------------------------------------";
 	echo -e "\n\n${DASHES}\n";

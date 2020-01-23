@@ -27,7 +27,8 @@ else
 	openssl.exe pkcs12 -in "$1" -nocerts -out "$1.pem"
 
 	# Convert the PEM-formatted private key into the PVK format:
-	pvk.exe -in "$1.pem" -topvk -strong -out "$1.pvk"
+	# pvk.exe -in "$1.pem" -topvk -strong -out "$1.pvk"
+  openssl rsa -in "$1.pem" -outform PVK -pvk-strong -out "$1.pvk"
 
 	# Combine the PVK and SPC into PFX:
 	echo -e "\n\n";
@@ -43,6 +44,8 @@ fi;
 
 # ------------------------------------------------------------
 #	Citation(s)
+#
+#		justsolve.archiveteam.org  |  "Tools for Signing Drivers - Windows drivers | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/tools-for-signing-drivers
 #
 #		justsolve.archiveteam.org  |  "PVK - Just Solve the File Format Problem"  |  http://justsolve.archiveteam.org/wiki/PVK
 #

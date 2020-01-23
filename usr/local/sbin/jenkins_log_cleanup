@@ -25,7 +25,7 @@ else
 	
 	SUDO_USER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)"; # Sudo-User's Home dir
 
-	PS_AUX_CONTAINS="jenkins.war";
+	PS_AUX_CONTAINS="^jenkins";
 
 	# MAX_AGE_DAYS=14;
 	MAX_AGE_DAYS=90;

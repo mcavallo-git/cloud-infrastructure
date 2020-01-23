@@ -15,6 +15,12 @@ if [ -z "$1" ] || [ -z "$2" ]; then
 	echo "Second argument (\$2) should be the new SPC certificate's fullpath";
 	echo -e "\n\n";
 	exit 1;
+elif [ $(which pvk2pfx 1>/dev/null 2>&1; echo $?) -ne 0 ]; then
+	echo -e "\n\n";
+	echo "Error:  Command \"pvk2pfx\" not found";
+	echo "Must install command via \"Windows WDK\" from: https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk";
+	echo -e "\n\n";
+	exit 1;
 else
 
 	WORKING_DIR="${HOME}/.pvk2pfx";

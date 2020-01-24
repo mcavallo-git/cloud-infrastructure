@@ -125,8 +125,8 @@ else
 				/usr/sbin/service "${SERVICE_NAME}" start;
 
 				# Reload NGINX (if found locally)
-				if [ -n "$(which nginx 2>'/dev/null')" ]; then
-					if [ -f "$(which reload_nginx 2>'/dev/null')" ]; then
+				if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+					if [ $(which reload_nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
 						echo "";
 						echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
 						reload_nginx;
@@ -139,6 +139,12 @@ else
 				else
 					echo "";
 					echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
+				fi;
+
+
+				# Re-Sync to repo/cloud-sync settings
+				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+					sync_cloud_infrastructure --jenkins;
 				fi;
 
 			fi;

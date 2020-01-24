@@ -119,6 +119,11 @@ else
 				# Replace Jenkins' runtime warfile with the newly downloaded runtime warfile
 				mv --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
 
+				# Re-Sync to repo/cloud-sync settings
+				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+					sync_cloud_infrastructure --jenkins;
+				fi;
+
 				# Start the Jenkins service (after updating its runtime warfile)
 				echo "";
 				echo "$(date +'%D  %r')   Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
@@ -131,20 +136,13 @@ else
 						echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
 						reload_nginx;
 					else
-						SERVICE_NAME="nginx";
 						echo "";
-						echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" stop; ]...";
-						nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" stop;
+						echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
+						nginx -t && sleep 1 && /usr/sbin/service nginx stop;
 					fi;
 				else
 					echo "";
 					echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
-				fi;
-
-
-				# Re-Sync to repo/cloud-sync settings
-				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
-					sync_cloud_infrastructure --jenkins;
 				fi;
 
 			fi;

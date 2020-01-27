@@ -1,6 +1,0 @@
-#
-# DAT_CRON="/etc/cron.d/CRON_jenkins_sync_cloud_infrastructure" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
-#
-
-### [ JENKINS ] Export Jenkins' Config-Files as well as Jenkins' Plugins
-# 05 * * * * root test -x "/usr/local/sbin/sync_cloud_infrastructure" && "/usr/local/sbin/sync_cloud_infrastructure" --jenkins;

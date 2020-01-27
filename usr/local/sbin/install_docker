@@ -85,6 +85,8 @@ else
 		
 	fi;
 
+	systemctl enable docker --now;
+
 	"${BIN_DOCKER}" --version;
 	"${BIN_DOCKER_COMPOSE}" --version;
 

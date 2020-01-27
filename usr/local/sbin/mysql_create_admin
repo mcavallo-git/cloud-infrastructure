@@ -23,7 +23,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 
 	# Get the new admin's username
-	PATH_ADMIN_NAME="${HOME}/mysql_root_user";
+	PATH_ADMIN_NAME="${HOME}/mysql_admin_user";
 	if [ ! -f "${PATH_ADMIN_NAME}" ]; then
 		echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_NAME}\" as one single line of text (no newlines)";
 		exit 1;
@@ -35,7 +35,7 @@ else
 	ADMIN_NAME=$(cat "${PATH_ADMIN_NAME}");
 
 	# Get the new admin's password
-	PATH_ADMIN_PASS="${HOME}/mysql_root_pass";
+	PATH_ADMIN_PASS="${HOME}/mysql_admin_pass";
 	if [ ! -f "${PATH_ADMIN_PASS}" ]; then
 		echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASS}\" as one single line of text (no newlines)";
 		exit 1;

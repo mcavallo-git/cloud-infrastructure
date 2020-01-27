@@ -90,24 +90,24 @@
 		"extensions.ignoreRecommendations": true,
 		"extensions.showRecommendationsOnlyOnDemand": true,
 		"files.associations": {
-			"**/*.{conf,mfa,no_mfa,nginx,password_auth}": "shellscript",
-			"**/CRON_*": "shellscript",
 			"**/*.preset": "powershell",
 			"**/*.royal-key-sequence": "powershell",
 			"**/*.svg": "html",
 			"**/*.xaml": "html",
+			"**/*.{conf,mfa,no_mfa,nginx,password_auth}": "shellscript",
+			"**/GitHub/*-infrastructure/**/{[!.],[!.][!.],[!.][!.][!.],[!.][!.][!.][!.],[!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.]}": "shellscript",
 			"**/Jenkinsfile": "groovy",
 			"**/my.cnf": "properties",
-			"**/GitHub/*-infrastructure/**/{[!.],[!.][!.],[!.][!.][!.],[!.][!.][!.][!.],[!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.],[!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.][!.]}": "shellscript",
-			"**/pam_duo.conf": "ini"
+			"**/pam_duo.conf": "ini",
+			"**/{settings.json,vscode.settings,*.code-workspace}": "jsonc"
 		},
 		"files.eol": "\n",
 		"files.exclude": {
-			"{boneal,CodingVault,irsahost}/**/*": true,
+			"**/*.{7z,ico,jpeg,jpg,pdf,pdn,png,sign,so,unknown}": true,
 			"**/{B,b}{O,o}{N,n}{E,e}{A,a}{L,l}*/**": true,
 			"**/{desktop.ini,node_modules,*.lnk,*.url}": true,
-			"**/*.{7z,ico,jpeg,jpg,pdf,pdn,png,sign,so,unknown}": true,
-			"**/~$*.{xls,xlsx,doc,docx}": true
+			"**/~$*.{xls,xlsx,doc,docx}": true,
+			"{boneal,CodingVault,irsahost}/**/*": true
 		},
 		"files.watcherExclude": {
 			"**/.*": true
@@ -131,14 +131,16 @@
 		"json.format.enable": true,
 		"markdown.preview.breaks": true,
 		"markdown.preview.doubleClickToSwitchToEditor": false,
+		"npm.autoDetect": "off",
+		"npm.fetchOnlinePackageInfo": false,
 		"scm.diffDecorations": "none",
 		"search.collapseResults": "alwaysCollapse",
 		"search.exclude": {
-			"{boneal,CodingVault,irsahost}/**/*": true,
+			"**/*.{7z,ico,jpeg,jpg,pdf,pdn,png,sign,so,unknown}": true,
 			"**/{B,b}{O,o}{N,n}{E,e}{A,a}{L,l}*/**": true,
 			"**/{desktop.ini,node_modules,*.lnk,*.url}": true,
-			"**/*.{7z,ico,jpeg,jpg,pdf,pdn,png,sign,so,unknown}": true,
-			"**/~$*.{xls,xlsx,doc,docx}": true
+			"**/~$*.{xls,xlsx,doc,docx}": true,
+			"{boneal,CodingVault,irsahost}/**/*": true
 		},
 		"search.quickOpen.includeHistory": false,
 		"search.quickOpen.includeSymbols": false,
@@ -150,6 +152,7 @@
 		"sync.autoDownload": true,
 		"sync.autoUpload": true,
 		"sync.forceDownload": false,
+		"sync.forceUpload": true,
 		"sync.quietSync": true,
 		"sync.removeExtensions": true,
 		"sync.syncExtensions": true,
@@ -179,9 +182,6 @@
 		"xmlTools.xmlFormatterImplementation": "classic",
 		"zenMode.hideActivityBar": false,
 		"zenMode.hideStatusBar": true,
-		"zenMode.hideTabs": true,
-		"npm.fetchOnlinePackageInfo": false,
-		"npm.autoDetect": "off",
-		"sync.forceUpload": true
+		"zenMode.hideTabs": true
 	}
 }

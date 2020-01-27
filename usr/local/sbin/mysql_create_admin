@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/mysql_create_admin" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+
+	# Get the new admin's username
+	PATH_ADMIN_UNAME="${HOME}/mysql_root_passwd";
+	if [ ! -f "${PATH_ADMIN_UNAME}" ]; then
+		echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_UNAME}\" as one single line of text (no newlines)";
+		exit 1;
+	elif [ $(cat "${PATH_ADMIN_UNAME}" | wc -l;) -gt 1 ]; then
+		echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_UNAME}\" as ONE SINGLE LINE of text (no newlines)";
+		exit 1;
+	fi;
+	chmod 0400 "${PATH_ADMIN_UNAME}";
+	ADMIN_UNAME=$(cat "${PATH_ADMIN_UNAME}");
+
+	# Get the new admin's password
+	PATH_ADMIN_PASSWD="${HOME}/mysql_root_passwd";
+	if [ ! -f "${PATH_ADMIN_PASSWD}" ]; then
+		echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASSWD}\" as one single line of text (no newlines)";
+		exit 1;
+	elif [ $(cat "${PATH_ADMIN_PASSWD}" | wc -l;) -gt 1 ]; then
+		echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASSWD}\" as ONE SINGLE LINE of text (no newlines)";
+		exit 1;
+	fi;
+	chmod 0400 "${PATH_ADMIN_PASSWD}";
+	ADMIN_PASSWD=$(cat "${PATH_ADMIN_PASSWD}");
+
+	# Prep the file to start mysql with
+	MYSQL_INIT_PATH="${HOME}/mysql-init";
+	MYSQL_CREATE_ADMIN_COMMAND="GRANT USAGE	ON *.* TO '${ADMIN_UNAME}'@'%' IDENTIFIED BY '${ADMIN_PASSWD}' REQUIRE SSL;" > "${MYSQL_INIT_PATH}";
+	echo "${MYSQL_CREATE_ADMIN_COMMAND}" > "${MYSQL_INIT_PATH}";
+	chmod 0440 "${MYSQL_INIT_PATH}";
+	chown "root:mysql" "${MYSQL_INIT_PATH}";
+
+	# Require user confirmation to proceed
+	echo -e "\n";
+	read -p "Are you ready to create new MySQL admin-user \"${ADMIN_UNAME}\"? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+	echo "";
+	if [ ${RETURN_CODE_READ} -gt 128 ]; then
+		echo -e "Response timed out";
+	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+		echo -e "\n""Info: Confirmed - Attempting to create new MySQL admin-user \"${ADMIN_UNAME}\"...""\n";
+
+		exit 0;
+
+		service mysqld stop;
+		sleep 1;
+
+		PATH_TEMP_PID="/var/run/mysqld/mysqld_temp.pid";
+		mysqld --init-file=${MYSQL_INIT_PATH} --pid-file=${PATH_TEMP_PID} &
+		echo "Waiting 60s for Database to start...";
+		sleep 60;
+
+		kill $(cat "${PATH_TEMP_PID}");
+		sleep 1;
+
+		service mysqld start;
+		sleep 1;
+
+	else
+		echo "Denied - Skipping command";
+	fi;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   confluence.atlassian.com  |  "Database Setup For MySQL - Atlassian Documentation"  |  https://confluence.atlassian.com/doc/database-setup-for-mysql-128747.html
+#
+#   dev.mysql.com  |  "MySQL :: MySQL 5.7 Reference Manual :: B.4.3.2 How to Reset the Root Password"  |  https://dev.mysql.com/doc/refman/5.7/en/resetting-permissions.html
+#
+# ------------------------------------------------------------

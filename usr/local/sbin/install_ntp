@@ -47,6 +47,7 @@ else
 		# Optionally, add a suggested NTP server as primary NTP server
 		#
 		PRIMARY_NTP_SUGGESTION="time.nist.gov";
+		# PRIMARY_NTP_SUGGESTION="pool.ntp.org";
 		# PRIMARY_NTP_SUGGESTION="time.google.com";
 		if [ -f "${PACKAGE_CONF}" ]; then
 			CURRENT_NTP_SERVER_LINES="$(cat ${PACKAGE_CONF} | grep '^server ' | awk '{print $2}' 2>'/dev/null';)";

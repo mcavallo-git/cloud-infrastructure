@@ -140,6 +140,11 @@ else
 						echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
 						nginx -t && sleep 1 && /usr/sbin/service nginx stop;
 					fi;
+					# Re-Sync to repo/cloud-sync settings
+					if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+						sleep 30;
+						sync_cloud_infrastructure --jenkins;
+					fi;
 				else
 					echo "";
 					echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";

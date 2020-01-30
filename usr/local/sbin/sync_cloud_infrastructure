@@ -1110,6 +1110,20 @@ else
 
 					# ------------------------------------------------------------
 					#
+					# Set directory permissions as-intended
+					#  |--> Fix for issue where jenkins images wouldn't show-up while on "Manage Jenkins" page (or directly accessing them)
+					#
+
+					DESTINATION_PATH="/var/cache/jenkins";
+					DIR_PERMS="0751";
+					chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
+
+					DESTINATION_PATH="/var/cache/jenkins/war";
+					DIR_PERMS="0755";
+					chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
+
+					# ------------------------------------------------------------
+					#
 					# /var/cache/jenkins/war
 					#
 					DESTINATION_PATH="/var/cache/jenkins/war";
@@ -1220,7 +1234,7 @@ else
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					fi;
-					
+
 					RESTART_SERVICE_JENKINS=1;
 					BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";

@@ -655,7 +655,7 @@ fi;
 		# Verify each path exists before excluding it (otherwise it doesn't matter)
 		EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
 		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
-		if [ -n "${EACH_PATH_LINUX}" ] && [-d "${EACH_PATH_LINUX}" ]; then
+		if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
 			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
 			DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
 			if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then

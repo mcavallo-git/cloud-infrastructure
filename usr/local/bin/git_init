@@ -238,7 +238,7 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
 	cd "${GIT_LOCAL_CEILING}";
 	export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
-	# export GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\"";
+	# export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
 	unset GIT_SSH_COMMAND;
 fi;
@@ -259,9 +259,9 @@ else
 fi;
 #
 # [config]  core.sshcommand
-# ${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null";
-${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no";
-# ${GIT_CLI} config core.sshcommand "ssh -i \"${REMOTE_PRIVATE_KEY}\"";
+# ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
+${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no";
+# ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
 #
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then

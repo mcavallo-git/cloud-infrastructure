@@ -1141,7 +1141,7 @@ else
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
 					# /var/cache/jenkins/war - Set policies to stop Selinux from blocking access to cached Jenkins images within "/var/cache/jenkins/war/images"
-					if [ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+					if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 						chcon -R -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
 						semanage fcontext -a -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
 					fi;

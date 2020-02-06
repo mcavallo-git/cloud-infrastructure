@@ -77,18 +77,14 @@ else
 
 		# Display the results
 		echo "";
-		if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
-			echo "   FQDN            | IPv4              ";
-		else
-			echo "   IPv4            | FQDN              ";
-		fi;
+		echo "   IPv4            | FQDN              ";
 		echo "  -----------------|-------------------";
 		for EACH_KEY in "${ARR_SORTED_RESULTS[@]}"; do
-			if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
-				EACH_VAL="${ARR_FQDN_IDX[${EACH_KEY}]}";
-			else
+			# if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
+			# 	EACH_VAL="${ARR_FQDN_IDX[${EACH_KEY}]}";
+			# else
 				EACH_VAL="${ARR_IPV4_IDX[${EACH_KEY}]}";
-			fi;
+			# fi;
 			EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
 			EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
 			echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";

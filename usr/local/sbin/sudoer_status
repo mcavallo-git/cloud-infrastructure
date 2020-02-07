@@ -3,8 +3,16 @@
 # LOCAL_SBIN="/usr/local/sbin/sudoer_status" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+# Sync 1-Liner
 #
-# test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
+if [ 0 -eq 1 ]; then
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status" -O "/usr/local/sbin/sudoer_status" -q && chmod 0755 "/usr/local/sbin/sudoer_status" && /usr/local/sbin/sudoer_status;
+
+test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
+
+fi;
+#
 #
 # ------------------------------------------------------------
 #

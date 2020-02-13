@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/docker_log_limiter" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+
+	# Set the max-filesize for a given docker's logfile
+	DOCKER_GLOBAL_CONFIG="/etc/docker/daemon.json";
+	if [ -f "${DOCKER_GLOBAL_CONFIG}" ]; then
+		echo -e"Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+	else
+		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+	fi;
+
+	if [ -n "${1}" ]; then
+		DOCKER_TARGET="$(docker ps | grep ${1} | awk '{print $1}')";
+		if [ -n "${DOCKER_TARGET}" ]; then
+			DOCKER_LOGFILE="$(docker inspect --format='{{.LogPath}}' ${DOCKER_TARGET})";
+			if [ -n "${DOCKER_LOGFILE}" ]; then
+				echo -e "found [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
+				sudo ls -hal ${DOCKER_LOGFILE};
+				echo -e "\nclearing logs...\n";
+				sudo echo "" > ${DOCKER_LOGFILE};
+			else
+				echo -e "file not found: [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
+			fi;
+		else
+				echo -e "no containers found which match \"${1}\"\n";
+		fi;
+	else
+		echo "If you wish to clear existing docker-logs, run this cript again with argument #1 ( \$1 ) as the name of the target-docker whose logs you wish to clear. Example >   docker_log_limiter MY_DOCKER_NAME";
+	fi;
+
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.docker.com  |  "Configure logging drivers | Docker Documentation"  |  https://docs.docker.com/config/containers/logging/configure/#configure-the-default-logging-driver
+#
+# ------------------------------------------------------------

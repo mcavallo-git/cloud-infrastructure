@@ -52,7 +52,7 @@ if [ -n "$0" ]; then
 					echo "";
 					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
 					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
-					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>/dev/null || \
+					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>"/dev/null" || \
 					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
 				fi;
 			else

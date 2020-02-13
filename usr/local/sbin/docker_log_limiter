@@ -23,34 +23,23 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	# Set the max-filesize for a given docker's logfile
+
 	DOCKER_GLOBAL_CONFIG="/etc/docker/daemon.json";
+
+	MAX_LOG_FILESIZE="10m";
+
+	echo "";
 	if [ -f "${DOCKER_GLOBAL_CONFIG}" ]; then
-		echo -e"Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+		echo -e"Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
 	else
-		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\"\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"3\"\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+		echo "Applied filesize-restriction to all docker containers --> max-size: \"${MAX_LOG_FILESIZE}\"";
+		echo "";
+		echo "Reloading daemon & restarting docker-service (to apply updated configuration)...";
 		systemctl daemon-reload;
 		systemctl restart docker;
 	fi;
-
-	if [ -n "${1}" ]; then
-		DOCKER_TARGET="$(docker ps | grep ${1} | awk '{print $1}')";
-		if [ -n "${DOCKER_TARGET}" ]; then
-			DOCKER_LOGFILE="$(docker inspect --format='{{.LogPath}}' ${DOCKER_TARGET})";
-			if [ -n "${DOCKER_LOGFILE}" ]; then
-				echo -e "found [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
-				sudo ls -hal ${DOCKER_LOGFILE};
-				echo -e "\nclearing logs...\n";
-				sudo echo "" > ${DOCKER_LOGFILE};
-			else
-				echo -e "file not found: [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
-			fi;
-		else
-				echo -e "no containers found which match \"${1}\"\n";
-		fi;
-	else
-		echo "If you wish to clear existing docker-logs, run this cript again with argument #1 ( \$1 ) as the name of the target-docker whose logs you wish to clear. Example >   docker_log_limiter MY_DOCKER_NAME";
-	fi;
-
+	echo "";
 
 fi;
 

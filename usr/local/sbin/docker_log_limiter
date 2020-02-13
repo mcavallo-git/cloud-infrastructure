@@ -27,7 +27,7 @@ else
 	if [ -f "${DOCKER_GLOBAL_CONFIG}" ]; then
 		echo -e"Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
 	else
-		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\",\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"10m\",\n    \"max-file\": \"3\"\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
 		systemctl daemon-reload;
 		systemctl restart docker;
 	fi;

@@ -3,6 +3,14 @@
 # LOCAL_SBIN="/usr/local/sbin/docker_log_limiter" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+
+
+LOCAL_SBIN="/usr/local/sbin/docker_log_limiter"; sudo curl -H 'Cache-Control: no-cache' -o "${LOCAL_SBIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_log_limiter?t=$(date +'%s.%N')"; sudo chmod 0755 "${LOCAL_SBIN}"; sudo "${LOCAL_SBIN}";
+
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #

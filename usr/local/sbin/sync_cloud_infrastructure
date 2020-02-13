@@ -235,7 +235,8 @@ else
 	elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		REQUIRED_PKGS_ARRAY+=("bind-utils");
 		REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");
-		if [ ! -f "/usr/bin/jq" ] || [[ -f "/usr/bin/jq" && $(stat --printf="%s" "/usr/bin/jq";) -le 1000 ]]; then
+		# Install the "jq" (JSON Parser) package manually for RHEL distros
+		if [ ! -f "/usr/bin/jq" ] || [[ -f "/usr/bin/jq" && $(stat --printf="%s" "/usr/bin/jq";) -le 1000 ]]; then # stat command is for hotfix on invalid downloads
 			curl -o "/usr/bin/jq" -ssL "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" && chmod 0755 "/usr/bin/jq";
 		fi;
 	fi;

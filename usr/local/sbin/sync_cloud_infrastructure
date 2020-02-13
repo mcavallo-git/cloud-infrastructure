@@ -236,7 +236,9 @@ else
 		REQUIRED_PKGS_ARRAY+=("bind-utils");
 		REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");
 		if [ ! -f "/usr/bin/jq" ]; then
-			curl -o "/usr/bin/jq" -ssL "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" && chmod 0755 "/usr/bin/jq";
+			if [ $(stat --printf="%s" "/usr/bin/jq";) -le 1000 ]; then
+				curl -o "/usr/bin/jq" -ssL "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" && chmod 0755 "/usr/bin/jq";
+			fi;
 		fi;
 	fi;
 

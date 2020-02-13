@@ -41,7 +41,7 @@ if [ -n "$0" ]; then
 			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
 				USER_SELECTION_KEY=$((0+${REPLY}));
 				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
-					echo "Error: Invalid Selection of \"${REPLY}\"";
+					echo "Error: Invalid selection of \"${REPLY}\"";
 				else
 					E1="LINES=$(tput lines)";
 					E2="COLUMNS=$(tput cols)";

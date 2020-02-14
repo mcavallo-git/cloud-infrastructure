@@ -11,6 +11,8 @@ wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master
 
 test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
 
+test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow --nopass;
+
 fi;
 #
 #

@@ -42,7 +42,7 @@ else
 	
 	EDIT_ACTION="";
 	TARGET_USER="";
-	REQUIRE_USERPASS="1";
+	SUDO_REQUIRES_USERPASS="1";
 	EXAMPLE_VALID_CALL="\n$(date +'%Y-%m-%d %H:%M:%S') | Info --> Please specify a valid local user via:  >  sudoer_status --user USERNAME""\n";
 
 	# Walk through any inline-arguments passed to this function
@@ -98,7 +98,7 @@ else
 			# ------------------------------------------------------------
 			# Skip requiring user-pass when they call the 'sudo' command
 			if [ "${EACH_ARG}" == "--nopass" ]; then
-				REQUIRE_USERPASS="0";
+				SUDO_REQUIRES_USERPASS="0";
 			fi;
 
 			# ------------------------------------------------------------

@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_snmp" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # Run this script on-the-fly:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_snmp" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	# Install SNMP & SNMP Utilities
+
+	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
+		# Debian distros (Ubuntu, Raspbian, etc.)
+		# echo -e "\n""Info:  Calling [ apt-get update -y && apt-get install -y ${MISSING_PKGS_ARRAY[@]}; ]...";
+		# apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
+		echo "Ubuntu SNMP installation not yet implemented";
+		exit 1;
+
+	elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+		# RHEL, CentOS
+		echo -e "\n""Info:  Calling [ yum check-update -y; yum -y install net-snmp net-snmp-utils; ]...";
+		yum check-update -y; yum -y install net-snmp net-snmp-utils;
+		snmpconf -g basic_setup
+
+	elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
+		# Alpine
+		# echo -e "\n""Info:  Calling [ apk update -y && apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
+		# apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]};
+		echo "Alpine SNMP installation not yet implemented";
+		exit 1;
+
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   www.liquidweb.com  |  "CentOS SNMP Installation | Liquid Web"  |  https://www.liquidweb.com/kb/how-to-install-and-configure-snmp-on-centos/
+#
+#   www.servernoobs.com  |  "Enabling SNMP On CentOS / RHEL | Linux Tips, Hacks, Tricks, and Tutorials for Beginners | ServerNoobs"  |  https://www.servernoobs.com/enabling-snmp-on-centos-rhel/
+#
+# ------------------------------------------------------------

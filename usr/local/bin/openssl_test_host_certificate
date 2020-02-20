@@ -4,6 +4,7 @@
 #
 if [ 0 -eq 1 ]; then # IF RUNNING A ONE-OFF, MANUALLY 
 
+
 HOST_NAME="example.com"; HOST_PORT="443"; openssl s_client -showcerts -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" </dev/null;
 
 

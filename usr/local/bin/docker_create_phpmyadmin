@@ -1,16 +1,16 @@
 #!/bin/bash
 
-docker run --name phpmyadmin -d -e PMA_ARBITRARY=1 -p 80:80 --restart always phpmyadmin/phpmyadmin
+docker run --name phpmyadmin -d -e PMA_ARBITRARY=1 -p 8080:80 --restart always phpmyadmin/phpmyadmin
 
 firewall-cmd --permanent --zone=public --add-service=http;
 firewall-cmd --set-default-zone=public;
 firewall-cmd --reload;
 firewall-cmd --list-all;
 
-iptables -A INPUT -p tcp --dport 80 -s 192.168.0.0/16 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -s 172.16.0.0/12 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -s 10.0.0.0/8 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -s 127.0.0.0/8 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -j DROP
+iptables -A INPUT -p tcp --dport 8080 -s 192.168.0.0/16 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -s 172.16.0.0/12 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -s 10.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -s 127.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -j DROP
 # Restart iptables service host (NetworkManager)
 service NetworkManager restart;

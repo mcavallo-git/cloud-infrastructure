@@ -3,17 +3,31 @@
 #    Pulls the details of the https-cert (if any) attached to a given hostname
 #
 
+
+# Hostname to-target
 HOST_NAME="";
-if [ -z "$1" ]; then
-	echo "";
-	read -p "Enter HTTP Host as arg. \$1 " -t 60 -r;
-	HOST_NAME="${REPLY}";
-else
+if [ -n "$1" ]; then
 	HOST_NAME="$1";
+else
+	echo "";
+	read -p "Enter HTTP Host (or pass as inline argument \$1):  " -t 60 -r;
+	HOST_NAME="${REPLY}";
 fi;
 
 
-CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}";);
+# Port to-target
+if [ -n "$2" ]; then
+	HOST_PORT="$2";
+else
+	echo "";
+	echo "Defaulting to port 443 (call w/ port as inline argument \$2 to use another port)";
+	echo "";
+	HOST_PORT="443";
+fi;
+
+
+CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
+
 
 echo "";
 echo "SSL Certiifcate for ${HOST_NAME}:${HOST_PORT}";

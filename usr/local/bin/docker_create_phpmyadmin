@@ -2,7 +2,8 @@
 
 docker run --name phpmyadmin -d -e PMA_ARBITRARY=1 -p 8080:80 --restart always phpmyadmin/phpmyadmin
 
-firewall-cmd --permanent --zone=public --add-service=http;
+firewall-cmd --permanent --zone=public --add-service=http;   # Port 80 / 443
+firewall-cmd --permanent --zone=public --add-port=8080/tcp;  # Port 8080
 firewall-cmd --set-default-zone=public;
 firewall-cmd --reload;
 firewall-cmd --list-all;

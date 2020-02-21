@@ -34,15 +34,29 @@ else
 	HOST_PORT="443";
 fi;
 
-
-CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
-
-
+PROTO_STARTTLS="";
+if [ "${HOST_PORT}" -eq "21" ]; then
+	PROTO_STARTTLS="ftp";
+fi;
 
 echo "";
-echo "SSL Certiifcate for ${HOST_NAME}:${HOST_PORT}";
+echo "SSL/TLS connection test"
 echo "";
+echo "Target Host: \"${HOST_NAME}\"";
+echo "Target Port: \"${HOST_PORT}\"";
+if [ -n "${PROTO_STARTTLS}" ]; then
+	echo "";
+	echo "Protocol Keyword:  \"${PROTO_STARTTLS}\"";
+fi;
+echo "";
+echo "------------------------------------------------------------";
+if [ -n "${PROTO_STARTTLS}" ]; then
+	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS};);
+else
+	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
+fi;
 echo "${CERT_DETAILS}";
+echo "------------------------------------------------------------";
 echo "";
 
 

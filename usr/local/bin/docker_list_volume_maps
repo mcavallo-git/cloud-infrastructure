@@ -25,6 +25,7 @@ docker inspect \
 --format=''${DASHES}'{{println}}IMG:  {{.Config.Image}}Image:   {{range .Mounts}}{{println}}Map-Src: {{.Source}}  (Host){{println}}Map-Dst: {{.Destination}}  (Container){{end}}' \
 $(docker ps --quiet) \
 | while read EACH_VOLMAP; do
+	echo "\$EACH_VOLMAP = \"${EACH_VOLMAP}\"";
 	test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
 done;
 

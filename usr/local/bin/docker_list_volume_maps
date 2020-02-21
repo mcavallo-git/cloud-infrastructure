@@ -1,35 +1,37 @@
 #!/bin/bash
 #    Docker - List Volume Maps
 
+# ------------------------------------------------------------
+#
+# Expanded using variable replacement:
+#
 
-ROLLBACK_IFS="${IFS}";
-IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
+test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
+if [ "${is_docker_installed}" -eq 1 ]; then
 
 clear;
 echo "";
 echo "Docker - Listing Active Volume-Maps...";
 DASHES="------------------------------------------------------------";
-# ------------------------------------------------------------
-#
-# Expanded using variable replacement:
-#
 
 TEXT_RESET='\e[0m';
 TEXT_TEAL='\033[0;96m';
 TEXT_RED='\033[0;31m'; # 
 TEXT_COLORLESS='\033[0m'; # No Color
 
-test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
-if [ "${is_docker_installed}" -eq 1 ]; then
+ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 
-	docker inspect \
-	--format=''${DASHES}'{{println}}{{println}}  {{.Config.Image}}  (Image) {{range .Mounts}}{{println}}   |{{println}}   |--> 📁 {{.Source}}  (Host){{println}}   |   ↳ {{.Destination}}  (Container){{end}}' \
-	$(docker ps --quiet) \
-	| while read EACH_VOLMAP
-	do
-		test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
-	done;
+docker inspect \
+--format=''${DASHES}'{{println}}IMG:  {{.Config.Image}}Image:   {{range .Mounts}}{{println}}Map-Src: {{.Source}}  (Host){{println}}Map-Dst: {{.Destination}}  (Container){{end}}' \
+$(docker ps --quiet) \
+| while read EACH_VOLMAP; do
+	test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
+done;
 
+IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
+
+echo "";
+echo "------------------------------------------------------------";
 
 else
 	echo "Docker is NOT installed";
@@ -37,10 +39,7 @@ else
 
 fi;
 echo "";
-echo "------------------------------------------------------------";
-echo "";
 
-IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
 
 # ------------------------------------------------------------
 #  Citation(s)

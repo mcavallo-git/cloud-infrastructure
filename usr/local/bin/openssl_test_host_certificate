@@ -49,14 +49,14 @@ if [ -n "${PROTO_STARTTLS}" ]; then
 	echo "Protocol Keyword:  \"${PROTO_STARTTLS}\"";
 fi;
 echo "";
-echo "------------------------------------------------------------";
+echo "BEGIN OPENSSL OUTPUT ------------------------------------------------------------";
 if [ -n "${PROTO_STARTTLS}" ]; then
 	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS};);
 else
 	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
 fi;
 echo "${CERT_DETAILS}";
-echo "------------------------------------------------------------";
+echo "END OF OPENSSL OUTPUT ------------------------------------------------------------";
 echo "";
 
 

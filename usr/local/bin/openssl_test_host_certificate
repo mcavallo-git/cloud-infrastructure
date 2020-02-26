@@ -37,6 +37,8 @@ fi;
 PROTO_STARTTLS="";
 if [ "${HOST_PORT}" -eq "21" ]; then
 	PROTO_STARTTLS="ftp";
+elif [ "${HOST_PORT}" -eq "25" ] || [ "${HOST_PORT}" -eq "465" ] || [ "${HOST_PORT}" -eq "587" ]; then
+	PROTO_STARTTLS="smtp";
 fi;
 
 echo "";

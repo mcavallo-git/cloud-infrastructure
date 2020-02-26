@@ -12,6 +12,12 @@ fi;
 
 
 # ------------------------------------------------------------
+# Parse additional arguments (passed to current script)
+
+ARGS=("$@");
+ARGS_COUNT=${#ARGS[@]};
+
+ARGS_DEBUG_MODE=0;
 
 # Hostname to-target
 HOST_NAME="";
@@ -34,12 +40,71 @@ else
 	HOST_PORT="443";
 fi;
 
-PROTO_STARTTLS="";
-if [ "${HOST_PORT}" -eq "21" ]; then
-	PROTO_STARTTLS="ftp";
-elif [ "${HOST_PORT}" -eq "25" ] || [ "${HOST_PORT}" -eq "465" ] || [ "${HOST_PORT}" -eq "587" ]; then
-	PROTO_STARTTLS="smtp";
-fi;
+
+# ------------------------------------------------------------
+#
+# Determine if a STARTTLS request is warranted (based on target port)
+#
+
+#
+# PROTO_STARTTLS="";
+# if [ "${HOST_PORT}" -eq "21" ]; then
+# 	PROTO_STARTTLS="ftp";
+# elif [ "${HOST_PORT}" -eq "25" ] || [ "${HOST_PORT}" -eq "465" ] || [ "${HOST_PORT}" -eq "587" ]; then
+# 	PROTO_STARTTLS="smtp";
+# fi;
+#
+
+unset STARTTLS_PORT_PROTOS; declare -A STARTTLS_PORT_PROTOS; # [Re-]Instantiate bash array
+
+STARTTLS_PORT_PROTOS+=(["21"]="ftp");
+
+STARTTLS_PORT_PROTOS+=(["143"]="imap");  # 143 is IMAP
+STARTTLS_PORT_PROTOS+=(["220"]="imap");  # 220 is IMAP version-3
+STARTTLS_PORT_PROTOS+=(["585"]="imap");  # 585 is IMAPS
+
+STARTTLS_PORT_PROTOS+=(["113"]="irc");
+STARTTLS_PORT_PROTOS+=(["194"]="irc");
+
+STARTTLS_PORT_PROTOS+=(["389"]="ldap");
+STARTTLS_PORT_PROTOS+=(["636"]="ldap");  # 636 is LDAPS
+
+STARTTLS_PORT_PROTOS+=(["7025"]="lmtp");  # 636 is LDAPS
+
+STARTTLS_PORT_PROTOS+=(["3306"]="mysql");
+
+STARTTLS_PORT_PROTOS+=(["119"]="nntp");
+
+STARTTLS_PORT_PROTOS+=(["110"]="pop3");
+STARTTLS_PORT_PROTOS+=(["995"]="pop3");  # 995 is POP3S
+
+STARTTLS_PORT_PROTOS+=(["5432"]="postgres");
+
+STARTTLS_PORT_PROTOS+=(["4190"]="sieve");
+
+STARTTLS_PORT_PROTOS+=(["4190"]="sieve");
+
+STARTTLS_PORT_PROTOS+=(["25"]="smtp");
+STARTTLS_PORT_PROTOS+=(["465"]="smtp");  # 465 is SMTPS  (implicit TLS)
+STARTTLS_PORT_PROTOS+=(["587"]="smtp");  # 587 is STARTTLS  (explicit TLS)
+STARTTLS_PORT_PROTOS+=(["3535"]="smtp");  # Alternate SMTP protocol
+
+STARTTLS_PORT_PROTOS+=(["5222"]="xmpp");
+STARTTLS_PORT_PROTOS+=(["5223"]="xmpp");  # 5223 is xmpp over SSL
+STARTTLS_PORT_PROTOS+=(["5269"]="xmpp-serve");  # 5269 is (xmpp-serve) Extensible Messaging and Presence Protocol
+STARTTLS_PORT_PROTOS+=(["5280"]="xmpp-serve");  # 5280 is (xmpp-serve) Extensible Messaging and Presence Protocol
+STARTTLS_PORT_PROTOS+=(["5281"]="xmpp-serve");  # 5281 is (xmpp-serve) Extensible Messaging and Presence Protocol
+STARTTLS_PORT_PROTOS+=(["5298"]="xmpp-serve");  # 5298 is (xmpp-serve) Extensible Messaging and Presence Protocol
+
+for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
+	if [ "${EACH_PORT}" == "${HOST_PORT}" ]; then
+		PROTO_STARTTLS="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
+		break;
+	fi;
+done;
+
+
+# ------------------------------------------------------------
 
 echo "";
 echo "SSL/TLS connection test"
@@ -64,6 +129,8 @@ echo "";
 
 # ------------------------------------------------------------
 #	Citation(s)
+#
+#		en.wikipedia.org  |  "List of TCP and UDP port ports numbers - Wikipedia"  |  https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 #
 #		stackoverflow.com  |  "Using openssl to get the certificate from a server"  |  https://stackoverflow.com/a/7886248
 #

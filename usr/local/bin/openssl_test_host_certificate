@@ -161,25 +161,23 @@ done;
 echo "";
 echo "SSL/TLS connection test";
 echo "";
-echo "Target Host: \"${HOST_NAME}\"";
-echo "Target Port: \"${HOST_PORT}\"";
+echo "Target Host:   \"${HOST_NAME}\"";
+echo "Target Port:   \"${HOST_PORT}\"";
 if [ -n "${PROTO_STARTTLS}" ]; then
 	echo "";
-	echo "Protocol Keyword:  \"${PROTO_STARTTLS}\"";
+	echo "Target Proto:  \"${PROTO_STARTTLS}\"";
 fi;
-echo "";
-echo "BEGIN OPENSSL OUTPUT ------------------------------------------------------------";
 if [ -n "${PROTO_STARTTLS}" ]; then
 	echo "";
 	echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" -starttls ${PROTO_STARTTLS}; ] ...";
-	echo "";
 	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS};);
 else
 	echo "";
 	echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";
-	echo "";
 	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
 fi;
+echo "";
+echo "BEGIN OPENSSL OUTPUT ------------------------------------------------------------";
 echo "${CERT_DETAILS}";
 echo "END OF OPENSSL OUTPUT ------------------------------------------------------------";
 echo "";

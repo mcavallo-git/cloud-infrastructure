@@ -9,17 +9,9 @@ HOST_NAME="example.com"; HOST_PORT="443"; openssl s_client -showcerts -servernam
 
 
 fi;
-
-
 # ------------------------------------------------------------
-# Parse additional arguments (passed to current script)
 
-ARGS=("$@");
-ARGS_COUNT=${#ARGS[@]};
-
-ARGS_DEBUG_MODE=0;
-
-# Hostname to-target
+# Target Host (FQDN / IPv4 / etc.)
 HOST_NAME="";
 if [ -n "$1" ]; then
 	HOST_NAME="$1";
@@ -30,7 +22,9 @@ else
 fi;
 
 
-# Port to-target
+#
+# Target Port
+#
 if [ -n "$2" ]; then
 	HOST_PORT="$2";
 else
@@ -40,19 +34,8 @@ else
 	HOST_PORT="443";
 fi;
 
-
-# ------------------------------------------------------------
 #
 # Determine if a STARTTLS request is warranted (based on target port)
-#
-
-#
-# PROTO_STARTTLS="";
-# if [ "${HOST_PORT}" -eq "21" ]; then
-# 	PROTO_STARTTLS="ftp";
-# elif [ "${HOST_PORT}" -eq "25" ] || [ "${HOST_PORT}" -eq "465" ] || [ "${HOST_PORT}" -eq "587" ]; then
-# 	PROTO_STARTTLS="smtp";
-# fi;
 #
 
 unset STARTTLS_PORT_PROTOS; declare -A STARTTLS_PORT_PROTOS; # [Re-]Instantiate bash array
@@ -97,7 +80,7 @@ STARTTLS_PORT_PROTOS+=(["5281"]="xmpp-serve");  # 5281 is (xmpp-serve) Extensibl
 STARTTLS_PORT_PROTOS+=(["5298"]="xmpp-serve");  # 5298 is (xmpp-serve) Extensible Messaging and Presence Protocol
 
 for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
-	if [ "${EACH_PORT}" == "${HOST_PORT}" ]; then
+	if [ "${HOST_PORT}" == "${EACH_PORT}" ]; then
 		PROTO_STARTTLS="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
 		break;
 	fi;
@@ -105,9 +88,60 @@ done;
 
 
 # ------------------------------------------------------------
+# Parse additional arguments (passed to current script)
+
+ARGS=("$@");
+ARGS_COUNT=${#ARGS[@]};
+
+ARGS_DEBUG_MODE=0;
+
+# Walk through any inline-arguments passed to this function
+for (( i=0;i<$ARGS_COUNT;i++ )); do
+
+	EACH_ARG=${ARGS[${i}]};
+
+	# Check if this is the last inline-argument or if there are more to follow
+	if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
+		NEXT_ARG="";
+	else
+		NEXT_ARG=${ARGS[$((${i}+1))]};
+		if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+			NEXT_ARG="";
+		fi;
+	fi;
+
+	if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+
+		# Parse cronjob calls
+		if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
+			PROTO_OVERRIDE="";
+			for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
+				EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
+				if [ "${NEXT_ARG}" == "${EACH_PROTO}" ]; then
+					PROTO_OVERRIDE="${EACH_PROTO}";
+					break;
+				fi;
+			done;
+			if [ -n "${PROTO_OVERRIDE}" ]; then
+				PROTO_STARTTLS="${PROTO_OVERRIDE}";
+			else
+				echo "";
+				echo "Error with \"${EACH_ARG}\" argument - please select a valid starttls protocol";
+				echo "For an exhaustive list of available starttls protocols, run 'man openssl-sclient' and search for '-starttls' (which will list said protocols)";
+				echo "";
+				exit 1;
+			fi;
+		fi;
+
+	fi;
+
+done;
+
+
+# ------------------------------------------------------------
 
 echo "";
-echo "SSL/TLS connection test"
+echo "SSL/TLS connection test";
 echo "";
 echo "Target Host: \"${HOST_NAME}\"";
 echo "Target Port: \"${HOST_PORT}\"";
@@ -128,10 +162,11 @@ echo "";
 
 
 # ------------------------------------------------------------
+#
 #	Citation(s)
 #
-#		en.wikipedia.org  |  "List of TCP and UDP port ports numbers - Wikipedia"  |  https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+#   en.wikipedia.org  |  "List of TCP and UDP port ports numbers - Wikipedia"  |  https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 #
-#		stackoverflow.com  |  "Using openssl to get the certificate from a server"  |  https://stackoverflow.com/a/7886248
+#   stackoverflow.com  |  "Using openssl to get the certificate from a server"  |  https://stackoverflow.com/a/7886248
 #
 # ------------------------------------------------------------

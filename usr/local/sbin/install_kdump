@@ -84,29 +84,9 @@ else
 	echo "------------------------------------------------------------";
 
 
-	# Partition un-partitioned disk(s) && add volumes to empty disks which use their whole disk-space
-	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
-	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do \
-	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
-	EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
-	EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
-	# Create disk partition-tables
-	if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
-		echo "Info:  Partitioning  [  ${EACH_DISK_DEVICE}  ]  as 'msdos'...";
-		parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos';
-	else
-		echo "Info:  Skipping disk-partitioning for device  [  ${EACH_DISK_DEVICE}  ]  (already partitioned as ${EACH_PARTITION_TABLE})"
-	fi;
-	# Create disk volumes
-	EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
-	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
-		echo "Info:  Creating volume  [ ${EACH_DISK_SIZE} ] on device  [  ${EACH_DISK_DEVICE}  ]  w/ using filesystem-type  [ ext4 ]...";
-		parted -s "${EACH_DISK_DEVICE}" mkpart "primary" "ext4" 0 "${EACH_DISK_SIZE}";
-		fdisk -l "${EACH_DISK_DEVICE}";
-	else
-		echo "Info:  Skipping volume-creation for device  [  ${EACH_DISK_DEVICE}  ]  (already contains  [ ${EACH_DISK_VOLUME_COUNT} ]  volume(s))"
-	fi;
-	done; IFS="${ROLLBACK_IFS}";
+	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount un-mounted volume(s)
+	wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/partition_unpartitioned_disks" -O "/usr/local/sbin/partition_unpartitioned_disks" -q && chmod 0755 "/usr/local/sbin/partition_unpartitioned_disks" && /usr/local/sbin/partition_unpartitioned_disks;
+
 
 fi;
 

@@ -103,6 +103,7 @@ else
 	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
 		echo "Info:  Creating volume  [ ${EACH_DISK_SIZE} ] on device  [  ${EACH_DISK_DEVICE}  ]  w/ using filesystem-type  [ ext4 ]...";
 		parted -s "${EACH_DISK_DEVICE}" mkpart "primary" "ext4" 0 "${EACH_DISK_SIZE}";
+		fdisk -l "${EACH_DISK_DEVICE}";
 	else
 		echo "Info:  Skipping volume-creation for device  [  ${EACH_DISK_DEVICE}  ]  (already contains  [ ${EACH_DISK_VOLUME_COUNT} ]  volume(s))"
 	fi;

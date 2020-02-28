@@ -7,7 +7,7 @@
 #
 if [ 0 -eq 1 ]; then
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sysstat" -O "/usr/local/sbin/install_kdump" -q && chmod 0755 "/usr/local/sbin/install_kdump" && /usr/local/sbin/install_kdump;
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_kdump" -O "/usr/local/sbin/install_kdump" -q && chmod 0755 "/usr/local/sbin/install_kdump" && /usr/local/sbin/install_kdump;
 
 fi;
 #
@@ -43,6 +43,10 @@ else
 	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
 		systemctl start ${SERVICE_NAME};
 	fi;
+
+	echo "";
+	echo "  Use command \"df -hT\" to determine log output filesystem's type (under column \"Type\") as well as Filesystem path (under column \"Mounted on\")";
+	echo "";
 
 fi;
 

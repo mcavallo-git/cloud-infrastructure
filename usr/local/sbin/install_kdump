@@ -85,20 +85,24 @@ else
 	echo "------------------------------------------------------------";
 
 
-	# Partition un-partitioned device(s)
+	# Partition un-partitioned disk(s)
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lm 2>&1 | grep -i ^/;); do \
 	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
 	EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
 	EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
 	if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
-	echo "Partitioning  [  ${EACH_DISK_DEVICE}  ]  as 'msdos'...";
-	parted "${EACH_DISK_DEVICE}" mklabel 'msdos';
+		echo "Partitioning  [  ${EACH_DISK_DEVICE}  ]  as 'msdos'...";
+		parted "${EACH_DISK_DEVICE}" mklabel 'msdos';
 	else
-	echo "Skipping device  [  ${EACH_DISK_DEVICE}  ]  (already partitioned as ${EACH_PARTITION_TABLE})"
+		echo "Skipping device  [  ${EACH_DISK_DEVICE}  ]  (already partitioned as ${EACH_PARTITION_TABLE})"
 	fi;
 	done; IFS="${ROLLBACK_IFS}";
 
+
+echo "Partitioning  [  ${EACH_DISK_DEVICE}  ]  as 'msdos' w/ 'primary' partition of size '${EACH_DISK_SIZE}'...";
+	parted "${EACH_DISK_DEVICE}" mklabel 'msdos';
+	mkpart primary 0 1396MB
 
 fi;
 

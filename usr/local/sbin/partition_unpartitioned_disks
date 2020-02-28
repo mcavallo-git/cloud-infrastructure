@@ -36,7 +36,7 @@ else
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 			apt-get -y install nfs-common;
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-			yum -y install nfs-utils;
+			yum -y install nfs-utils cifs-utils samba-client samba-common;
 		fi;
 	fi;
 
@@ -138,6 +138,8 @@ fi;
 #   opensource.com  |  "How to partition a disk in Linux | Opensource.com"  |  https://opensource.com/article/18/6/how-partition-disk-linux
 #
 #   unix.stackexchange.com  |  "mount - Is there a command to see where a disk is mounted? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/34772
+#
+#   unix.stackexchange.com  |  "RHEL 7: mount windows cifs share failed - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/164927
 #
 #   unix.stackexchange.com  |  "ubuntu - mount: wrong fs type, bad option, bad superblock - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/315070
 #

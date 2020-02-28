@@ -61,7 +61,7 @@ else
 	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
 		echo "";
 		READ_TIMEOUT=60;
-		read -p "CONFIRM:  Do you want to create a [ ${EACH_DISK_SIZE} ] volume using (all) of device [ ${EACH_DISK_DEVICE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+		read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
 			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
@@ -85,7 +85,7 @@ else
 		fi;
 		echo "";
 		READ_TIMEOUT=60;
-		read -p "CONFIRM:  Do you want to mount device [ ${EACH_DISK_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ] , now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+		read -p "CONFIRM:  Do you want to mount device [ ${EACH_DISK_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
 			echo "Error:  Response timed out after ${READ_TIMEOUT}s";

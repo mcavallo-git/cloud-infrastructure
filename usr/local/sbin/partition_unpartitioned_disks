@@ -62,9 +62,9 @@ else
 	EACH_DISK_PARTITION_COUNT=$(cat /proc/partitions | grep -v "${EACH_DISK_BASENAME}$" | grep -E "${EACH_DISK_BASENAME}[0-9]+" 2>'/dev/null' | wc -l;);
 	EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
 	echo "";
-	echo "EACH_DISK_DEVICE = [${EACH_DISK_PARTITION_COUNT} ]";
-	echo "EACH_DISK_PARTITION_COUNT = [${EACH_DISK_PARTITION_COUNT} ]";
-	echo "EACH_DISK_VOLUME_COUNT = [${EACH_DISK_VOLUME_COUNT} ]";
+	echo "EACH_DISK_DEVICE = [ ${EACH_DISK_PARTITION_COUNT} ]";
+	echo "EACH_DISK_PARTITION_COUNT = [ ${EACH_DISK_PARTITION_COUNT} ]";
+	echo "EACH_DISK_VOLUME_COUNT = [ ${EACH_DISK_VOLUME_COUNT} ]";
 	echo "";
 	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
 		echo "";

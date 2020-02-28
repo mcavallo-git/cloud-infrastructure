@@ -77,10 +77,10 @@ else
 			if [ ${RETURN_CODE_READ} -gt 128 ]; then
 				echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "Info:  Confirmed - Calling [ mkfs.ext4 \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
-				mkfs.ext4 "${EACH_SUB_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+				echo "Info:  Confirmed - Calling [ mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
+				mkfs "${EACH_SUB_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
 			else
-				echo "Info:  Denied - Skipping call [ mkfs.ext4 \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
+				echo "Info:  Denied - Skipping call [ mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
 			fi;
 		else
 			echo "Info:  Skipping volume-creation for device [ ${EACH_DISK_DEVICE} ] (already contains [ ${EACH_DISK_VOLUME_COUNT} ] volume(s))";

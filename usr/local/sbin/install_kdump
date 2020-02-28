@@ -49,17 +49,17 @@ else
 
 	# Verify that taget service is enabled
 	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" not is enabled (skipping enable-service)";
+		echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
 	else
-		echo "Warning:  Service \"kdump\" not is not enabled --> Enabling it, now...";
+		echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
 		systemctl enable ${SERVICE_NAME};
 	fi;
 
 	# Verify that taget service is active
 	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" not is active (skipping start-service)";
+		echo "Info:  Service \"kdump\" is active (skipping start-service)";
 	else
-		echo "Warning:  Service \"kdump\" not is not active --> Starting it, now...";
+		echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
 		systemctl start ${SERVICE_NAME};
 	fi;
 

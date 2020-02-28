@@ -77,8 +77,8 @@ else
 			if [ ${RETURN_CODE_READ} -gt 128 ]; then
 				echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo "Info:  Confirmed - Calling [ mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
-				mkfs "${EACH_SUB_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+				echo "Info:  Confirmed - Calling [ umount \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
+				umount "${EACH_DISK_DEVICE}"; mkfs "${EACH_SUB_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
 			else
 				echo "Info:  Denied - Skipping call [ mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
 			fi;
@@ -108,6 +108,8 @@ else
 						echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 						echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+						# clear Superblock of disk
+						mdadm --zero-superblock "${EACH_SUB_DEVICE}";
 						mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
 					else
 						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
@@ -138,6 +140,8 @@ fi;
 #   linux.die.net  |  "parted(8): partition change program - Linux man page"  |  https://linux.die.net/man/8/parted
 #
 #   opensource.com  |  "How to partition a disk in Linux | Opensource.com"  |  https://opensource.com/article/18/6/how-partition-disk-linux
+#
+#   serverfault.com  |  "linux - mkfs fails complaining that: "/dev/sdb is apparently in use by the system; will not make a filesystem here" - Server Fault"  |  https://serverfault.com/a/672435
 #
 #   unix.stackexchange.com  |  "mount - Is there a command to see where a disk is mounted? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/34772
 #

@@ -35,6 +35,7 @@ else
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do
 	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
+	EACH_DISK_BASENAME=$(basename "${EACH_DISK_DEVICE}");
 	EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
 	EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
 
@@ -57,7 +58,14 @@ else
 	fi;
 
 	# Add volume(s) to empty disk(s)
+	KERNEL_DISK_PARTITIONS="/proc/partitions";
+	EACH_DISK_PARTITION_COUNT=$(cat /proc/partitions | grep -v "${EACH_DISK_BASENAME}$" | grep -E "${EACH_DISK_BASENAME}[0-9]+" 2>'/dev/null' | wc -l;);
 	EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
+	echo "";
+	echo "EACH_DISK_DEVICE = [${EACH_DISK_PARTITION_COUNT} ]";
+	echo "EACH_DISK_PARTITION_COUNT = [${EACH_DISK_PARTITION_COUNT} ]";
+	echo "EACH_DISK_VOLUME_COUNT = [${EACH_DISK_VOLUME_COUNT} ]";
+	echo "";
 	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
 		echo "";
 		READ_TIMEOUT=60;
@@ -77,7 +85,7 @@ else
 
 	# Mount un-mounted volume(s)
 	KERNEL_DISK_MOUNTS="/proc/mounts";
-	EACH_DISK_MOUNT_POINTS="$(grep "^${EACH_DISK_DEVICE}" "${KERNEL_DISK_MOUNTS}" 2>'/dev/null' | wc -l;)";
+	EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_DISK_DEVICE}" 2>'/dev/null' | wc -l;);
 	if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
 		EACH_NEW_MOUNT="/mnt/$(basename ${EACH_DISK_DEVICE})";
 		if [ -d "${EACH_NEW_MOUNT}" ]; then

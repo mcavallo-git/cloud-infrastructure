@@ -34,6 +34,7 @@ else
 	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount unmounted volume(s)
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do
+		echo "------------------------------------------------------------";
 		EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
 		EACH_DISK_BASENAME=$(basename "${EACH_DISK_DEVICE}");
 		EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);

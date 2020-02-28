@@ -3,8 +3,13 @@
 # LOCAL_SBIN="/usr/local/sbin/partition_unpartitioned_disks" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-#
-# test -v SUDO_USER && partition_unpartitioned_disks --user $SUDO_USER --allow;
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/partition_unpartitioned_disks" -O "/usr/local/sbin/partition_unpartitioned_disks" -q && chmod 0755 "/usr/local/sbin/partition_unpartitioned_disks" && /usr/local/sbin/partition_unpartitioned_disks;
+
+
+fi;
 #
 # ------------------------------------------------------------
 #

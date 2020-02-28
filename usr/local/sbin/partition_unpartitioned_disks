@@ -78,7 +78,7 @@ else
 				echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 				echo "Info:  Confirmed - Calling [ umount \"${EACH_DISK_DEVICE}\" 2>/dev/null; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
-				umount "${EACH_DISK_DEVICE}" 2>/dev/null; mkfs "${EACH_SUB_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+				umount "${EACH_DISK_DEVICE}" 2>/dev/null; mkfs "${EACH_DISK_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
 			else
 				echo "Info:  Denied - Skipping call [ mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
 			fi;

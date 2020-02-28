@@ -77,12 +77,9 @@ else
 		fi;
 
 		# Mount un-mounted volume(s)
-		KERNEL_DISK_PARTITIONS="/proc/partitions";
 		KERNEL_DISK_MOUNTS="/proc/mounts";
-
-		EACH_DISK_BASENAME="/dev/sda";
+		KERNEL_DISK_PARTITIONS="/proc/partitions";
 		EACH_DISK_PARTITIONS="$(sfdisk -l | grep "^${EACH_DISK_DEVICE}" | grep -v Empty$ | awk '{print $1}';)";
-
 		for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
 			EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
 			if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then

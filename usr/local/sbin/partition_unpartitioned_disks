@@ -108,9 +108,9 @@ else
 					if [ ${RETURN_CODE_READ} -gt 128 ]; then
 						echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-						echo "Info:  Confirmed - Calling [ umount -f \"${EACH_SUB_DEVICE}\" 2>/dev/null; mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+						echo "Info:  Confirmed - Calling [ umount -f \"${EACH_SUB_DEVICE}\" 2>/dev/null; fsck -a \"${EACH_SUB_DEVICE}\"; mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
 						# clear Superblock of disk
-						umount -f "${EACH_SUB_DEVICE}" 2>/dev/null; mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+						umount -f "${EACH_SUB_DEVICE}" 2>/dev/null; fsck -a "${EACH_SUB_DEVICE}"; mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
 					else
 						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
 					fi;

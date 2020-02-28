@@ -1511,10 +1511,14 @@ else
 			# ------------------------------------------------------------
 			# Cleanup log files outside of the retention-policy's max-age
 			# ------------------------------------------------------------
-			DIRECTORY_TO_CLEAN="${LOGDIR}/";
-			MAX_RETENTION_DAYS=3;
-			if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
-				find ${DIRECTORY_TO_CLEAN} -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
+			if [ -z "${LOGDIR}" ]; then
+				LOGDIR="/var/log/sync_cloud_infrastructure";
+			fi;
+			if [ "${LOGDIR}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${LOGDIR}" == "/var/log/sync_cloud_infrastructure" ]; then
+				if [ -d "${LOGDIR}" ]; then
+					echo -e "\n""Info:  Cleaning logs older than 3 days old from directory \"${${LOGDIR}}\"";
+					find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
+				fi;
 			fi;
 
 		fi;

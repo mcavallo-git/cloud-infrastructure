@@ -44,17 +44,19 @@ else
 		systemctl start ${SERVICE_NAME};
 	fi;
 
+	echo "------------------------------------------------------------";
 	echo "";
-	echo "  Use command \"fdisk -l | grep sectors | grep '^Disk';\" to view attached devices/disks (including unmounted disks)";
+	echo "  Use command \"fdisk -l;\" as well as \"sfdisk -l;\" to show attached disks (including unmounted disks)";
 	echo "";
-
+	echo "------------------------------------------------------------";
 	echo "";
-	echo "  Use command \"ls -al '/dev/disk/by-uuid';\" to obtain the UUID identifier for a given attached disk (including unmounted disks)";
+	echo "  Use command \"ls -al '/dev/disk/by-uuid';\" to obtain the UUID identifiers for a given all attached disks (shows ONLY mounted disks)";
 	echo "";
-
+	echo "------------------------------------------------------------";
 	echo "";
 	echo "  Use command \"df -hT;\" to determine filesystem-type (under column \"Type\") as well as filesystem-path (under column \"Mounted on\")";
 	echo "";
+	echo "------------------------------------------------------------";
 
 fi;
 

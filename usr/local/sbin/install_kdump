@@ -85,7 +85,7 @@ else
 	echo "------------------------------------------------------------";
 
 
-	# Partition un-partitioned disk(s)
+	# Partition un-partitioned disk(s) && add volumes to empty disks which use their whole disk-space
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do \
 	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);

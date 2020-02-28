@@ -31,6 +31,15 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
+	# Install helper package(s)
+	if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
+		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+			apt-get -y install nfs-common;
+		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+			yum -y install nfs-utils;
+		fi;
+	fi;
+
 	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount unmounted volume(s)
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do

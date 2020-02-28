@@ -81,26 +81,29 @@ else
 		KERNEL_DISK_PARTITIONS="/proc/partitions";
 		EACH_DISK_PARTITIONS="$(sfdisk -l | grep "^${EACH_DISK_DEVICE}" | grep -v Empty$ | awk '{print $1}';)";
 		for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
-			EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
-			if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
-				EACH_NEW_MOUNT="/mnt/$(basename ${EACH_SUB_DEVICE})";
-				if [ -d "${EACH_NEW_MOUNT}" ]; then
-					EACH_NEW_MOUNT="${EACH_NEW_MOUNT}_$(date +'%s')";
-				fi;
-				echo "";
-				READ_TIMEOUT=60;
-				read -p "CONFIRM:  Do you want to mount [ ${EACH_SUB_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-				echo "";
-				if [ ${RETURN_CODE_READ} -gt 128 ]; then
-					echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-				elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-					echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
-					mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+			EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>/dev/null | grep "^${EACH_SUB_DEVICE} " 2>/dev/null | wc -l);
+ 			if [ ${EACH_CHILD_DEPENDENCY_COUNT} -eq 0 ]; then
+				EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
+				if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
+					EACH_NEW_MOUNT="/mnt/$(basename ${EACH_SUB_DEVICE})";
+					if [ -d "${EACH_NEW_MOUNT}" ]; then
+						EACH_NEW_MOUNT="${EACH_NEW_MOUNT}_$(date +'%s')";
+					fi;
+					echo "";
+					READ_TIMEOUT=60;
+					read -p "CONFIRM:  Do you want to mount [ ${EACH_SUB_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+					echo "";
+					if [ ${RETURN_CODE_READ} -gt 128 ]; then
+						echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+						echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+						mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+					else
+						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
+					fi;
 				else
-					echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
+					echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
 				fi;
-			else
-				echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
 			fi;
 		done;
 

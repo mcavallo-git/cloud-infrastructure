@@ -26,21 +26,36 @@ else
 	#
 	SERVICE_NAME="kdump";
 
-	if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
-		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-			apt-get -y install linux-crashdump;
-		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-			yum -y install kexec-tools;
+	#	Search for one, specific service
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	echo "------------------------------------------------------------";
+	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service FOUND locally
+		echo "";
+		echo "Info:  Service \"kdump\" found to exist locally (skipping package-install)";
+		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
+	else # Service NOT found locally
+		echo "";
+		echo "Error:  Service \"${SERVICE_NAME}\" not found locally";
+		echo "";
+		echo "Info:  Attempting to install the \"kdump\" package (for kernel crash dump logging) ...";
+		if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
+			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+				apt-get -y install linux-crashdump;
+			elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+				yum -y install kexec-tools;
+			fi;
 		fi;
 	fi;
 
 	# Verify that taget service is enabled
 	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
+		echo "Error:  Service \"kdump\" not is not enabled --> Enabling it, now...";
 		systemctl enable ${SERVICE_NAME};
 	fi;
 
 	# Verify that taget service is active
 	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
+		echo "Error:  Service \"kdump\" not is not active --> Starting it, now...";
 		systemctl start ${SERVICE_NAME};
 	fi;
 

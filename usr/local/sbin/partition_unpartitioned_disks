@@ -31,7 +31,7 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Partition un-partitioned disk(s) && add volumes to empty disks which use their whole disk-space
+	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount unmounted volume(s)
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do \
 	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
@@ -54,6 +54,16 @@ else
 		echo "Info:  Skipping volume-creation for device  [  ${EACH_DISK_DEVICE}  ]  (already contains  [ ${EACH_DISK_VOLUME_COUNT} ]  volume(s))"
 	fi;
 	done; IFS="${ROLLBACK_IFS}";
+	# Mount un-mounted disks
+	KERNEL_DISK_MOUNTS="/proc/mounts";
+	EACH_DISK_MOUNT_POINTS="$(grep "^${EACH_DISK_DEVICE}" "${KERNEL_DISK_MOUNTS}" 2>'/dev/null' | wc -l;)";
+	if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
+		echo "Info:  Creating volume  [ ${EACH_DISK_SIZE} ] on device  [  ${EACH_DISK_DEVICE}  ]  w/ using filesystem-type  [ ext4 ]...";
+
+	else
+		echo "Info:  Skipping disk-mounting for device  [  ${EACH_DISK_DEVICE}  ]  (already mounted @  [ ${EACH_DISK_MOUNT_POINTS} ]  location(s))"
+	fi;
+	done; IFS="${ROLLBACK_IFS}";
 
 fi;
 
@@ -69,5 +79,7 @@ fi;
 #   linux.die.net  |  "parted(8): partition change program - Linux man page"  |  https://linux.die.net/man/8/parted
 #
 #   opensource.com  |  "How to partition a disk in Linux | Opensource.com"  |  https://opensource.com/article/18/6/how-partition-disk-linux
+#
+#   unix.stackexchange.com  |  "mount - Is there a command to see where a disk is mounted? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/34772
 #
 # ------------------------------------------------------------

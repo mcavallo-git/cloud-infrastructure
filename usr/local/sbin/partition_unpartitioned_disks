@@ -90,7 +90,7 @@ else
 		KERNEL_DISK_MOUNTS="/proc/mounts";
 		KERNEL_DISK_PARTITIONS="/proc/partitions";
 		# EACH_DISK_PARTITIONS="$(sfdisk -l | grep "^${EACH_DISK_DEVICE}" | grep -v Empty$ | awk '{print $1}';)";
-		EACH_DISK_PARTITIONS="$(lsblk -p -n -o KNAME,TYPE,MOUNTPOINT | grep 'part $' | awk '{print $1}';)";
+		EACH_DISK_PARTITIONS=$(lsblk -p -n -o KNAME,TYPE,MOUNTPOINT | grep 'part $' | awk '{print $1}';);
 		ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 		for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
 			EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>/dev/null | grep "^${EACH_SUB_DEVICE} " 2>/dev/null | wc -l);

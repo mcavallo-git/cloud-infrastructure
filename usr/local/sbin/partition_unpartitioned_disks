@@ -99,7 +99,7 @@ else
 						echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 						echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
-						mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+						mkdir -p "${EACH_NEW_MOUNT}"; mount -t ext4 "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
 					else
 						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
 					fi;

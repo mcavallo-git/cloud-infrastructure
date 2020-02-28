@@ -53,7 +53,6 @@ else
 	else
 		echo "Info:  Skipping volume-creation for device  [  ${EACH_DISK_DEVICE}  ]  (already contains  [ ${EACH_DISK_VOLUME_COUNT} ]  volume(s))";
 	fi;
-	done; IFS="${ROLLBACK_IFS}";
 	# Mount un-mounted volume(s)
 	KERNEL_DISK_MOUNTS="/proc/mounts";
 	EACH_DISK_MOUNT_POINTS="$(grep "^${EACH_DISK_DEVICE}" "${KERNEL_DISK_MOUNTS}" 2>'/dev/null' | wc -l;)";

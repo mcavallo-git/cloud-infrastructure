@@ -104,6 +104,8 @@ else
 				else
 					echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
 				fi;
+			else
+				echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (has [ ${EACH_CHILD_DEPENDENCY_COUNT} ] child-nodes(s))";
 			fi;
 		done;
 

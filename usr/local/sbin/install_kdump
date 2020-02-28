@@ -65,17 +65,41 @@ else
 
 	echo "------------------------------------------------------------";
 	echo "";
-	echo "  Show attached disks via  \"parted -l;\"  or  \"fdisk -l;\"";
+	echo "  Show attached disks via  [  parted -l;  ]  or  [  fdisk -l;  ]";
+	echo "";
 	echo "";
 	echo "------------------------------------------------------------";
 	echo "";
-	echo "  Show filesystems' local-paths, filesystem-types, disk-allocations/usage, and mount-points via  \"df -hT;\"";
+	echo "  Show mounted filesystems' local-paths, filesystem-types, disk-allocations/usage, and mount-points via  [  df -hT;  ]";
 	echo "";
 	echo "------------------------------------------------------------";
 	echo "";
-	echo "  Show disk mount identifiers in UUID format via  \"ls -al '/dev/disk/by-uuid';\"";
+	echo "  Show unmounted filesystems via  [  parted -lm 2>&1 | grep -i ^/ | grep unknown;  ]";
+	echo "   |";
+	echo "   |-->  For un-partitioned disks (disks with no label), create a new partition table (WIPES DISK CONTENTS) via  [  parted DISK_NAME mklabel 'gpt';  ]  or  [  parted DISK_NAME mklabel 'msdos';  ]"; 
 	echo "";
 	echo "------------------------------------------------------------";
+	echo "";
+	echo "  Show disk mount identifiers in UUID format via  [  ls -al '/dev/disk/by-uuid';  ]";
+	echo "";
+	echo "------------------------------------------------------------";
+
+
+	# Partition un-partitioned device(s)
+	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
+	for EACH_LINE in $(parted -lm 2>&1 | grep -i ^/;); do \
+	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
+	EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
+	EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
+	if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
+	echo "Partitioning  [  ${EACH_DISK_DEVICE}  ]  as 'msdos'...";
+	parted "${EACH_DISK_DEVICE}" mklabel 'msdos';
+	else
+	echo "Skipping device  [  ${EACH_DISK_DEVICE}  ]  (already partitioned as ${EACH_PARTITION_TABLE})"
+	fi;
+	done; IFS="${ROLLBACK_IFS}";
+
+
 
 fi;
 
@@ -87,5 +111,7 @@ fi;
 #   access.redhat.com  |  "Chapter 7. Kernel crash dump guide Red Hat Enterprise Linux 7 | Red Hat Customer Portal"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/kernel_administration_guide/kernel_crash_dump_guide
 #
 #   help.ubuntu.com  |  "Kernel Crash Dump"  |  https://help.ubuntu.com/lts/serverguide/kernel-crash-dump.html
+#
+#   linux.die.net  |  "parted(8): partition change program - Linux man page"  |  https://linux.die.net/man/8/parted
 #
 # ------------------------------------------------------------

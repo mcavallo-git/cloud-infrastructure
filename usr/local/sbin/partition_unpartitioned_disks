@@ -34,80 +34,79 @@ else
 	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount unmounted volume(s)
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do
-	EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
-	EACH_DISK_BASENAME=$(basename "${EACH_DISK_DEVICE}");
-	EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
-	EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
+		EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
+		EACH_DISK_BASENAME=$(basename "${EACH_DISK_DEVICE}");
+		EACH_DISK_SIZE=$(echo "${EACH_LINE}" | cut -d':' -f2;);
+		EACH_PARTITION_TABLE=$(echo "${EACH_LINE}" | cut -d':' -f6;);
 
-	# Partition un-partitioned disk(s)
-	if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
-		echo "";
-		READ_TIMEOUT=60;
-		read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		echo "";
-		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo "Info:  Confirmed - Calling [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ] ...";
-			parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos';
+		# Partition un-partitioned disk(s)
+		if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
+			echo "";
+			READ_TIMEOUT=60;
+			read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+			echo "";
+			if [ ${RETURN_CODE_READ} -gt 128 ]; then
+				echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+				echo "Info:  Confirmed - Calling [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ] ...";
+				parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos';
+			else
+				echo "Info:  Denied - Skipping call [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ]";
+			fi;
 		else
-			echo "Info:  Denied - Skipping call [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ]";
+			echo "Info:  Skipping disk-partitioning for device [ ${EACH_DISK_DEVICE} ] (already partitioned as ${EACH_PARTITION_TABLE})";
 		fi;
-	else
-		echo "Info:  Skipping disk-partitioning for device [ ${EACH_DISK_DEVICE} ] (already partitioned as ${EACH_PARTITION_TABLE})";
-	fi;
 
-	# Add volume(s) to empty disk(s)
-	KERNEL_DISK_PARTITIONS="/proc/partitions";
-	EACH_DISK_PARTITIONS="$(cat /proc/partitions | grep -v "${EACH_DISK_BASENAME}$" | grep -E "${EACH_DISK_BASENAME}[0-9]+";)";
-	EACH_DISK_PARTITION_COUNT=$(cat /proc/partitions | grep -v "${EACH_DISK_BASENAME}$" | grep -E "${EACH_DISK_BASENAME}[0-9]+" 2>'/dev/null' | wc -l;);
-	EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
-	echo "";
-	echo "EACH_DISK_DEVICE = [ ${EACH_DISK_PARTITION_COUNT} ]";
-	echo "EACH_DISK_PARTITIONS = [ ${EACH_DISK_PARTITIONS} ]";
-	echo "EACH_DISK_PARTITION_COUNT = [ ${EACH_DISK_PARTITION_COUNT} ]";
-	echo "EACH_DISK_VOLUME_COUNT = [ ${EACH_DISK_VOLUME_COUNT} ]";
-	echo "";
-	if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
-		echo "";
-		READ_TIMEOUT=60;
-		read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		echo "";
-		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo "Info:  Confirmed - Calling [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
-			parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+		# Add volume(s) to empty disk(s)
+		EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
+		if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
+			echo "";
+			READ_TIMEOUT=60;
+			read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+			echo "";
+			if [ ${RETURN_CODE_READ} -gt 128 ]; then
+				echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+				echo "Info:  Confirmed - Calling [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
+				parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+			else
+				echo "Info:  Denied - Skipping call [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
+			fi;
 		else
-			echo "Info:  Denied - Skipping call [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
+			echo "Info:  Skipping volume-creation for device [ ${EACH_DISK_DEVICE} ] (already contains [ ${EACH_DISK_VOLUME_COUNT} ] volume(s))";
 		fi;
-	else
-		echo "Info:  Skipping volume-creation for device [ ${EACH_DISK_DEVICE} ] (already contains [ ${EACH_DISK_VOLUME_COUNT} ] volume(s))";
-	fi;
 
-	# Mount un-mounted volume(s)
-	KERNEL_DISK_MOUNTS="/proc/mounts";
-	EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_DISK_DEVICE}" 2>'/dev/null' | wc -l;);
-	if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
-		EACH_NEW_MOUNT="/mnt/$(basename ${EACH_DISK_DEVICE})";
-		if [ -d "${EACH_NEW_MOUNT}" ]; then
-			EACH_NEW_MOUNT="${EACH_NEW_MOUNT}_$(date +'%s')";
-		fi;
-		echo "";
-		READ_TIMEOUT=60;
-		read -p "CONFIRM:  Do you want to mount device [ ${EACH_DISK_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		echo "";
-		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_DISK_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
-			mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_DISK_DEVICE}" "${EACH_NEW_MOUNT}";
-		else
-			echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_DISK_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
-		fi;
-	else
-		echo "Info:  Skipping disk-mounting for device [ ${EACH_DISK_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
-	fi;
+		# Mount un-mounted volume(s)
+		KERNEL_DISK_PARTITIONS="/proc/partitions";
+		KERNEL_DISK_MOUNTS="/proc/mounts";
+
+		EACH_DISK_BASENAME="/dev/sda";
+		EACH_DISK_PARTITIONS="$(sfdisk -l | grep "^${EACH_DISK_DEVICE}" | grep -v Empty$ | awk '{print $1}';)";
+
+		for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
+			EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
+			if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
+				EACH_NEW_MOUNT="/mnt/$(basename ${EACH_SUB_DEVICE})";
+				if [ -d "${EACH_NEW_MOUNT}" ]; then
+					EACH_NEW_MOUNT="${EACH_NEW_MOUNT}_$(date +'%s')";
+				fi;
+				echo "";
+				READ_TIMEOUT=60;
+				read -p "CONFIRM:  Do you want to mount [ ${EACH_SUB_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+				echo "";
+				if [ ${RETURN_CODE_READ} -gt 128 ]; then
+					echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+				elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+					echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+					mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+				else
+					echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
+				fi;
+			else
+				echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
+			fi;
+		done;
+
 	done; IFS="${ROLLBACK_IFS}";
 
 fi;

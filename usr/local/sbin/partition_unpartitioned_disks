@@ -107,10 +107,10 @@ else
 					if [ ${RETURN_CODE_READ} -gt 128 ]; then
 						echo "Error:  Response timed out after ${READ_TIMEOUT}s";
 					elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-						echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
-						mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+						echo "Info:  Confirmed - Calling [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+						mkdir -p "${EACH_NEW_MOUNT}"; mount "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
 					else
-						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
+						echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
 					fi;
 				else
 					echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";

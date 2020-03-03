@@ -62,31 +62,31 @@ else
 		systemctl start ${SERVICE_NAME};
 	fi;
 
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "  Show attached disks via  [  parted -l;  ]  or  [  fdisk -l;  ]";
-	echo "";
-	echo "";
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "  Show mounted filesystems' local-paths, filesystem-types, disk-allocations/usage, and mount-points via  [  df -hT;  ]";
-	echo "";
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "  Show unmounted filesystems via  [  parted -lm 2>&1 | grep -i ^/ | grep unknown;  ]";
-	echo "   |";
-	echo "   |-->  For un-partitioned disks (disks with no label), create a new partition table (WIPES DISK CONTENTS) via  [  parted DISK_NAME mklabel 'gpt';  ]  or  [  parted DISK_NAME mklabel 'msdos';  ]"; 
-	echo "";
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "  Show disk mount identifiers in UUID format via  [  ls -al '/dev/disk/by-uuid';  ]";
-	echo "";
-	echo "------------------------------------------------------------";
+	if [ -f "/etc/sysctl.conf" ]; then
+		# Enable fallback/backup crash logging via the built-in "sadump" mechanism (in-case any unexpected issues arise with kdump down the road)
+		if [ $(grep '^kernel.panic=0' '/etc/sysctl.conf' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Let user knos config was already setup correctly
+			echo "Info:  Skipping Update 1/2 for config file \"/etc/sysctl.conf\" as it already contains \"kernel.panic=0\" (calls fallback mechanism 'sadump' in case kdump happens to go missing during a kernel panic)";
+		else
+			# Remove lines containing "kernel.panic" in the config file
+			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^kernel.panic/c\ " "/etc/sysctl.conf";
+			# Remove whitespace-only (empty) lines
+			sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/sysctl.conf";
+			# Add the kernel.panic directive to the config file as-intended
+			echo "kernel.panic=0" >> "/etc/sysctl.conf";
+		fi;
+		if [ $(grep '^kernel.unknown_nmi_panic=1' '/etc/sysctl.conf' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Let user knos config was already setup correctly
+			echo "Info:  Skipping Update 2/2 for config file \"/etc/sysctl.conf\" as it already contains \"kernel.unknown_nmi_panic=1\"";
+		else
+			# Remove lines containing "kernel.panic" in the config file
+			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^kernel.unknown_nmi_panic/c\ " "/etc/sysctl.conf";
+			# Remove whitespace-only (empty) lines
+			sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/sysctl.conf";
+			# Add the kernel.panic directive to the config file as-intended
+			echo "kernel.unknown_nmi_panic=1" >> "/etc/sysctl.conf";
+		fi;
 
-
-	# Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount un-mounted volume(s)
-	if [ 0 -eq 1 ]; then
-		wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/partition_unpartitioned_disks" -O "/usr/local/sbin/partition_unpartitioned_disks" -q && chmod 0755 "/usr/local/sbin/partition_unpartitioned_disks" && /usr/local/sbin/partition_unpartitioned_disks;
 	fi;
 
 fi;

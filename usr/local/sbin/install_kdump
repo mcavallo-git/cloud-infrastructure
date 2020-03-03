@@ -64,17 +64,47 @@ else
 
 	if [ -f "/etc/default/grub" ]; then
 		#
-		# Enabling settings at-bootup (via Grub2)
+		# Enabling Grub2's "crashkernel" setting
 		#
 		if [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=auto' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 			# Let user know config was already setup correctly
-			echo "Info:  Skipping update for config file \"/etc/default/grub\" as it already contains ' GRUB_CMDLINE_LINUX=\"... crashkernel=auto ...\" ' ";
+			echo "Info:  Skipping update for config file \"/etc/default/grub\" as it already contains 'GRUB_CMDLINE_LINUX=\"... crashkernel=auto ...\"' ";
 		elif [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
-			# Separate crashkernel config - replace it with auto
+			# crashkernel already configured - replace it with auto
 			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".*)crashkernel=[a-zA-Z0-9:,:@\-]+(.*\")\$/\1crashkernel=auto\2/" "/etc/default/grub";
 		else
 			# Add inline argument "... crashkernel=auto ..." to grub startup options
 			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".+)\"\$/\1 crashkernel=auto\"/" "/etc/default/grub";
+		fi;
+
+		#
+		# Enabling KDump's "path" setting
+		#
+		if [ $(cat '/etc/kdump.conf' | grep '^path /var/crash' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Let user know config was already setup correctly
+			echo "Info:  Skipping update for config file \"/etc/kdump.conf\" as it already contains 'path /var/crash' ";
+		elif [ $(cat '/etc/kdump.conf' | grep '^path' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# crashkernel already configured - replace it with /var/crash
+			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re '/^#?path/d' "/etc/kdump.conf";
+			echo "path /var/crash" > "/etc/kdump.conf";
+		else
+			# Add inline argument "... crashkernel=auto ..." to grub startup options
+			echo "path /var/crash" > "/etc/kdump.conf";
+		fi;
+
+		#
+		# Enabling KDump's "default" setting
+		#
+		if [ $(cat '/etc/kdump.conf' | grep '^default dump_to_rootfs' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Let user know config was already setup correctly
+			echo "Info:  Skipping update for config file \"/etc/kdump.conf\" as it already contains 'default dump_to_rootfs' ";
+		elif [ $(cat '/etc/kdump.conf' | grep '^default' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# crashkernel already configured - replace it with dump_to_rootfs
+			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re '/^#?default/d' "/etc/kdump.conf";
+			echo "default dump_to_rootfs" > "/etc/kdump.conf";
+		else
+			# Add inline argument "... crashkernel=auto ..." to grub startup options
+			echo "default dump_to_rootfs" > "/etc/kdump.conf";
 		fi;
 
 	fi;

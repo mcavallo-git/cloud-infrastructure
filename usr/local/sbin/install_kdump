@@ -64,7 +64,7 @@ else
 
 	if [ -f "/etc/default/grub" ]; then
 		#
-		# Enabling fadump for fallback/backup crash logging in-case any unexpected issues arise with kdump down the road
+		# Enabling settings at-bootup (via Grub2)
 		#
 		if [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=auto' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 			# Let user know config was already setup correctly
@@ -72,22 +72,15 @@ else
 		elif [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 			# Separate crashkernel config - replace it with auto
 			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".*)crashkernel=[a-zA-Z0-9:,:@\-]+(.*\")\$/\1crashkernel=auto\2/" "/etc/default/grub";
-
 		else
 			# Add inline argument "... crashkernel=auto ..." to grub startup options
 			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".+)\"\$/\1 crashkernel=auto\"/" "/etc/default/grub";
-
-			# Remove whitespace-only (empty) lines
-			# sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/default/grub";
-			# Add the kernel.panic directive to the config file as-intended
-			# echo "kernel.panic=0" >> "/etc/default/grub";
 		fi;
 
 	fi;
 
 fi;
 
-# GRUB_CMDLINE_LINUX="console=tty1 console=ttyS0 crashkernel=auto earlyprintk=ttyS0 rootdelay=300"
 
 # ------------------------------------------------------------
 #

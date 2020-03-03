@@ -62,35 +62,32 @@ else
 		systemctl start ${SERVICE_NAME};
 	fi;
 
-	if [ -f "/etc/sysctl.conf" ]; then
-		# Enable fallback/backup crash logging via the built-in "sadump" mechanism (in-case any unexpected issues arise with kdump down the road)
-		if [ $(grep '^kernel.panic=0' '/etc/sysctl.conf' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
-			# Let user knos config was already setup correctly
-			echo "Info:  Skipping Update 1/2 for config file \"/etc/sysctl.conf\" as it already contains \"kernel.panic=0\" (calls fallback mechanism 'sadump' in case kdump happens to go missing during a kernel panic)";
+	if [ -f "/etc/default/grub" ]; then
+		#
+		# Enabling fadump for fallback/backup crash logging in-case any unexpected issues arise with kdump down the road
+		#
+		if [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=auto' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Let user know config was already setup correctly
+			echo "Info:  Skipping update for config file \"/etc/default/grub\" as it already contains ' GRUB_CMDLINE_LINUX=\"... crashkernel=auto ...\" ' ";
+		elif [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+			# Separate crashkernel config - tell user to set it to auto
+			echo "ERROR - PLEASE REPLACE ' GRUB_CMDLINE_LINUX=\"... crashkernel=... ...\" '  WITH  ' GRUB_CMDLINE_LINUX=\"... crashkernel=auto ...\" '";
+			
 		else
 			# Remove lines containing "kernel.panic" in the config file
-			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^kernel.panic/c\ " "/etc/sysctl.conf";
+			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^GRUB_CMDLINE_LINUX=\"(.+)\"\$/c\GRUB_CMDLINE_LINUX=\"\$1 crashkernel=auto\"" "/etc/default/grub";
+
 			# Remove whitespace-only (empty) lines
-			sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/sysctl.conf";
+			# sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/default/grub";
 			# Add the kernel.panic directive to the config file as-intended
-			echo "kernel.panic=0" >> "/etc/sysctl.conf";
-		fi;
-		if [ $(grep '^kernel.unknown_nmi_panic=1' '/etc/sysctl.conf' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
-			# Let user knos config was already setup correctly
-			echo "Info:  Skipping Update 2/2 for config file \"/etc/sysctl.conf\" as it already contains \"kernel.unknown_nmi_panic=1\"";
-		else
-			# Remove lines containing "kernel.panic" in the config file
-			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^kernel.unknown_nmi_panic/c\ " "/etc/sysctl.conf";
-			# Remove whitespace-only (empty) lines
-			sed_remove_whitespace_lines='/^\s*$/d'; sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "${sed_remove_whitespace_lines}" "/etc/sysctl.conf";
-			# Add the kernel.panic directive to the config file as-intended
-			echo "kernel.unknown_nmi_panic=1" >> "/etc/sysctl.conf";
+			# echo "kernel.panic=0" >> "/etc/default/grub";
 		fi;
 
 	fi;
 
 fi;
 
+# GRUB_CMDLINE_LINUX="console=tty1 console=ttyS0 crashkernel=auto earlyprintk=ttyS0 rootdelay=300"
 
 # ------------------------------------------------------------
 #

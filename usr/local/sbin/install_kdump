@@ -46,21 +46,6 @@ else
 		fi;
 	fi;
 
-	# Verify that taget service is enabled
-	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
-	else
-		echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
-		systemctl enable ${SERVICE_NAME};
-	fi;
-
-	# Verify that taget service is active
-	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" is active (skipping start-service)";
-	else
-		echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
-		systemctl start ${SERVICE_NAME};
-	fi;
 
 	if [ -f "/etc/default/grub" ]; then
 		#
@@ -76,7 +61,10 @@ else
 			# Add inline argument "... crashkernel=auto ..." to grub startup options
 			sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".+)\"\$/\1 crashkernel=auto\"/" "/etc/default/grub";
 		fi;
+	fi;
 
+
+	if [ -f "/etc/kdump.conf" ]; then
 		#
 		# Enabling KDump's "path" setting
 		#
@@ -106,8 +94,25 @@ else
 			# Add inline argument "... crashkernel=auto ..." to grub startup options
 			echo "default dump_to_rootfs" > "/etc/kdump.conf";
 		fi;
-
 	fi;
+
+	
+	# Verify that taget service is enabled
+	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
+		echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
+	else
+		echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
+		systemctl enable ${SERVICE_NAME};
+	fi;
+
+	# Verify that taget service is active
+	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
+		echo "Info:  Service \"kdump\" is active (skipping start-service)";
+	else
+		echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
+		systemctl start ${SERVICE_NAME};
+	fi;
+
 
 fi;
 

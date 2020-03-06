@@ -3,9 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/certbot_add_wildcard" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
 DN="mcavallo.com"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${DL}/certbot_add_wildcard" -q; chmod 0755 "${DL}/certbot_add_wildcard"; ${DL}/certbot_add_wildcard "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
 

@@ -3,6 +3,12 @@
 # LOCAL_SBIN="/usr/local/sbin/install_7z" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z" -O "/usr/local/sbin/install_7z" -q && chmod 0755 "/usr/local/sbin/install_7z" && /usr/local/sbin/install_7z;
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #

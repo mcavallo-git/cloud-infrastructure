@@ -3,9 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_nginx" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
 wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx" -O "/usr/local/sbin/install_nginx" -q && chmod 0755 "/usr/local/sbin/install_nginx" && /usr/local/sbin/install_nginx;
 

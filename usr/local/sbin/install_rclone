@@ -48,11 +48,14 @@ else
 	echo "List s3 bucket-files (via rclone):";
 	echo "   \"rclone ls SERVER_ALIAS:BUCKET_NAME\"";
 	echo "";
-	echo "Sync a bucket to another (via rclone):";
-	echo "   \"rclone sync SERVER_ALIAS_1:BUCKET_NAME SERVER_ALIAS_2:BUCKET_NAME\"";
+	echo "Sync one bucket to another (via rclone):";
+	echo "   \"rclone sync SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME\"";
 	echo "";
 	echo "Sync recent items (<=2 days old) from one s3 bucket to another (via rclone):";
-	echo "   \"rclone sync -vv --max-age 2d SERVER_ALIAS_1:BUCKET_NAME SERVER_ALIAS_2:BUCKET_NAME\"";
+	echo "   \"rclone sync -vv --max-age 2d SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME\"";
+	echo "";
+	echo "Run a background job to sync one bucket to another (via rclone):";
+	echo "   \"nohup rclone sync -vv SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.log 2>&1 &\"";
 	echo "";
 
 fi;

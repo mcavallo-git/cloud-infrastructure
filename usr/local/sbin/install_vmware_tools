@@ -1,19 +1,29 @@
 #!/bin/bash
 
-yum -y check-update;
-yum -y install open-vm-tools;
+# Install VMware Tools
+if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
+	# Command IS found locally
+	echo "";
+	echo "Package already installed:  VMware Tools v$(vmware-toolbox-cmd -v)";
+else
+	# Command NOT found locally
+	yum -y check-update;
+	yum -y install open-vm-tools;
+	echo "";
+	echo "Installed package:  VMware Tools v$(vmware-toolbox-cmd -v)";
+	echo "  |";
+	echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
+	echo "";
+	echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  Reboot required to finish installing VMWare-Tools";
+	read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+	echo "";
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		reboot now;
+	fi;
+fi;
 
 ### Once-installed, manually run:
-# echo "To use VMware Tools, manually run   [ /usr/bin/vmware-user ]";
 
-
-echo "";
-echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  Reboot required to finish installing VMWare-Tools";
-read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
-echo "";
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-	reboot now;
-fi;
 
 # ------------------------------------------------------------
 #

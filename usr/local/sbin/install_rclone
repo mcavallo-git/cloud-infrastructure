@@ -42,19 +42,22 @@ else
 	echo "Edit rclone config directly:";
 	echo "   \"vi ~/.config/rclone/rclone.conf\"";
 	echo "";
-	echo "List s3 buckets (via rclone):";
+	echo "List s3 buckets:";
 	echo "   \"rclone lsd SERVER_ALIAS:\"";
 	echo "";
-	echo "List s3 bucket-files (via rclone):";
+	echo "List s3 bucket-files:";
 	echo "   \"rclone ls SERVER_ALIAS:BUCKET_NAME\"";
 	echo "";
-	echo "Sync one bucket to another (via rclone):";
+	echo "Print the total size and number of objects in s3 bucket:";
+	echo "   \"rclone size SERVER_ALIAS:BUCKET_NAME\"";
+	echo "";
+	echo "Sync one bucket to another:";
 	echo "   \"rclone sync SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME\"";
 	echo "";
-	echo "Sync recent items (<=2 days old) from one s3 bucket to another (via rclone):";
+	echo "Sync recent items (<=2 days old) from one s3 bucket to another:";
 	echo "   \"rclone sync -vv --max-age 2d SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME\"";
 	echo "";
-	echo "Run a background job to sync one bucket to another (via rclone):";
+	echo "Run a background job to sync one bucket to another:";
 	echo "   \"nohup rclone sync -vv SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.log 2>&1 &\"";
 	echo "";
 
@@ -67,5 +70,7 @@ fi;
 #   docs.min.nio  |  "MinIO | Rclone with MinIO Server- Cookbook/Recipe"  |  https://docs.minio.io/docs/rclone-with-minio-server
 # 
 #   rclone.org  |  "rclone - rsync for cloud storage"  |  https://rclone.org/
+# 
+#   rclone.org  |  "rclone size"  |  https://rclone.org/commands/rclone_size/
 # 
 # ------------------------------------------------------------

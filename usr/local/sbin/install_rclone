@@ -58,7 +58,7 @@ else
 	echo "  >  rclone sync -vv --max-age 2d SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME";
 	echo "";
 	echo "Run a background job to sync one bucket to another (limiting to 40 MBps, which is 320 Mbps):";
-	echo "  >  nohup rclone sync -vv --bwlimit 40M SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.log 2>&1 &";
+	echo "  >  nohup rclone sync -vv --bwlimit 40M SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.$(date +'%Y%m%d_%H%M%S').log 2>&1 &";
 	echo "";
 
 fi;

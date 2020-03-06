@@ -1,42 +1,70 @@
 #!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_vmware_tools" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_vmware_tools" -O "/usr/local/sbin/install_vmware_tools" -q && chmod 0755 "/usr/local/sbin/install_vmware_tools" && /usr/local/sbin/install_vmware_tools;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
 EXIT_CODE=0;
-
-# Install VMware Tools
-if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
-	# Command IS found locally
-	echo "Info:  Package already installed - VMware Tools v$(vmware-toolbox-cmd -v)";
-else
-	# Command NOT found locally
+if [ "$(id -un)" != "root" ]; then
 	echo "";
-	echo "Info:  Installing VMware Tools package \"open-vm-tools\"";
-	yum -y check-update;
-	yum -y install open-vm-tools;
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	EXIT_CODE=1;
+else
+	# ------------------------------------------------------------
+	# Install VMware Tools
 	if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
-		echo "";
-		echo "Info:  Successfully installed VMware Tools v$(vmware-toolbox-cmd -v)";
-		echo "  |";
-		echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
-		echo "";
-		echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  System reboot is required to apply change(s)";
-		read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 -r;
-		echo "";
-		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			reboot now;
-		fi;
+		# Command IS found locally
+		echo "Info:  Package already installed - VMware Tools v$(vmware-toolbox-cmd -v)";
 	else
-		echo "Error during installation of VMware tools, exiting...";
-		EXIT_CODE=1;
+		# Command NOT found locally
+		echo "";
+		echo "Info:  Installing VMware Tools package \"open-vm-tools\"";
+		yum -y check-update;
+		yum -y install open-vm-tools;
+		if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
+			echo "";
+			echo "Info:  Successfully installed VMware Tools v$(vmware-toolbox-cmd -v)";
+			echo "  |";
+			echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
+			echo "";
+			echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  System reboot is required to apply change(s)";
+			read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+			echo "";
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				reboot now;
+			fi;
+		else
+			echo "Error during installation of VMware tools, exiting...";
+			EXIT_CODE=1;
+		fi;
 	fi;
+
 fi;
 
 exit ${EXIT_CODE};
 
 
 # ------------------------------------------------------------
-#
 # Citation(s)
-#
+# 
 #   shellhacks.com  |  "HowTo: Install VMware Tools on CentOS/RHEL"  |  https://www.shellhacks.com/install-vmware-tools-centos-rhel/
-#
+# 
 # ------------------------------------------------------------

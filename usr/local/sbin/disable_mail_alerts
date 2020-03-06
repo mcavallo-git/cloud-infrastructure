@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/disable_mail_alerts" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_mail_alerts" -O "/usr/local/sbin/disable_mail_alerts" -q && chmod 0755 "/usr/local/sbin/disable_mail_alerts" && /usr/local/sbin/disable_mail_alerts;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	#
+	# Bash - Disable  "You have mail in ..."  &&   "You have new mail in /var/spool/mail/..."  alerts
+	#
+	if [ $(sed -rne 's/^MAIL=""$/\0/p' '/etc/profile' | wc -l 2>'/dev/null';) -eq 0 ]; then
+		if [ $(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\0/p' '/etc/profile' | wc -l 2>'/dev/null';) -gt 0 ]; then
+			BENCHMARK_START=$(date +'%s.%N');
+			echo -e "\n""Info:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
+			sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
+			sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
+			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+		fi;
+	fi;
+
+fi;
+
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   docs.min.io  |  "MinIO Admin Complete Guide"  |  https://docs.min.io/docs/minio-admin-complete-guide.html
+#
+#   docs.min.io  |  "MinIO Server Config Guide"  |  https://docs.min.io/docs/minio-server-configuration-guide.html
+#
+#   docs.min.io  |  "MinIO | Learn how to secure access to MinIO server with TLS"  |  https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html
+#
+#   www.civo.com  |  "Create a multi-user MinIO server as a private S3 compatible object host - Civo.com"  |  https://www.civo.com/learn/create-a-multi-user-minio-server-for-s3-compatible-object-hosting
+#
+#   www.digitalocean.com  |  "How to Set Up an Object Storage Server Using Minio on Ubuntu 16.04 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-set-up-an-object-storage-server-using-minio-on-ubuntu-16-04
+#
+# ------------------------------------------------------------

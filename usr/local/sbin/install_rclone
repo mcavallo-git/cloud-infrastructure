@@ -31,6 +31,30 @@ else
 	wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z" -O "/usr/local/sbin/install_7z" -q && chmod 0755 "/usr/local/sbin/install_7z" && /usr/local/sbin/install_7z;
 
 	curl "https://rclone.org/install.sh" | bash;
+	
+	echo "";
+	echo "View rclone s3 storage server (minio) setup/usage guide:";
+	echo "   \"https://docs.minio.io/docs/rclone-with-minio-server\"";
+	echo "";
+	echo "Edit rclone config (add/edit server connections, etc.):";
+	echo "   \"rclone config\"";
+	echo "";
+	echo "List s3 buckets (via rclone):";
+	echo "   \"rclone lsd SERVER_ALIAS:\"";
+	echo "";
+	echo "List s3 bucket-files (via rclone):";
+	echo "   \"rclone ls SERVER_ALIAS:BUCKET_NAME\"";
+	echo "";
+	echo "Sync a bucket to another (via rclone):";
+	echo "   \"rclone sync SERVER_ALIAS_1:BUCKET_NAME SERVER_ALIAS_2:BUCKET_NAME\"";
+	echo "";
+	echo "Sync recent items (<=2 days old) from one s3 bucket to another (via rclone):";
+	echo "   \"rclone sync -vv --max-age 2d SERVER_ALIAS_1:BUCKET_NAME SERVER_ALIAS_2:BUCKET_NAME\"";
+	echo "";
+
+LIST FILES : rclone ls SERVER_ALIAS:BUCKET_NAME
+
+SYNC TWO BUCKETS:  rclone sync SERVER_ALIAS_1:BUCKET_NAME SERVER_ALIAS_2:BUCKET_NAME
 
 fi;
 

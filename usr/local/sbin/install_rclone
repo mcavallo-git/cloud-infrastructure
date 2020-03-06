@@ -28,6 +28,8 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 
+	wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z" -O "/usr/local/sbin/install_7z" -q && chmod 0755 "/usr/local/sbin/install_7z" && /usr/local/sbin/install_7z;
+
 	curl "https://rclone.org/install.sh" | bash;
 
 fi;

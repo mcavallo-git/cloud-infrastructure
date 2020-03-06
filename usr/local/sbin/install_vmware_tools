@@ -3,7 +3,6 @@
 # Install VMware Tools
 if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
 	# Command IS found locally
-	echo "";
 	echo "Package already installed:  VMware Tools v$(vmware-toolbox-cmd -v)";
 else
 	# Command NOT found locally

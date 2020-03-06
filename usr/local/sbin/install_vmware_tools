@@ -3,13 +3,14 @@
 # Install VMware Tools
 if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
 	# Command IS found locally
-	echo "Package already installed:  VMware Tools v$(vmware-toolbox-cmd -v)";
+	echo "Info:  Package already installed:  VMware Tools v$(vmware-toolbox-cmd -v)";
 else
 	# Command NOT found locally
+	echo "Info:  Installing VMware Tools package \"open-vm-tools\"";
 	yum -y check-update;
 	yum -y install open-vm-tools;
 	echo "";
-	echo "Installed package:  VMware Tools v$(vmware-toolbox-cmd -v)";
+	echo "Info:  Installed package:  VMware Tools v$(vmware-toolbox-cmd -v)";
 	echo "  |";
 	echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
 	echo "";

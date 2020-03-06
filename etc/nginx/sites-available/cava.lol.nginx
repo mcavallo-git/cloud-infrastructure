@@ -16,7 +16,7 @@ server {
 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
 	location / {
 		if ($http_user_agent ~* "^curl") {
-			return 302 https://sync.mcavallo.com;  # curl -ssL centos.sh | bash
+			return 302 https://sync.mcavallo.com;  # curl -ssL https://cava.lol | bash -s -- --all;
 		}
 		if ($http_user_agent !~* "^curl") {
 			return 302 https://${subdomain}mcavallo.com${request_uri};

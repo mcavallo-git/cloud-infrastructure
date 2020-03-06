@@ -163,9 +163,7 @@ server {
 	# ------------------------------------------------------------
 	# ### Sync Bash Modules  (Linux/Shellscripts)
 	#
-	#   curl -ssL centos.sh | bash
-	#
-	#   curl -ssL "https://sync.mcavallo.com/$(date +'%s%N').sh" -H 'Cache-Control: no-store, no-cache, must-revalidate' | sudo bash;
+	#   curl -ssL https://mcavallo.com | bash -s -- --all;
 	#
 	#                ~* [case-insensitive regex]
 	if ($request_uri ~* "^/sh$") {

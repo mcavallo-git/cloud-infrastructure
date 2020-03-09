@@ -1516,7 +1516,7 @@ else
 			fi;
 			if [ "${LOGDIR}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${LOGDIR}" == "/var/log/sync_cloud_infrastructure" ]; then
 				if [ -d "${LOGDIR}" ]; then
-					echo -e "\n""Info:  Cleaning logs older than 3 days old from directory \"${${LOGDIR}}\"";
+					echo -e "\n""Info:  Cleaning logs older than 3 days old from directory \"${LOGDIR}\"";
 					find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
 				fi;
 			fi;

@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/reload_httpd" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	#
+	# Reload Httpd (Apache/Aapache2) service
+	#
+
+	SERVICE_NAME="httpd";
+
+	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+
+	if [ ${SERVICE_RET_CODE} -eq 1 ]; then
+		# Service NOT found to exist locally
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+
+	else
+
+		if [ ${SERVICE_RET_CODE} -ne 0 ]; then
+			if [ -f "/etc/init.d/apache2" ]; then
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Reloading it, now...";
+				/etc/init.d/apache2 reload
+			else
+				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Aparche reload file \"/etc/init.d/apache2\" not found";
+			fi;
+		fi;
+
+	fi;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "apache2 - How to reload apache configuration for a site without restarting apache - Stack Overflow"  |  https://stackoverflow.com/a/8270181
+#
+# ------------------------------------------------------------

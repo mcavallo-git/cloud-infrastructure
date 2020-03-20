@@ -3260,3 +3260,48 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="INFRA"] > td
 textarea.setting-input {
 	max-height: 125px !important;
 }
+
+/* Artifacts - Hide the "View" button from any artifacts attached to Jenkins jobs */
+table.fileList tr td a:nth-child(n+2),
+table.fileList tr th a:nth-child(n+2)
+{
+	display: none !important;
+}
+
+/* Artifacts - Scaling/sizing/bordering (for simplified viewing/accessibility) */
+table.fileList {
+	margin-top: 10px !important;
+	border-collapse: collapse !important;
+}
+table.fileList td,
+table.fileList th
+{
+	border: 1px dotted #333333 !important;
+	padding: 10px !important;
+}
+a[href="artifact/"] {
+	font-weight: 700 !important;
+}
+
+/* Global Layouts - Add dividers and spacing between dissimilar elements (example: "Workspace" "Last Succcessful Artifacts" and "Recent Changes") */
+div#main-panel > table
+{
+	border-collapse: collapse !important;
+}
+div#main-panel > table tr td,
+div#main-panel > table tr th
+{
+	border-top: 1px dotted #333333 !important;
+	border-bottom: 1px dotted #333333 !important;
+	padding: 10px !important;
+}
+
+/* Edit Description - Remove the button from the regular (NON-configuration) project page view */
+#description-link {
+	display: none !important;
+}
+
+/* Disable Project - Remove the button from the regular (NON-configuration) project page view */
+#disable-project {
+	display: none !important;
+}

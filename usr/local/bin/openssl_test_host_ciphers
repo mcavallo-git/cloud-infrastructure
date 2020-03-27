@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then  # Install sslscan
+if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then # Install package "sslscan"
 	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 		apt-get -y update; apt-get -y install sslscan;
 	fi;
 fi;
 
-if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then  # Install sslscan
+if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then
 	echo "";
 	echo "  Please retry this script on a Debian-based Linux distro (Debian, Ubuntu, Raspbian, etc.)";
 	echo "";

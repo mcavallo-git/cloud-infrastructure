@@ -1,37 +1,53 @@
 #!/usr/bin/env bash
 
-# OpenSSL requires the port number
-SERVER="";
-if [ -z "$1" ]; then
-	echo "";
-	read -p "HTTP host to test: " -t 60 -r;
-	SERVER="${REPLY}";
-else
-	SERVER="$1";
-fi;
-DELAY=1;
-
-sslscan "${SERVER}";
-
-exit;
-
-ciphers=$(openssl ciphers 'ALL:eNULL' | sed -e 's/:/ /g');
-echo "Obtaining cipher list from $(openssl version)...";
-
-for cipher in ${ciphers[@]}
-do
-echo -n Testing $cipher...
-result=$(echo -n | openssl s_client -cipher "$cipher" -connect $SERVER 2>&1)
-if [[ "$result" =~ ":error:" ]] ; then
-	error=$(echo -n $result | cut -d':' -f6);
-	echo NO \($error\);
-else
-	if [[ "$result" =~ "Cipher is ${cipher}" || "$result" =~ "Cipher    :" ]] ; then
-		echo "YES";
-	else
-		echo "UNKNOWN RESPONSE";
-		echo $result;
+if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then  # Install sslscan
+	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+		apt-get -y update; apt-get -y install sslscan;
 	fi;
 fi;
-sleep $DELAY;
-done;
+
+if [ $(which sslscan 2>'/dev/null' | wc -l;) -eq 0 ]; then  # Install sslscan
+	echo "";
+	echo "  Please retry this script on a Debian-based Linux distro (Debian, Ubuntu, Raspbian, etc.)";
+	echo "";
+	echo "  Requierd package not found: \"sslscan\"";
+	echo "  Exiting...";
+	exit 1;
+else
+	# OpenSSL requires the port number
+	SERVER="";
+	if [ -z "$1" ]; then
+		echo "";
+		read -p "HTTP host to test: " -t 60 -r;
+		SERVER="${REPLY}";
+	else
+		SERVER="$1";
+	fi;
+	DELAY=1;
+
+	sslscan "${SERVER}";
+
+	exit;
+
+	ciphers=$(openssl ciphers 'ALL:eNULL' | sed -e 's/:/ /g');
+	echo "Obtaining cipher list from $(openssl version)...";
+
+	for cipher in ${ciphers[@]}
+	do
+	echo -n Testing $cipher...
+	result=$(echo -n | openssl s_client -cipher "$cipher" -connect $SERVER 2>&1)
+	if [[ "$result" =~ ":error:" ]] ; then
+		error=$(echo -n $result | cut -d':' -f6);
+		echo NO \($error\);
+	else
+		if [[ "$result" =~ "Cipher is ${cipher}" || "$result" =~ "Cipher    :" ]] ; then
+			echo "YES";
+		else
+			echo "UNKNOWN RESPONSE";
+			echo $result;
+		fi;
+	fi;
+	sleep $DELAY;
+	done;
+
+fi;

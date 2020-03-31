@@ -8,8 +8,9 @@ if [ 0 -eq 1 ]; then
 # Example Call
 #
 
-USER_NAME="example_user"; USER_GNAME="example_user"; USER_UID="1200"; USER_GID="1200"; ADD_USER_TO_SUDOERS="1"; \
-if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user" -O "/usr/local/sbin/add_user" -q; chmod 0755 "/usr/local/sbin/add_user"; env USER_NAME="${USER_NAME}" USER_GNAME="${USER_GNAME}" USER_UID="${USER_UID}" USER_GID="${USER_GID}" ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS}" "/usr/local/sbin/add_user";
+if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user" -O "/usr/local/sbin/add_user" -q; chmod 0755 "/usr/local/sbin/add_user"; \
+env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" "/usr/local/sbin/add_user";
+
 
 
 fi;

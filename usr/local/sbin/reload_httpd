@@ -30,23 +30,21 @@ else
 
 	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 
-	if [ ${SERVICE_RET_CODE} -eq 1 ]; then
+	if [ ${SERVICE_RET_CODE} -ne 0 ]; then
 		# Service NOT found to exist locally
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
 	else
-
-		if [ ${SERVICE_RET_CODE} -ne 0 ]; then
-			if [ -f "/etc/init.d/apache2" ]; then
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
-				/etc/init.d/apache2 reload;
-			elif [ -n "$(which httpd 2>'/dev/null';)" ]; then
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
-				httpd -t && httpd -k restart;
-			else
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
-			fi;
+		# Service EXISTS locally
+		if [ -f "/etc/init.d/apache2" ]; then
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
+			/etc/init.d/apache2 reload;
+		elif [ -n "$(which httpd 2>'/dev/null';)" ]; then
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
+			httpd -t && httpd -k restart;
+		else
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
+			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
 		fi;
 
 	fi;

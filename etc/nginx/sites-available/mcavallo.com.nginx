@@ -5,7 +5,7 @@
 # 
 # map "$hostname:$request_uri" $redirect_action {
 # 	default 0;
-# 	"~*mcavallo.com:meta$" meta;  # ~* [case-insensitive regex]
+# 	"~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
 # }
 # 
 # 
@@ -33,192 +33,209 @@ server {
 
 
 	# ------------------------------------------------------------
-	#                    ~ [case-sensitive regex]
+	#                    ~ [regex match, case-sensitive]
 	if ($redirect_action ~ "^meta$") {
 		return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/cashapp$") {
-		return 301 "https://cash.me/mcavallo";
+		return 302 "https://cash.me/mcavallo";
 	}
 	if ($subdomain ~* "^cashapp.$") {
-		return 301 "https://cash.me/mcavallo";
+		return 302 "https://cash.me/mcavallo";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/cloud-infrastructure$") {
-		return 301 "https://github.com/mcavallo-git/cloud-infrastructure";
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
 	}
 	if ($subdomain ~* "^cloud-infrastructure.$") {
-		return 301 "https://github.com/mcavallo-git/cloud-infrastructure";
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/cv$") {
-		return 301 "https://linkedin.mcavallo.com";
+		return 302 "https://linkedin.mcavallo.com";
 	}
 	if ($subdomain ~* "^cv.$") {
-		return 301 "https://linkedin.mcavallo.com";
+		return 302 "https://linkedin.mcavallo.com";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/git$") {
-		return 301 "https://github.com/mcavallo-git/repositories";
+		return 302 "https://github.com/mcavallo-git/repositories";
 	}
 	if ($subdomain ~* "^git.$") {
-		return 301 "https://github.com/mcavallo-git/repositories";
+		return 302 "https://github.com/mcavallo-git/repositories";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/good-credit$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
 	}
 	if ($subdomain ~* "^good-credit.$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/linkedin$") {
-		return 301 "https://linkedin.com/in/matt-cavallo";
+		return 302 "https://linkedin.com/in/matt-cavallo";
 	}
 	if ($subdomain ~* "^linkedin.$") {
-		return 301 "https://linkedin.com/in/matt-cavallo";
+		return 302 "https://linkedin.com/in/matt-cavallo";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/linux$") {
-		return 301 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
 	}
 	if ($subdomain ~* "^linux.$") {
-		return 301 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/paypal$") {
-		return 301 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}
 	if ($subdomain ~* "^paypal.$") {
-		return 301 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/pc$") {
-		return 301 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
+		return 302 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
 	}
 	if ($subdomain ~* "^pc.$") {
-		return 301 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
+		return 302 "https://pcpartpicker.com/user/cavalol/saved/7Q2Mcf";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/resume$") {
-		return 301 "https://cv.mcavallo.com";
+		return 302 "https://cv.mcavallo.com";
 	}
 	if ($subdomain ~* "^resume.$") {
-		return 301 "https://cv.mcavallo.com";
+		return 302 "https://cv.mcavallo.com";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/repos$") {
-		return 301 "https://github.com/mcavallo-git/repositories";
+		return 302 "https://github.com/mcavallo-git/repositories";
 		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
 	}
 	if ($subdomain ~* "^repos.$") {
-		return 301 "https://github.com/mcavallo-git/repositories";
+		return 302 "https://github.com/mcavallo-git/repositories";
 	}
 
 
 	# ------------------------------------------------------------
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/venmo$") {
-		return 301 "https://venmo.com/cavalol";
+		return 302 "https://venmo.com/cavalol";
 	}
 	if ($subdomain ~* "^venmo.$") {
-		return 301 "https://venmo.com/cavalol";
+		return 302 "https://venmo.com/cavalol";
 	}
 
 
 	# ------------------------------------------------------------
-	# ### Sync Bash Modules  (Linux/Shellscripts)
+	# Shellscript Requests (commonly Linux-based bash scripts)
 	#
 	#   curl -ssL https://mcavallo.com | bash -s -- --all;
 	#
-	#                ~* [case-insensitive regex]
+	#                ~* [regex match, case-insensitive]
 	if ($request_uri ~* "^/sh$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 	if ($subdomain ~* "^sh.$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 	if ($request_uri ~* "^/sync$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 	if ($subdomain ~* "^sync.$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 
 
 	# ------------------------------------------------------------
-	# ### Sync PowerShell Modules
+	# PowerShell Script/Module Requests (commonly Windows-based powershell scripts, i.e. not intended to be used in a [ PowerShell Core for Linux ] environment)
 	#
 	#   [System.Net.ServicePointManager]::SecurityProtocol=[System.Net.SecurityProtocolType]'Tls11,Tls12'; Clear-DnsClientCache; Set-ExecutionPolicy "RemoteSigned" -Scope "CurrentUser" -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ps.mcavallo.com'));
 	#
 	#   [System.Net.ServicePointManager]::SecurityProtocol=[System.Net.SecurityProtocolType]'Tls11,Tls12'; Clear-DnsClientCache; Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -Force -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://ps.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}";
 	#
-	#                ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
+	location ~* "^/codesign$" {
+		if ($subdomain ~* "^ps.$") { # PowerShell code signing (nginx catch 1-of-2)
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+		}
+	}
+	#        ~* [regex match, case-insensitive]
+	location ~* "^/ps$" {
+		if ($subdomain ~* "^codesign.$") { # PowerShell code signing (nginx catch 2-of-2)
+			return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+		}
+	}
+	# Fallthrough PowerShell script/module requests
 	if ($request_uri ~* "^/ps$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 	if ($subdomain ~* "^ps.$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 	if ($request_uri ~* "^/sync-ps$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 	if ($subdomain ~* "^sync-ps.$") {
-		return 301 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
-	}
-
-	if ($request_uri ~* "^/$") {
-		return 301 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
-	}
-
-	if ($subdomain ~* "^$") {
-		return 301 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 
 
 	# ------------------------------------------------------------
-	#              ~* [case-insensitive regex]
+	# Fallthrough Request Handler
+	#  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
+	#
+	#                ~* [regex match, case-insensitive]
+	if ($request_uri ~* "^/$") {
+		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+	}
+	if ($subdomain ~* "^$") {
+		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+	}
+
+
+	# ------------------------------------------------------------
+	#              ~* [regex match, case-insensitive]
 	# if ($subdomain ~* "^cv.$") {
 	# 	root /var/www/html/wordpress; # webroot
 	# 	index index.php;
 	# 	location / {
 	# 		try_files $uri $uri/ /index.php?$args;
 	# 	}
-	#		         ~* [case-insensitive regex]
+	#		         ~* [regex match, case-insensitive]
 	# 	location ~* \.php$ { #  *.php requests
 	# 		try_files $uri $uri/ /index.php?$args;
 	# 		fastcgi_read_timeout 120;

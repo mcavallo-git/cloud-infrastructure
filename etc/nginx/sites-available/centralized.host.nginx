@@ -93,7 +93,7 @@ server {
 	}
 
 	# Github Web-Hook Trigger (Jenkins-Job)
-	#        ~ [case-sensitive regex]
+	#        ~ [regex match, case-sensitive]
 	location ~ ^/(generic-webhook-trigger/invoke|safeRestart) {
 		access_log "/var/log/nginx/jenkins-verbose.log" api;
 		access_log "/var/log/nginx/webhook.log" thin;
@@ -112,32 +112,32 @@ server {
 		try_files $uri =404;
 	}
 
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/headshot.svg {
 		return 302 https://$host/images/svg/headshot.png;
 	}
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/headshot.png {
 		return 302 https://$host/images/svg/headshot.png;
 	}
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/title.svg {
 		return 302 https://$host/images/svg/title.png;
 	}
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/title.png {
 		return 302 https://$host/images/svg/title.png;
 	}
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/jenkins.svg {
 		return 302 https://$host/images/svg/jenkins.ron-burgundy.svg;
 	}
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^.*/images/jenkins.png {
 		return 302 https://$host/images/svg/jenkins.ron-burgundy.png;
 	}
 
-	#        ~* [case-insensitive regex]
+	#        ~* [regex match, case-insensitive]
 	location ~* ^/(safe)?restart {
 		return 302 https://$host/safeRestart;
 	}

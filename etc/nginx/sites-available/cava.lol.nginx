@@ -15,7 +15,7 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/cava.lol/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/cava.lol/chain.pem";
 	location / {
-		#                    ~* [case-insensitive regex]
+		#                    ~* [regex match, case-insensitive]
 		if ($http_user_agent ~* "^curl") {
 			return 302 https://sync.mcavallo.com;  # curl -ssL https://cava.lol | bash -s -- --all;
 		}

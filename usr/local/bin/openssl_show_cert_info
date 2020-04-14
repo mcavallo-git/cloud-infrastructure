@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+#   OpenSSL - Display Certificate Info
+#
+# ------------------------------------------------------------
+
+if [ -z "$1" ] || [ ! -f "$1" ]; then
+	echo -e "\n\n";
+	echo "First argument (\$1) must contain the filepath of the certificate to show information-of";
+	echo -e "\n\n";
+	exit 1;
+else
+	openssl x509 -in "${1}" -text -noout;
+fi;
+
+
+# ------------------------------------------------------------
+#	Citation(s)
+#
+#		www.sslshopper.com  |  "The Most Common OpenSSL Commands"  |  https://www.sslshopper.com/article-most-common-openssl-commands.html
+#
+# ------------------------------------------------------------

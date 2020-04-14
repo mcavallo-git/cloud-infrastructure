@@ -86,6 +86,11 @@ Each_RAM_Alloc=$(vcgencmd get_mem $EachComponent | sed --regexp-extended --quiet
 list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
 done;
 # list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
+# ------------------------------------------------------------
+
+list_logfile_info="";
+list_logfile_info="logfile (min)   =  \"${MinTemp_LogFile}\"\n";
+list_logfile_info="logfile (max)   =  \"${MaxTemp_LogFile}\"\n";
 
 # ------------------------------------------------------------
 
@@ -119,7 +124,8 @@ list_all="${list_all}${list_temperature}\n\n------------------------------------
 list_all="${list_all}${list_throttled}\n\n------------------------------------------------------------\n\n";
 list_all="${list_all}${list_voltages}\n\n------------------------------------------------------------\n\n";
 list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------";
+list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------\n\n";
+list_all="${list_all}${list_logfile_info}\n\n------------------------------------------------------------";
 
 # ------------------------------------------------------------
 

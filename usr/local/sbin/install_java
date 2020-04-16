@@ -31,7 +31,7 @@ else
 		PACKAGE_NAME_DEV="java-1.8.0-openjdk-devel";
 		echo "";
 		echo "";
-		echo "  !! Info:  Do you also want to add the developement kit? (java-1.8.0-openjdk-devel)";
+		echo "  !! Info:  Do you also want to install the Java Developer's Kit (java-1.8.0-openjdk-devel) during your java install?  (timeout will CONFIRM the install for java-1.8.0-openjdk-devel)";
 		echo "";
 		echo "      > Package Name?  java-1.8.0-openjdk-devel";
 		echo "";
@@ -39,6 +39,18 @@ else
 		echo "";
 		read -p "  Press 'y' to accept and install package... " -n 1 -t 60 -r;
 		echo "";
+		READ_TIMEOUT=60;
+		read -p "Perform action [ xyz ], now? (y/n)  " -n 1 -t ${READ_TIMEOUT} -r; RETURN_CODE_READ=$?;
+		echo "";
+		if [ ${RETURN_CODE_READ} -gt 128 ]; then
+			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+			yum -y check-update; yum -y install "${PACKAGE_NAME_DEV}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+			echo "Info:  Confirmed - Performing package install, now...";
+			yum -y check-update; yum -y install "${PACKAGE_NAME_DEV}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+		else
+			echo "Info:  Denied - Skipping action [ xyz ]";
+		fi;
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
 			yum -y check-update; yum -y install "${PACKAGE_NAME_DEV}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		fi;

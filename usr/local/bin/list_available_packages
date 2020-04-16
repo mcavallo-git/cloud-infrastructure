@@ -4,22 +4,25 @@
 #
 # ------------------------------------------------------------
 
-if [ -n "$(which yum 2>'/dev/null';)" ]; then
-
-	if [ -n "$1" ]; then
+if [ -n "$1" ]; then
+	if [ -n "$(which yum 2>'/dev/null';)" ]; then
 		yum list available | grep -i "$1";
-
+	elif [ -n "$(which apt 2>'/dev/null';)" ]; then
+		apt-cache search "$1" | grep "$1";
 	else
 		echo "";
-		echo "Info:  Syntax for querying available packages (in Fedora-based OS'es):";
-		echo "";
-		echo "  Ex)      yum list available | grep -i 'openjdk';";
+		if [ -n "$(which yum 2>'/dev/null';)" ]; then
+			echo -e "  Info:  Syntax for querying available packages in Fedora-based OS'es:\n";
+			echo "  Ex)      yum list available | grep -i 'openjdk';";
+		elif [ -n "$(which apt 2>'/dev/null';)" ]; then
+			echo -e " Info:  Syntax for querying available packages in Debian-basedecho ""; OS'es):\n";
+			echo "  Ex)      apt-cache search '$1' | grep '$1';";
+		fi;
 		echo "";
 
 	fi;
 
 elif [ -n "$(which apt 2>'/dev/null';)" ]; then
-	apt list --upgradable;
 
 fi;
 

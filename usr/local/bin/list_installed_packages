@@ -24,9 +24,11 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
 			RET_CODE=0;
 		fi;
 	else
-		# If no arguments were passed to this function, then list all installed packages (without x86_64 / noarch extension after each)
-		PACKAGES_REMOVED_X86X64_NOARCH=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
-		echo "${PACKAGES_REMOVED_X86X64_NOARCH}";
+		if [ -n "$(which yum 2>'/dev/null';)" ]; then #
+			# If this is a Fedora-based OS, list all installed packages without x86_64 & noarch extension after each
+			INSTALLED_PACKAGES=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
+		fi;
+		echo "${INSTALLED_PACKAGES}";
 		RET_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above
 	fi;
 else

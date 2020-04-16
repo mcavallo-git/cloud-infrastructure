@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/jenkins_diag_info" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+
+
+
+
+
+
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "jvm - Command to find out -Xms and -Xmx variable values for a given java process? - Stack Overflow"  |  https://stackoverflow.com/a/27961336
+#
+#   stackoverflow.com  |  "linux - com.sun.tools.attach.AttachNotSupportedException: Unable to open socket file: target process not responding or HotSpot VM not loaded - Stack Overflow"  |  https://stackoverflow.com/a/51507597
+#
+# ------------------------------------------------------------

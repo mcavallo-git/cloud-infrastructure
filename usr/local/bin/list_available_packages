@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/list_available_packages" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+if [ -n "$(which yum 2>'/dev/null';)" ]; then
+
+	if [ -n "$1" ]; then
+		yum list available | grep -i "$1";
+
+	else
+		echo "";
+		echo "Info:  Syntax for querying available packages (in Fedora-based OS'es):";
+		echo " |";
+		echo " |-->  yum list available | grep -i 'openjdk';";
+		echo "";
+
+	fi;
+
+elif [ -n "$(which apt 2>'/dev/null';)" ]; then
+	apt list --upgradable;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   access.redhat.com  |  "8.2.2. Listing Packages Red Hat Enterprise Linux 6 | Red Hat Customer Portal"  |  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/deployment_guide/sec-listing_packages
+#
+# ------------------------------------------------------------

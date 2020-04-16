@@ -29,17 +29,18 @@ else
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 		PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME_DEV}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		PACKAGE_NAME_DEV="java-1.8.0-openjdk-devel";
+		READ_TIMEOUT=60;
 		echo "";
 		echo "";
-		echo "  !! Info:  Do you also want to install the Java Developer's Kit (java-1.8.0-openjdk-devel) during your java install?  (timeout will CONFIRM the install for java-1.8.0-openjdk-devel)";
+		echo "  !! Info:  Do you also want to install the Java Developer's Kit (${PACKAGE_NAME_DEV}) during your java install?  (timeout will CONFIRM the install after ${READ_TIMEOUT}s)";
 		echo "";
-		echo "      > Package Name?  java-1.8.0-openjdk-devel";
+		echo "      > Package Name:  ${PACKAGE_NAME_DEV}";
 		echo "";
-		echo "      > Feature(s) Added?   >> jcmd  <<";
+		echo "      > Feature(s) Added:   >> jcmd  <<";
+		echo "";
 		echo "";
 		read -p "  Press 'y' to accept and install package... " -n 1 -t 60 -r;
 		echo "";
-		READ_TIMEOUT=60;
 		read -p "Perform action [ xyz ], now? (y/n)  " -n 1 -t ${READ_TIMEOUT} -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then

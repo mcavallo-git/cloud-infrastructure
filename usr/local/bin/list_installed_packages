@@ -4,36 +4,42 @@
 #
 # ------------------------------------------------------------
 
-if [ -n "$(which yum 2>'/dev/null';)" ]; then
+if [ -n "$(which apt 2>'/dev/null';)" ]; then # 
+	INSTALLED_PACKAGES="$(apt list --installed;)";
+elif [ -n "$(which yum 2>'/dev/null';)" ]; then #
+	INSTALLED_PACKAGES="$(yum list installed;)";
+fi;
 
-	RET_CODE=1; # Default to error-ing out (return code of 1)
-
+if [ -n "${INSTALLED_PACKAGES}" ]; then
 	if [ $# -gt 0 ]; then
 		# Determine if argument $1 (if given) exists/is-installed as a local package
-		CHECK_FOR_LOCAL_PKG=$(yum list installed | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
+		CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
 		if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
-			echo "Package \"${1}\" not found, locally";
+			echo "Info:  Package \"${1}\" not found, locally";
 			RET_CODE=1;
 		else
-			echo "Package \"${1}\" already exists locally";
+			echo "Info:  Package \"${1}\" already exists locally";
 			RET_CODE=0;
 		fi;
 	else
 		# If no arguments were passed to this function, then list all installed packages (without x86_64 / noarch extension after each)
-		INSTALLED_PACKAGES=$(yum list installed | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
-		echo "${INSTALLED_PACKAGES}";
+		PACKAGES_REMOVED_X86X64_NOARCH=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
+		echo "${PACKAGES_REMOVED_X86X64_NOARCH}";
 		RET_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above
 	fi;
-
-	exit ${RET_CODE};
-
+else
+	RET_CODE=1;
+	echo "Error:  Incompatible environment - exiting...";
 fi;
+
+exit ${RET_CODE};
+
 
 
 # ------------------------------------------------------------
 #
 # Citation(s)
 #
-#   -
+#   access.redhat.com  |  "rh_yum_cheatsheet_1214_jcs_print-1.pdf"  |  https://access.redhat.com/sites/default/files/attachments/rh_yum_cheatsheet_1214_jcs_print-1.pdf
 #
 # ------------------------------------------------------------

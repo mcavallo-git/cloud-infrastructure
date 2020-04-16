@@ -1,0 +1,99 @@
+
+ # --------------------------------------------------------- #
+  #                                                         #
+ ###   Certificate Signing Request (CSR) Creation Tool     ###
+  #                                                         #
+ # --------------------------------------------------------- #
+
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/csr_generator?t=$(date +'%s.%N')" | bash;
+
+fi;
+
+clear;
+echo "";
+echo "";
+echo "  Please enter these values with attention to detail - they will be what defines your output CSR, which in-turn defines the values on your SSL-certificate returned from the DNS Authority you purchased it though.";
+echo "";
+echo "";
+read -p "Domain Name? (domain.com)  :  " -t 60 -r;
+domain_name="${REPLY}";
+read -p "Email Address (example@domain.com)  :  " -t 60 -r;
+email_address="${REPLY}";
+read -p "Company Name (Companies and WhatNot, Inc.)  :  " -t 60 -r;
+organization="${REPLY}";
+read -p "Branch which will be using the SSL Cert (Software Engineering)  :  " -t 60 -r;
+org_branch="${REPLY}";
+read -p "City (company's headquarters' city)  :  " -t 60 -r;
+city="${REPLY}";
+read -p "State (company's headquarters' state)  :  " -t 60 -r;
+state="${REPLY}";
+read -p "Country (company's headquarters' country)  :  " -t 60 -r;
+country="${REPLY}";
+read -p "Days, from today, until certificate will expire:  (YearsPurchased * 365) - (DaysSincePurchase)  =  " -t 60 -r;
+days_valid="${REPLY}";
+read -p "Days, from today, until certificate will expire:  (YearsPurchased * 365) - (DaysSincePurchase)  =  " -t 60 -r;
+days_valid="${REPLY}";
+
+## --------------- MODIFY LINES ABOVE THIS COMMENT TO MATCH YOUR NEEDS --------------- ##
+
+output_dir="~/";
+key_size=4096;  # Use a miminum of 2048 bit strength, with 3072 or 4096 preferred
+NEW_CSR_FULLPATH="${output_dir}/${domain_name}_csr_$(date +'%Y%m%d%H%M%S')";
+mkdir -p "${NEW_CSR_FULLPATH}";
+openssl req \
+-new \
+-sha256 \
+-nodes \
+-newkey rsa:${key_size} \
+-days ${days_valid} \
+-out "${NEW_CSR_FULLPATH}/${domain_name}_certificateSigningRequest_getSignedByCA.csr" \
+-keyout "${NEW_CSR_FULLPATH}/${domain_name}_privateKey_keepAndUseAfterDCV.key" \
+# -CSP "Microsoft RSA SChannel" \
+-config <(
+cat <<-EOF
+[req]
+default_bits = 4096
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C=${country}
+ST=${state}
+L=${city}
+O=${organization}
+OU=${org_branch}
+emailAddress=${email_address}
+CN = *.${domain_name}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = ${domain_name}
+DNS.2 = *.${domain_name}
+EOF
+);
+
+# ------------------------------------------------------------
+
+if [ ! -f "${NEW_CSR_FULLPATH}" ]; then
+	echo "";
+	echo "Error: CSR output file notfound at \"${NEW_CSR_FULLPATH}\"";
+else
+	echo "";
+	echo "Info:  Certificate Signing Request (CSR) successfully created";
+	echo "";
+	echo "";
+	echo "Info:  Contents (if you wish to copy-paste):";
+	echo "$(cat ${NEW_CSR_FULLPATH};)";
+	echo "";
+	echo "";
+	echo "Info:  CSR saved to disk at:  \"${NEW_CSR_FULLPATH}\"";
+	echo "";
+fi;
+
+# ------------------------------------------------------------

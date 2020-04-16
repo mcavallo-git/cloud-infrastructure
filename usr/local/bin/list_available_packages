@@ -6,7 +6,7 @@
 
 if [ -n "$1" ]; then
 	if [ -n "$(which yum 2>'/dev/null';)" ]; then
-		yum list available | grep -i "$1";
+		yum list available "*$1*" | grep -i "$1";
 	elif [ -n "$(which apt 2>'/dev/null';)" ]; then
 		apt-cache search "$1" | grep "$1";
 	else
@@ -19,10 +19,9 @@ if [ -n "$1" ]; then
 			echo "  Ex)      apt-cache search '$1' | grep '$1';";
 		fi;
 		echo "";
-
 	fi;
-
-elif [ -n "$(which apt 2>'/dev/null';)" ]; then
+else
+	
 
 fi;
 

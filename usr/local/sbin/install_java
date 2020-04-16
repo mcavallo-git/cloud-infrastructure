@@ -31,15 +31,9 @@ else
 		PACKAGE_NAME_DEV="java-1.8.0-openjdk-devel";
 		READ_TIMEOUT=60;
 		echo "";
+		echo "  Info: Successfully installed the headless version of Open Java 8 \"${PACKAGE_NAME})";
 		echo "";
-		echo "  !! Info:  Do you also want to install the Java Developer's Kit (${PACKAGE_NAME_DEV}) during your java install?  (timeout will CONFIRM the install after ${READ_TIMEOUT}s)";
-		echo "";
-		echo "      > Package Name:  ${PACKAGE_NAME_DEV}";
-		echo "";
-		echo "      > Feature(s) Added:   >> jcmd  <<";
-		echo "";
-		echo "";
-		read -p "  Press 'y' to accept and install package... " -n 1 -t 60 -r;
+		read -p "  Do you also want to install Open Java 8's developer's toolkit \"${PACKAGE_NAME_DEV}\" (which includes the jcmd runtime)? (y/n)  " -n 1 -t 60 -r;
 		echo "";
 		read -p "Perform action [ xyz ], now? (y/n)  " -n 1 -t ${READ_TIMEOUT} -r; RETURN_CODE_READ=$?;
 		echo "";

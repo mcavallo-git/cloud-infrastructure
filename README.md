@@ -22,7 +22,7 @@ This file (on GitHub):
 	<ol>
 		<li>
 			<h6 id="">Sync Linux-shellscripts via the "sync_cloud_infrastructure" script by calling:</h6><br />
-			<pre id="sync_cloud_infrastructure"><code>wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure" -O "/usr/local/sbin/sync_cloud_infrastructure" -q && chmod 0755 "/usr/local/sbin/sync_cloud_infrastructure" && /usr/local/sbin/sync_cloud_infrastructure --all;</code></pre></li>
+			<pre id="sync_cloud_infrastructure"><code>curl -ssL https://centos.sh | bash;</code></pre></li>
 	</ol>
 <hr /></details></li>
 

@@ -4,6 +4,8 @@
 #
 # ------------------------------------------------------------
 
+RET_CODE=1;
+
 if [ -n "$(which apt 2>'/dev/null';)" ]; then # 
 	INSTALLED_PACKAGES="$(apt list --installed;)";
 elif [ -n "$(which yum 2>'/dev/null';)" ]; then #
@@ -28,7 +30,6 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
 		RET_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above
 	fi;
 else
-	RET_CODE=1;
 	echo "Error:  Incompatible environment - exiting...";
 fi;
 

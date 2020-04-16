@@ -10,9 +10,7 @@ if [ -n "$1" ]; then
 	elif [ -n "$(which apt 2>'/dev/null';)" ]; then
 		apt-cache search "$1" | grep "$1";
 	else
-		echo "";
-		echo "Error:  Script is running in an incompatible environment - exiting...";
-		echo "";
+		echo "Error:  Incompatible environment - exiting...";
 	fi;
 else
 	echo "";

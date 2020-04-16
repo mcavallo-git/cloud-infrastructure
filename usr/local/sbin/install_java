@@ -30,9 +30,12 @@ else
 		PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME_DEV}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		PACKAGE_NAME_DEV="java-1.8.0-openjdk-devel";
 		echo "";
-		echo "  Info:  Do you also want to add the developement kit? (java-1.8.0-openjdk-devel)";
-		echo "    > Package Name?  java-1.8.0-openjdk-devel";
-		echo "    > Feature(s) Added?  jcmd";
+		echo "";
+		echo "  !! Info:  Do you also want to add the developement kit? (java-1.8.0-openjdk-devel)";
+		echo "";
+		echo "      > Package Name?  java-1.8.0-openjdk-devel";
+		echo "";
+		echo "      > Feature(s) Added?   >> jcmd  <<";
 		echo "";
 		read -p "  Press 'y' to accept and install package... " -n 1 -t 60 -r;
 		echo "";

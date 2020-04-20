@@ -3057,6 +3057,7 @@ img#jenkins-name-icon
 	display: none !important;
 }
 
+
 /* Jenkins View-Tabs (top of jobs table) */
 div.tabBarFrame > div.tabBar > div.tab > a
 {
@@ -3070,7 +3071,6 @@ div.tabBarFrame > div.tabBar > div.tab > a:hover
 	background-color: #212121;
 	color: #FFFFFF;
 }
-
 tr[categoryrole*="child" i].categoryJobs > td.categoryJobsColumn > div.dashboard > table > tbody > tr:hover,
 tr[categoryrole*="child" i].categoryJobs > td.categoryJobsColumn > div.dashboard > table > tbody > tr:hover > td
 {
@@ -3078,11 +3078,13 @@ tr[categoryrole*="child" i].categoryJobs > td.categoryJobsColumn > div.dashboard
 	color: #000000 !important;
 }
 
+
 /*   Category View - Hide Table-Headers (doesn't work the best with sub-tables, etc.) */
 div#main-panel > div.dashboard > table.categorizedSortable > tbody > tr:first-child
 {
 	display: none;
 }
+
 
 /*   Category SubContents - Remove excessive margins/padding */
 tr.categoryJobs
@@ -3104,11 +3106,13 @@ tr[categoryrole*="child" i].categoryJobs > td:first-child
 	max-width: 35px;
 }
 
+
 /*   Category SubContents - Remove empty header-row (first row) */
 tr[categoryrole*="child" i].categoryJobs > td.categoryJobsColumn > div.dashboard > table > tbody > tr.hidden-header
 {
 	display: none;
 }
+
 
 /*   Category SubContents - First column (padding/gradient column) */
 .categoryJobsColumn > .dashboard > table > tbody > tr:first-child > td:first-child
@@ -3119,6 +3123,8 @@ tr[categoryrole*="child" i].categoryJobs > td.categoryJobsColumn > div.dashboard
 {
 	display: none;
 }
+
+
 /*   Category SubContents - First column (padding/gradient column) */
 tr[categoryrole*="child" i].categoryJobs > td:first-child
 {
@@ -3138,6 +3144,7 @@ tr[categoryrole*="child" i].categoryJobs > td:first-child
 	border: 0 !important; /* equivalent to  "border:none;" */
 }
 
+
 /* Category Headers (All Columns) */
 tr.categoryJobRow,
 tr.categoryJobRow > *
@@ -3147,7 +3154,6 @@ tr.categoryJobRow > *
 	max-height: 40px;
 	background-color:#212121 !important;
 }
-
 tr.categoryJobRow:hover,
 tr.categoryJobRow:hover > td
 {
@@ -3156,7 +3162,6 @@ tr.categoryJobRow:hover > td
 	max-height: 40px;
 	background-color:#000000 !important;
 }
-
 /* Category Headers (Columns 1-4) Category-Name && +/- Dropdown (button) */
 tr.categoryJobRow > td:nth-child(-n+4)
 {
@@ -3184,30 +3189,23 @@ tr.categoryJobRow > td:nth-child(2)
 	width: 35px !important;
 	max-width: 35px !important;
 }
-
 /*
-
 table#projectstatus *
 {
 	font-family: Roboto, Helvetica !important;
 }
-
 div.manage-option dt,
 div.manage-option dd,
 a.task-link
 {
 	font-family: Roboto, Helvetica !important;
 }
-
 a.task-link b
 {
 	color: #4D4DFF;
 	font-family: Roboto, Helvetica !important;
 }
-
 */
-
-
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="dev"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="uat"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="qa"] > td
@@ -3218,7 +3216,6 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="dev.api"] > td
 {
 	background: #D9F7F7;
 }
-
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="prod"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="www"] > td
 {
@@ -3229,7 +3226,6 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="prod.api"] > td
 {
 	background: #ECECFB;
 }
-
 div.dashboard > table > tbody > tr:not([categoryrole])[id^="api_" i] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="phpmyadmin" i] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="utility" i] > td,
@@ -3237,7 +3233,6 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="backup" i] > td
 {
 	background: #EEDFFB !important;
 }
-
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="cron"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="CRON"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="infra"] > td,
@@ -3246,15 +3241,18 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="INFRA"] > td
 	background: #FFECDF;
 }
 
+
 /* Console Output, Warnings - Color identifiably */
 .console-output .warning-inline {
 	color: #C4A000 !important;
 }
 
+
 /* Console Output Timestamps, use a condensed font to allow more space for the log-data (body of log) */
 .console-output .timestamp {
 	font-size: 80% !important;
 }
+
 
 /* Control the height of textarea input-fields */
 textarea.setting-input {
@@ -3262,6 +3260,7 @@ textarea.setting-input {
 	height: 18vh !important;
 	max-height: 50vh !important;
 }
+
 
 /* Artifacts - Hide the "View" button from any artifacts attached to Jenkins jobs */
 table.fileList tr td a:nth-child(n+2),
@@ -3285,6 +3284,7 @@ a[href="artifact/"] {
 	font-weight: 700 !important;
 }
 
+
 /* Global Layouts - Add dividers and spacing between dissimilar elements (example: "Workspace" "Last Succcessful Artifacts" and "Recent Changes") */
 div#main-panel > table
 {
@@ -3304,12 +3304,68 @@ div#main-panel > table tr th:first-child
 	padding-left: 25px !important;
 }
 
+
 /* Edit Description - Remove the button from the regular (NON-configuration) project page view */
 #description-link {
 	display: none !important;
 }
 
+
 /* Disable Project - Remove the button from the regular (NON-configuration) project page view */
 #disable-project {
 	display: none !important;
 }
+
+
+/* Node Icons (Offline) - force "icon-computer-user-offline" to perform the same as "icon-computer-x" (default jenkins class) */
+.icon-computer-user-offline.icon48x48,
+.icon-computer-user-offline.icon-xlg,
+.icon-computer-user-offline[src*="48x"] {
+	padding-left: 57.6px !important;
+	padding-top: 57.6px !important;
+	height: 0 !important;
+	width: 0 !important;
+	background-size: 100% 100% !important;
+	font-size: 0 !important
+}
+.icon-computer-user-offline.icon32x32,
+.icon-computer-user-offline.icon-lg,
+.icon-computer-user-offline[src*="32x"],
+.icon-computer-user-offline[style*="width: 32p"],
+.icon-computer-user-offline[width="32"] {
+	padding-left: 43.2px !important;
+	padding-top: 43.2px !important;
+	height: 0 !important;
+	width: 0 !important;
+	background-size: 100% 100% !important;
+	font-size: 0 !important
+}
+.icon-computer-user-offline.icon24x24,
+.icon-computer-user-offline.icon-md,
+.icon-computer-user-offline[src*="24x"],
+.icon-computer-user-offline[style*="width: 24p"],
+.icon-computer-user-offline[width="24"] {
+	padding-left: 28.8px !important;
+	padding-top: 28.8px !important;
+	height: 0 !important;
+	width: 0 !important;
+	background-size: 100% 100% !important;
+	font-size: 0 !important
+}
+.icon-computer-user-offline.icon16x16,
+.icon-computer-user-offline.icon-sm,
+.icon-computer-user-offline[src*="16x"],
+.icon-computer-user-offline[style*="width: 16p"],
+.icon-computer-user-offline[width="16"] {
+	padding-left: 21.6px !important;
+	padding-top: 21.6px !important;
+	height: 0 !important;
+	width: 0 !important;
+	background-size: 100% 100% !important;
+	font-size: 0 !important
+}
+.icon-computer-user-offline {
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PHN0eWxlPi5zdDB7ZmlsbDojOUU5RTlFfTwvc3R5bGU+PHBhdGggY2xhc3M9InN0MCIgZD0iTTE1IDEzLjVjLjggMCAxLjUtLjcgMS41LTEuNVY0LjVjMC0uOC0uNy0xLjUtMS41LTEuNUgzYy0uOCAwLTEuNS43LTEuNSAxLjVWMTJjMCAuOC43IDEuNSAxLjUgMS41SDBWMTVoMTh2LTEuNWgtM3ptLTEyLTloMTJWMTJIM1Y0LjV6Ii8+PHBhdGggY2xhc3M9InN0MCIgZD0iTTcuNSA1LjdsLTEuMSAxTDggOC4yIDYuNCA5LjhsMS4xIDFMOSA5LjNsMS41IDEuNSAxLjEtMUwxMCA4LjJsMS42LTEuNS0xLjEtMUw5IDcuMiA3LjUgNS43Ii8+PC9zdmc+)
+}
+
+

@@ -42,19 +42,17 @@ else
 		# Block [ Java version 11.* ] from being changed (NOTE: this step assumes Java 11 hasn't, yet been installed - need additional logic here to ensure that)
 		echo "";
 		echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
-		apt-mark hold openjdk-11-*;
+		apt-get -y update; apt-mark hold openjdk-11-*;
 
 		# Optionally, force an install of Java version-8
 		# echo "";
-		# echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
+		# echo "Info:  Calling  [ apt-get -y update; apt-get -y openjdk-8-jre-headless; ]...";
 		# apt-get -y update; apt-get -y openjdk-8-jre-headless;
 
-		
 		# Install pre-requisite package(s)
 		echo "";
-		echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
+		echo "Info:  Calling  [ apt-get -y update; apt-get -y install apt-transport-https ca-certificates wget; ]...";
 		apt-get -y update; apt-get -y install apt-transport-https ca-certificates wget;
-		
 
 		# Add the Unifi package repository
 		echo "";

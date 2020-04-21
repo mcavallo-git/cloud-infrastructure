@@ -249,7 +249,7 @@ else
 		if [ -n "${EACH_REQUIRED_PKG}" ]; then
 			if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				# Query Debian's Package-Manager for each package
-				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" FFF; echo $?;) -ne 0 ]; then
 					MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
 				fi;
 			elif [ $(which rpm 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -702,7 +702,7 @@ else
 
 					dos2unix --quiet "${SSHD_CONFIG_LIVE}";
 					dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
-					if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>&2 2>"/dev/null"; echo $?;) -eq 0 ]; then
+					if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 						# SSH-Config file already fully up-to-date
 						echo -e "\n""Info:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
 						echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
@@ -830,7 +830,7 @@ else
 				# Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
 				if [ $(which ufw 2>'/dev/null' | wc -l) -gt 0 ]; then
 					# Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
-					if [[ $(ufw status 1>&2 2>/dev/null; echo $?;) -eq 0 ]]; then
+					if [[ $(ufw status 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
 						# Check UFW Enabled/Disabled Status
 						UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 						if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
@@ -1377,7 +1377,7 @@ else
 				#
 				# --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
 				#
-				LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>/dev/null;);
+				LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>'/dev/null';);
 				COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
 				if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
 					echo -e "\n""Info:  Skipped removal of cron sync-triggers (No scripts found matching \"/etc/cron.d/CRON_*\")";

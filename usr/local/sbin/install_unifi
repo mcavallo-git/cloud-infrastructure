@@ -49,15 +49,25 @@ else
 		# echo "Info:  Calling  [ apt-get -y update; apt-get -y openjdk-8-jre-headless; ]...";
 		# apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y openjdk-8-jre-headless;
 
+		# Import Unifi's official GPG Key
+		echo "";
+		echo "Info:  Calling  [ wget -O \"/etc/apt/trusted.gpg.d/unifi-repo.gpg\" \"https://dl.ui.com/unifi/unifi-repo.gpg\"; ]...";
+		wget -O "/etc/apt/trusted.gpg.d/unifi-repo.gpg" "https://dl.ui.com/unifi/unifi-repo.gpg";
+
 		# Add the Unifi package repository
 		echo "";
 		echo "Info:  Calling  [ echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee \"/etc/apt/sources.list.d/100-ubnt-unifi.list\"; ]...";
 		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee "/etc/apt/sources.list.d/100-ubnt-unifi.list";
 
-		# Import Unifi's official GPG Key
+		# Import MongoDB's official GPG Key
 		echo "";
-		echo "Info:  Calling  [ wget -O \"/etc/apt/trusted.gpg.d/unifi-repo.gpg\" \"https://dl.ui.com/unifi/unifi-repo.gpg\"; ]...";
-		wget -O "/etc/apt/trusted.gpg.d/unifi-repo.gpg" "https://dl.ui.com/unifi/unifi-repo.gpg";
+		echo "Info:  Calling  [ wget -qO - \"https://www.mongodb.org/static/pgp/server-3.4.asc\" | apt-key add -; ]...";
+		wget -qO - "https://www.mongodb.org/static/pgp/server-3.4.asc" | apt-key add -;
+
+		# Add the MongoDB package repository
+		echo "";
+		echo "Info:  Calling  [ echo \"deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse\" | tee \"/etc/apt/sources.list.d/mongodb-org-3.4.list\"; apt-get update -y; ]...";
+		echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | tee "/etc/apt/sources.list.d/mongodb-org-3.4.list"; apt-get update -y;
 
 		# Install Unifi for Debian, Ubuntu, etc.
 		echo "";
@@ -91,5 +101,7 @@ fi;
 # Citation(s)
 #
 #   help.ubnt.com  |  "UniFi - How to Install and Update via APT on Debian or Ubuntu"  |  https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-and-Update-via-APT-on-Debian-or-Ubuntu
+#
+#   help.ui.com  |  "UniFi - How to Install and Update via APT on Debian or Ubuntu – Ubiquiti Networks Support and Help Center"  |  https://help.ui.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu
 #
 # ------------------------------------------------------------

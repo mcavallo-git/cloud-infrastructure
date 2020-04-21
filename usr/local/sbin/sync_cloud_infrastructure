@@ -850,8 +850,8 @@ else
 							echo "   ## ufw allow 22/tcp;  # allow ssh/sftp-requests (22)  !!! Insecure - only use this if cloud host and you haven't setup DDNS, yet";
 							echo "   ufw allow 80/tcp;  # allow web-requests (80)";
 							echo "   ufw allow 443/tcp; # allow web-requests (443)";
-							echo "   ufw default deny incoming;  # deny all non-matched incoming requests";
 							echo "   ufw default allow outgoing; # allow all non-matched outgoing requests";
+							echo "   ufw default deny incoming;  # deny all non-matched incoming requests";
 							echo "   ufw logging on; # enable logging";
 							echo "   ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
 							echo "   ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";

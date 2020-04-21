@@ -7,7 +7,7 @@
 #
 if [ 0 -eq 1 ]; then
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_jenkins" -O "/usr/local/sbin/uninstall_jenkins" -q && chmod 0755 "/usr/local/sbin/uninstall_jenkins" && /usr/local/sbin/uninstall_jenkins;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_jenkins?t=$(date +'%s.%N')" | bash;
 
 fi;
 #

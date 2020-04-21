@@ -6,9 +6,7 @@
 # Run as a 1-liner command
 if [ 0 -eq 1 ]; then
 
-
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_permissions" -O "/usr/local/bin/get_permissions" && chmod 0755 "/usr/local/bin/get_permissions";
-
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_permissions?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

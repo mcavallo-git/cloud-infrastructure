@@ -5,9 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config" -O "/usr/local/sbin/selinux_config" -q && chmod 0755 "/usr/local/sbin/selinux_config" && /usr/local/sbin/selinux_config;
-
-curl -ssL centos.sh | bash; selinux_config --enable;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash;
 
 fi;
 #

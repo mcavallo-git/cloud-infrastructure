@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_mail_alerts" -O "/usr/local/sbin/disable_mail_alerts" -q && chmod 0755 "/usr/local/sbin/disable_mail_alerts" && /usr/local/sbin/disable_mail_alerts;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_mail_alerts?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

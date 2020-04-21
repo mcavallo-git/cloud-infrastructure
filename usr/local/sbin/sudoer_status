@@ -7,11 +7,11 @@
 #
 if [ 0 -eq 1 ]; then
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status" -O "/usr/local/sbin/sudoer_status" -q && chmod 0755 "/usr/local/sbin/sudoer_status";
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status?t=$(date +'%s.%N')" | bash;
 
-test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
-
-test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow --nopass;
+# wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status" -O "/usr/local/sbin/sudoer_status" -q && chmod 0755 "/usr/local/sbin/sudoer_status";
+# test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
+# test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow --nopass;
 
 fi;
 #

@@ -3,6 +3,12 @@
 # LOCAL_SBIN="/usr/local/sbin/partition_unpartitioned_disks" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/partition_unpartitioned_disks?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
 
 echo "";
 echo "Warning:  This runtime has been deprecated";
@@ -13,14 +19,6 @@ echo "  https://github.com/mcavallo-git/Coding/search?q=linux+partition&unscoped
 echo "";
 exit 1;
 
-# ------------------------------------------------------------
-if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
-
-
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/partition_unpartitioned_disks" -O "/usr/local/sbin/partition_unpartitioned_disks" -q && chmod 0755 "/usr/local/sbin/partition_unpartitioned_disks" && /usr/local/sbin/partition_unpartitioned_disks;
-
-
-fi;
 #
 # ------------------------------------------------------------
 #

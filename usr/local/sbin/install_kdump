@@ -5,9 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
 
-
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_kdump" -O "/usr/local/sbin/install_kdump" -q && chmod 0755 "/usr/local/sbin/install_kdump" && /usr/local/sbin/install_kdump;
-
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_kdump?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

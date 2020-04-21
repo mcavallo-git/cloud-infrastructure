@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx" -O "/usr/local/sbin/install_nginx" -q && chmod 0755 "/usr/local/sbin/install_nginx" && /usr/local/sbin/install_nginx;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx?t=$(date +'%s.%N')" | bash;
 
 fi;
 #

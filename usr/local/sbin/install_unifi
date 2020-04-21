@@ -56,8 +56,8 @@ else
 
 		# Add the MongoDB package repository
 		echo "";
-		echo "Info:  Calling  [ echo \"deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse\" | tee \"/etc/apt/sources.list.d/mongodb-org-3.4.list\"; apt-get update -y; ]...";
-		echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | tee "/etc/apt/sources.list.d/mongodb-org-3.4.list"; apt-get update -y;
+		echo "Info:  Calling  [ echo \"deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse\" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list; apt-get -y update; ]...";
+		echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list; apt-get -y update;
 
 		# Import Unifi's official GPG Key
 		echo "";
@@ -66,8 +66,8 @@ else
 
 		# Add the Unifi package repository
 		echo "";
-		echo "Info:  Calling  [ echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee \"/etc/apt/sources.list.d/100-ubnt-unifi.list\"; ]...";
-		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee "/etc/apt/sources.list.d/100-ubnt-unifi.list";
+		echo "Info:  Calling  [ echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list; apt-get -y update; ]...";
+		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list; apt-get -y update;
 
 		# Install Unifi for Debian, Ubuntu, etc.
 		echo "";

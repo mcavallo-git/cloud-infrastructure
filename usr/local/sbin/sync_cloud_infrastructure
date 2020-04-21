@@ -833,22 +833,40 @@ else
 					if [[ $(ufw status 1>&2 2>/dev/null; echo $?;) -eq 0 ]]; then
 						# Check UFW Enabled/Disabled Status
 						UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-						if [ ${UFW_ENABLED} -eq 0 ]; then
-							# Prompt for confirmation before auto-enabling UFW
-							echo -e "\n""!!! Warning !!!";
-							echo "  |";
-							echo "  |--> UFW sync requested, however UFW is currently disabled";
-							echo "  |";
-							read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
-							if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-								ufw enable;
-							fi;
-						fi;
-
-						# Re-check UFW Enabled/Disabled Status
-						UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 						if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 							echo -e "\n""Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+						fi;
+						if [ ${UFW_ENABLED} -eq 0 ]; then
+
+							# UFW DISABLED - Show recommendations for general-practice setup
+							echo -e "\n""!!! Warning !!!";
+							echo "  |";
+							echo "  |--> Firewall package UFW (default Debian firewall) is installed but disabled";
+							echo "  |";
+							echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
+							echo "         ufw allow 22/tcp;  # allow ssh/sftp-requests (22)";
+							echo "         ufw allow 80/tcp;  # allow web-requests (80)";
+							echo "         ufw allow 443/tcp; # allow web-requests (443)";
+							echo "         ufw default deny incoming;  # deny other incoming requests, by default";
+							echo "         ufw default allow outgoing; # allow all outgoing requests, by default";
+							echo "         ufw logging on; # enable logging";
+							echo "         ufw enable; # enable ufw module";
+							echo "         # Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
+
+							# UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
+							# echo "  |";
+							# echo "  |--> UFW sync requested, however UFW is currently disabled";
+							# echo "  |";
+							# read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
+							# if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+							# 	ufw enable;
+							# 	# Re-check UFW Enabled/Disabled Status
+							# 	UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+							# 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+							# 		echo -e "\n""Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+							# 	fi;
+							# fi;
+
 						fi;
 
 						# Proceed if UFW is, indeed, enabled
@@ -862,6 +880,7 @@ else
 								ENABLE_CRON_DDNS_UPDATER=1;
 							fi;
 						fi;
+
 					fi;
 
 				elif [ $(which firewall-cmd 2>'/dev/null' | wc -l) -gt 0 ]; then

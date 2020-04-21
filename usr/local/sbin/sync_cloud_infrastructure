@@ -844,7 +844,10 @@ else
 							echo "  |--> Firewall package UFW (default Debian firewall) is installed but disabled";
 							echo "  |";
 							echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
-							echo "         ufw allow 22/tcp;  # allow ssh/sftp-requests (22)";
+							# echo "         ufw allow 22/tcp;  # allow ssh/sftp-requests (22)";
+							echo "         ufw allow from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)";
+							echo "         ufw allow from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)";
+							echo "         ufw allow from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)";
 							echo "         ufw allow 80/tcp;  # allow web-requests (80)";
 							echo "         ufw allow 443/tcp; # allow web-requests (443)";
 							echo "         ufw default deny incoming;  # deny other incoming requests, by default";

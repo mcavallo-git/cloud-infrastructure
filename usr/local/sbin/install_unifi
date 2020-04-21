@@ -71,9 +71,9 @@ else
 			THIS_LAN_IPV4=$(hostname -i | awk '{print $1}' 2>'/dev/null';);
 		fi;
 
-		# Direct user to browser-insterface (to continue installation)
+		# Point the user to the Unifi Controller's URL to continue installation
 		echo "";
-		echo "Info:  Installation Complete - Browse to any of the following URLs to manage this Unifi Controller:";
+		echo "Info:  To continue installation, please open the Unifi Controller in-browser via any of the following URLs:";
 		echo "";
 		echo "            https://$(hostname):8443";
 		echo "";

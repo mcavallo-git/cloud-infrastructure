@@ -249,7 +249,7 @@ else
 		if [ -n "${EACH_REQUIRED_PKG}" ]; then
 			if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				# Query Debian's Package-Manager for each package
-				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" FFF; echo $?;) -ne 0 ]; then
+				if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
 					MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
 				fi;
 			elif [ $(which rpm 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.

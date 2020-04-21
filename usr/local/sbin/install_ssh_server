@@ -33,61 +33,9 @@ else
 	fi;
 
 	# ------------------------------------------------------------
-	# Setup Java
-	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+	# Setup Firewall
+	curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --ufw;
 
-		# Show local Java runtime's settings/properties
-		JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
-		
-		# Locate $JAVA_HOME (local Java runtime's home-directory)
-		LOCAL_JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -rne 's/^\s*java.home = (.+)\s*$/\1/p';); echo "LOCAL_JAVA_HOME = [ ${LOCAL_JAVA_HOME} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
-
-		# ------------------------------------------------------------
-		#	To find the appropriate font configuration file for a host operating system, the following information is used:
-		#
-		#		JavaHome - the JRE's directory, as given by the "java.home" system property.
-		#
-		#		OS - a string identifying an operating system variant:
-		#			For Windows, "98", "2000", "Me", "XP", "2003".
-		#			For Solaris, empty.
-		#			For Linux, "Sun", "RedHat", "Turbo", "SuSE".
-		#
-		#		Version - a string identifying the operating system version.
-		#
-		#
-		#  The runtime uses the first of the following files it finds:
-		#  
-		#          JavaHome/lib/fontconfig.OS.Version.properties
-		#          JavaHome/lib/fontconfig.OS.Version.bfc
-		#          JavaHome/lib/fontconfig.OS.properties
-		#          JavaHome/lib/fontconfig.OS.bfc
-		#          JavaHome/lib/fontconfig.Version.properties
-		#          JavaHome/lib/fontconfig.Version.bfc
-		#          JavaHome/lib/fontconfig.properties
-		#          JavaHome/lib/fontconfig.bfc
-		#  
-		#
-		# ------------------------------------------------------------
-
-		LOCAL_JAVA_FONTS_DIR="${LOCAL_JAVA_HOME}/lib/fonts/"; echo "LOCAL_JAVA_FONTS_DIR = [ ${LOCAL_JAVA_FONTS_DIR} ]";
-		if [ ! -d "${LOCAL_JAVA_FONTS_DIR}" ]; then
-			echo "";
-			echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
-			mkdir -p "${LOCAL_JAVA_FONTS_DIR}";
-		fi;
-
-		LOCAL_JAVA_FONTCONFIG_PROPS="${LOCAL_JAVA_HOME}/lib/fontconfig.properties"; echo "LOCAL_JAVA_FONTCONFIG_PROPS = [ ${LOCAL_JAVA_FONTCONFIG_PROPS} ]";
-		if [ ! -f "${LOCAL_JAVA_FONTS_DIR}" ]; then
-			echo "";
-			echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
-			touch "${LOCAL_JAVA_FONTCONFIG_PROPS}";
-		fi;
-		echo "";
-		echo "Info:  Calling [ chmod 0644 \"${LOCAL_JAVA_FONTCONFIG_PROPS}\"; ]...";
-		chmod 0644 "${LOCAL_JAVA_FONTCONFIG_PROPS}";
-
-	fi;
 
 fi;
 

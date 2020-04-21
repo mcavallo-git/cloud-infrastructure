@@ -51,10 +51,16 @@ else
 	UFW_CONFIG_FILEPATH="/etc/default/ufw";
 
 	# File containing hosts to allow through UFW
+	#  |
 	#  |--> All lines in given whitelist file must be in a specific format/syntax
-	#        |
-	#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
-	#        |--> Example:   tcp:22:demo.example.com
+	#  |
+	#  |--> Syntax:
+	#  |        [tcp/udp]:[PORT]:[FQDN]
+	#  |
+	#  |
+	#  |--> Example:
+	#           tcp:22:demo.example.com
+	#           tcp:22:localhost.localdomain
 	#
 	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
 	RUNTIME_SERVICE_USERS+=(["sshd"]="root");
@@ -68,7 +74,9 @@ else
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
 
 	# ------------------------------------------------------------
-	# Function to add a rule to UFW
+	#
+	# Sub-Function: Adds a rule to UFW
+	#
 	add_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 
@@ -109,7 +117,9 @@ else
 
 
 	# ------------------------------------------------------------
-	# Function to delete a rule from UFW
+	#
+	# Sub-Function: Deletes a rule from UFW
+	#
 	delete_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			local proto=$1;
@@ -148,7 +158,8 @@ else
 
 
 	# ------------------------------------------------------------
-	# UFW Main Runtime
+	#
+	# Main Runtime
 	#
 	if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 		if [ -f "${UFW_CONFIG_FILEPATH}" ]; then
@@ -181,7 +192,8 @@ else
 	fi;
 
 	# ------------------------------------------------------------
-	# Whitelisting by-Service
+	#
+	# Apply Whitelist on a per-service basis
 	#
 	for EACH_SERVICE in "${!RUNTIME_SERVICE_USERS[@]}"; do
 		# File containing hosts to allow through UFW
@@ -305,7 +317,6 @@ else
 
 	done;
 
-	# ------------------------------------------------------------
 	# Set ownership & privileges for the logging directory & sub-contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 		chown -R "syslog:adm" "${LOGDIR}";
@@ -314,9 +325,7 @@ else
 	find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
 	find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
 
-	# ------------------------------------------------------------
 	# Cleanup log files outside of the retention-policy's max-age
-	# ------------------------------------------------------------
 	DIRECTORY_TO_CLEAN="${LOGDIR}/";
 	MAX_RETENTION_DAYS=3;
 	if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
@@ -366,7 +375,10 @@ fi;
 #
 # Citation(s)
 #
-#		Thanks to stackoverflow user "Force" on forum: https://superuser.com/questions/646958/ufw-rules-for-specific-host-dynamic-dns
-#		Original script from https://notepad2.blogspot.com/2012/06/shell-script-update-ufw-rules-for-hosts.html
+#   notepad2.blogspot.com  |  "My Tech Notes: shell script: update ufw rules for the hosts with dynamic ip addresses"  |  https://notepad2.blogspot.com/2012/06/shell-script-update-ufw-rules-for-hosts.html
+#
+#   superuser.com  |  "linux - UFW rules for specific host / dynamic dns - Super User"  |  https://superuser.com/a/646959
+#
+#   www.digitalocean.com  |  "How To Set Up a Firewall with UFW on Ubuntu 18.04 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-18-04
 #
 # ------------------------------------------------------------

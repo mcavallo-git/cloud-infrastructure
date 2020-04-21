@@ -36,26 +36,48 @@ else
 	READ_TIMEOUT=60; read -p "Install Unifi service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 	echo "";
 	if [ ${RETURN_CODE_READ} -gt 128 ]; then
-		echo -e "Response timed out after ${READ_TIMEOUT}s";
+		echo "Response timed out after ${READ_TIMEOUT}s";
 	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-		echo -e "\n""Info: Confirmed - Attempting to install Unifi service...""\n";
 
+		# Block [ Java version 11.* ] from being changed (NOTE: this step assumes Java 11 hasn't, yet been installed - need additional logic here to ensure that)
+		echo "";
+		echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
+		apt-mark hold openjdk-11-*;
+
+		# Optionally, force an install of Java version-8
+		# echo "";
+		# echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
+		# apt-get -y update; apt-get -y openjdk-8-jre-headless;
+
+		
 		# Install pre-requisite package(s)
-		apt-get -y update; apt-get -y install apt-transport-https ca-certificates openjdk-8-jre-headless wget;
+		echo "";
+		echo "Info:  Calling  [ apt-mark hold openjdk-11-*; ]...";
+		apt-get -y update; apt-get -y install apt-transport-https ca-certificates wget;
+		
 
 		# Add the Unifi package repository
+		echo "";
+		echo "Info:  Calling  [ echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee \"/etc/apt/sources.list.d/100-ubnt-unifi.list\"; ]...";
 		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee "/etc/apt/sources.list.d/100-ubnt-unifi.list";
 
 		# Import Unifi's official GPG Key
+		echo "";
+		echo "Info:  Calling  [ wget -O \"/etc/apt/trusted.gpg.d/unifi-repo.gpg\" \"https://dl.ui.com/unifi/unifi-repo.gpg\"; ]...";
 		wget -O "/etc/apt/trusted.gpg.d/unifi-repo.gpg" "https://dl.ui.com/unifi/unifi-repo.gpg";
 
 		# Install Unifi for Debian, Ubuntu, etc.
+		echo "";
+		echo "Info:  Calling  [ apt-get -y update; apt-get -y install unifi; ]...";
 		apt-get -y update; apt-get -y install unifi;
 
 		# Direct user to browser-insterface (to continue installation)
-		echo -e "\n""   Open a browser to  [ https://$(hostname):8443 ]  to manage this unifi instance""\n";
+		echo "";
+		echo "Info:  Installation Complete - Please browse to  [ https://$(hostname):8443 ]  to manage this Unifi instance";
+		echo "";
 
 	else
+		echo "";
 		echo "Denied - Skipping command";
 	fi;
 

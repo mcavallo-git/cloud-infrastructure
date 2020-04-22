@@ -460,6 +460,7 @@ else
 				echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
 			fi;
 			IS_SKIPPED=$(add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}" | grep 'Skipped');
+			echo "IS_SKIPPED = [ ${IS_SKIPPED} ]";
 			if [ -z "${IS_SKIPPED}" ]; then  # New rule was applied
 				# Add the inverse of new rule to the undo-changes array
 				UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");

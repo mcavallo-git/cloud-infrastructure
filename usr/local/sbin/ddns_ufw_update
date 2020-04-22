@@ -475,8 +475,11 @@ else
 	done;
 
 	if [ ${DEBUG_MODE} -eq 1 ]; then
-		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR{@]} ]";
-		echo "Debug:  PREVIOUSLY_RESOLVED_TO_REMOVE = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
+		for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+			DAT_ITEM="${RESOLVED_CIDRv4_ARR[${DAT_KEY}]}";
+			echo "Debug:  RESOLVED_CIDRv4_ARR[${DAT_KEY}] = [ ${DAT_ITEM} ]";
+		done;
+		echo "Debug:  ALL_PREVIOUSLY_RESOLVED_CONTENTS = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
 	fi;
 
 	# Array containing CIDRv4 addresses which are now no-longer-valid

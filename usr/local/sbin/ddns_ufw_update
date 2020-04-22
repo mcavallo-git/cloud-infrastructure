@@ -49,7 +49,17 @@ else
 
 	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
 	UFW_CONFIG_FILEPATH="/etc/default/ufw";
+	
+	# Read-in runtime/resolved values from previous iteration of this script
+	DDNS_UFW_RESOLVED_ADDR="/etc/ddns_ufw_update.resolved";
 
+	ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
+	if [ -f "${DDNS_UFW_RESOLVED_ADDR}" ]; then
+		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(cat "${DDNS_UFW_RESOLVED_ADDR}" | grep '\S');
+	else
+		touch "${DDNS_UFW_RESOLVED_ADDR}";
+	fi;
+	
 	# File containing hosts to allow through UFW
 	#  |
 	#  |--> All lines in given whitelist file must be in a specific format/syntax
@@ -63,15 +73,30 @@ else
 	#           tcp:22:localhost.localdomain
 	#
 	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
-	RUNTIME_SERVICE_USERS+=(["sshd"]="root");
-	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");
-	# RUNTIME_SERVICE_USERS+=(["java"]="jenkins");
+	RUNTIME_SERVICE_USERS+=(["sshd"]="root");       # SSH/OpenSSH listener
+	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");  # NGINX Web Server
+	RUNTIME_SERVICE_USERS+=(["unifi"]="unifi");  # Unifi Controller
+	# RUNTIME_SERVICE_USERS+=(["jenkins"]="jenkins");    # Jenkins Master
 
 	# Defaults for UFW (out-of-the-box)
-	NGINX_CONF_DDNS="/etc/nginx/conf.ddns";
+	ETC_NGINX="/etc/nginx/conf.ddns";
+	NGINX_CONF_DDNS="${ETC_NGINX}/conf.ddns";
+
+	# Create the DDNS NGINX directory only if the NGINX parent directory already exists
+	if [ -d "${ETC_NGINX}" ] && [ ! -d "${NGINX_CONF_DDNS}" ]; then
+			mkdir -p "${NGINX_CONF_DDNS}";
+	fi;
 
 	# Defaults for UFW (out-of-the-box)
 	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
+
+
+	# ------------------------------------------------------------
+	#
+	# Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
+	#
+	function implode { local IFS="$1"; shift; echo "$*"; }
+
 
 	# ------------------------------------------------------------
 	#
@@ -79,13 +104,11 @@ else
 	#
 	add_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
-
 			local proto=$1;
 			local port=$2;
 			local ip=$3;
 			local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
 			local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
-
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug: -> IN FUNCTION [ add_rule()  ]";
 				echo "Debug: -> proto = [ ${proto} ]";
@@ -94,7 +117,6 @@ else
 				echo "Debug: -> regex = [ ${regex} ]";
 				echo "Debug: -> rule = [ ${rule} ]";
 			fi;
-
 			# If rule doesn't exist, then add (allow) it to UFW's ruleset
 			if [ -z "${rule}" ]; then
 				echo -e "\n""Info: Adding Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
@@ -105,7 +127,6 @@ else
 				#   /usr/sbin/ufw allow proto tcp from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
 				#   /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
 				#   /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
-
 			else
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "Debug: Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
@@ -127,7 +148,6 @@ else
 			local ip=$3;
 			local regex="${WHITELIST_PORT}\/${proto}.*ALLOW.*IN.*${ip}";
 			local rule=$(ufw status numbered | grep ${regex});
-
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug: -> IN FUNCTION [ delete_rule()  ]";
 				echo "Debug: -> proto = [ ${proto} ]";
@@ -136,7 +156,6 @@ else
 				echo "Debug: -> regex = [ ${regex} ]";
 				echo "Debug: -> rule = [ ${rule} ]";
 			fi;
-
 			# If rule exists, then remove (delete) it from UFW's ruleset
 			if [ -n "${rule}" ]; then
 				echo -e "\n""Info: Deleting Firewall Rule [ ${proto}/${port} ALLOW IN ${ip} ]";
@@ -144,14 +163,12 @@ else
 				echo "  |--> Call: [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]...";
 				/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
 				# Example(s):
-				#   /usr/sbin/ufw delete allow proto tcp from any to any port 80,443
-
+				#   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
 			else
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "Debug: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
 					echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				fi;
-
 			fi;
 		fi;
 	}
@@ -191,28 +208,43 @@ else
 		fi;
 	fi;
 
+	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
+	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	
+	# Array to store previously resolved service CIDRv4 addresses and their contents
+	unset PREVIOUSLY_RESOLVED_CONTENTS_ARR; declare -A PREVIOUSLY_RESOLVED_CONTENTS_ARR; # [Re-]Instantiate bash array
+
 	# ------------------------------------------------------------
 	#
 	# Apply Whitelist on a per-service basis
 	#
-	for EACH_SERVICE in "${!RUNTIME_SERVICE_USERS[@]}"; do
+	for EACH_SERVICE_NAME in "${!RUNTIME_SERVICE_USERS[@]}"; do
+
 		# File containing hosts to allow through UFW
 		#  |--> All lines in given whitelist file must be in a specific format/syntax
 		#        |
 		#        |--> Syntax:    tcp/udp:PORT:SUBDOMAIN.DOMAIN.TLD
 		#        |--> Example:   tcp:22:demo.example.com
 		#
-		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE}]}";
+		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE_NAME}]}";
+		EACH_NGINX_DDNS_CONF="${NGINX_CONF_DDNS}/${EACH_SERVICE_NAME}";
+		EACH_NGINX_DDNS_RESULTS="";
 
-		# Only whitelist services which are found to exist, locally
-		test ${DEBUG_MODE} -eq 1 && echo "MATCHED_PROCS_PGREP Call = [ pgrep -u \"${EACH_RUNTIME_USER}\" \"${EACH_SERVICE}\"; ]";
-		MATCHED_PROCS_PGREP=$(pgrep -u "${EACH_RUNTIME_USER}" "${EACH_SERVICE}" 2>/dev/null;);
-		MATCHED_PROCS_PGREP_TRIMMED="$(echo -e "${MATCHED_PROCS_PGREP}" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' 2>/dev/null;)";
+		EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}"; # Define the location for the whitelist config-files
+		EACH_RESOLVED_FILE="${EACH_WHITELIST_FILE}.resolved"; # Define the location to save resolve CIDRv4 addresses to
 
-		if [ -n "${MATCHED_PROCS_PGREP_TRIMMED}" ]; then
+		if [ -f "${EACH_RESOLVED_FILE}" ]; then
+			# Read in previously-resolved addresses on a per-service basis
+			PREVIOUSLY_RESOLVED_CONTENTS_ARR+=(["${EACH_SERVICE_NAME}"]="$(cat ${EACH_RESOLVED_FILE})");
+		else
+			touch "${EACH_RESOLVED_FILE}";
+		fi;
 
-			test ${DEBUG_MODE} -eq 1 && echo "MATCHED_PROCS_PS Call = [ ps --format \"pid,fname,user,%cpu,%mem,maj_flt,cmd\" --no-headers -p \"${MATCHED_PROCS_PGREP_TRIMMED}\" | wc -l; ]";
-			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -p "${MATCHED_PROCS_PGREP_TRIMMED}" | wc -l;);
+		# Only whitelist services which are in-use by this machine
+		SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${EACH_SERVICE_NAME}.service" | grep "^${EACH_SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+		if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally & is currently active
+
+			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "${EACH_RUNTIME_USER}" | wc -l;);
 
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
@@ -221,92 +253,171 @@ else
 
 			if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
 				# Service does NOT exist locally - do NOT whitelist associated ports/hosts
-				echo -e "\n""Info: Skipping whitelisting for service \"${EACH_SERVICE}\" (not found locally)";
+				echo -e "\n""Info: Skipping whitelisting for service \"${EACH_SERVICE_NAME}\" (not found locally)";
 
 			else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
-				EACH_HOSTS_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE}";
 
-				if [ ! -f "${EACH_HOSTS_FILE}" ]; then
-					echo -e "\n""Error: Whitelist hosts file for service \"${EACH_SERVICE}\" not found @ filepath \"${EACH_HOSTS_FILE}\"";
-					echo "  |--> Skipping Whitelist for Service \"${EACH_HOSTS_FILE}\"";
+				if [ ! -f "${EACH_WHITELIST_FILE}" ]; then
+					echo "";
+					echo "Error:  Whitelist hosts file for service \"${EACH_SERVICE_NAME}\" not found @ filepath \"${EACH_WHITELIST_FILE}\"";
+					echo "  |--> Skipping Whitelist for Service \"${EACH_WHITELIST_FILE}\"";
 
 				else
 
-					echo -e "\n""Info: Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE}\" Service";
-					echo "  |-> Using whitelist file \"${EACH_HOSTS_FILE}\"";
+					echo -e "\n""Info: Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE_NAME}\" Service";
+					echo "  |-> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
 
 					# Iterate-over each line in the whitelist file
-					sed '/^[[:space:]]*$/d' ${EACH_HOSTS_FILE} | \
+					sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | \
 					sed '/^[[:space:]]*#/d' | \
 					while read EACH_WHITELIST_LINE;	do
+
 						if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
-							# Define the location of the file to output resolved ipv4's to
-							EACH_RESOLVED_FILE="${EACH_HOSTS_FILE}.resolved";
-							if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
-								echo -n "" > "${EACH_RESOLVED_FILE}";
-							fi;
+							HAYSTACK_TO_SEARCH="${EACH_WHITELIST_LINE}";
+							CHAR_DELIMITER="|";
+							ALL_NEEDLES_FOUND="${HAYSTACK_TO_SEARCH//[^${CHAR_DELIMITER}]}"; # Required middleman var
+							NEEDLE_TOTAL_COUNT=${#ALL_NEEDLES_FOUND};
+
+							# IP Protocol must be a lowercase string matching 'tcp' or 'udp'
+							WHITELIST_PROTOCOL=""; if [ ${NEEDLE_TOTAL_COUNT} -ge 1 ]; then MM="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f1)"; WHITELIST_PROTOCOL="${MM,,}"; fi;
+							WHITELIST_PROTOCOL="$(echo -e "${WHITELIST_PROTOCOL}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; # Trim leading/trailing whitespace
+
+							WHITELIST_PORT=""; if [ ${NEEDLE_TOTAL_COUNT} -ge 2 ]; then WHITELIST_PORT="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f2)"; fi;
+							WHITELIST_PORT="$(echo -e "${WHITELIST_PORT}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; # Trim leading/trailing whitespace
+
+							WHITELIST_HOSTS_COMMA_DELIMITED=""; if [ ${NEEDLE_TOTAL_COUNT} -ge 3 ]; then WHITELIST_HOSTS_COMMA_DELIMITED="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f3)"; fi;
+							WHITELIST_HOSTS_COMMA_DELIMITED="$(echo -e "${WHITELIST_HOSTS_COMMA_DELIMITED}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; # Trim leading/trailing whitespace
+
+							WHITELIST_DESCRIPTION=""; if [ ${NEEDLE_TOTAL_COUNT} -ge 4 ]; then WHITELIST_DESCRIPTION="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f4)"; fi;
+							WHITELIST_DESCRIPTION="$(echo -e "${WHITELIST_DESCRIPTION}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; # Trim leading/trailing whitespace
+
+							WHITELIST_FQDN="";
 
 							if [ ${DEBUG_MODE} -eq 1 ]; then
 								echo -e "\n""------------------------------------------------------------";
-							fi;
-
-							WHITELIST_PROTOCOL=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f1);
-							WHITELIST_PORT=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f2);
-							WHITELIST_HOST=$(echo ${EACH_WHITELIST_LINE} | cut -d: -f3);
-
-							if [ ${DEBUG_MODE} -eq 1 ]; then
 								echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
 								echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
 								echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-								echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+								echo "Debug: WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
 							fi;
 
-							CURRENT_RESOLVED_IPv4="";
-							OLD_RESOLVED_IPV4="";
-							if [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
-								# Allow "Any" host to be used
-								CURRENT_RESOLVED_IPv4="any";
-							else
-								# Determine current & previous IPv4(s) for each hostname
-								CURRENT_RESOLVED_IPv4=$(dig +short ${WHITELIST_HOST} | tail -n 1);
-								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
-								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
-									if [ -d "${NGINX_CONF_DDNS}" ]; then
-										# IPv4 resolved successfully - Add whitelist rule for NGINX (if NGINX directory exists)
-										echo "allow ${CURRENT_RESOLVED_IPv4}; # ${WHITELIST_HOST}" > "${NGINX_CONF_DDNS}/${WHITELIST_HOST}";
-									fi;
+							# For each substring in a comma delimited string
+							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
+
+								RESOLVED_IPv4="";
+								RESOLVED_CIDRv4="";
+
+								if [ "${WHITELIST_HOST}" == "0.0.0.0" ] || [ "${WHITELIST_HOST}" == "0.0.0.0/0" ] || [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
+
+									# Allow requests originating from the "default route" (e.g. allow incoming requests from any network address, which is 0.0.0.0/0 in CIDRv4 and ::/0 in CIDRv6)
+									RESOLVED_IPv4="0.0.0.0";
+									RESOLVED_CIDRv4="0.0.0.0/0";
+
 								else
+
+									# Check if host if in IPv4 or CIDRv4 syntax, already
+									
+									if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
+										# Host is formatted using IP or CIDR notation (address resolution not required)
+										if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
+											# Add "/32" to the end of string, if no CIDR notation is found - ex: 192.168.0.1/32
+											RESOLVED_IPv4="${WHITELIST_HOST}";
+											RESOLVED_CIDRv4="${WHITELIST_HOST}/32";
+										else
+											# Valid IPv4 in CIDR Notation - ex: 192.168.0.0/16
+											RESOLVED_IPv4=$(echo ${WHITELIST_HOST} | cut -d"/" -f1);
+											RESOLVED_CIDRv4="${WHITELIST_HOST}";
+										fi;
+									else
+										# Host is NOT formatted using IP or CIDR notation (address resolution is required)
+										HOST_ADDRESS_LOOKUP="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
+										if [[ ${HOST_ADDRESS_LOOKUP} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
+											# IPv4 resolved successfully
+											RESOLVED_IPv4="${HOST_ADDRESS_LOOKUP}"; 
+											RESOLVED_CIDRv4="${HOST_ADDRESS_LOOKUP}/32"; 
+											WHITELIST_FQDN="${WHITELIST_HOST}";
+										else
+											# ERROR - Unable to resolve host
+											echo "Error:  Address resolution failed for host \"${WHITELIST_HOST}\"";
+											RESOLVED_IPv4=""
+											RESOLVED_CIDRv4="";
+											WHITELIST_FQDN="";
+										fi;
+
+									fi;
+
+								fi;
+
+								# Verify final CIDRv4 address notation
+								if [ -n "${RESOLVED_CIDRv4}" ] && [[ ${RESOLVED_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
+
+									if [ ${DEBUG_MODE} -eq 1 ]; then
+										echo "Debug:  RESOLVED_IPv4 = [ ${RESOLVED_IPv4} ]";
+										echo "Debug:  RESOLVED_CIDRv4 = [ ${RESOLVED_CIDRv4} ]";
+									fi;
+
+									PORT_PROTO="${WHITELIST_PORT}/${WHITELIST_PROTOCOL}";
+
+									if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
+										# New array-index (CIDRv4) & value (port)
+										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${PORT_PROTO}");
+									else
+										# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
+										if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${PORT_PROTO},"* ]]; then
+											# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
+											echo "" 1>'/dev/null' 2>&1;  # Do nothing
+										else
+											# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
+											RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${PORT_PROTO}";
+										fi;
+									fi;
+
+									# ------------------------------------------------------------
+									# BEGIN NGINX ONLY
+									if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
+										# Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
+										NEXT_NGINX_LINE="";
+										if [ -n "${WHITELIST_FQDN}" ]; then
+											# DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
+											#   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
+											#   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
+											if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
+												rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
+											fi;
+											NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
+										else
+											NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};";
+										fi;
+										# Append this line to the total string of lines to put into the nginx service-config-file
+										if [ -z "${EACH_NGINX_DDNS_RESULTS}" ]; then
+											EACH_NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
+										else
+											EACH_NGINX_DDNS_RESULTS="${EACH_NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
+										fi;
+									fi;
+									# END NGINX ONLY
+									# ------------------------------------------------------------
+
+								else
+
 									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
-									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-									fi;
-									echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\" (could not be converted to an IPv4/IPv6 address)" 1>&2;
-									# exit 1;
+									RESOLVED_IPv4="";
+									RESOLVED_CIDRv4="";
+									echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Hostname resolution failed for \"${WHITELIST_HOST}\"  (unable to resolve/convert to CIDRv4 notation)" 1>&2;
+
+									# !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
+									# if [ -f ${EACH_RESOLVED_FILE} ]; then
+									# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+									# fi;
+
 								fi;
-								# Remove old whitelist rule(s)
-								if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-									if [ ${CURRENT_RESOLVED_IPv4} != ${OLD_RESOLVED_IPV4} ]; then
-										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-									fi;
-								fi;
-							fi;
 
-							if [ ${DEBUG_MODE} -eq 1 ]; then
-								echo "Debug: CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
-								echo "Debug: OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
-							fi;
-
-							add_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
-
-							if [ -f ${EACH_RESOLVED_FILE} ]; then
-								sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-							fi;
-
-							echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+							done;
 
 						fi;
+
 					done;
 
 				fi;
@@ -315,9 +426,72 @@ else
 
 		fi;
 
+		# Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
+		if [ "${EACH_SERVICE_NAME}" == "nginx" ] && [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${EACH_NGINX_DDNS_RESULTS}" ]; then
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "Debug:  NGINX_CONF_DDNS = [ ${NGINX_CONF_DDNS} ]";
+				echo "Debug:  EACH_NGINX_DDNS_RESULTS = [ ${EACH_NGINX_DDNS_RESULTS} ]";
+			fi;
+			echo -e "${EACH_NGINX_DDNS_RESULTS}" > "${EACH_NGINX_DDNS_CONF}";
+		fi;
+	
+	done;
+	
+	# Show resolved CIDRv4 addresses
+	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+		PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+
+		WHITELIST_PORT="$(echo "${PORT_PROTO}" | cut -d'/' -f1)"; fi;
+		WHITELIST_PROTOCOL="$(echo "${PORT_PROTO}" | cut -d'/' -f2)"; fi;
+
+		# Remove new, valid hosts from previously resolved hosts (to be left with the set of invalid hosts to remove at the end)
+		SED_EXPRESSION="$(echo ${EACH_RESOLVED_CIDRv4} | sed 's/\//\\\//g')"; SED_EXPRESSION="/^${SED_EXPRESSION}*/d";
+		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(echo "${ALL_PREVIOUSLY_RESOLVED_CONTENTS}" | sed ${SED_EXPRESSION});
+		if [ "${SLICED_PREVIOUSLY_RESOLVED_CONTENTS}" == "${ALL_PREVIOUSLY_RESOLVED_CONTENTS}" ]; then
+			# New CIDRv4 which was not previously in the resolved addresses file(s) OR an eisting address which has already been removed
+			echo "" 1>'/dev/null' 2>&1;  # Do nothing
+		else
+			# Existing FQDN whose address lookup returned a matching CIDRv4 address between this run (newly-resolved) and a previous run (previously-resolved)
+			echo "" 1>'/dev/null' 2>&1;  # Do nothing
+		fi;
+
+		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+		add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}";
+
+		# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
+		echo "${WHITELIST_PROTO}|${WHITELIST_PORT}|${EACH_RESOLVED_CIDRv4}" >> "${DDNS_UFW_RESOLVED_ADDR}";
+
 	done;
 
-	# Set ownership & privileges for the logging directory & sub-contents
+	if [ ${DEBUG_MODE} -eq 1 ]; then
+		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR{@]} ]";
+		echo "Debug:  PREVIOUSLY_RESOLVED_TO_REMOVE = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
+	fi;
+
+	# Array containing CIDRv4 addresses which are now no-longer-valid
+	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
+	# unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	# DISASSOCIATED_CIDRv4_ARR=();
+
+	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
+	# for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
+	# 	for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+
+	# 		DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
+	# 		echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+
+			### !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
+			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+
+			### !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
+			# if [ -f ${EACH_RESOLVED_FILE} ]; then
+			# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+			# fi;
+
+	# 	done;
+	# done;
+
+	# Set ownership & privileges for the logging directory & its sub contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 		chown -R "syslog:adm" "${LOGDIR}";
 	fi;
@@ -344,13 +518,11 @@ fi;
 #		chmod 0755 "/usr/local/sbin/ddns_ufw_update";
 #
 #
-#
 #### The content of "/etc/ddns_ufw_update.whitelist" should match the format:
 #	
 #		vi "/etc/ddns_ufw_update.whitelist";
 #
 #		tcp:22:yourpc.no-ip.org
-#
 #
 #
 #### Shortcuts to this script, whitelist, and logfile-directory can be set via:
@@ -362,13 +534,11 @@ fi;
 #		ln -sf "/var/log/ddns_ufw_update" "/root/ddns_ufw_update/logs";
 #
 #
-#
 #### A crontab entry for executing the script every 3 minutes could look like this:
 #
 #		crontab -e
 #
 #		*/3 * * * * sudo "ddns_ufw_update"
-#
 #
 #
 # ------------------------------------------------------------
@@ -380,6 +550,14 @@ fi;
 #   notepad2.blogspot.com  |  "My Tech Notes: shell script: update ufw rules for the hosts with dynamic ip addresses"  |  https://notepad2.blogspot.com/2012/06/shell-script-update-ufw-rules-for-hosts.html
 #
 #   superuser.com  |  "linux - UFW rules for specific host / dynamic dns - Super User"  |  https://superuser.com/a/646959
+#
+#   stackoverflow.com  |  "Loop through a comma-separated shell variable - Stack Overflow"  |  https://stackoverflow.com/a/27703327
+#
+#   stackoverflow.com  |  "How can I join elements of an array in Bash? - Stack Overflow"  |  https://stackoverflow.com/a/17841619
+#
+#   stackoverflow.com  |  "shell - A Bash script to check if a string is present in a comma separated list of strings - Stack Overflow"  |  https://stackoverflow.com/a/29301172
+#
+#   unix.stackexchange.com  |  "text processing - How to count the number of a specific character in each line? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/18742
 #
 #   www.digitalocean.com  |  "How To Set Up a Firewall with UFW on Ubuntu 18.04 | DigitalOcean"  |  https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-18-04
 #

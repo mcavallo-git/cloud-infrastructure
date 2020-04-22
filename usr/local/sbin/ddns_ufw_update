@@ -513,7 +513,9 @@ else
 	echo " !!  To undo any of the changes-made, please see below  !!  ";
 	echo " !!    list of undo-commands created for this session   !!  ";
 	echo "";
-	echo "${UFW_CHANGES_UNDO_ARR[@]}";
+	for EACH_UNDO_COMMAND in "${UFW_CHANGES_UNDO_ARR[@]}"; do
+		echo "${EACH_UNDO_COMMAND}";
+	done;
 	echo "------------------------------------------------------------";
 	echo "------------------------  UFW STATUS  ----------------------";
 	/bin/systemctl status ufw;

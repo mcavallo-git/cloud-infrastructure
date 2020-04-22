@@ -225,14 +225,6 @@ else
 		EACH_NGINX_DDNS_RESULTS="";
 
 		EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}"; # Define the location for the whitelist config-files
-		EACH_RESOLVED_FILE="${EACH_WHITELIST_FILE}.resolved"; # Define the location to save resolve CIDRv4 addresses to
-
-		if [ -f "${EACH_RESOLVED_FILE}" ]; then
-			# Read in previously-resolved addresses on a per-service basis
-			PREVIOUSLY_RESOLVED_CONTENTS_ARR+=(["${EACH_SERVICE_NAME}"]="$(cat ${EACH_RESOLVED_FILE})");
-		else
-			touch "${EACH_RESOLVED_FILE}";
-		fi;
 
 		# Only whitelist services which are in-use by this machine
 		SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${EACH_SERVICE_NAME}.service" | grep "^${EACH_SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -419,11 +411,6 @@ else
 										RESOLVED_CIDRv4="";
 										echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Hostname resolution failed for \"${WHITELIST_HOST}\"  (unable to resolve/convert to CIDRv4 notation)" 1>&2;
 
-										# !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
-										# if [ -f ${EACH_RESOLVED_FILE} ]; then
-										# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-										# fi;
-
 									fi;
 
 								done;
@@ -451,11 +438,6 @@ else
 	
 	done;
 
-	if [ ${DEBUG_MODE} -eq 1 ]; then
-		echo "";
-		echo "============================================================";
-	fi;
-
 	# Show resolved CIDRv4 addresses
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 		CIDRv4_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
@@ -481,8 +463,19 @@ else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  Calling  [ add_rule \"${WHITELIST_PROTOCOL}\" \"${WHITELIST_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
 			fi;
-			add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}";
+			IS_SKIPPED=$(add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}" | grep 'Skipped');
+			if [ -z "${IS_SKIPPED}" ]; then  # New rule was applied
+				# Add the inverse of new rule to the undo-changes array
+				UFW_CHANGES_UNDO_ARR+=("/usr/sbin/ufw delete allow proto ${WHITELIST_PROTOCOL} from ${EACH_RESOLVED_CIDRv4} to any port ${WHITELIST_PORT};");
+			fi;
 		done;
+	done;
+
+	# Array containing rules deleted from UFW
+	unset UFW_CHANGES_UNDO_ARR; declare -a UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
+
+	for DAT_ITEM in "${DAT_ARRAY[@]}"; do
+	echo "${DAT_ITEM}";
 	done;
 
 	# Determine which rules need to be removed
@@ -510,13 +503,15 @@ else
 		if [ ${DELETE_RULE} -eq 1 ]; then
 			# Delete the firewall rule
 			delete_rule ${EACH_UFW_PROTOCOL} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
+			# Add the inverse of new rule to the undo-changes array
+			UFW_CHANGES_UNDO_ARR+=("/usr/sbin/ufw allow proto ${EACH_UFW_PROTOCOL} from ${EACH_UFW_CIDRv4} to any port ${EACH_UFW_PORT};");
 		else
 			# Keep the firewall rule
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  Keeping rule (not deleting it):  ${EACH_UFW_LINE}";
 			fi;
 		fi;
-	fi;
+	done;
 	IFS="${ROLLBACK_IFS}";
 
 	if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -527,30 +522,17 @@ else
 		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
 		echo "Debug:  OLD_RESOLVED_CIDR = [ ${OLD_RESOLVED_CIDR} ]";
 	fi;
-
-	# Array containing CIDRv4 addresses which are now no-longer-valid
-	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
-	# unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
-	# DISASSOCIATED_CIDRv4_ARR=();
-
-	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
-	# for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
-	# 	for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-
-	# 		DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
-	# 		echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
-
-			### !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
-			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-
-			### !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
-			# if [ -f ${EACH_RESOLVED_FILE} ]; then
-			# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-			# fi;
-
-	# 	done;
-	# done;
-
+	
+	echo "------------------------------------------------------------";
+	echo "----------------------  UNDO COMMANDS  ---------------------";
+	echo " !!  To undo any of the changes-made, please see below  !!  ";
+	echo " !!    list of undo-commands created for this session   !!  ";
+	echo "";
+	echo "${UFW_CHANGES_UNDO_ARR[@]}";
+	echo "------------------------------------------------------------";
+	echo "------------------------  UFW STATUS  ----------------------";
+	/bin/systemctl status ufw;
+	echo "------------------------------------------------------------";
 	# Set ownership & privileges for the logging directory & its sub contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 		chown -R "syslog:adm" "${LOGDIR}";

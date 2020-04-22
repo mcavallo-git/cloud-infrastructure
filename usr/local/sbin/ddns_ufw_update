@@ -94,7 +94,7 @@ else
 	#
 	# Sub-Function: Adds a rule to UFW
 	#
-	$ADD_RULE_SKIPPED=0;
+	ADD_RULE_SKIPPED=0;
 	add_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			local proto=$1;
@@ -112,7 +112,7 @@ else
 			fi;
 			# If rule doesn't exist, then add (allow) it to UFW's ruleset
 			if [ -z "${rule}" ]; then
-				$ADD_RULE_SKIPPED=0;
+				ADD_RULE_SKIPPED=0;
 				echo "";
 				echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
@@ -123,7 +123,7 @@ else
 				#   /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
 				#   /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
 			else
-				$ADD_RULE_SKIPPED=1;
+				ADD_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "Debug:  Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
 					echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
@@ -137,7 +137,7 @@ else
 	#
 	# Sub-Function: Deletes a rule from UFW
 	#
-	$DELETE_RULE_SKIPPED=0;
+	DELETE_RULE_SKIPPED=0;
 	delete_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			local proto=$1;
@@ -155,7 +155,7 @@ else
 			fi;
 			# If rule exists, then remove (delete) it from UFW's ruleset
 			if [ -n "${rule}" ]; then
-				$DELETE_RULE_SKIPPED=0;
+				DELETE_RULE_SKIPPED=0;
 				echo "";
 				echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
@@ -164,7 +164,7 @@ else
 				# Example(s):
 				#   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
 			else
-				$DELETE_RULE_SKIPPED=1;
+				DELETE_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "Debug:  Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
 					echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";

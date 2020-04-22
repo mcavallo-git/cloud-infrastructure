@@ -39,9 +39,10 @@ else
 			SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";
 			FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
 			SOURCE_URL="${FALLBACK_URL}";
+			TMP_FILE="/tmp/unifi-update.sh";
 			echo "";
-			echo "Info:  Calling  [ mkdir -p \"/tmp\"; wget -O \"/tmp/unifi-update.sh\" \"${SOURCE_URL}\"; bash \"/tmp/unifi-update.sh\"; ]...";
-			mkdir -p "/tmp"; wget -O "/tmp/unifi-update.sh" "${SOURCE_URL}"; bash "/tmp/unifi-update.sh";
+			echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
+			mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
 
 		else
 

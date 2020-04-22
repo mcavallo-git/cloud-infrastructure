@@ -441,8 +441,8 @@ else
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 		PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 
-		WHITELIST_PORT="$(echo "${PORT_PROTO}" | cut -d'/' -f1)"; fi;
-		WHITELIST_PROTOCOL="$(echo "${PORT_PROTO}" | cut -d'/' -f2)"; fi;
+		WHITELIST_PORT="$(echo "${PORT_PROTO}" | cut -d'/' -f1)";
+		WHITELIST_PROTOCOL="$(echo "${PORT_PROTO}" | cut -d'/' -f2)";
 
 		# Remove new, valid hosts from previously resolved hosts (to be left with the set of invalid hosts to remove at the end)
 		SED_EXPRESSION="$(echo ${EACH_RESOLVED_CIDRv4} | sed 's/\//\\\//g')"; SED_EXPRESSION="/^${SED_EXPRESSION}*/d";

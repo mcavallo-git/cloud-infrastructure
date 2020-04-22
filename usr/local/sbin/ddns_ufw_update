@@ -439,6 +439,9 @@ else
 	done;
 
 	# Show resolved CIDRv4 addresses
+	if [ ${DEBUG_MODE} -eq 1 ]; then
+		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
+	fi;
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 		CIDRv4_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 		# For each substring in a comma delimited string
@@ -448,16 +451,6 @@ else
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
 				echo "Debug:  WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-			fi;
-			# Remove new, valid hosts from previously resolved hosts (to be left with the set of invalid hosts to remove at the end)
-			SED_EXPRESSION="$(echo ${EACH_RESOLVED_CIDRv4} | sed 's/\//\\\//g')"; SED_EXPRESSION="/^${SED_EXPRESSION}*/d";
-			OLD_RESOLVED_CIDR=$(echo "${OLD_RESOLVED_CIDR}" | sed ${SED_EXPRESSION});
-			if [ "${SLICED_PREVIOUSLY_RESOLVED_CONTENTS}" == "${OLD_RESOLVED_CIDR}" ]; then
-				# New CIDRv4 which was not previously in the resolved addresses file(s) OR an eisting address which has already been removed
-				echo "" 1>'/dev/null' 2>&1;  # Do nothing
-			else
-				# Existing FQDN whose address lookup returned a matching CIDRv4 address between this run (newly-resolved) and a previous run (previously-resolved)
-				echo "" 1>'/dev/null' 2>&1;  # Do nothing
 			fi;
 			# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -514,15 +507,7 @@ else
 	done;
 	IFS="${ROLLBACK_IFS}";
 
-	if [ ${DEBUG_MODE} -eq 1 ]; then
-		for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-			DAT_ITEM="${RESOLVED_CIDRv4_ARR[${DAT_KEY}]}";
-			echo "Debug:  RESOLVED_CIDRv4_ARR[${DAT_KEY}] = [ ${DAT_ITEM} ]";
-		done;
-		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
-		echo "Debug:  OLD_RESOLVED_CIDR = [ ${OLD_RESOLVED_CIDR} ]";
-	fi;
-	
+	# Show all undo-commands for this runtime
 	echo "------------------------------------------------------------";
 	echo "----------------------  UNDO COMMANDS  ---------------------";
 	echo " !!  To undo any of the changes-made, please see below  !!  ";

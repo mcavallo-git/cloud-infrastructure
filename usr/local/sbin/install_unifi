@@ -54,7 +54,7 @@ else
 		echo "Info:  Calling  [ echo \"deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse\" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list; ]...";
 		echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list;
 
-		# Install MongoDB for Debian
+		# Install MongoDB for Debian-based Linux distros
 		echo "";
 		echo "Info:  Calling  [ apt-get -y update; apt-get -y install mongodb-org; ]...";
 		apt-get -y update; apt-get -y install mongodb-org;
@@ -69,7 +69,7 @@ else
 		echo "Info:  Calling  [ echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list; ]...";
 		echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list;
 
-		# Install Unifi for Debian
+		# Install Unifi for Debian-based Linux distros
 		echo "";
 		echo "Info:  Calling  [ apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install unifi; ]...";
 		apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install unifi;

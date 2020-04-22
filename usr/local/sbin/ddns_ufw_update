@@ -294,8 +294,7 @@ else
 								echo "Debug: WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
 							fi;
 
-							# For each host in the comma delimited whitelist of hosts
-							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
+							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do  # For each substring in a comma delimited string
 
 								RESOLVED_IPv4="";
 								WHITELIST_CIDRv4="";

@@ -480,6 +480,10 @@ else
 		EACH_UFW_PROTOCOL="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f3 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - delete the rule, otherwise
+		
+			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "Debug:  Checking array-index \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X}";
+			fi;
 		if [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X} ]; then # Matched on valid CIDRv4
 			RESOLVED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 			for EACH_PORT_PROTO in $(echo ${RESOLVED_PORT_PROTOS} | sed "s/,/ /g"); do # For each substring in a comma delimited string

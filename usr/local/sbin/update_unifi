@@ -35,13 +35,13 @@ else
 		/bin/systemctl list-unit-files --no-legend --no-pager --full unifizz.service | grep '^unifi.service'; echo $?;
 		if [ 1 -eq 1 ]; then
 
-			# # Update Unifi Controller (via Bash convenience script)
-			# echo "";
-			# echo "Info:  Calling  [ mkdir -p \"/tmp\"; wget -O \"/tmp/unifi-update.sh\" \"https://get.glennr.nl/unifi/update/unifi-update.sh\"; bash \"/tmp/unifi-update.sh\"; ]...";
-			# mkdir -p "/tmp"; wget -O "/tmp/unifi-update.sh" "https://get.glennr.nl/unifi/update/unifi-update.sh"; bash "/tmp/unifi-update.sh";
+			# Update Unifi Controller (via Bash convenience script)
+			SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";
+			FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
+			SOURCE_URL="${FALLBACK_URL}";
 			echo "";
-			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-update.sh\" | bash; ]...";
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh" | bash;
+			echo "Info:  Calling  [ mkdir -p \"/tmp\"; wget -O \"/tmp/unifi-update.sh\" \"${SOURCE_URL}\"; bash \"/tmp/unifi-update.sh\"; ]...";
+			mkdir -p "/tmp"; wget -O "/tmp/unifi-update.sh" "${SOURCE_URL}"; bash "/tmp/unifi-update.sh";
 
 		else
 

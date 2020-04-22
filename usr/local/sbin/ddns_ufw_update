@@ -306,6 +306,10 @@ else
 							# For each substring in a comma delimited string
 							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
 
+								if [ ${DEBUG_MODE} -eq 1 ]; then
+									echo -e "\n""------------------------------------------------------------";
+									echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+								fi;
 								RESOLVED_IPv4="";
 								RESOLVED_CIDRv4="";
 

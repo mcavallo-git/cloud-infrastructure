@@ -198,6 +198,9 @@ else
 		fi;
 	fi;
 
+	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
+	unset RESOLVED_CIDR_ARR; declare -A RESOLVED_CIDR_ARR; # [Re-]Instantiate bash array
+	
 	# ------------------------------------------------------------
 	#
 	# Apply Whitelist on a per-service basis
@@ -212,15 +215,15 @@ else
 		#
 		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE_NAME}]}";
 		EACH_NGINX_DDNS_CONF="${NGINX_CONF_DDNS}/${EACH_SERVICE_NAME}";
-		EACH_NGINX_DDNS_CONTENTS="";
+		EACH_NGINX_DDNS_RESULTS="";
 
-		# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
-		unset ALLOW_CIDR_ARR; declare -a ALLOW_CIDR_ARR; # [Re-]Instantiate bash array
-		ALLOW_CIDR_ARR=();
+		EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}";
 
-		# Array to store store CIDRv4 addresses which were previously resolved and valid, but have since changed and need to be removed
-		unset DENY_CIDR_ARR; declare -a DENY_CIDR_ARR; # [Re-]Instantiate bash array
-		DENY_CIDR_ARR=();
+		# Define the location of the file to output resolved ipv4's to
+		EACH_RESOLVED_FILE="${EACH_WHITELIST_FILE}.resolved";
+		if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
+			touch "${EACH_RESOLVED_FILE}";
+		fi;
 
 		# Only whitelist services which are in-use by this machine
 		SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${EACH_SERVICE_NAME}.service" | grep "^${EACH_SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -247,7 +250,6 @@ else
 
 			else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
-				EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}";
 
 				if [ ! -f "${EACH_WHITELIST_FILE}" ]; then
 					echo "";
@@ -264,12 +266,6 @@ else
 					sed '/^[[:space:]]*#/d' | \
 					while read EACH_WHITELIST_LINE;	do
 						if [ -n "${EACH_WHITELIST_LINE}" ]; then
-
-							# Define the location of the file to output resolved ipv4's to
-							EACH_RESOLVED_FILE="${EACH_WHITELIST_FILE}.resolved";
-							if [ ! -f "${EACH_RESOLVED_FILE}" ]; then
-								touch "${EACH_RESOLVED_FILE}";
-							fi;
 
 							HAYSTACK_TO_SEARCH="${EACH_WHITELIST_LINE}";
 							CHAR_DELIMITER="|";
@@ -291,7 +287,7 @@ else
 								echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
 							fi;
 
-							CURRENT_RESOLVED_IPv4="";
+							RESOLVED_IPv4="";
 							OLD_RESOLVED_IPV4="";
 
 							WHITELIST_CIDRv4="";
@@ -299,8 +295,8 @@ else
 							if [ "${WHITELIST_HOST}" == "0.0.0.0" ] || [ "${WHITELIST_HOST}" == "0.0.0.0/0" ] || [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
 
 								# Allow requests originating from the "default route" (e.g. allow incoming requests from any network address, which is 0.0.0.0/0 in CIDRv4 and ::/0 in CIDRv6)
-								CURRENT_RESOLVED_IPv4="0.0.0.0";
-								CURRENT_RESOLVED_CIDRv4="0.0.0.0/0";
+								RESOLVED_IPv4="0.0.0.0";
+								RESOLVED_CIDRv4="0.0.0.0/0";
 
 							else
 
@@ -309,29 +305,23 @@ else
 								if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
 									if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
 										# Add "/32" to the end of string, if no CIDR notation is found - ex: 192.168.0.1/32
-										CURRENT_RESOLVED_IPv4="${WHITELIST_HOST}";
-										CURRENT_RESOLVED_CIDRv4="${WHITELIST_HOST}/32";
+										RESOLVED_IPv4="${WHITELIST_HOST}";
+										RESOLVED_CIDRv4="${WHITELIST_HOST}/32";
 									else
 										# Valid IPv4 in CIDR Notation - ex: 192.168.0.0/16
-										CURRENT_RESOLVED_IPv4=$(echo ${WHITELIST_HOST} | cut -d"/" -f1);
-										CURRENT_RESOLVED_CIDRv4="${WHITELIST_HOST}";
+										RESOLVED_IPv4=$(echo ${WHITELIST_HOST} | cut -d"/" -f1);
+										RESOLVED_CIDRv4="${WHITELIST_HOST}";
 									fi;
 								else
 									# Attempt to resolve the current IPv4 of target hostname
 									WHITELIST_FQDN="${WHITELIST_HOST}";
-									CURRENT_RESOLVED_IPv4="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
+									RESOLVED_IPv4="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
 								fi;
 
-								# Get the previously-resolved IPv4 of target hostname (stored from a previous run of this script)
-								OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
-								if [ -z "${OLD_RESOLVED_IPV4}" ]  && [ -n "${WHITELIST_FQDN}" ]; then
-									# DEPRECATED METHODOLOGY --> Used to saved the format of previously-resolved hosts as their original hostname
-									OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_FQDN} | cut -d: -f2);
-								fi;
+								if [ -n "${RESOLVED_IPv4}" ]; then
 
-								if [ -n "${CURRENT_RESOLVED_IPv4}" ]; then
-
-										# IPv4 resolved successfully - Add whitelist rule for NGINX (if NGINX directory exists)
+									# NGINX Service Only --> Also add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
+									if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
 										NEXT_NGINX_LINE="";
 										if [ -n "${WHITELIST_FQDN}" ]; then
 											# DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
@@ -340,56 +330,67 @@ else
 											if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
 												rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
 											fi;
-											NEXT_NGINX_LINE="allow ${CURRENT_RESOLVED_IPv4};  # ${WHITELIST_HOST}";
+											NEXT_NGINX_LINE="allow ${RESOLVED_IPv4};  # ${WHITELIST_HOST}";
 										else
-											NEXT_NGINX_LINE="allow ${CURRENT_RESOLVED_IPv4};";
+											NEXT_NGINX_LINE="allow ${RESOLVED_IPv4};";
 										fi;
-
 										# Append this line to the total string of lines to put into the nginx service-config-file
-										if [ -n "${EACH_NGINX_DDNS_CONTENTS}" ]; then
-											NEXT_NGINX_LINE="\n${NEXT_NGINX_LINE}";
+										if [ -z "${EACH_NGINX_DDNS_RESULTS}" ]; then
+											EACH_NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
+										else
+											EACH_NGINX_DDNS_RESULTS="${EACH_NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
 										fi;
-										EACH_NGINX_DDNS_CONTENTS="${EACH_NGINX_DDNS_CONTENTS}${NEXT_NGINX_LINE}";
+									fi;
 
 								else
 
 									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
-									if [ -n "${OLD_RESOLVED_IPV4}" ]; then
-										#
-										#  !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
-										#
-										delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-									fi;
 									echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\"  (unable to resolve/convert to CIDRv4 notation)" 1>&2;
 
-								fi;
-
-								# Remove old whitelist rule(s)
-								if [ -n "${OLD_RESOLVED_IPV4}" ] && [ "${CURRENT_RESOLVED_IPv4}" != "${OLD_RESOLVED_IPV4}" ]; then
-									#
-									#  !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
-									#
-									delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
 								fi;
 
 							fi;
 
 							if [ ${DEBUG_MODE} -eq 1 ]; then
-								echo "Debug:  CURRENT_RESOLVED_IPv4 = [ ${CURRENT_RESOLVED_IPv4} ]";
+								echo "Debug:  RESOLVED_IPv4 = [ ${RESOLVED_IPv4} ]";
 								echo "Debug:  OLD_RESOLVED_IPV4 = [ ${OLD_RESOLVED_IPV4} ]";
 							fi;
 
+
+							if [ -z "${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]}" ]; then
+								# New array-index (CIDRv4) & value (port)
+								RESOLVED_CIDR_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
+							else
+								# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
+								if [[ ",${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
+									# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
+									echo "" > '/dev/null';  # Do nothing
+								else
+									# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
+									RESOLVED_CIDR_ARR+=(["${EACH_CIDRv4}"]="${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}");
+								fi;
+							fi;
 							#
 							#  !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
 							#
-							ALLOW_CIDR_ARR+=("${EACH_CIDRv4}");
-							### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
+							### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${RESOLVED_IPv4};
 
-							if [ -f ${EACH_RESOLVED_FILE} ]; then
-								sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-							fi;
 
-							echo "${WHITELIST_HOST}:${CURRENT_RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+							#
+							#  !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
+							#
+							##### Remove / Slice the line beginning with this current host from the resolved-addresses file
+							# if [ -f ${EACH_RESOLVED_FILE} ]; then
+							# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+							# fi;
+
+
+							#
+							#  !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
+							#
+							##### Add / Append a line containing this current host to the resolved-addresses file
+							# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+
 
 						fi;
 					done;
@@ -400,18 +401,43 @@ else
 
 		fi;
 
-		for EACH_ALLOWED_CIDR in "${ALLOW_CIDR_ARR[@]}"; do
-				echo "EACH_ALLOWED_CIDR = \"${EACH_ALLOWED_CIDR}\"";
-		done;
-		for EACH_DENIED_CIDR in "${DENY_CIDR_ARR[@]}"; do
-				echo "EACH_DENIED_CIDR = \"${EACH_DENIED_CIDR}\"";
-		done;
-
 		# Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
-		if [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${EACH_NGINX_DDNS_CONTENTS}" ]; then
-			echo -e "${EACH_NGINX_DDNS_CONTENTS}" > "${EACH_NGINX_DDNS_CONF}";
+		if [ "${EACH_SERVICE_NAME}" == "nginx" ] && [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${EACH_NGINX_DDNS_RESULTS}" ]; then
+			echo -e "${EACH_NGINX_DDNS_RESULTS}" > "${EACH_NGINX_DDNS_CONF}";
+		fi;
+	
+	done;
+
+
+	# Array to store store CIDRv4 addresses which were previously resolved and valid, but have since changed and need to be removed
+	unset DENY_CIDR_ARR; declare -A DENY_CIDR_ARR; # [Re-]Instantiate bash array
+	DENY_CIDR_ARR=();
+
+	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
+	for DAT_KEY in "${!DENY_CIDR_ARR[@]}"; do
+		DAT_ITEM="${DENY_CIDR_ARR[${DAT_KEY}]}";
+		echo "DENY_CIDR_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+	done;
+	
+	# Show resolved CIDRv4 addresses
+	for DAT_KEY in "${!RESOLVED_CIDR_ARR[@]}"; do
+		DAT_ITEM="${RESOLVED_CIDR_ARR[${DAT_KEY}]}";
+		echo "RESOLVED_CIDR_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+
+		# Get the previously-resolved IPv4 of target hostname (stored from a previous run of this script)
+		OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
+		if [ -z "${OLD_RESOLVED_IPV4}" ] && [ -n "${WHITELIST_FQDN}" ]; then
+			# DEPRECATED METHODOLOGY --> Used to saved the format of previously-resolved hosts as their original hostname
+			OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_FQDN} | cut -d: -f2);
 		fi;
 
+		# Remove old whitelist rule(s)
+		if [ -n "${OLD_RESOLVED_IPV4}" ] && [ "${RESOLVED_IPv4}" != "${OLD_RESOLVED_IPV4}" ]; then
+			#
+			#  !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
+			#
+			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+		fi;
 	done;
 
 	# Set ownership & privileges for the logging directory & sub-contents
@@ -479,6 +505,8 @@ fi;
 #   superuser.com  |  "linux - UFW rules for specific host / dynamic dns - Super User"  |  https://superuser.com/a/646959
 #
 #   stackoverflow.com  |  "How can I join elements of an array in Bash? - Stack Overflow"  |  https://stackoverflow.com/a/17841619
+#
+#   stackoverflow.com  |  "shell - A Bash script to check if a string is present in a comma separated list of strings - Stack Overflow"  |  https://stackoverflow.com/a/29301172
 #
 #   unix.stackexchange.com  |  "text processing - How to count the number of a specific character in each line? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/18742
 #

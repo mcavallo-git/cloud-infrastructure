@@ -467,9 +467,15 @@ else
 		fi;
 
 		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "Debug:  Calling  [ add_rule \"${WHITELIST_PROTOCOL}\" \"${WHITELIST_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
+		fi;
 		add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}";
 
 		# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
+		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "Debug:  Calling  [ echo \"${WHITELIST_PROTO}|${WHITELIST_PORT}|${EACH_RESOLVED_CIDRv4}\" >> \"${DDNS_UFW_RESOLVED_ADDR}\"; ]...";
+		fi;
 		echo "${WHITELIST_PROTO}|${WHITELIST_PORT}|${EACH_RESOLVED_CIDRv4}" >> "${DDNS_UFW_RESOLVED_ADDR}";
 
 	done;

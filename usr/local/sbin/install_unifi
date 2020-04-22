@@ -49,14 +49,6 @@ else
 			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-5.10.19/ubuntu1804/unifi-5.10.19.sh\" | bash; ]...";
 			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/ubuntu-18.04/unifi-5.10.23.sh" | bash;
 
-			# # Update Unifi Controller (via Bash convenience script)
-			# echo "";
-			# echo "Info:  Calling  [ mkdir -p \"/tmp\"; wget -O \"/tmp/unifi-update.sh\" \"https://get.glennr.nl/unifi/update/unifi-update.sh\"; bash \"/tmp/unifi-update.sh\"; ]...";
-			# mkdir -p "/tmp"; wget -O "/tmp/unifi-update.sh" "https://get.glennr.nl/unifi/update/unifi-update.sh"; bash "/tmp/unifi-update.sh";
-			echo "";
-			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-update.sh\" | bash; ]...";
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh" | bash;
-
 		else
 
 			# Install pre-requisite package(s)

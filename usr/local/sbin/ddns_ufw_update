@@ -83,7 +83,7 @@ else
 
 	# ------------------------------------------------------------
 	#
-	# Sub-Function: Takes first argument ($1) as a delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
+	# Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
 	#
 	function implode { local IFS="$1"; shift; echo "$*"; }
 
@@ -214,17 +214,13 @@ else
 		EACH_NGINX_DDNS_CONF="${NGINX_CONF_DDNS}/${EACH_SERVICE_NAME}";
 		EACH_NGINX_DDNS_CONTENTS="";
 
-		unset EACH_SERVICE_CIDR_ARR; declare -a EACH_SERVICE_CIDR_ARR; # [Re-]Instantiate bash array
-		EACH_SERVICE_CIDR_ARR=();
-		DAT_ARRAY+=("Item-One");
-		DAT_ARRAY+=("Item-One");
-		DAT_ARRAY+=("Item-Two");
-		DAT_ARRAY+=("Item-A");
-		DAT_ARRAY+=("Item-A");
-		DAT_ARRAY+=("Item-B");
-		for DAT_ITEM in "${DAT_ARRAY[@]}"; do
-		echo "${DAT_ITEM}";
-		done;
+		# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
+		unset ALLOW_CIDR_ARR; declare -a ALLOW_CIDR_ARR; # [Re-]Instantiate bash array
+		ALLOW_CIDR_ARR=();
+
+		# Array to store store CIDRv4 addresses which were previously resolved and valid, but have since changed and need to be removed
+		unset DENY_CIDR_ARR; declare -a DENY_CIDR_ARR; # [Re-]Instantiate bash array
+		DENY_CIDR_ARR=();
 
 		# Only whitelist services which are in-use by this machine
 		SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${EACH_SERVICE_NAME}.service" | grep "^${EACH_SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -386,7 +382,8 @@ else
 							#
 							#  !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
 							#
-							add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
+							ALLOW_CIDR_ARR+=("${EACH_CIDRv4}");
+							### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${CURRENT_RESOLVED_IPv4};
 
 							if [ -f ${EACH_RESOLVED_FILE} ]; then
 								sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
@@ -402,6 +399,13 @@ else
 			fi;
 
 		fi;
+
+		for EACH_ALLOWED_CIDR in "${ALLOW_CIDR_ARR[@]}"; do
+				echo "EACH_ALLOWED_CIDR = \"${EACH_ALLOWED_CIDR}\"";
+		done;
+		for EACH_DENIED_CIDR in "${DENY_CIDR_ARR[@]}"; do
+				echo "EACH_DENIED_CIDR = \"${EACH_DENIED_CIDR}\"";
+		done;
 
 		# Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
 		if [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${EACH_NGINX_DDNS_CONTENTS}" ]; then

@@ -478,13 +478,13 @@ else
 		DELETE_RULE=1;
 		EACH_UFW_PORT="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		EACH_UFW_PROTOCOL="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f3 sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f3 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - delete the rule, otherwise
 		if [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X} ]; then # Matched on valid CIDRv4
 			RESOLVED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 			for EACH_PORT_PROTO in $(echo ${RESOLVED_PORT_PROTOS} | sed "s/,/ /g"); do # For each substring in a comma delimited string
-				RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1)";
-				RESOLVED_PROTOCOL="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2)";
+				RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+				RESOLVED_PROTOCOL="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 				if [ "${EACH_UFW_PORT}" == "${RESOLVED_PORT}" ]; then # Matched on valid Port
 					if [ "${EACH_UFW_PROTOCOL}" == "${RESOLVED_PROTOCOL}" ]; then # Matched on valid Protocol
 						# All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)

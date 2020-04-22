@@ -471,7 +471,7 @@ else
 		CIDRv4_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 
 		# For each substring in a comma delimited string
-		for PORT_PROTO in $(echo ${ALL_PORT_PROTOS} | sed "s/,/ /g"); do
+		for PORT_PROTO in $(echo ${CIDRv4_PORT_PROTOS} | sed "s/,/ /g"); do
 
 			WHITELIST_PORT="$(echo "${PORT_PROTO}" | cut -d'/' -f1)";
 			WHITELIST_PROTOCOL="$(echo "${PORT_PROTO}" | cut -d'/' -f2)";

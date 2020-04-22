@@ -17,7 +17,7 @@ fi;
 #
 LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
@@ -374,6 +374,8 @@ fi;
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   manpages.ubuntu.com  |  "Ubuntu Manpage: ufw - program for managing a netfilter firewall"  |  https://manpages.ubuntu.com/manpages/bionic/man8/ufw.8.html
 #
 #   notepad2.blogspot.com  |  "My Tech Notes: shell script: update ufw rules for the hosts with dynamic ip addresses"  |  https://notepad2.blogspot.com/2012/06/shell-script-update-ufw-rules-for-hosts.html
 #

@@ -52,6 +52,7 @@ else
 	
 	# Read-in runtime/resolved values from previous iteration of this script
 	DDNS_UFW_RESOLVED_ADDR="/etc/ddns_ufw_update.resolved";
+
 	ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
 	if [ -f "${DDNS_UFW_RESOLVED_ADDR}" ]; then
 		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(cat "${DDNS_UFW_RESOLVED_ADDR}" | grep '\S');
@@ -228,7 +229,6 @@ else
 		EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE_NAME}]}";
 		EACH_NGINX_DDNS_CONF="${NGINX_CONF_DDNS}/${EACH_SERVICE_NAME}";
 		EACH_NGINX_DDNS_RESULTS="";
-
 
 		EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}"; # Define the location for the whitelist config-files
 		EACH_RESOLVED_FILE="${EACH_WHITELIST_FILE}.resolved"; # Define the location to save resolve CIDRv4 addresses to
@@ -456,24 +456,29 @@ else
 		fi;
 
 		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-		add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${EACH_RESOLVED_CIDRv4};
+		add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}";
 
 		# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
-		# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+		echo "${WHITELIST_PROTO}|${WHITELIST_PORT}|${EACH_RESOLVED_CIDRv4}" >> "${DDNS_UFW_RESOLVED_ADDR}";
 
 	done;
 
+	if [ ${DEBUG_MODE} -eq 1 ]; then
+		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR{@]} ]";
+		echo "Debug:  PREVIOUSLY_RESOLVED_TO_REMOVE = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
+	fi;
+
 	# Array containing CIDRv4 addresses which are now no-longer-valid
 	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
-	unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
-	DISASSOCIATED_CIDRv4_ARR=();
+	# unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	# DISASSOCIATED_CIDRv4_ARR=();
 
 	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
-	for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
-		for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+	# for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
+	# 	for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 
-			DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
-			echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+	# 		DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
+	# 		echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
 
 			### !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
 			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
@@ -483,8 +488,8 @@ else
 			# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
 			# fi;
 
-		done;
-	done;
+	# 	done;
+	# done;
 
 	# Set ownership & privileges for the logging directory & its sub contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then

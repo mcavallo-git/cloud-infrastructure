@@ -10,10 +10,10 @@ if [ -n "$1" ]; then
 	# Use first argument passed to script as a string to match the available packages against
 	if [ -n "$(which yum 2>'/dev/null';)" ]; then
 		yum list available "*$1*" | sort | grep -i "$1";
-		echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep -i "$1" | wc -l; echo "";
+		echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep -i "$1" | wc -l;
 	elif [ -n "$(which apt-cache 2>'/dev/null';)" ]; then
 		apt-cache search "$1" | sort | grep -i "$1";
-		echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep -i "$1" | wc -l; echo "";
+		echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep -i "$1" | wc -l;
 	else
 		echo "Error:  Incompatible environment - exiting...";
 	fi;
@@ -23,10 +23,10 @@ else
 	# No argument(s) passed - Show all available packages
 	if [ -n "$(which yum 2>'/dev/null';)" ]; then
 		yum list available | sort;
-		echo ""; echo -n "Total Packages Found:  "; yum list available | sort | wc -l; echo "";
+		echo ""; echo -n "Total Packages Found:  "; yum list available | sort | wc -l;
 	elif [ -n "$(which apt-cache 2>'/dev/null';)" ]; then
 		apt-cache search '' | sort;
-		echo ""; echo -n "Total Packages Found:  "; apt-cache search "$1" | sort | grep -i "$1" | wc -l; echo "";
+		echo ""; echo -n "Total Packages Found:  "; apt-cache search "$1" | sort | grep -i "$1" | wc -l;
 	else
 		echo "Error:  Incompatible environment - exiting...";
 	fi;

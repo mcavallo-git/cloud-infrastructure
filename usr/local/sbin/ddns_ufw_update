@@ -468,7 +468,7 @@ else
 	# Show resolved CIDRv4 addresses
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 
-		ALL_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+		CIDRv4_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 
 		# For each substring in a comma delimited string
 		for PORT_PROTO in $(echo ${ALL_PORT_PROTOS} | sed "s/,/ /g"); do

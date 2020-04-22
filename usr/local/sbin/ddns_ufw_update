@@ -199,7 +199,7 @@ else
 	fi;
 
 	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
-	unset RESOLVED_CIDR_ARR; declare -A RESOLVED_CIDR_ARR; # [Re-]Instantiate bash array
+	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
 	
 	# ------------------------------------------------------------
 	#
@@ -357,17 +357,17 @@ else
 							fi;
 
 
-							if [ -z "${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]}" ]; then
+							if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
 								# New array-index (CIDRv4) & value (port)
-								RESOLVED_CIDR_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
+								RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
 							else
 								# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
-								if [[ ",${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
+								if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
 									# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
 									echo "" > '/dev/null';  # Do nothing
 								else
 									# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
-									RESOLVED_CIDR_ARR+=(["${EACH_CIDRv4}"]="${RESOLVED_CIDR_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}");
+									RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}");
 								fi;
 							fi;
 							#
@@ -409,20 +409,15 @@ else
 	done;
 
 
-	# Array to store store CIDRv4 addresses which were previously resolved and valid, but have since changed and need to be removed
-	unset DENY_CIDR_ARR; declare -A DENY_CIDR_ARR; # [Re-]Instantiate bash array
-	DENY_CIDR_ARR=();
-
-	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
-	for DAT_KEY in "${!DENY_CIDR_ARR[@]}"; do
-		DAT_ITEM="${DENY_CIDR_ARR[${DAT_KEY}]}";
-		echo "DENY_CIDR_ARR[${DAT_KEY}] = ${DAT_ITEM}";
-	done;
+	# Array containing CIDRv4 addresses which are now no-longer-valid
+	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
+	unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	DISASSOCIATED_CIDRv4_ARR=();
 	
 	# Show resolved CIDRv4 addresses
-	for DAT_KEY in "${!RESOLVED_CIDR_ARR[@]}"; do
-		DAT_ITEM="${RESOLVED_CIDR_ARR[${DAT_KEY}]}";
-		echo "RESOLVED_CIDR_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+	for EACH_RESOLVED_CIDR in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+		DAT_ITEM="${RESOLVED_CIDRv4_ARR[${DAT_KEY}]}";
+		echo "RESOLVED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
 
 		# Get the previously-resolved IPv4 of target hostname (stored from a previous run of this script)
 		OLD_RESOLVED_IPV4=$(cat ${EACH_RESOLVED_FILE} | grep ${WHITELIST_HOST} | cut -d: -f2);
@@ -440,7 +435,15 @@ else
 		fi;
 	done;
 
-	# Set ownership & privileges for the logging directory & sub-contents
+	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
+	for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
+		for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+			DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
+			echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+		done;
+	done;
+
+	# Set ownership & privileges for the logging directory & its sub contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 		chown -R "syslog:adm" "${LOGDIR}";
 	fi;

@@ -32,7 +32,6 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
 		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
-		/bin/systemctl list-unit-files --no-legend --no-pager --full unifizz.service | grep '^unifi.service'; echo $?;
 		if [ 1 -eq 1 ]; then
 
 			# Update Unifi Controller (via Bash convenience script)

@@ -294,10 +294,11 @@ else
 								echo "Debug: WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
 							fi;
 
-							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do  # For each substring in a comma delimited string
+							# For each substring in a comma delimited string
+							for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
 
 								RESOLVED_IPv4="";
-								WHITELIST_CIDRv4="";
+								RESOLVED_CIDRv4="";
 
 								if [ "${WHITELIST_HOST}" == "0.0.0.0" ] || [ "${WHITELIST_HOST}" == "0.0.0.0/0" ] || [ "$(echo ${WHITELIST_HOST} | tr '[:upper:]' '[:lower:]';)" == "any" ]; then
 
@@ -310,6 +311,7 @@ else
 									# Check if host if in IPv4 or CIDRv4 syntax, already
 									
 									if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
+										# Host is formatted using IP or CIDR notation (address resolution not required)
 										if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
 											# Add "/32" to the end of string, if no CIDR notation is found - ex: 192.168.0.1/32
 											RESOLVED_IPv4="${WHITELIST_HOST}";
@@ -320,85 +322,94 @@ else
 											RESOLVED_CIDRv4="${WHITELIST_HOST}";
 										fi;
 									else
-										# Attempt to resolve the current IPv4 of target hostname
-										WHITELIST_FQDN="${WHITELIST_HOST}";
-										RESOLVED_IPv4="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
-									fi;
-
-									if [ -n "${RESOLVED_IPv4}" ]; then
-
-										# NGINX Service Only --> Also add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
-										if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
-											NEXT_NGINX_LINE="";
-											if [ -n "${WHITELIST_FQDN}" ]; then
-												# DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
-												#   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
-												#   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
-												if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
-													rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
-												fi;
-												NEXT_NGINX_LINE="allow ${RESOLVED_IPv4};  # ${WHITELIST_HOST}";
-											else
-												NEXT_NGINX_LINE="allow ${RESOLVED_IPv4};";
-											fi;
-											# Append this line to the total string of lines to put into the nginx service-config-file
-											if [ -z "${EACH_NGINX_DDNS_RESULTS}" ]; then
-												EACH_NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
-											else
-												EACH_NGINX_DDNS_RESULTS="${EACH_NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
-											fi;
+										# Host is NOT formatted using IP or CIDR notation (address resolution is required)
+										HOST_ADDRESS_LOOKUP="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
+										if [[ ${HOST_ADDRESS_LOOKUP} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
+											# IPv4 resolved successfully
+											RESOLVED_IPv4="${HOST_ADDRESS_LOOKUP}"; 
+											RESOLVED_CIDRv4="${HOST_ADDRESS_LOOKUP}/32"; 
+											WHITELIST_FQDN="${WHITELIST_HOST}";
+										else
+											# ERROR - Unable to resolve host
+											echo "Error:  Address resolution failed for host \"${WHITELIST_HOST}\"";
+											RESOLVED_IPv4=""
+											RESOLVED_CIDRv4="";
+											WHITELIST_FQDN="";
 										fi;
-
-									else
-
-										# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
-										echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Hostname resolution failed for \"${WHITELIST_HOST}\"  (unable to resolve/convert to CIDRv4 notation)" 1>&2;
 
 									fi;
 
 								fi;
 
-								if [ ${DEBUG_MODE} -eq 1 ]; then
-									echo "Debug:  RESOLVED_IPv4 = [ ${RESOLVED_IPv4} ]";
-									echo "Debug:  RESOLVED_CIDRv4 = [ ${RESOLVED_CIDRv4} ]";
+								# Verify final CIDRv4 address notation
+								if [ -n "${RESOLVED_CIDRv4}" ] && [[ ${RESOLVED_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
+
+									if [ ${DEBUG_MODE} -eq 1 ]; then
+										echo "Debug:  RESOLVED_IPv4 = [ ${RESOLVED_IPv4} ]";
+										echo "Debug:  RESOLVED_CIDRv4 = [ ${RESOLVED_CIDRv4} ]";
+									fi;
+
+									if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
+										# New array-index (CIDRv4) & value (port)
+										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
+									else
+										# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
+										if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
+											# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
+											echo "" > '/dev/null';  # Do nothing
+										else
+											# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
+											RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}";
+										fi;
+									fi;
+
+									# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+									### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${RESOLVED_IPv4};
+
+									# ------------------------------------------------------------
+									# BEGIN NGINX ONLY
+									if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
+										# Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
+										NEXT_NGINX_LINE="";
+										if [ -n "${WHITELIST_FQDN}" ]; then
+											# DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
+											#   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
+											#   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
+											if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
+												rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
+											fi;
+											NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
+										else
+											NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};";
+										fi;
+										# Append this line to the total string of lines to put into the nginx service-config-file
+										if [ -z "${EACH_NGINX_DDNS_RESULTS}" ]; then
+											EACH_NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
+										else
+											EACH_NGINX_DDNS_RESULTS="${EACH_NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
+										fi;
+									fi;
+									# END NGINX ONLY
+									# ------------------------------------------------------------
+
+								else
+
+									# IPv4 Unable to be resolved - Remove old IPv4 rule(s)
+									RESOLVED_IPv4="";
+									RESOLVED_CIDRv4="";
+									echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Hostname resolution failed for \"${WHITELIST_HOST}\"  (unable to resolve/convert to CIDRv4 notation)" 1>&2;
+
+									# !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
+									# if [ -f ${EACH_RESOLVED_FILE} ]; then
+									# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+									# fi;
+
+									# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
+									# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
+
 								fi;
 
 							done;
-
-
-							if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
-								# New array-index (CIDRv4) & value (port)
-								RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
-							else
-								# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
-								if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
-									# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
-									echo "" > '/dev/null';  # Do nothing
-								else
-									# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
-									RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}";
-								fi;
-							fi;
-							#
-							#  !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-							#
-							### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${RESOLVED_IPv4};
-
-
-							#
-							#  !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
-							#
-							##### Remove / Slice the line beginning with this current host from the resolved-addresses file
-							# if [ -f ${EACH_RESOLVED_FILE} ]; then
-							# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-							# fi;
-
-
-							#
-							#  !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
-							#
-							##### Add / Append a line containing this current host to the resolved-addresses file
-							# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
 
 						fi;
 
@@ -420,26 +431,14 @@ else
 		fi;
 	
 	done;
-
-	# Keep reading lines from file(s), removing newlines as you go, and not worry about it you've read a file in at the start or not
-	# tester=$(echo "$tester"$'\n'"$(cat 1)" | grep '\S');
-	# echo "$tester"
-
-	# Array containing CIDRv4 addresses which are now no-longer-valid
-	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
-	unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
-	DISASSOCIATED_CIDRv4_ARR=();
 	
 	# Combine all previously-resolved CIDRv4 addresses and their services
-	ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
-	for EACH_SERVICE_NAME in "${!ALL_PREVIOUSLY_RESOLVED_CONTENTS[@]}"; do
-		EACH_RESOLVED_CONTENTS="${RESOLVED_CIDRv4_ARR[${EACH_SERVICE_NAME}]}";
-
-		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(implode $'\n' "${PREVIOUSLY_RESOLVED_CONTENTS_ARR[@]}" | grep '\S');
-		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "Debug:  ALL_PREVIOUSLY_RESOLVED_CONTENTS = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
-		fi;
-	done;
+	ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(implode $'\n' "${PREVIOUSLY_RESOLVED_CONTENTS_ARR[@]}" | grep '\S');
+	if [ ${DEBUG_MODE} -eq 1 ]; then
+		echo "Debug:  ALL_PREVIOUSLY_RESOLVED_CONTENTS = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
+	fi;
+	### ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
+	### for EACH_SERVICE_NAME in "${!PREVIOUSLY_RESOLVED_CONTENTS_ARR[@]}"; do EACH_RESOLVED_CONTENTS="${PREVIOUSLY_RESOLVED_CONTENTS_ARR[${EACH_SERVICE_NAME}]}"; done;
 
 	# Show resolved CIDRv4 addresses
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
@@ -447,27 +446,30 @@ else
 		echo "RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = ${DAT_ITEM}";
 
 		# Compare old resolved hosts against currently resolved hosts
-		CIDR_EXISTS_IN_CURRENT_RESOLVED_LIST="";
-
-		# Remove old whitelist rule(s)
-		if [ -n "${CIDR_EXISTS_IN_CURRENT_RESOLVED_LIST}" ]; then
-			#
-			#  !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
-			#
-			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
-			##### Remove / Slice the line beginning with this current host from the resolved-addresses file
-			# if [ -f ${EACH_RESOLVED_FILE} ]; then
-			# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
-			# fi;
-		fi;
+		CIDR_IS_STILL_VALID="";
 
 	done;
+
+	# Array containing CIDRv4 addresses which are now no-longer-valid
+	#  |--> Whitelist file(s) at some point in time (during a previous runtime) resolved to these CIDRv4 addresses, but since then, either the whitelist was removed or the host has changed network addresses (DDNS, DHCP, etc.)
+	unset DISASSOCIATED_CIDRv4_ARR; declare -A DISASSOCIATED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	DISASSOCIATED_CIDRv4_ARR=();
 
 	# Determine which CIDRv4 addresses should no longer be allowed through the firewall
 	for DAT_KEY in "${!DISASSOCIATED_CIDRv4_ARR[@]}"; do
 		for DAT_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+
 			DAT_ITEM="${DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}]}";
 			echo "DISASSOCIATED_CIDRv4_ARR[${DAT_KEY}] = ${DAT_ITEM}";
+
+			### !!!  REMOVE THE OLD IPv4 FROM FIREWALL'S WHITELIST  !!!
+			# delete_rule ${WHITELIST_PROTOCOL} ${WHITELIST_PORT} ${OLD_RESOLVED_IPV4};
+
+			### !!!  REMOVE LINE FROM FILE - OLD HOST (RESOLVED ADDRESSES FILE)  !!!
+			# if [ -f ${EACH_RESOLVED_FILE} ]; then
+			# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
+			# fi;
+
 		done;
 	done;
 

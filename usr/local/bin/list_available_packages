@@ -7,17 +7,17 @@
 echo "";
 if [ -n "$1" ]; then
 	if [ -n "$(which yum 2>'/dev/null';)" ]; then
-		yum list available "*$1*" | grep -i "$1";
+		yum list available "*$1*" | sort | grep -i "$1";
 	elif [ -n "$(which apt-cache 2>'/dev/null';)" ]; then
-		apt-cache search "$1" | grep "$1";
+		apt-cache search "$1" | sort | grep "$1"
 	else
 		echo "Error:  Incompatible environment - exiting...";
 	fi;
 else
 	if [ -n "$(which yum 2>'/dev/null';)" ]; then
-		yum list available;
+		yum list available | sort;
 	elif [ -n "$(which apt-cache 2>'/dev/null';)" ]; then
-		apt-cache search '';
+		apt-cache search '' | sort;
 	else
 		echo "Error:  Incompatible environment - exiting...";
 	fi;

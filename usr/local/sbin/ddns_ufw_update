@@ -204,9 +204,6 @@ else
 
 	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
 	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
-	
-	# Array to store previously resolved service CIDRv4 addresses and their contents
-	unset PREVIOUSLY_RESOLVED_CONTENTS_ARR; declare -A PREVIOUSLY_RESOLVED_CONTENTS_ARR; # [Re-]Instantiate bash array
 
 	# ------------------------------------------------------------
 	#
@@ -438,6 +435,9 @@ else
 	
 	done;
 
+	# Array containing rules deleted from UFW
+	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
+
 	# Show resolved CIDRv4 addresses
 	if [ ${DEBUG_MODE} -eq 1 ]; then
 		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
@@ -459,16 +459,9 @@ else
 			IS_SKIPPED=$(add_rule "${WHITELIST_PROTOCOL}" "${WHITELIST_PORT}" "${EACH_RESOLVED_CIDRv4}" | grep 'Skipped');
 			if [ -z "${IS_SKIPPED}" ]; then  # New rule was applied
 				# Add the inverse of new rule to the undo-changes array
-				UFW_CHANGES_UNDO_ARR+=("/usr/sbin/ufw delete allow proto ${WHITELIST_PROTOCOL} from ${EACH_RESOLVED_CIDRv4} to any port ${WHITELIST_PORT};");
+				UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${WHITELIST_PROTOCOL} from ${EACH_RESOLVED_CIDRv4} to any port ${WHITELIST_PORT};"]="");
 			fi;
 		done;
-	done;
-
-	# Array containing rules deleted from UFW
-	unset UFW_CHANGES_UNDO_ARR; declare -a UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
-
-	for DAT_ITEM in "${DAT_ARRAY[@]}"; do
-	echo "${DAT_ITEM}";
 	done;
 
 	# Determine which rules need to be removed
@@ -500,7 +493,7 @@ else
 			# Delete the firewall rule
 			delete_rule ${EACH_UFW_PROTOCOL} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
 			# Add the inverse of new rule to the undo-changes array
-			UFW_CHANGES_UNDO_ARR+=("/usr/sbin/ufw allow proto ${EACH_UFW_PROTOCOL} from ${EACH_UFW_CIDRv4} to any port ${EACH_UFW_PORT};");
+			UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw allow proto ${EACH_UFW_PROTOCOL} from ${EACH_UFW_CIDRv4} to any port ${EACH_UFW_PORT};"]="");
 		else
 			# Keep the firewall rule
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -516,7 +509,9 @@ else
 	echo " !!  To undo any of the changes-made, please see below  !!  ";
 	echo " !!    list of undo-commands created for this session   !!  ";
 	echo "";
-	for EACH_UNDO_COMMAND in "${UFW_CHANGES_UNDO_ARR[@]}"; do
+	for EACH_UNDO_COMMAND in "${!UFW_CHANGES_UNDO_ARR[@]}"; do
+	# 	CIDRv4_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+	# for EACH_UNDO_COMMAND in "${UFW_CHANGES_UNDO_ARR[@]}"; do
 		echo "${EACH_UNDO_COMMAND}";
 	done;
 	echo "------------------------------------------------------------";

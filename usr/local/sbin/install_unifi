@@ -42,12 +42,7 @@ else
 		# Install pre-requisite package(s)
 		echo "";
 		echo "Info:  Calling  [ apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install apt-transport-https ca-certificates wget; ]...";
-		apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install apt-transport-https ca-certificates wget;
-
-		# Optionally, force an install of Java version-8
-		# echo "";
-		# echo "Info:  Calling  [ apt-get -y update; apt-get -y openjdk-8-jre-headless; ]...";
-		# apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y openjdk-8-jre-headless;
+		apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install apt-transport-https ca-certificates openjdk-8-jre-headless wget;
 
 		# Import MongoDB's official GPG Key
 		echo "";

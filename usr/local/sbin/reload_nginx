@@ -23,7 +23,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	SERVICE_NAME="nginx";
-	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 1 ]; then
 		# Service NOT found to exist locally
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";

@@ -119,7 +119,7 @@ else
 
 	# ------------------------------------------------------------
 	# Check for the Jenkins service locally
-	# SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	# SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	# if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 	# 	# Jenkins is already installed
 	# 	echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
@@ -202,7 +202,7 @@ else
 
 
 	# ------------------------------------------------------------
-	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 		EXIT_CODE=0;
 

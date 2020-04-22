@@ -476,9 +476,9 @@ else
 	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 	for EACH_UFW_LINE in ${RULESET_UFW}; do
 		DELETE_RULE=1;
-		EACH_UFW_PORT="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-		EACH_UFW_PROTOCOL="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | cut -d'/' -f3 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_UFW_PORT="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_UFW_PROTOCOL="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - delete the rule, otherwise
 		# if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug:  Checking array-index \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X}";

@@ -24,7 +24,7 @@ else
 	# ------------------------------------------------------------
 
 	SERVICE_NAME="unifi";
-	SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
 
 		# Show service status
@@ -32,6 +32,7 @@ else
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
 		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
+		/bin/systemctl list-unit-files --no-legend --no-pager --full unifizz.service | grep '^unifi.service'; echo $?;
 		if [ 1 -eq 1 ]; then
 
 			# # Update Unifi Controller (via Bash convenience script)

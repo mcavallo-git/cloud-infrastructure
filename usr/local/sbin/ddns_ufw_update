@@ -49,7 +49,16 @@ else
 
 	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
 	UFW_CONFIG_FILEPATH="/etc/default/ufw";
-
+	
+	# Read-in runtime/resolved values from previous iteration of this script
+	DDNS_UFW_RESOLVED_ADDR="/etc/ddns_ufw_update.resolved";
+	ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
+	if [ -f "${DDNS_UFW_RESOLVED_ADDR}" ]; then
+		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(cat "${DDNS_UFW_RESOLVED_ADDR}" | grep '\S');
+	else
+		touch "${DDNS_UFW_RESOLVED_ADDR}";
+	fi;
+	
 	# File containing hosts to allow through UFW
 	#  |
 	#  |--> All lines in given whitelist file must be in a specific format/syntax
@@ -349,22 +358,21 @@ else
 										echo "Debug:  RESOLVED_CIDRv4 = [ ${RESOLVED_CIDRv4} ]";
 									fi;
 
+									PORT_PROTO="${WHITELIST_PORT}/${WHITELIST_PROTOCOL}";
+
 									if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
 										# New array-index (CIDRv4) & value (port)
-										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${WHITELIST_PORT}");
+										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${PORT_PROTO}");
 									else
 										# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
-										if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${WHITELIST_PORT},"* ]]; then
+										if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${PORT_PROTO},"* ]]; then
 											# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
-											echo "" > '/dev/null';  # Do nothing
+											echo "" 1>'/dev/null' 2>&1;  # Do nothing
 										else
 											# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
-											RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${WHITELIST_PORT}";
+											RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${PORT_PROTO}";
 										fi;
 									fi;
-
-									# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-									### add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${RESOLVED_IPv4};
 
 									# ------------------------------------------------------------
 									# BEGIN NGINX ONLY
@@ -404,9 +412,6 @@ else
 									# 	sed -i.bak /^${WHITELIST_HOST}*/d ${EACH_RESOLVED_FILE};
 									# fi;
 
-									# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
-									# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
-
 								fi;
 
 							done;
@@ -432,21 +437,29 @@ else
 	
 	done;
 	
-	# Combine all previously-resolved CIDRv4 addresses and their services
-	ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(implode $'\n' "${PREVIOUSLY_RESOLVED_CONTENTS_ARR[@]}" | grep '\S');
-	if [ ${DEBUG_MODE} -eq 1 ]; then
-		echo "Debug:  ALL_PREVIOUSLY_RESOLVED_CONTENTS = [ ${ALL_PREVIOUSLY_RESOLVED_CONTENTS} ]";
-	fi;
-	### ALL_PREVIOUSLY_RESOLVED_CONTENTS="";
-	### for EACH_SERVICE_NAME in "${!PREVIOUSLY_RESOLVED_CONTENTS_ARR[@]}"; do EACH_RESOLVED_CONTENTS="${PREVIOUSLY_RESOLVED_CONTENTS_ARR[${EACH_SERVICE_NAME}]}"; done;
-
 	# Show resolved CIDRv4 addresses
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-		EACH_PORT="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
-		echo "RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = ${DAT_ITEM}";
+		PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 
-		# Compare old resolved hosts against currently resolved hosts
-		CIDR_IS_STILL_VALID="";
+		WHITELIST_PORT="$(echo "${PORT_PROTO}" | cut -d'/' -f1)"; fi;
+		WHITELIST_PROTOCOL="$(echo "${PORT_PROTO}" | cut -d'/' -f2)"; fi;
+
+		# Remove new, valid hosts from previously resolved hosts (to be left with the set of invalid hosts to remove at the end)
+		SED_EXPRESSION="$(echo ${EACH_RESOLVED_CIDRv4} | sed 's/\//\\\//g')"; SED_EXPRESSION="/^${SED_EXPRESSION}*/d";
+		ALL_PREVIOUSLY_RESOLVED_CONTENTS=$(echo "${ALL_PREVIOUSLY_RESOLVED_CONTENTS}" | sed ${SED_EXPRESSION});
+		if [ "${SLICED_PREVIOUSLY_RESOLVED_CONTENTS}" == "${ALL_PREVIOUSLY_RESOLVED_CONTENTS}" ]; then
+			# New CIDRv4 which was not previously in the resolved addresses file(s) OR an eisting address which has already been removed
+			echo "" 1>'/dev/null' 2>&1;  # Do nothing
+		else
+			# Existing FQDN whose address lookup returned a matching CIDRv4 address between this run (newly-resolved) and a previous run (previously-resolved)
+			echo "" 1>'/dev/null' 2>&1;  # Do nothing
+		fi;
+
+		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+		add_rule "${WHITELIST_PROTOCOL}" ${WHITELIST_PORT} ${EACH_RESOLVED_CIDRv4};
+
+		# !!!  ADD LINE TO FILE - NEW HOST (RESOLVED ADDRESSES FILE)  !!!
+		# echo "${WHITELIST_HOST}:${RESOLVED_IPv4}" >> ${EACH_RESOLVED_FILE};
 
 	done;
 
@@ -500,13 +513,11 @@ fi;
 #		chmod 0755 "/usr/local/sbin/ddns_ufw_update";
 #
 #
-#
 #### The content of "/etc/ddns_ufw_update.whitelist" should match the format:
 #	
 #		vi "/etc/ddns_ufw_update.whitelist";
 #
 #		tcp:22:yourpc.no-ip.org
-#
 #
 #
 #### Shortcuts to this script, whitelist, and logfile-directory can be set via:
@@ -518,13 +529,11 @@ fi;
 #		ln -sf "/var/log/ddns_ufw_update" "/root/ddns_ufw_update/logs";
 #
 #
-#
 #### A crontab entry for executing the script every 3 minutes could look like this:
 #
 #		crontab -e
 #
 #		*/3 * * * * sudo "ddns_ufw_update"
-#
 #
 #
 # ------------------------------------------------------------

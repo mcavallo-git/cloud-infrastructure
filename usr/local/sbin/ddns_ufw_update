@@ -33,6 +33,8 @@ else
 	# ------------------------------------------------------------
 	# Declare runtime variable(s)
 	
+	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
+
 	# Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
 	if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
 		DEBUG_MODE=1;

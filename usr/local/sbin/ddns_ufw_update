@@ -360,11 +360,9 @@ else
 
 									PORT_PROTO="${WHITELIST_PORT}/${WHITELIST_PROTOCOL}";
 
-									if [ -z "${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}" ]; then
-										# New array-index (CIDRv4) & value (port)
-										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${PORT_PROTO}");
-									else
-										# Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
+									if [ ${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]+X} ]; then
+										# Existing array-index (CIDRv4) & value (port(s))
+										#   |--> Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
 										if [[ ",${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]}," = *",${PORT_PROTO},"* ]]; then
 											# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
 											echo "" 1>'/dev/null' 2>&1;  # Do nothing
@@ -372,6 +370,9 @@ else
 											# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
 											RESOLVED_CIDRv4_ARR["${EACH_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4}]},${PORT_PROTO}";
 										fi;
+									else
+										# New array-index (CIDRv4) & value (port)
+										RESOLVED_CIDRv4_ARR+=(["${EACH_CIDRv4}"]="${PORT_PROTO}");
 									fi;
 
 									# ------------------------------------------------------------
@@ -549,13 +550,15 @@ fi;
 #
 #   notepad2.blogspot.com  |  "My Tech Notes: shell script: update ufw rules for the hosts with dynamic ip addresses"  |  https://notepad2.blogspot.com/2012/06/shell-script-update-ufw-rules-for-hosts.html
 #
-#   superuser.com  |  "linux - UFW rules for specific host / dynamic dns - Super User"  |  https://superuser.com/a/646959
-#
-#   stackoverflow.com  |  "Loop through a comma-separated shell variable - Stack Overflow"  |  https://stackoverflow.com/a/27703327
+#   stackoverflow.com  |  "bash - Easiest way to check for an index or a key in an array? - Stack Overflow"  |  https://stackoverflow.com/a/13221491
 #
 #   stackoverflow.com  |  "How can I join elements of an array in Bash? - Stack Overflow"  |  https://stackoverflow.com/a/17841619
 #
+#   stackoverflow.com  |  "Loop through a comma-separated shell variable - Stack Overflow"  |  https://stackoverflow.com/a/27703327
+#
 #   stackoverflow.com  |  "shell - A Bash script to check if a string is present in a comma separated list of strings - Stack Overflow"  |  https://stackoverflow.com/a/29301172
+#
+#   superuser.com  |  "linux - UFW rules for specific host / dynamic dns - Super User"  |  https://superuser.com/a/646959
 #
 #   unix.stackexchange.com  |  "text processing - How to count the number of a specific character in each line? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/18742
 #

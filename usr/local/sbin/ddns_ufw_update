@@ -306,7 +306,7 @@ else
 							if [ "${WHITELIST_PROTOCOL}" == "tcp" ] || [ "${WHITELIST_PROTOCOL}" == "udp" ]; then
 
 								# For each substring in a comma delimited string
-								for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
+								for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/\n/g"); do
 
 									if [ ${DEBUG_MODE} -eq 1 ]; then
 										echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";

@@ -42,12 +42,13 @@ else
 		if [ 1 -eq 1 ]; then
 
 			# Install Unifi Controller (via Bash convenience script)
-			# echo "";
-			# echo "Info:  Calling  [ mkdir -p \"/tmp\"; wget -O \"/tmp/unifi-5.12.66.sh\" \"https://get.glennr.nl/unifi/install/unifi-5.12.66.sh\"; bash \"/tmp/unifi-5.12.66.sh\"; ]...";
-			# rm "/tmp/unifi-latest.sh" 1>'/dev/null' 2>*1; wget -O "/tmp/unifi-latest.sh" "https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh"; bash "/tmp/unifi-latest.sh";
+			SOURCE_URL="https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh";
+			FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/ubuntu-18.04/unifi-5.10.23.sh";
+			SOURCE_URL="${FALLBACK_URL}";
+			TMP_FILE="/tmp/unifi-install.sh";
 			echo "";
-			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-5.10.19/ubuntu1804/unifi-5.10.19.sh\" | bash; ]...";
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/ubuntu-18.04/unifi-5.10.23.sh" | bash;
+			echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
+			mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
 
 		else
 

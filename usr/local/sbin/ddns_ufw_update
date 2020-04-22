@@ -386,7 +386,7 @@ else
 										if [ ${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]+X} ]; then
 											# Existing array-index (CIDRv4) & value (port(s))
 											#   |--> Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
-											if [[ ",${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]}," == *",${PORT_PROTO},"* ]]; then
+											if [[ ",${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]}," = *",${PORT_PROTO},"* ]]; then
 												# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
 												echo "" 1>'/dev/null' 2>&1;  # Do nothing
 											else

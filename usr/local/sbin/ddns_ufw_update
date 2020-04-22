@@ -27,7 +27,7 @@ exec 2>&1;
 #
 if [ "$(id -un)" != "root" ]; then
 	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
 	exit 1;
 else
 	# ------------------------------------------------------------
@@ -135,7 +135,7 @@ else
 			else
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "Debug:  Rule already exists for [ ${proto}/${port} ALLOW IN ${ip} ]";
-					echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+					echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				fi;
 			fi;
 		fi;
@@ -172,8 +172,8 @@ else
 				#   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
 			else
 				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "Debug: Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
-					echo "  |--> Time: [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+					echo "Debug:  Skipped delete (No rule found to delete): ${proto}/${port} ALLOW IN ${ip}";
+					echo "  |--> Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				fi;
 			fi;
 		fi;
@@ -314,18 +314,18 @@ else
 								if [ ${DEBUG_MODE} -eq 1 ]; then
 									echo "";
 									echo "------------------------------------------------------------";
-									echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-									echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
-									echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-									echo "Debug: WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
-									echo "Debug: WHITELIST_DESCRIPTION = [ ${WHITELIST_DESCRIPTION} ]";
+									echo "Debug:  EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+									echo "Debug:  WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+									echo "Debug:  WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+									echo "Debug:  WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
+									echo "Debug:  WHITELIST_DESCRIPTION = [ ${WHITELIST_DESCRIPTION} ]";
 								fi;
 
 								# For each substring in a comma delimited string
 								for WHITELIST_HOST in $(echo ${WHITELIST_HOSTS_COMMA_DELIMITED} | sed "s/,/ /g"); do
 
 									if [ ${DEBUG_MODE} -eq 1 ]; then
-										echo "Debug: WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
+										echo "Debug:  WHITELIST_HOST = [ ${WHITELIST_HOST} ]";
 									fi;
 
 									RESOLVED_IPv4="";
@@ -474,11 +474,11 @@ else
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "";
 			echo "============================================================";
-			echo "Debug: EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-			echo "Debug: WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
-			echo "Debug: WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
-			echo "Debug: WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
-			echo "Debug: WHITELIST_DESCRIPTION = [ ${WHITELIST_DESCRIPTION} ]";
+			echo "Debug:  EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+			echo "Debug:  WHITELIST_PROTOCOL = [ ${WHITELIST_PROTOCOL} ]";
+			echo "Debug:  WHITELIST_PORT = [ ${WHITELIST_PORT} ]";
+			echo "Debug:  WHITELIST_HOSTS_COMMA_DELIMITED = [ ${WHITELIST_HOSTS_COMMA_DELIMITED} ]";
+			echo "Debug:  WHITELIST_DESCRIPTION = [ ${WHITELIST_DESCRIPTION} ]";
 		fi;
 
 		# Remove new, valid hosts from previously resolved hosts (to be left with the set of invalid hosts to remove at the end)

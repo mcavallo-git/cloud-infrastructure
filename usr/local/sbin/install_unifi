@@ -75,16 +75,12 @@ else
 		# apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install unifi;
 
 		# Install Unifi Controller (via Bash convenience script)
-		mkdir -p "/tmp";
-		wget -O "/tmp/unifi-5.12.66.sh" "https://get.glennr.nl/unifi/install/unifi-5.12.66.sh";
-		bash "/tmp/unifi-5.12.66.sh";
+		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://get.glennr.nl/unifi/install/unifi-5.12.66.sh" | bash;
 		
 		# Update Unifi Controller (via Bash convenience script)
-		mkdir -p "/tmp";
-		wget -O "/tmp/unifi-update.sh" "https://get.glennr.nl/unifi/update/unifi-update.sh";
-		bash "/tmp/unifi-update.sh";
+		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://get.glennr.nl/unifi/update/unifi-update.sh" | bash;
 
-		# Get LAN-Local IPv4
+		### Get LAN-Local IPv4(s) - One per NIC
 		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
 		if [ -z "${THIS_LAN_IPV4}" ]; then

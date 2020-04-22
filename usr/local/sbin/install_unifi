@@ -47,7 +47,7 @@ else
 			# rm "/tmp/unifi-latest.sh" 1>'/dev/null' 2>*1; wget -O "/tmp/unifi-latest.sh" "https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh"; bash "/tmp/unifi-latest.sh";
 			echo "";
 			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-5.10.19/ubuntu1804/unifi-5.10.19.sh\" | bash; ]...";
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://sysinfo.io/scripts/linux/unifi-controller/unifi-5.10.19/ubuntu1804/unifi-5.10.19.sh" | bash;
+			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/ubuntu-18.04/unifi-5.10.23.sh" | bash;
 
 			# # Update Unifi Controller (via Bash convenience script)
 			# echo "";
@@ -55,7 +55,7 @@ else
 			# mkdir -p "/tmp"; wget -O "/tmp/unifi-update.sh" "https://get.glennr.nl/unifi/update/unifi-update.sh"; bash "/tmp/unifi-update.sh";
 			echo "";
 			echo "Info:  Calling  [ curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -ssL \"https://sysinfo.io/scripts/linux/unifi-controller/unifi-update.sh\" | bash; ]...";
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://sysinfo.io/scripts/linux/unifi-controller/unifi-update.sh" | bash;
+			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh" | bash;
 
 		else
 
@@ -132,8 +132,8 @@ fi;
 # ------------------------------------------------------------
 # Citation(s)
 #
-#   help.ubnt.com  |  "UniFi - How to Install and Update via APT on Debian or Ubuntu"  |  https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-and-Update-via-APT-on-Debian-or-Ubuntu
-#
 #   help.ui.com  |  "UniFi - How to Install and Update via APT on Debian or Ubuntu – Ubiquiti Networks Support and Help Center"  |  https://help.ui.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu
+#
+#   sysinfo.io  |  "unifi-controller - sysinfo.io > scripts > linux > unifi-controller"  |  https://sysinfo.io/scripts/linux/unifi-controller/
 #
 # ------------------------------------------------------------

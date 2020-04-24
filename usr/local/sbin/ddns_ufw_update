@@ -443,6 +443,7 @@ else
 				echo "Debug:  NGINX_DDNS_CONF = [ ${NGINX_DDNS_CONF} ]";
 				echo "Debug:  NGINX_DDNS_RESULTS = [ ${NGINX_DDNS_RESULTS} ]";
 			fi;
+			echo "Info:  Calling  [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
 			echo -e "${NGINX_DDNS_RESULTS}" > "${NGINX_DDNS_CONF}";
 		fi;
 	

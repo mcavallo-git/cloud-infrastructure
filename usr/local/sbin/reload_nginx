@@ -38,14 +38,14 @@ else
 
 		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (before reload)...";
 		# /usr/sbin/service "${SERVICE_NAME}" status;
-
 		if [ -f "/run/nginx.pid" ]; then
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
 			nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" reload;
 		else
 			# Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
-			PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
-			if [ -n "${PID_ROGUE_NGINX_INSTANCE}" ]; then
+			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | wc -l;);
+			# PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
+			if [ -n "${MATCHED_PROCS_PS}" ]; then
 				# Snipe rogue nginx PIDs
 				echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
 				kill "${PID_ROGUE_NGINX_INSTANCE}";

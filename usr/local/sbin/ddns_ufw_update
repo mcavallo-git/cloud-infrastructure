@@ -71,12 +71,12 @@ else
 	# RUNTIME_SERVICE_USERS+=(["jenkins"]="jenkins");    # Jenkins Master
 
 	# Defaults for UFW (out-of-the-box)
-	ETC_NGINX="/etc/nginx/conf.ddns";
+	ETC_NGINX="/etc/nginx";
 	NGINX_CONF_DDNS="${ETC_NGINX}/conf.ddns";
 
 	# Create the DDNS NGINX directory only if the NGINX parent directory already exists
 	if [ -d "${ETC_NGINX}" ] && [ ! -d "${NGINX_CONF_DDNS}" ]; then
-			mkdir -p "${NGINX_CONF_DDNS}";
+		mkdir -p "${NGINX_CONF_DDNS}";
 	fi;
 
 	# Defaults for UFW (out-of-the-box)

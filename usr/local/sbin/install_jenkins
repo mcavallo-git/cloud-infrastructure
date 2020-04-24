@@ -164,7 +164,7 @@ else
 			yum -y check-update;
 			yum -y install "${PACKAGE_YUM}";
 		fi;
-		PACKAGE_YUM="openldap-devel";
+		# PACKAGE_YUM="openldap*";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
 			yum -y check-update;
 			yum -y install "${PACKAGE_YUM}";

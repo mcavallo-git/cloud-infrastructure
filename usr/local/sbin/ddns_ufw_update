@@ -205,6 +205,9 @@ else
 			CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
 			DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
 			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "Debug:  Calling  [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
+				fi;
 				/usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
 				# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 			fi;
@@ -215,6 +218,9 @@ else
 			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
 				# /usr/sbin/ufw default skip routed;
 				sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "Debug:  Calling  [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
+				fi;
 			fi;
 
 		fi;

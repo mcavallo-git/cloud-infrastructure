@@ -504,7 +504,19 @@ else
 		EACH_UFW_PORT="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		EACH_UFW_PROTOCOL="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-		EACH_UFW_IPv4="$(echo "${EACH_UFW_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_UFW_IPv4="";
+
+		if [[ ${EACH_UFW_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
+			# Regex test passed: CIDRv4 notation validity
+			EACH_UFW_IPv4="$(echo "${EACH_UFW_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+    elif [[ ${EACH_UFW_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
+  		# Regex test passed: IPv4 notation validity
+			EACH_UFW_IPv4="${EACH_UFW_CIDRv4}";
+			EACH_UFW_CIDRv4="${EACH_UFW_IPv4}/32";
+		else
+			EACH_UFW_IPv4="";
+			EACH_UFW_CIDRv4="";
+		fi;
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "------------------------------------------------------------";
 			echo "Debug:  EACH_UFW_PORT = [ ${EACH_UFW_PORT} ]";

@@ -560,13 +560,13 @@ else
 		if [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X} ]; then # Matched on valid CIDRv4
 			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug:  Matched on CIDRv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X}";
+				echo "Debug:  Matched on CIDRv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 				echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
 			fi;
 		elif [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]+X} ]; then # Matched on valid CIDRv4
 			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug:  Matched on IPv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]+X}";
+				echo "Debug:  Matched on IPv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
 				echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
 			fi;
 		fi;

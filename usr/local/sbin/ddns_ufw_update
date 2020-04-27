@@ -111,6 +111,7 @@ else
 			local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  IN FUNCTION [ add_rule()  ]";
+				echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				echo "            |-->  proto = [ ${proto} ]";
 				echo "            |-->  port = [ ${port} ]";
 				echo "            |-->  ip = [ ${ip} ]";
@@ -123,7 +124,6 @@ else
 				echo "";
 				# echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "            |-->  result: [ add new rule ]";
-				echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				echo "            |-->  call:  [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
 				/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
 				# Example(s):
@@ -134,7 +134,6 @@ else
 				ADD_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "            |-->  result: [ SKIPPED adding new rule ]";
-					echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				fi;
 			fi;
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -158,6 +157,7 @@ else
 			local rule=$(ufw status numbered | grep ${regex});
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  IN FUNCTION [ delete_rule()  ]";
+				echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				echo "            |-->  proto = [ ${proto} ]";
 				echo "            |-->  port = [ ${port} ]";
 				echo "            |-->  ip = [ ${ip} ]";
@@ -169,7 +169,6 @@ else
 				DELETE_RULE_SKIPPED=0;
 				# echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "            |-->  result: [ delete existing rule ]";
-				echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				echo "            |-->  call:  [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]";
 				/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
 				# Example(s):
@@ -178,7 +177,6 @@ else
 				DELETE_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
 					echo "            |-->  result: [ SKIPPED adding new rule ]";
-					echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
 				fi;
 			fi;
 			if [ ${DEBUG_MODE} -eq 1 ]; then

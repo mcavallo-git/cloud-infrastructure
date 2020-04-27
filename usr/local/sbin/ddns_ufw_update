@@ -465,14 +465,16 @@ else
 	fi;
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 		EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
+			echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
+		fi;
 		EACH_RESOLVED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
 		# For each substring in a comma delimited string
 		for EACH_PORT_PROTO in $(echo ${EACH_RESOLVED_PORT_PROTOS} | sed "s/,/ /g"); do
 			EACH_RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1)";
 			EACH_RESOLVED_PROTO="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2)";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
-				echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
 				echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
 				echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
 			fi;

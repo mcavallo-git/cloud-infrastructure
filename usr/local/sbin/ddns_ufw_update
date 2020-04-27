@@ -260,6 +260,12 @@ else
 			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "${EACH_RUNTIME_USER}" | wc -l;);
 
 			if [ ${DEBUG_MODE} -eq 1 ]; then
+				echo "";
+				echo "!~!  Starting new instance of ddns_ufw_update";
+				echo "";
+				echo "Start Time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
+				echo "";
+				echo "\${0} = [ ${0} ]";
 				echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
 				echo "MATCHED_PROCS_PS = [ ${MATCHED_PROCS_PS} ]";
 			fi;

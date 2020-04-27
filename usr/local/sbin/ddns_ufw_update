@@ -506,6 +506,13 @@ else
 		EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		EACH_UFW_IPv4="";
 
+		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "------------------------------------------------------------";
+			echo "Debug:  EACH_UFW_PORT = [ ${EACH_UFW_PORT} ]";
+			echo "Debug:  EACH_UFW_PROTOCOL = [ ${EACH_UFW_PROTOCOL} ]";
+			echo "Debug:  EACH_UFW_CIDRv4 (before regex tests) = [ ${EACH_UFW_CIDRv4} ]";
+			echo "Debug:  EACH_UFW_IPv4 (before regex tests)  = [ ${EACH_UFW_IPv4} ]";
+		fi;
 		if [[ ${EACH_UFW_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
 			# Regex test passed: CIDRv4 notation validity
 			EACH_UFW_IPv4="$(echo "${EACH_UFW_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
@@ -518,11 +525,8 @@ else
 			EACH_UFW_CIDRv4="";
 		fi;
 		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "------------------------------------------------------------";
-			echo "Debug:  EACH_UFW_PORT = [ ${EACH_UFW_PORT} ]";
-			echo "Debug:  EACH_UFW_PROTOCOL = [ ${EACH_UFW_PROTOCOL} ]";
-			echo "Debug:  EACH_UFW_CIDRv4 = [ ${EACH_UFW_CIDRv4} ]";
-			echo "Debug:  EACH_UFW_IPv4 = [ ${EACH_UFW_IPv4} ]";
+			echo "Debug:  EACH_UFW_CIDRv4 (after regex tests) = [ ${EACH_UFW_CIDRv4} ]";
+			echo "Debug:  EACH_UFW_IPv4 (after regex tests) = [ ${EACH_UFW_IPv4} ]";
 		fi;
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - delete the rule, otherwise
 		VALID_CIDRv4_PORT_PROTO="";

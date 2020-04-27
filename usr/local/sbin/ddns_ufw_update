@@ -461,11 +461,13 @@ else
 
 	# Show resolved CIDRv4 addresses
 	if [ ${DEBUG_MODE} -eq 1 ]; then
-		echo "Debug:  RESOLVED_CIDRv4_ARR = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
+		echo "------------------------------------------------------------";
+		echo "Debug:  RESOLVED_CIDRv4_ARR[@] = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
 	fi;
 	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
 		EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 		if [ ${DEBUG_MODE} -eq 1 ]; then
+			echo "------------------------------------------------------------";
 			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
 			echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
 		fi;

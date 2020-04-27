@@ -487,7 +487,8 @@ else
 		echo "Debug:  !RESOLVED_CIDRv4_KEYS_NO_DUPES[@] = [ ${!RESOLVED_CIDRv4_KEYS_NO_DUPES[@]} ]";
 		echo "";
 	fi;
-	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_KEYS_NO_DUPES[@]}"; do
+	for EACH_RESOLVED_CIDRv4 in "${RESOLVED_CIDRv4_KEYS_NO_DUPES[@]}"; do
+	# for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_KEYS_NO_DUPES[@]}"; do
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";

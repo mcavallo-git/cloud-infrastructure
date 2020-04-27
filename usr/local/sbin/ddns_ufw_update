@@ -508,24 +508,29 @@ else
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - delete the rule, otherwise
 		VALID_CIDRv4_PORT_PROTO="";
 		if [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X} ]; then # Matched on valid CIDRv4
+			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  Matched on CIDRv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X}";
+				echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
 			fi;
-			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
 		elif [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]+X} ]; then # Matched on valid CIDRv4
+			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  Matched on IPv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]+X}";
+				echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
 			fi;
-			VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
 		fi;
 		if [ -n "${VALID_CIDRv4_PORT_PROTO}" ]; then
 			RESOLVED_PORT_PROTOS="${VALID_CIDRv4_PORT_PROTO}";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
 				echo "Debug:  Matched on valid CIDRv4";
+				echo "Debug:  RESOLVED_PORT_PROTOS = [ ${RESOLVED_PORT_PROTOS} ]";
 			fi;
 			for EACH_PORT_PROTO in $(echo ${RESOLVED_PORT_PROTOS} | sed "s/,/\n/g"); do # For each substring in a comma delimited string
 				RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
 				RESOLVED_PROTOCOL="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+				echo "Debug:  RESOLVED_PORT = [ ${RESOLVED_PORT} ]";
+				echo "Debug:  RESOLVED_PROTOCOL = [ ${RESOLVED_PROTOCOL} ]";
 				if [ "${EACH_UFW_PORT}" == "${RESOLVED_PORT}" ]; then # Matched on valid Port
 					if [ ${DEBUG_MODE} -eq 1 ]; then
 						echo "Debug:  Matched on valid Port";

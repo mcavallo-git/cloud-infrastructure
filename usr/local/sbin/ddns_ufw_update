@@ -523,7 +523,7 @@ else
     elif [[ ${EACH_UFW_CIDRv4} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
   		# Regex test passed: IPv4 notation validity
 			EACH_UFW_IPv4="${EACH_UFW_CIDRv4}";
-			EACH_UFW_CIDRv4="${EACH_UFW_IPv4}/32";
+			EACH_UFW_CIDRv4="${EACH_UFW_CIDRv4}/32";
 		else
 			EACH_UFW_IPv4="";
 			EACH_UFW_CIDRv4="";

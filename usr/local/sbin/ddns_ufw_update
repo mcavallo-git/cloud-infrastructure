@@ -479,7 +479,6 @@ else
 	RESOLVED_CIDRv4_ARR_NO_DUPES=($(echo "${!RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	if [ ${DEBUG_MODE} -eq 1 ]; then
 		echo "************************************************************";
-
 		echo "Debug:  RESOLVED_CIDRv4_ARR[@] = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
 		echo "Debug:  !RESOLVED_CIDRv4_ARR[@] = [ ${!RESOLVED_CIDRv4_ARR[@]} ]";
 		echo "Debug:  RESOLVED_CIDRv4_ARR_NO_DUPES[@] = [ ${RESOLVED_CIDRv4_ARR_NO_DUPES[@]} ]";

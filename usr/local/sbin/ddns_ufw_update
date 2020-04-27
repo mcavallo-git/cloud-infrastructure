@@ -492,34 +492,36 @@ else
 		echo "Debug:  !RESOLVED_CIDRv4_ARR_NO_DUPES[@] = [ ${!RESOLVED_CIDRv4_ARR_NO_DUPES[@]} ]";
 		echo "";
 	fi;
-	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR_NO_DUPES[@]}"; do
-	# for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-		EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "============================================================";
-			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
-			echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
-		fi;
-		EACH_RESOLVED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
-		# For each substring in a comma delimited string
-		for EACH_PORT_PROTO in $(echo ${EACH_RESOLVED_PORT_PROTOS} | sed "s/,/ /g"); do
-			EACH_RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1)";
-			EACH_RESOLVED_PROTO="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2)";
+	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+	# for EACH_GROUP_OF_CIDRv4 in "${!RESOLVED_CIDRv4_ARR_NO_DUPES[@]}"; do
+		for EACH_RESOLVED_CIDRv4 in $(echo ${EACH_GROUP_OF_CIDRv4} | sed "s/,/ /g"); do
+			EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "------------------------------------------------------------";
-				echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
-				echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
+				echo "============================================================";
+				echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
+				echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
 			fi;
-			# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
-			fi;
-			ADD_RULE_SKIPPED=0;
-			add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
-			if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
-				# Add the inverse of new rule to the undo-changes array
-				UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
-			fi;
+			EACH_RESOLVED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+			# For each substring in a comma delimited string
+			for EACH_PORT_PROTO in $(echo ${EACH_RESOLVED_PORT_PROTOS} | sed "s/,/ /g"); do
+				EACH_RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1)";
+				EACH_RESOLVED_PROTO="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2)";
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "------------------------------------------------------------";
+					echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
+					echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
+				fi;
+				# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+				if [ ${DEBUG_MODE} -eq 1 ]; then
+					echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
+				fi;
+				ADD_RULE_SKIPPED=0;
+				add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
+				if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
+					# Add the inverse of new rule to the undo-changes array
+					UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
+				fi;
+			done;
 		done;
 	done;
 

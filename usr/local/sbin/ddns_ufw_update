@@ -475,19 +475,19 @@ else
 	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
 
 	# Foreach on resolved (valid) CIDRv4 addresses
-	RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES=($(echo "${RESOLVED_CIDRv4_ARR[@]}" | tr ',' ' '));
-	RESOLVED_CIDRv4_ARR_NO_DUPES=($(echo "${!RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+	RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES=($(echo "${RESOLVED_CIDRv4_ARR[@]}" | tr ',' ' '));
+	RESOLVED_CIDRv4_KEYS_NO_DUPES=($(echo "${RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	if [ ${DEBUG_MODE} -eq 1 ]; then
 		echo "************************************************************";
 		echo "Debug:  RESOLVED_CIDRv4_ARR[@] = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
 		echo "Debug:  !RESOLVED_CIDRv4_ARR[@] = [ ${!RESOLVED_CIDRv4_ARR[@]} ]";
-		echo "Debug:  RESOLVED_CIDRv4_ARR_NO_DUPES[@] = [ ${RESOLVED_CIDRv4_ARR_NO_DUPES[@]} ]";
-		echo "Debug:  !RESOLVED_CIDRv4_ARR_NO_DUPES[@] = [ ${!RESOLVED_CIDRv4_ARR_NO_DUPES[@]} ]";
-		echo "Debug:  RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@] = [ ${RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@]} ]";
-		echo "Debug:  !RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@] = [ ${!RESOLVED_CIDRv4_ARR_COMMAS_TO_SPACES[@]} ]";
+		echo "Debug:  RESOLVED_CIDRv4_KEYS_NO_DUPES[@] = [ ${RESOLVED_CIDRv4_KEYS_NO_DUPES[@]} ]";
+		echo "Debug:  !RESOLVED_CIDRv4_KEYS_NO_DUPES[@] = [ ${!RESOLVED_CIDRv4_KEYS_NO_DUPES[@]} ]";
+		echo "Debug:  RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES[@]} ]";
+		echo "Debug:  !RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES[@] = [ ${!RESOLVED_CIDRv4_KEYS_COMMAS_TO_SPACES[@]} ]";
 		echo "";
 	fi;
-	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR_NO_DUPES[@]}"; do
+	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_KEYS_NO_DUPES[@]}"; do
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
 			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";

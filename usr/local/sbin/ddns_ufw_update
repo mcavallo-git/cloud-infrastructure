@@ -564,6 +564,10 @@ else
 					if [ "${EACH_UFW_PROTOCOL}" == "${RESOLVED_PROTOCOL}" ]; then # Matched on valid Protocol
 						# All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
 						DELETE_RULE=0;
+						if [ ${DEBUG_MODE} -eq 1 ]; then
+							echo "Debug:  Match success (CIDRv4 + Port + Proto) - [ \"${EACH_UFW_PROTOCOL}\" == \"${RESOLVED_PROTOCOL}\" ] returned false";
+						fi;
+						break;
 					else
 						if [ ${DEBUG_MODE} -eq 1 ]; then
 							echo "Debug:  Match failed (protocol) - [ \"${EACH_UFW_PROTOCOL}\" == \"${RESOLVED_PROTOCOL}\" ] returned false";

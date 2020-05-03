@@ -2961,11 +2961,6 @@ pre.console-output
  /* color: #89cff0; */
 }
 
-.console-output .error-inline
-{
-	color: #f44336 !important;
-}
-
 .console-output
 {
 	padding: 10px 20px;
@@ -2986,6 +2981,27 @@ pre.console-output
 	color: #e9eded !important;
 	cursor: text !important;
 }
+
+/* Console Output, Errors - Color identifiably */
+.console-output .error-inline
+{
+	color: #f44336 !important;
+}
+
+/* Console Output, Warnings - Color identifiably */
+.console-output .warning-inline {
+	color: #C4A000 !important;
+}
+
+/* Console Output Timestamps, use a condensed font to allow more space for the log-data (body of log) */
+.console-output .timestamp {
+	display: block !important;
+	padding-top: 5px !important;
+	margin-top: 5px !important;
+	border-top: 1px dotted #3c4f58 !important;
+	font-size: 80% !important;
+}
+
 
 .ace_editor {
 	font: 12px/normal 'Fira Code', 'Roboto Mono', monospace;
@@ -3257,22 +3273,6 @@ div.dashboard > table > tbody > tr:not([categoryrole])[id*="infra"] > td,
 div.dashboard > table > tbody > tr:not([categoryrole])[id*="INFRA"] > td
 {
 	background: #FFECDF;
-}
-
-
-/* Console Output, Warnings - Color identifiably */
-.console-output .warning-inline {
-	color: #C4A000 !important;
-}
-
-
-/* Console Output Timestamps, use a condensed font to allow more space for the log-data (body of log) */
-.console-output .timestamp {
-	display: block !important;
-	padding-top: 5px !important;
-	margin-top: 5px !important;
-	border-top: 1px dotted #C8C8C8 !important;
-	font-size: 80% !important;
 }
 
 

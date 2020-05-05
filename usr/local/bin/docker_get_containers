@@ -3,7 +3,7 @@
 DASHES="-------------------------------------------------";
 
 PS_FORMAT=""\
-"\n${DASHES}\n"\
+"${DASHES}\n"\
 "\n     {{.Names}}   ({{.Status}})"\
 "\n          Container: {{.ID}}"\
 "\n          Size:      {{.Size}}"\
@@ -11,4 +11,4 @@ PS_FORMAT=""\
 "\n          Created:   {{.RunningFor}} on {{.CreatedAt}}"\
 "";
 
-docker ps -a --format "${PS_FORMAT}" && printf "\n${DASHES}\n\n";
+docker ps -a --format "${PS_FORMAT}" && printf "\n${DASHES}\n";

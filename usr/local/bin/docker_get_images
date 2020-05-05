@@ -1,0 +1,10 @@
+#!/bin/bash
+
+IMG_FORMAT=""\
+"\n        ID:  {{.ID}}"\
+"\n       Tag:  {{.Repository}}:{{.Tag}}"\
+"\n    Digest:  {{.Repository}}@{{.Digest}}"\
+"\n   Created:  {{.CreatedSince}} on {{.CreatedAt}}"\
+"\n Disk-Size:  {{.Size}}"\
+"";
+docker images --format "${IMG_FORMAT}" && printf "\n";

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+PS_DASHES="-------------------------------------------------";
+PS_FORMAT=""\
+"\n${PS_DASHES}\n"\
+"\n     {{.Names}}   ({{.Status}})"\
+"\n          Container: {{.ID}}"\
+"\n          Size:      {{.Size}}"\
+"\n          Ports:     {{.Ports}}"\
+"\n          Created:   {{.RunningFor}} on {{.CreatedAt}}"\
+"";
+docker ps -a --format "${PS_FORMAT}" && printf "\n${PS_DASHES}\n\n";

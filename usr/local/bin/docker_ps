@@ -1,8 +1,8 @@
 #!/bin/bash
-
-
-
+# ------------------------------------------------------------
+#
 # Assume [ DISPLAY/LOG ] format when this script is called directly
+#
 PS_DASHES="-------------------------------------------------";
 PS_FORMAT=""\
 "\n${PS_DASHES}\n"\
@@ -26,27 +26,29 @@ docker ps -a --format "${PS_FORMAT}" && printf "\n${PS_DASHES}\n\n";
 # docker ps -a --format "${PS_FORMAT}" && printf "\n";
 
 
-
-# --------------------------------------------------------------------------------------------------------------------------------------- #
+# ------------------------------------------------------------
 # EXIT HERE
 exit 0;
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
-# --------------------------------------------------------------------------------------------------------------------------------------- #
-
-
-
+# ------------------------------------------------------------
+#
 # DISPLAY/LOG FORMAT
 #   SHOW RESULTS AS A TABLE (WITH COLUMN HEADERS)
+#
 PS_FORMAT="{{.ID}}" && docker ps --format "table ${PS_FORMAT}";
 
+#
 # FOREACH-PROCESSING FORMAT
 #   SHOW RESULTS AS ROWS (for storing into a variable and walking-through with a for-each loop)
+#
 PS_FORMAT="{{.ID}}" && docker ps --format "${PS_FORMAT}";
 
-# --------------------------------------------------------------------------------------------------------------------------------------- #
 
-## ALL OPTIONS: (KEEP STATIC - DO EDITING ELSEWHERE)
-## REFERENCED FROM:   https://docs.docker.com/engine/reference/commandline/ps/#formatting
+# ------------------------------------------------------------
+#
+# ALL OPTIONS: (KEEP STATIC - DO EDITING ELSEWHERE)
+# REFERENCED FROM:   https://docs.docker.com/engine/reference/commandline/ps/#formatting
+#
 
 # Quoted command
 CM="Command" && docker ps --format "table {{.${CM}}}";
@@ -86,3 +88,5 @@ CM="Size" && docker ps --format "table {{.${CM}}}";
 
 # Container status.
 CM="Status" && docker ps --format "table {{.${CM}}}";
+
+# ------------------------------------------------------------

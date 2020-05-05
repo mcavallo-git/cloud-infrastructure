@@ -22,7 +22,7 @@ TEXT_COLORLESS='\033[0m'; # No Color
 ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 
 docker inspect \
---format=''${DASHES}'{{println}}IMG:  {{.Config.Image}}Image:   {{range .Mounts}}{{println}}Map-Src: {{.Source}}  (Host){{println}}Map-Dst: {{.Destination}}  (Container){{end}}' \
+--format='{{println}}IMG:  {{.Config.Image}}Image:   {{range .Mounts}}{{println}}Map-Src: {{.Source}}  (Host){{println}}Map-Dst: {{.Destination}}  (Container){{end}}' \
 $(docker ps --quiet) \
 | while read EACH_VOLMAP; do
 	echo "\$EACH_VOLMAP = \"${EACH_VOLMAP}\"";

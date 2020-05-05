@@ -1,10 +1,14 @@
 #!/bin/bash
 
+DASHES="-------------------------------------------------";
+
 IMG_FORMAT=""\
+"\n${DASHES}\n"\
 "\n        ID:  {{.ID}}"\
 "\n       Tag:  {{.Repository}}:{{.Tag}}"\
 "\n    Digest:  {{.Repository}}@{{.Digest}}"\
 "\n   Created:  {{.CreatedSince}} on {{.CreatedAt}}"\
 "\n Disk-Size:  {{.Size}}"\
 "";
-docker images --format "${IMG_FORMAT}" && printf "\n";
+
+docker images --format "${IMG_FORMAT}" && printf "\n${DASHES}\n\n";

@@ -71,30 +71,58 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 fi;
 
 #
-# fail-out if git is not installed & could not be installed
+# Fail-out if git is not installed & could not be installed
 #
 which git > /dev/null 2>&1; ERROR_CODE=$?;
 if [ ${ERROR_CODE} -ne 0 ]; then 
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Git runtime not installed.\n";
 fi;
+
+#
+# Verify Repo Host
+#
 if [ -z "${REMOTE_HOST}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_HOST is empty.\n";
-fi;
-if [ -z "${REMOTE_OWNER}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_OWNER is empty.\n";
-fi;
-if [ -z "${REMOTE_REPOSITORY}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
+	read -p "Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 -r;
+	REMOTE_HOST="${REPLY}";
+	if [ -z "${REMOTE_HOST}" ]; then
+		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_HOST is empty.\n";
+	fi;
 fi;
 
 #
-# fail-out if private-key is unset / empty / not-found / not a file
+# Verify Repo Owner
+#
+if [ -z "${REMOTE_OWNER}" ]; then
+	read -p "Remote Repo's Owner? (username/company-name which owns repo)  " -t 60 -r;
+	REMOTE_OWNER="${REPLY}";
+	if [ -z "${REMOTE_OWNER}" ]; then
+		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_OWNER is empty.\n";
+	fi;
+fi;
+
+#
+# Verify Repo Basename
+#
+if [ -z "${REMOTE_REPOSITORY}" ]; then
+	read -p "Remote Repo's Basename? (e.g. name of the repository)  " -t 60 -r;
+	REMOTE_OWNER="${REPLY}";
+	if [ -z "${REMOTE_REPOSITORY}" ]; then
+		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
+	fi;
+fi;
+
+#
+# Verify Repo SSH Private-Keys
 #
 REMOTE_PRIVATE_KEY="${REMOTE_PRIVATE_KEY:-${REMOTE_SSH_KEY}}";
-if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
-elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
-	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
+if [ -z "${REMOTE_REPOSITORY}" ]; then
+	read -p "Private-Key for Remote Repo? (e.g. fullpath to RSA key)  " -t 60 -r;
+	REMOTE_OWNER="${REPLY}";
+	if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
+		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
+	elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
+		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
+	fi;
 fi;
 
 #

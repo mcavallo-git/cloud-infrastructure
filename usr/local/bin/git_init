@@ -249,6 +249,7 @@ ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # TARG
 
 # Override SSH (which is what Git connects through)'s config settings to force RSA key usage
 export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Exporting \$GIT_SSH_COMMAND = \"${GIT_SSH_COMMAND}\":";
 
 
 # Show the git working tree

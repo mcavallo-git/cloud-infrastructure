@@ -1422,6 +1422,7 @@ else
 			TO_DEL="${DELDIR}/get_wan_ip"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
 			DELDIR="/usr/local/sbin/";
+			TO_DEL="${DELDIR}/disable_mail_alerts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 			TO_DEL="${DELDIR}/install_devops_packages"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 			TO_DEL="${DELDIR}/install_minio_mc"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 			TO_DEL="${DELDIR}/install_mongod"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;

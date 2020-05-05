@@ -109,7 +109,7 @@ fi;
 #
 if [ -z "${REMOTE_REPOSITORY}" ]; then
 	read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 -r;
-	REMOTE_OWNER="${REPLY}";
+	REMOTE_REPOSITORY="${REPLY}";
 	if [ -z "${REMOTE_REPOSITORY}" ]; then
 		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
 	fi;
@@ -119,9 +119,9 @@ fi;
 # Verify Repo SSH Private-Keys
 #
 REMOTE_PRIVATE_KEY="${REMOTE_PRIVATE_KEY:-${REMOTE_SSH_KEY}}";
-if [ -z "${REMOTE_REPOSITORY}" ]; then
+if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 -r;
-	REMOTE_OWNER="${REPLY}";
+	REMOTE_PRIVATE_KEY="${REPLY}";
 	if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
 	elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then

@@ -3,7 +3,7 @@
 DASHES="-------------------------------------------------";
 
 IMG_FORMAT=""\
-"\n${DASHES}\n"\
+"${DASHES}\n"\
 "\n        ID:  {{.ID}}"\
 "\n       Tag:  {{.Repository}}:{{.Tag}}"\
 "\n    Digest:  {{.Repository}}@{{.Digest}}"\
@@ -11,4 +11,4 @@ IMG_FORMAT=""\
 "\n Disk-Size:  {{.Size}}"\
 "";
 
-docker images --format "${IMG_FORMAT}" && printf "\n${DASHES}\n\n";
+docker images --format "${IMG_FORMAT}" && printf "\n${DASHES}\n";

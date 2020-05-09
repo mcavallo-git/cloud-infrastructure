@@ -1,11 +1,5 @@
 #!/bin/bash
 # ------------------------------------------------------------
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
-# Need to update for Ubuntu Raspberry Pi Distros --> See https://www.cyberciti.biz/faq/how-to-check-cpu-temperature-on-ubuntu-linux/
-#
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# ------------------------------------------------------------
 #	WATCH TEMPS USING THIS SCRIPT:
 # 
 #   while [ 1 ]; do TEMPS="$(raspi_hw_monitor)"; clear; echo "${TEMPS}"; sleep 1; done;
@@ -24,140 +18,146 @@ MaxTemp_LogFile="${LOGDIR}/max_temp";
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 
-CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+if [ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]; then
+	CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+else
+	CurrentTemp_Celsuis=$(echo "scale=2 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);
+fi;
 
+# See if a minimum temp logfile exists (yet), and compare the current temp against it to see if we have a new low
 MinTemp_LogPath="${LOGDIR}/min_temp";
 MinTemp_LogVal=$(if [ -f "${MinTemp_LogPath}" ] && [ -r "${MinTemp_LogPath}" ]; then cat "${MinTemp_LogPath}"; else echo ""; fi;);
 MinTemp_Celsuis=${MinTemp_LogVal:-${CurrentTemp_Celsuis}};
-
-MaxTemp_LogPath="${LOGDIR}/max_temp";
-MaxTemp_LogVal=$(if [ -f "${MaxTemp_LogPath}" ] && [ -r "${MaxTemp_LogPath}" ]; then cat "${MaxTemp_LogPath}"; else echo ""; fi;);
-MaxTemp_Celsuis=${MaxTemp_LogVal:-${CurrentTemp_Celsuis}};
-
-if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
-
-# while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
-
-# ------------------------------------------------------------
-
-Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
-Throttle_Val="0x${Throttle_Val_After_X}";
-list_throttled="Throttle Val\t=  ${Throttle_Val}";
-#
-# 0   |  00000  |  0x00    under-voltage
-# 1   |  00001  |  0x01    arm frequency capped
-# 2   |  00010  |  0x02    currently throttled (turbo disabled due to low voltage / over-temperature)
-# 16  |  10000  |  0x10    under-voltage has occurred
-# 17  |  10001  |  0x11    arm frequency capped has occurred
-# 18  |  10010  |  0x12    throttling has occurred
-#
-# ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
-#
-
-# ------------------------------------------------------------
-
-declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
-list_clock_freq="";
-list_clock_freq="${list_clock_freq}Freq, cpu, now\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000)) MHz";
-list_clock_freq="${list_clock_freq}\n";
-list_clock_freq="${list_clock_freq}Freq, cpu, min\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq)/1000)) MHz";
-list_clock_freq="${list_clock_freq}\n";
-list_clock_freq="${list_clock_freq}Freq, cpu, max\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000)) MHz";
-list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
-for EachComponent in "${Components_ClockFreq[@]}"; do
-Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
-if [ $(echo "${Each_ClockFreq_Hz} > 0" | bc -l) -eq 1 ]; then
-list_clock_freq="${list_clock_freq}\n";
-list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l) MHz";
-fi;
-done;
-# list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
-
-# ------------------------------------------------------------
-
-declare -a Components_Voltage=("core   " "sdram_c" "sdram_i" "sdram_p");
-list_voltages="";
-for EachComponent in "${Components_Voltage[@]}"; do
-if [ -n "${list_voltages}" ]; then
-list_voltages="${list_voltages}\n";
-fi;
-Each_Voltage=$(vcgencmd measure_volts $EachComponent | sed --regexp-extended --quiet --expression='s/^volt=([0-9]+\.[0-9]+)V$/\1/p';);
-list_voltages="${list_voltages}Volt, ${EachComponent}\t=  ${Each_Voltage} V";
-done;
-
-# ------------------------------------------------------------
-
-declare -a Components_Memory=("arm" "gpu");
-list_memory_info="";
-for EachComponent in "${Components_Memory[@]}"; do
-if [ -n "${list_memory_info}" ]; then
-list_memory_info="${list_memory_info}\n";
-fi;
-Each_RAM_Alloc=$(vcgencmd get_mem $EachComponent | sed --regexp-extended --quiet --expression='s/^[a-z]+=([0-9]+)M$/\1/p';);
-list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
-done;
-# list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
-# ------------------------------------------------------------
-
-list_logfile_info="";
-list_logfile_info="${list_logfile_info}logfile (min)   =  \"${MinTemp_LogFile}\"";
-list_logfile_info="${list_logfile_info}\n";
-list_logfile_info="${list_logfile_info}logfile (max)   =  \"${MaxTemp_LogFile}\"";
-
-# ------------------------------------------------------------
-
-CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
-
-if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} < ${MinTemp_Celsuis}" | bc -l) -eq 1 ]; then
+if [ $(echo "scale=2 ; ${CurrentTemp_Celsuis} < ${MinTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MinTemp_Celsuis=${CurrentTemp_Celsuis};
-# echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
 fi;
 echo "${MinTemp_Celsuis}" > "${MinTemp_LogPath}";
 
-if [ $(echo "scale=1 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq 1 ]; then
+# See if a maximum temp logfile exists (yet), and compare the current temp against it to see if we have a new high
+MaxTemp_LogPath="${LOGDIR}/max_temp";
+MaxTemp_LogVal=$(if [ -f "${MaxTemp_LogPath}" ] && [ -r "${MaxTemp_LogPath}" ]; then cat "${MaxTemp_LogPath}"; else echo ""; fi;);
+MaxTemp_Celsuis=${MaxTemp_LogVal:-${CurrentTemp_Celsuis}};
+if [ $(echo "scale=2 ; ${CurrentTemp_Celsuis} > ${MaxTemp_Celsuis}" | bc -l) -eq 1 ]; then
 MaxTemp_Celsuis=${CurrentTemp_Celsuis};
-# echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 fi;
 echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 
-list_temperature="";
-list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
-list_temperature="${list_temperature}\n";
-list_temperature="${list_temperature}SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
-list_temperature="${list_temperature}\n";
-list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
+if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
+	if [ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]; then
 
-# ------------------------------------------------------------
+		# while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
 
-list_all="";
-list_all="${list_all}$(date +'%c')\n";
-list_all="${list_all}------------------------------------------------------------\n\n";
-list_all="${list_all}${list_temperature}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_throttled}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_voltages}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------\n\n";
-list_all="${list_all}${list_logfile_info}\n\n------------------------------------------------------------";
+		# ------------------------------------------------------------
 
-# ------------------------------------------------------------
+		Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
+		Throttle_Val="0x${Throttle_Val_After_X}";
+		list_throttled="Throttle Val\t=  ${Throttle_Val}";
+		#
+		# 0   |  00000  |  0x00    under-voltage
+		# 1   |  00001  |  0x01    arm frequency capped
+		# 2   |  00010  |  0x02    currently throttled (turbo disabled due to low voltage / over-temperature)
+		# 16  |  10000  |  0x10    under-voltage has occurred
+		# 17  |  10001  |  0x11    arm frequency capped has occurred
+		# 18  |  10010  |  0x12    throttling has occurred
+		#
+		# ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
+		#
 
-# done;
+		# ------------------------------------------------------------
 
-if [ ${#} -gt 0 ] && [ -n "$(echo ${@} | grep tail;)" ]; then
-# Recursive loopback call (tail continuously)
-clear;
-echo -e "${list_all}";
-sleep 1;
-/usr/local/bin/raspi_hw_monitor --tail
+		declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
+		list_clock_freq="";
+		list_clock_freq="${list_clock_freq}Freq, cpu, now\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000)) MHz";
+		list_clock_freq="${list_clock_freq}\n";
+		list_clock_freq="${list_clock_freq}Freq, cpu, min\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq)/1000)) MHz";
+		list_clock_freq="${list_clock_freq}\n";
+		list_clock_freq="${list_clock_freq}Freq, cpu, max\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000)) MHz";
+		list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
+		for EachComponent in "${Components_ClockFreq[@]}"; do
+		Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
+		if [ $(echo "${Each_ClockFreq_Hz} > 0" | bc -l) -eq 1 ]; then
+		list_clock_freq="${list_clock_freq}\n";
+		list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l) MHz";
+		fi;
+		done;
+		# list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
 
-else
-# Just call once
-echo -e "${list_all}";
+		# ------------------------------------------------------------
 
-fi;
+		declare -a Components_Voltage=("core   " "sdram_c" "sdram_i" "sdram_p");
+		list_voltages="";
+		for EachComponent in "${Components_Voltage[@]}"; do
+		if [ -n "${list_voltages}" ]; then
+		list_voltages="${list_voltages}\n";
+		fi;
+		Each_Voltage=$(vcgencmd measure_volts $EachComponent | sed --regexp-extended --quiet --expression='s/^volt=([0-9]+\.[0-9]+)V$/\1/p';);
+		list_voltages="${list_voltages}Volt, ${EachComponent}\t=  ${Each_Voltage} V";
+		done;
 
-# ------------------------------------------------------------
+		# ------------------------------------------------------------
 
+		declare -a Components_Memory=("arm" "gpu");
+		list_memory_info="";
+		for EachComponent in "${Components_Memory[@]}"; do
+		if [ -n "${list_memory_info}" ]; then
+		list_memory_info="${list_memory_info}\n";
+		fi;
+		Each_RAM_Alloc=$(vcgencmd get_mem $EachComponent | sed --regexp-extended --quiet --expression='s/^[a-z]+=([0-9]+)M$/\1/p';);
+		list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
+		done;
+		# list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
+		# ------------------------------------------------------------
+
+		list_logfile_info="";
+		list_logfile_info="${list_logfile_info}logfile (min)   =  \"${MinTemp_LogFile}\"";
+		list_logfile_info="${list_logfile_info}\n";
+		list_logfile_info="${list_logfile_info}logfile (max)   =  \"${MaxTemp_LogFile}\"";
+
+		# ------------------------------------------------------------
+
+		CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+
+		list_temperature="";
+		list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
+		list_temperature="${list_temperature}\n";
+		list_temperature="${list_temperature}SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
+		list_temperature="${list_temperature}\n";
+		list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
+
+		# ------------------------------------------------------------
+
+		list_all="";
+		list_all="${list_all}$(date +'%c')\n";
+		list_all="${list_all}------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_temperature}\n\n------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_throttled}\n\n------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_voltages}\n\n------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------\n\n";
+		list_all="${list_all}${list_logfile_info}\n\n------------------------------------------------------------";
+
+		# ------------------------------------------------------------
+
+		# done;
+
+		if [ ${#} -gt 0 ] && [ -n "$(echo ${@} | grep tail;)" ]; then
+		# Recursive loopback call (tail continuously)
+		clear;
+		echo -e "${list_all}";
+		sleep 1;
+		/usr/local/bin/raspi_hw_monitor --tail
+
+		else
+		# Just call once
+		echo -e "${list_all}";
+
+		fi;
+
+	else
+
+		echo "scale=2 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;
+
+	fi;
 fi;
 
 
@@ -166,6 +166,6 @@ fi;
 #
 # Citation(s)
 #
-#   www.cyberciti.biz  |  "How to check CPU temperature on Ubuntu Linux - nixCraft"  |  https://www.cyberciti.biz/faq/how-to-check-cpu-temperature-on-ubuntu-linux/
+#   www.raspberrypi.org  |  "[ubuntu] Getting CPU tempature on Ubuntu - Raspberry Pi Forums"  |  https://www.raspberrypi.org/forums/viewtopic.php?t=252115
 #
 # ------------------------------------------------------------

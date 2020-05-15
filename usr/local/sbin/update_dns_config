@@ -215,6 +215,53 @@ else
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
 	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 
+	if [ "${IS_WINDOWS_WSL}" != "1" ]; then
+
+		#
+		# Required package:
+		#   resolvconf
+		#
+		# Method(s) used:
+		#   > resolvconf   ### manage nameserver information
+		#
+		REQUIRED_PACKAGE_NAME="resolvconf";
+		REQUIRED_METHOD_NAME="resolvconf";
+		if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+			echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
+		else
+			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+			echo -e "\n""Info:  Please install required package via:";
+			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+			echo ""; exit 1;
+		fi;
+
+		#
+		# Required package:
+		#   ifupdown
+		#
+		# Method(s) used:
+		#   > ifup        ### bring a network interface up
+		#   > ifdown      ### take a network interface down
+		#
+		REQUIRED_PACKAGE_NAME="ifupdown";
+		REQUIRED_METHOD_NAME="ifup";
+		if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+			echo -e "\n""Info:  Please install required package via:";
+			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+			echo ""; exit 1;
+		fi;
+		REQUIRED_PACKAGE_NAME="ifupdown";
+		REQUIRED_METHOD_NAME="ifdown";
+		if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+			echo -e "\n""Info:  Please install required package via:";
+			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+			echo ""; exit 1;
+		fi;
+
+	fi;
+
 	# Network config filepaths
 	ETC_DHCPCD_CONF="/etc/dhcpcd.conf"; # DHCPCD Service Config-File
 	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
@@ -435,13 +482,13 @@ else
 		FILE_TO_BACKUP="${ETC_RESOLVCONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
 			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Info:  Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
+			echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
 			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 		FILE_TO_BACKUP="${DEBIAN_NETWORK_CONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
 			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Info:  Calling [cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\";]...";
+			echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
 			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 
@@ -454,49 +501,6 @@ else
 		echo "" >> "${FILE_NETWORK_RESOLVER}";
 
 		if [ "${IS_WINDOWS_WSL}" != "1" ]; then
-
-			#
-			# Required package:
-			#   resolvconf
-			#
-			# Method(s) used:
-			#   > resolvconf   ### manage nameserver information
-			#
-			REQUIRED_PACKAGE_NAME="resolvconf";
-			REQUIRED_METHOD_NAME="resolvconf";
-			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
-			else
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
-			fi;
-
-			#
-			# Required package:
-			#   ifupdown
-			#
-			# Method(s) used:
-			#   > ifup        ### bring a network interface up
-			#   > ifdown      ### take a network interface down
-			#
-			REQUIRED_PACKAGE_NAME="ifupdown";
-			REQUIRED_METHOD_NAME="ifup";
-			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
-			fi;
-			REQUIRED_PACKAGE_NAME="ifupdown";
-			REQUIRED_METHOD_NAME="ifdown";
-			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
-			fi;
 
 			# show "${ETC_RESOLVCONF}" file (configuration before-start)
 			echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";

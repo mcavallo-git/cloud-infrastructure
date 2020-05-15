@@ -8,7 +8,7 @@ if [ 0 -eq 1 ]; then
 # Example Call
 #
 
-if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; curl -H 'Cache-Control: no-cache' -o "/usr/local/sbin/add_user" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user" chmod 0755 "/usr/local/sbin/add_user"; env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" SET_USER_PASSWORD="1" "/usr/local/sbin/add_user";
+if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; curl -H 'Cache-Control: no-cache' -o "/usr/local/sbin/add_user" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user" chmod 0755 "/usr/local/sbin/add_user"; env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" SUDO_REQUIRES_PASS="0" SET_USER_PASSWORD="1" "/usr/local/sbin/add_user";
 
 
 fi;

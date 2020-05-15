@@ -197,11 +197,6 @@ else
 	DASHES="-----------------------------------------------------------------------";
 	START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
 
-	# Kernel-Info
-	IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
-	if [ "${IS_LINUX}" != "1" ]; then echo -e "\n""Error:  Must run in a Linux-based environment"; exit 1; fi;
-
 	# Detect current IP Config
 	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;);
 	THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p" | head -n 1;);
@@ -215,51 +210,64 @@ else
 	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
 	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 
-	if [ "${IS_WINDOWS_WSL}" != "1" ]; then
 
-		#
-		# Required package:
-		#   resolvconf
-		#
-		# Method(s) used:
-		#   > resolvconf   ### manage nameserver information
-		#
-		REQUIRED_PACKAGE_NAME="resolvconf";
-		REQUIRED_METHOD_NAME="resolvconf";
-		if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-			echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
+	# Kernel-Info
+	IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+	IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
+	if [ "${IS_LINUX}" != "1" ]; then
+		echo -e "\n""Error:  Must run in a Linux-based environment";
+		exit 1;
+
+	elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
+		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+
+			#
+			# Required package:
+			#   resolvconf
+			#
+			# Method(s) used:
+			#   > resolvconf   ### manage nameserver information
+			#
+			REQUIRED_PACKAGE_NAME="resolvconf";
+			REQUIRED_METHOD_NAME="resolvconf";
+			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+				echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
+			else
+				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+				echo ""; exit 1;
+			fi;
+
+			#
+			# Required package:
+			#   ifupdown
+			#
+			# Method(s) used:
+			#   > ifup        ### bring a network interface up
+			#   > ifdown      ### take a network interface down
+			#
+			REQUIRED_PACKAGE_NAME="ifupdown";
+			REQUIRED_METHOD_NAME="ifup";
+			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+				echo ""; exit 1;
+			fi;
+			REQUIRED_PACKAGE_NAME="ifupdown";
+			REQUIRED_METHOD_NAME="ifdown";
+			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+				echo -e "\n""Info:  Please install required package via:";
+				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+				echo ""; exit 1;
+			fi;
+
 		else
-			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-			echo -e "\n""Info:  Please install required package via:";
-			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-			echo ""; exit 1;
+			echo -e "\n""Error:  Kernel/Linux-Distro not supported";
+			exit 1;
 		fi;
-
-		#
-		# Required package:
-		#   ifupdown
-		#
-		# Method(s) used:
-		#   > ifup        ### bring a network interface up
-		#   > ifdown      ### take a network interface down
-		#
-		REQUIRED_PACKAGE_NAME="ifupdown";
-		REQUIRED_METHOD_NAME="ifup";
-		if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-			echo -e "\n""Info:  Please install required package via:";
-			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-			echo ""; exit 1;
-		fi;
-		REQUIRED_PACKAGE_NAME="ifupdown";
-		REQUIRED_METHOD_NAME="ifdown";
-		if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-			echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-			echo -e "\n""Info:  Please install required package via:";
-			echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-			echo ""; exit 1;
-		fi;
-
 	fi;
 
 	# Network config filepaths

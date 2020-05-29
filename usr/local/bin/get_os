@@ -100,6 +100,7 @@ DISTRO_CODENAME="";
 DISTRO_DESCRIPTION="";
 
 if [ -n "$(which vmware 2>'/dev/null';)" ]; then
+	# VMware ESXi Hosts
 	DISTRO_ID="$(vmware -l;)";
 	DISTRO_RELEASE="$(vmware -v;)";
 	DISTRO_CODENAME="";

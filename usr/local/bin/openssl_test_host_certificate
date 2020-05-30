@@ -173,6 +173,8 @@ else
 	echo "";
 	echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";
 	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
+	CERT_DATE_INFO=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" 2>/dev/null | openssl x509 -noout -dates;);
+	CERT_DETAILS="${CERT_DETAILS}"$'\n'${CERT_DATE_INFO};
 fi;
 echo "";
 echo "BEGIN OPENSSL OUTPUT ------------------------------------------------------------";

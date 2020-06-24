@@ -351,24 +351,25 @@ else
 	CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);
 	CHECKSUM_ERRORS=4294967295;
 
-	TOTAL_LINES_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
+	TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
+	TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
 
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 		echo "";
 		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
 		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-		echo "Debug:  TOTAL_LINES_REMOTE  = [ ${TOTAL_LINES_REMOTE} ]";
+		echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
 	fi;
 
-	if [ ${TOTAL_LINES_REMOTE} -eq 0 ]; then
+	if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
 		UPDATE_SELF_REQUIRED=0;
-		echo -e "\n""Info:  (Update-Self skipped) Total lines found to be 0 when checking source-path \"${THIS_SOURCECODE_REMOTE}\"";
+		echo -e "\n""Info:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERRORS}" ]; then
 		UPDATE_SELF_REQUIRED=0;
-		echo -e "\n""Info:  (Update-Self skipped) Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE}";
+		echo -e "\n""Info:  Update skipped - Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE}";
 	elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=1;
-		echo -e "\n""Info:  (Update-Self required) Checksums of this script are different between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
+		echo -e "\n""Info:  Update required - checksums of this script are different between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  (Update-Self not required) Checksums of this script are equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";

@@ -359,7 +359,7 @@ else
 		echo -e "\n""Info:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
 		UPDATE_SELF_REQUIRED=0;
-		echo -e "\n""Info:  Update skipped - Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE} (assumed to be unsigned-int error)";
+		echo -e "\n""Info:  Update skipped - Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE} (assume unsigned-int error)";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  (Update-Self not required) Checksums of this script are equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";

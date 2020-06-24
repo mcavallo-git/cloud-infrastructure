@@ -367,12 +367,12 @@ else
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERRORS}" ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  Update skipped - Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE}";
-	elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
-		UPDATE_SELF_REQUIRED=1;
-		echo -e "\n""Info:  Update required - checksums of this script are different between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  (Update-Self not required) Checksums of this script are equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
+	elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
+		UPDATE_SELF_REQUIRED=1;
+		echo -e "\n""Info:  Update required - checksums of this script are different between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
 	fi;
 
 	if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then

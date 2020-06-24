@@ -354,13 +354,6 @@ else
 	TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
 	TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
 
-	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-		echo "";
-		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
-		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-		echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
-	fi;
-
 	if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
@@ -373,6 +366,16 @@ else
 	elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=1;
 		echo -e "\n""Info:  Update required - checksums of this script are different between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
+	fi;
+
+	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+		echo "";
+		echo "Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
+		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+		echo "Debug:  CHECKSUM_ERRORS  = [ ${CHECKSUM_ERRORS} ]";
+		echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
+		echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
 	fi;
 
 	if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then

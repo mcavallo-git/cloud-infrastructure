@@ -33,7 +33,9 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
-	# Instantiate runtime variables
+	#
+	# Instantiate Static Runtime-Variables
+	#
 
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
@@ -43,13 +45,17 @@ else
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
-	GIT_SOURCE_REPO_URL="";
+	DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
 
 	DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 
-	DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
+	THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
 	# ------------------------------------------------------------
+	#
+	# Determine Dynamic Runtime-Variables
+	#
+
 	# Make sure the Config directory exists (create it if it doesn't)
 	if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
 		mkdir -p "${DIRNAME_LOCAL_CONFIG}";
@@ -59,8 +65,8 @@ else
 	fi;
 
 	# Get the Git Source-Repo from the local device's config
-	FILEPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
 	GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
+	FILEPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
 	if [ -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
 		GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
 	fi; 
@@ -72,6 +78,8 @@ else
 
 	GIT_REPO_OWNER="$(basename $(dirname ${GIT_SOURCE_REPO_URL};);)";
 	GIT_REPO_NAME="$(basename ${GIT_SOURCE_REPO_URL} | cut -d. -f1;)";
+	THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
+
 
 	# ------------------------------------------------------------
 	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
@@ -338,9 +346,6 @@ else
 	#
 
 	UPDATE_SELF_REQUIRED=0;
-
-	THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
-	THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
 
 	CHECKSUM_LOCAL=$(if [ -f "${THIS_SOURCECODE_LOCAL}" ]; then cat "${THIS_SOURCECODE_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
 	CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);

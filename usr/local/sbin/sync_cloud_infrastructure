@@ -349,7 +349,7 @@ else
 
 	CHECKSUM_LOCAL=$(if [ -f "${THIS_SOURCECODE_LOCAL}" ]; then cat "${THIS_SOURCECODE_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
 	CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);
-	CHECKSUM_ERRORS=4294967295;
+	CHECKSUM_ERROR_UNSIGNED=4294967295;
 
 	TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
 	TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
@@ -357,7 +357,7 @@ else
 	if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
-	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERRORS}" ]; then
+	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
 		UPDATE_SELF_REQUIRED=0;
 		echo -e "\n""Info:  Update skipped - Checksum of remote source-code yielded an invalid value of ${CHECKSUM_REMOTE}";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
@@ -371,9 +371,9 @@ else
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 		echo "";
 		echo "Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
-		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
 		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-		echo "Debug:  CHECKSUM_ERRORS  = [ ${CHECKSUM_ERRORS} ]";
+		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+		echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
 		echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
 		echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
 	fi;

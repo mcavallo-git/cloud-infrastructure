@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
-DN="mcavallo.com"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
+DN="example.com"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard?t=$(date +'%s.%N')" | bash -s -- "${DN}";
 
 fi;
 #
@@ -35,12 +35,10 @@ else
 	#
 	if [ -z "$1" ]; then
 		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Missing domain name - Please try again using first argument (\$1) as domain name, such as:  [ certbot_add_wildcard example.com ]";
+		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Missing domain name - Please try again using first argument (\$1) as domain name";
 		exit 1;
 	else
-
 		DOMAIN_NAME="$1";
-
 		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			echo "";
 			echo "Info:  Calling [ which certbot; ]...";
@@ -60,23 +58,26 @@ else
 				fi;
 			fi;
 		fi;
-
+		# Create the SSL (TLS/HTTPS) certificate
 		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			echo "";
-			echo "Info:  Calling [ certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
-			certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
-			# certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d "${DOMAIN_NAME},*" -d "${DOMAIN_NAME}";
-			# certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
+			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
+			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
 		fi;
-
-
+		# Reload NGINX to bring new certificates into its cache
+		if [ -x "/usr/local/sbin/reload_nginx" ]; then
+			sleep 2;
+			/usr/local/sbin/reload_nginx;
+		fi;
 	fi;
-
 fi;
+
 
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   dev.to  |  "Let's Encrypt: Renew Wildcard Certificate With Certbot - DEV"  |  https://dev.to/nabbisen/let-s-encrypt-renew-wildcard-certificate-manually-with-certbot-1jp
 #
 #   guides.wp-bullet.com  |  "Let’s Encrypt Wildcard SSL nginx for WordPress Ubuntu 18.04"  |  https://guides.wp-bullet.com/lets-encrypt-wildcard-ssl-nginx-for-wordpress-ubuntu-18-04/
 #

@@ -66,13 +66,15 @@ else
 			echo " !!!";
 			echo " !!!  Perform the requested DNS update(s), below (which exist to verify domain ownership)";
 			echo " !!!";
-			echo " !!!  BEFORE accepting the prompt (from certbot/lets-encrypt) and continuing, verify that DNS change(s) performed have propogated by browsing to:";
+			echo " !!!  BEFORE accepting the continuation prompts (from certbot/lets-encrypt), verify that DNS change(s) performed have propogated by browsing to:";
 			echo " !!!   |";
 			echo " !!!   |-->  https://mxtoolbox.com/SuperTool.aspx?action=txt%3a${DOMAIN_NAME}&run=toolpage";
 			echo " !!!";
+			echo " !!!  Begin by copy-pasting the following into this terminal:";
+			echo " !!!";
 			echo "";
 			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
-			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
+			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME}" -d "*.${DOMAIN_NAME}";
 		fi;
 		# Show status of installed certificate(s)
 		certbot certificates -d "${DOMAIN_NAME}";

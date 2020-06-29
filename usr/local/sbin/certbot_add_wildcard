@@ -61,6 +61,16 @@ else
 		# Create the SSL (TLS/HTTPS) certificate
 		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			echo "";
+			echo " !!!";
+			echo " !!!  Log-into your DNS provider's website/management-service (in-browser, app, etc.)";
+			echo " !!!";
+			echo " !!!  Perform the requested DNS update(s), below (which exist to verify domain ownership)";
+			echo " !!!";
+			echo " !!!  BEFORE accepting the prompt (from certbot/lets-encrypt) and continuing, verify that DNS change(s) performed have propogated by browsing to:";
+			echo " !!!   |";
+			echo " !!!   |-->  https://mxtoolbox.com/SuperTool.aspx?action=txt%3a${DOMAIN_NAME}&run=toolpage";
+			echo " !!!";
+			echo "";
 			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
 			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
 		fi;

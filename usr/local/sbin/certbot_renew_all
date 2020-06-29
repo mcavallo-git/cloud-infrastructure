@@ -42,6 +42,11 @@ else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
 			certbot renew --noninteractive --force-renewal --dry-run;
 		fi;
+		# Reload NGINX to bring new certificates into its cache
+		if [ -x "/usr/local/sbin/reload_nginx" ]; then
+			sleep 2;
+			/usr/local/sbin/reload_nginx;
+		fi;
 	else
 		# ------------------------------------------------------------
 		# Error - certbot command not command

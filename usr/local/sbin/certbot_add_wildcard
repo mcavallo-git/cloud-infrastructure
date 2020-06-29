@@ -65,6 +65,7 @@ else
 			echo "";
 			echo "Info:  Calling [ certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
 			certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
+			# certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 -d "${DOMAIN_NAME},*" -d "${DOMAIN_NAME}";
 			# certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
 		fi;
 

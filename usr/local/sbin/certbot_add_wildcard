@@ -64,9 +64,10 @@ else
 			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
 			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME},*.${DOMAIN_NAME}";
 		fi;
+		# Show status of installed certificate(s)
+		certbot certificates -d "${DOMAIN_NAME}";
 		# Reload NGINX to bring new certificates into its cache
 		if [ -x "/usr/local/sbin/reload_nginx" ]; then
-			sleep 2;
 			/usr/local/sbin/reload_nginx;
 		fi;
 	fi;

@@ -71,14 +71,8 @@ else
 			echo " !!!   |-->  https://mxtoolbox.com/SuperTool.aspx?action=txt%3a${DOMAIN_NAME}&run=toolpage";
 			echo " !!!";
 			echo "";
-			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME},*.${DOMAIN_NAME}\"; ]...";
-			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME}" -d "*.${DOMAIN_NAME}";
-		fi;
-		# Show status of installed certificate(s)
-		certbot certificates -d "${DOMAIN_NAME}";
-		# Reload NGINX to bring new certificates into its cache
-		if [ -x "/usr/local/sbin/reload_nginx" ]; then
-			/usr/local/sbin/reload_nginx;
+			echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME}\" -d \"*.${DOMAIN_NAME}\"; certbot certificates -d \"${DOMAIN_NAME}\"; test -x \"/usr/local/sbin/reload_nginx\" && /usr/local/sbin/reload_nginx; ]...";
+			certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME}" -d "*.${DOMAIN_NAME}"; certbot certificates -d "${DOMAIN_NAME}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
 		fi;
 	fi;
 fi;

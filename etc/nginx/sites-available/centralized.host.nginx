@@ -154,9 +154,9 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Create LetsEncrypt Certs
+### Create/Renew SSL-Certs (Wildcard, Let's Encrypt)
 #
-# DN="centralized.host"; DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${DN}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
+# DN="centralized.host"; certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DN}" -d "*.${DN}"; certbot certificates -d "${DN}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
 #
 #
 # ------------------------------------------------------------

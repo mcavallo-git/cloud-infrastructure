@@ -73,7 +73,7 @@ else
 			echo " !!!";
 			echo " !!!  CALL THE FOLLOWING TO BEGIN:";
 			echo "";
-			echo "certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME}\" -d \"*.${DOMAIN_NAME}\"; certbot certificates -d \"${DOMAIN_NAME}\"; test -x \"/usr/local/sbin/reload_nginx\" && /usr/local/sbin/reload_nginx; ]...";
+			echo "DOMAIN_NAME=\"${DOMAIN_NAME}\"; certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"\${DOMAIN_NAME}\" -d \"*.\${DOMAIN_NAME}\"; certbot certificates -d \"\${DOMAIN_NAME}\"; test -x \"/usr/local/sbin/reload_nginx\" && /usr/local/sbin/reload_nginx; ]...";
 			echo "";
 			echo "------------------------------------------------------------";
 			echo "";

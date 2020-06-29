@@ -1019,12 +1019,12 @@ else
 					if [ -f "${DESTINATION_PATH}" ]; then
 						REPLY="y";
 					else
-						echo ""; read -p "Setup DNS-Server Sync (daily @ 04:05 AM) via \"update_dns_config\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+						echo ""; read -p "Enable DNS-server sync? (Runs \"update_dns_config\" daily at 04:05 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					fi;
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+						echo "  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
@@ -1035,7 +1035,7 @@ else
 						BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 					else
-						echo "Info:  Skipped DNS-Server Sync";
+						echo "  |--> Denied - DNS-server sync disabled";
 					fi;
 				fi;
 
@@ -1048,13 +1048,13 @@ else
 					if [ -f "${DESTINATION_PATH}" ]; then
 						REPLY="y";
 					else
-						echo ""; read -p "Setup Automatic Updates (Weekly, Sunday @ 04:10 AM) via \"update_system\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+						echo ""; read -p "Enable system & package weekly updates? (Runs \"update_system\" every Sunday at 04:10 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					fi;
 
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+						echo "  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
@@ -1065,7 +1065,7 @@ else
 						BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 						test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 					else
-						echo "Info:  Skipped Automatic Updates";
+						echo "  |--> Denied - System & package weekly updates disabled";
 					fi;
 				fi;
 

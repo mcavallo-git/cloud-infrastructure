@@ -402,12 +402,13 @@ else
 		if [ -z "$(which nohup 2>'/dev/null')" ]; then
 			# Run recursive callback to self in [ parallel ] (e.g. as a background call/runtime kicked-off by the current call/runtime)
 			nohup "${THIS_SOURCECODE_LOCAL}" "${ARGS}" &
+			echo -e "\n""=== End of recursive call ===";
 			exit 0;
 
 		else
 			# Run recursive callback to self in [ series ]
 			# "${THIS_SOURCECODE_LOCAL}" $@
-			"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && exit 0;
+			"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && echo -e "\n""=== End of recursive call ===" && exit 0;
 		fi;
 
 	else
@@ -1110,7 +1111,6 @@ else
 				fi;
 
 			fi;
-
 
 			# ------------------------------------------------------------
 			#

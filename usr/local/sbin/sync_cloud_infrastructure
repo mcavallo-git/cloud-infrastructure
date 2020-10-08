@@ -396,20 +396,12 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 		echo "Info:  Update complete";
 
-		echo -e "\n""--- Recursively calling self (to use latest runtime version) ---";
+		echo -e "\n""--- Recursively calling self (to use latest runtime version) (ID: ${START_SECONDS_NANOSECONDS}) ---";
+		
 		# Call the updated version of this script with the same parameters given to this (current) runtime
-
-		if [ -z "$(which nohup 2>'/dev/null')" ]; then
-			# Run recursive callback to self in [ parallel ] (e.g. as a background call/runtime kicked-off by the current call/runtime)
-			nohup "${THIS_SOURCECODE_LOCAL}" "${ARGS}" &
-			echo -e "\n""=== End of recursive call ===";
-			exit 0;
-
-		else
-			# Run recursive callback to self in [ series ]
-			# "${THIS_SOURCECODE_LOCAL}" $@
-			"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && echo -e "\n""=== End of recursive call ===" && exit 0;
-		fi;
+		"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && \
+		echo -e "\n""=== End of recursive call (ID: ${START_SECONDS_NANOSECONDS}) ===" && \
+		exit 0;
 
 	else
 

@@ -80,39 +80,31 @@ fi;
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 USER_HOME="$(eval echo ~${USER_NAME})";
 
-# KEY_UID="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
-# KEY_UID="id_rsa_${THIS_FQDN}_${USER_NAME}_${START_TIMESTAMP}";
-KEY_UID="id_rsa_${USER_NAME}@${THIS_FQDN}_${START_TIMESTAMP}";
+# KEY_BASENAME="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
+# KEY_BASENAME="id_rsa_${THIS_FQDN}_${USER_NAME}_${START_TIMESTAMP}";
+KEY_BASENAME="id_rsa_${USER_NAME}@${THIS_FQDN}_${START_TIMESTAMP}";
 
-KEY_OUTPUT_DIR="${USER_HOME}/ssh_created_keys/${START_TIMESTAMP}";
-KEY_ABSPATH_NOEXT="${KEY_OUTPUT_DIR}/${KEY_UID}";
+KEY_DIRNAME="${USER_HOME}/ssh_created_keys/${START_TIMESTAMP}";
+KEY_FULLPATH_NOEXT="${KEY_DIRNAME}/${KEY_BASENAME}";
 
-PRIVATE_KEY_PATH="${KEY_ABSPATH_NOEXT}.pem";
-PUBLIC_KEY_PATH="${KEY_ABSPATH_NOEXT}.pub";
+PRIVATE_KEY_PATH="${KEY_FULLPATH_NOEXT}.pem";
+PUBLIC_KEY_PATH="${KEY_FULLPATH_NOEXT}.pub";
 
 # Create the output directory
-mkdir -p "${KEY_OUTPUT_DIR}";
+mkdir -p "${KEY_DIRNAME}";
 
 # Set permissions on output directory
-chown "${USER_NAME}:${USER_NAME}" "${KEY_OUTPUT_DIR}";
-chmod 700 "${KEY_OUTPUT_DIR}";
+chown "${USER_NAME}:${USER_NAME}" "${KEY_DIRNAME}";
+chmod 700 "${KEY_DIRNAME}";
 
 # Set permissions on output directory's parent-directory
-chown "${USER_NAME}:${USER_NAME}" "$(dirname ${KEY_OUTPUT_DIR})";
-chmod 700 "$(dirname ${KEY_OUTPUT_DIR})";
+chown "${USER_NAME}:${USER_NAME}" "$(dirname ${KEY_DIRNAME})";
+chmod 700 "$(dirname ${KEY_DIRNAME})";
 
 
 # Create the SSH-keypair
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-if [ -n "$KEY_COMMENT" ]; then # var is not empty
-
-	ssh-keygen -q -t rsa -b 2048 -f "${KEY_ABSPATH_NOEXT}" -N "${KEY_PASSPHRASE}" -C "${KEY_COMMENT}";
-
-else # var is empty
-
-	ssh-keygen -q -t rsa -b 2048 -f "${KEY_ABSPATH_NOEXT}" -N "${KEY_PASSPHRASE}";
-
-fi;
+ssh-keygen -q -t rsa -b 2048 -f "${KEY_FULLPATH_NOEXT}" -N "${KEY_PASSPHRASE}" -C "${KEY_BASENAME}";
 
 
 # Add an IP whitelist to the public key (if variable is not blank)
@@ -127,9 +119,9 @@ fi;
 
 # Name the keys as-intended
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-mv "${KEY_ABSPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
-# mv "${KEY_ABSPATH_NOEXT}.pub" "${PUBLIC_KEY_PATH}";
-# cat "${KEY_ABSPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_ABSPATH_NOEXT}.pub";
+mv "${KEY_FULLPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
+# mv "${KEY_FULLPATH_NOEXT}.pub" "${PUBLIC_KEY_PATH}";
+# cat "${KEY_FULLPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_FULLPATH_NOEXT}.pub";
 
 
 # ADD TO:  /etc/ssh/authorized_keys/${USER_NAME}  ??

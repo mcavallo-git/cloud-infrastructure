@@ -156,6 +156,10 @@ else
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo shutdown -r \"${SCHEDULED_RESTART_TIME}\"";
 				sudo shutdown -r "${SCHEDULED_RESTART_TIME}";
 			fi;
+		else
+				echo "";
+				echo "$(date '+%Y-%m-%d %H:%M:%S') | Use argument '--now' to run system update";
+
 		fi;
 		if [ -f "/usr/local/bin/get_os" ]&& [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
 			#

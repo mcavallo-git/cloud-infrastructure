@@ -122,7 +122,7 @@ else
 				echo "            |-->  rule = [ ${rule} ]";
 			fi;
 			# If rule doesn't exist, then add (allow) it to UFW's ruleset
-			if [ -z "${rule}" ]; then
+			if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -z "${rule}" ]; then
 				ADD_RULE_SKIPPED=0;
 				echo "";
 				# echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
@@ -168,7 +168,7 @@ else
 				echo "            |-->  rule = [ ${rule} ]";
 			fi;
 			# If rule exists, then remove (delete) it from UFW's ruleset
-			if [ -n "${rule}" ]; then
+			if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -n "${rule}" ]; then
 				DELETE_RULE_SKIPPED=0;
 				# echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "            |-->  result: [ delete existing rule ]";

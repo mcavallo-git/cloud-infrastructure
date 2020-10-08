@@ -1,17 +1,19 @@
 #!/bin/bash
-#
-# LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
-#
 # ------------------------------------------------------------
-# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
+# Option 1:  Sync basic + utility methods (only)
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
 
-# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all
+# Option 2:  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
 
 fi;
+# ------------------------------------------------------------
+#
+# Edit this script, locally (for use during ad-hoc updates/hotfixes)
+#
+#   LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
 #

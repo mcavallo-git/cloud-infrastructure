@@ -243,7 +243,7 @@ else
 	if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 		REQUIRED_PKGS_ARRAY+=("cron");
 		REQUIRED_PKGS_ARRAY+=("jq");
-		REQUIRED_PKGS_ARRAY+=("sslscan");
+		# REQUIRED_PKGS_ARRAY+=("sslscan");
 	elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		REQUIRED_PKGS_ARRAY+=("bind-utils");
 		REQUIRED_PKGS_ARRAY+=("epel-release");

@@ -122,9 +122,11 @@ else
 			#
 			# pip
 			if [ "skip pip" == "skip pip" ]; then
+					echo "";
 					echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
 			else 
 				if [ $(which pip 2>'/dev/null' | wc -l;) -eq 0 ]; then
+					echo "";
 					echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
 				else
 					echo "";

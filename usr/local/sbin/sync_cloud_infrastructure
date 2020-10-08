@@ -398,9 +398,17 @@ else
 
 		echo -e "\n""--- Recursively calling self (to use latest runtime version) ---";
 		# Call the updated version of this script with the same parameters given to this (current) runtime
-		"${THIS_SOURCECODE_LOCAL}" "${ARGS}";
-		EXIT_CODE=0;
-		exit 0;
+
+		if [ -z "$(which nohup 2>'/dev/null')" ]; then
+			# Run recursive callback to self in [ parallel ] (e.g. as a background call/runtime kicked-off by the current call/runtime)
+			nohup "${THIS_SOURCECODE_LOCAL}" "${ARGS}" &
+			exit 0;
+
+		else
+			# Run recursive callback to self in [ series ]
+			# "${THIS_SOURCECODE_LOCAL}" $@
+			"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && exit 0;
+		fi;
 
 	else
 

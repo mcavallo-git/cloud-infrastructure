@@ -395,7 +395,7 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "       |--> Finished after ${BENCHMARK_DELTA}s";
 		echo "  |--> Info:  Update complete";
 
-		echo -e "\n""--- Recursively calling self (to use latest/updated runtime) ---";
+		echo -e "\n""--- Recursively calling self (to use latest runtime version) ---";
 		# Call the updated version of this script with the same parameters given to this (current) runtime
 		"${THIS_SOURCECODE_LOCAL}" $@;
 		EXIT_CODE=0;

@@ -65,8 +65,8 @@ else
 				curl -o "${DEB_PKG_LOCAL_FULLPATH}" "${DEB_PKG_URL}";
 				echo "";
 				echo "Info:  Attempting to install downloaded package...";
-				echo "  |";
-				echo "  |-->  If errors about dependencies are thrown, run [  apt-get -y -f install; ], then re-run this script (with URL inline)";
+				# echo "  |";
+				# echo "  |-->  If errors about dependencies are thrown, run [  apt-get -y -f install; ], then re-run this script (with URL inline)";
 				apt-get -y -f install "${DEB_PKG_LOCAL_FULLPATH}";
 				# dpkg -i "${DEB_PKG_LOCAL_FULLPATH}";
 

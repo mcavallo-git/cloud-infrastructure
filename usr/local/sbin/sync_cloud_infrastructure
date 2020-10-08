@@ -39,6 +39,12 @@ else
 	# Instantiate Static Runtime-Variables
 	#
 
+#
+# !!! TEMP !!!
+ufw allow proto tcp from 24.26.60.110/32 to any port 22;
+# !!! TEMP !!!
+#
+
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
@@ -862,8 +868,6 @@ else
 					fi;
 				fi;
 			fi;
-
-ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 
 			# ------------------------------------------------------------
 			# Sync UFW ("Uncomplicated Firewall")

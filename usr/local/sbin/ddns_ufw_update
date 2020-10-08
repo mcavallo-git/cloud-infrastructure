@@ -415,6 +415,10 @@ else
 											RESOLVED_CIDRv4_ARR+=(["${RESOLVED_CIDRv4}"]="${RESOLVED_PORT_PROTO}");
 										fi;
 
+# OVERRIDE for logic (below) using finalized arrays and comparing them against existing UFW rules
+#  |--> Add allowed ips & protocols, here.
+add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
+
 										# ------------------------------------------------------------
 										# BEGIN NGINX ONLY
 										if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then

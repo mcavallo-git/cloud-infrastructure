@@ -299,6 +299,7 @@ else
 				echo -e "\n""Info:  Calling [ apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
 				apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
 			fi;
+
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# RHEL, CentOS distros
 			#  |--> Bulk install missing packages

@@ -32,7 +32,7 @@ exec 2>&1;
 if [ "$(id -un)" != "root" ]; then
 	echo "";
 	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+	EXIT_CODE=1;
 else
 	# ------------------------------------------------------------
 	#
@@ -84,7 +84,6 @@ else
 
 
 	# ------------------------------------------------------------
-	EXIT_CODE=1; # Set status to fail by-default, and only proceed if a known good-status is reached
 
 	GIT_LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
 
@@ -145,7 +144,7 @@ else
 					ARGS_CRONJOB_SYNC=1;
 				else
 					# Error - Show user valid argument syntax
-					echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
+					echo "Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
 					echo "                        |";
 					echo "                        |--> Sync cron-job(s) via \"--cron sync\" argument";
 					echo "                        |--> Remove synced cron-job(s) via \"--cron remove\" argument";
@@ -334,23 +333,8 @@ else
 		done;
 
 		if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
-			# echo -e "\n""Warning : Attempting fallback (manual/hardcode) package installation-method";
-			# RET_CODE=1
-			# if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
-			# 	echo "Info:  Calling [ apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; ]...";
-			# 	apt-get -y update; apt-get -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
-			# elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
-			# 	echo "Info:  Calling [ yum check-update -y && yum -y install bc dos2unix git rsync vim wget; ]...";
-			# 	yum -y check-update; yum -y install bc dos2unix git rsync vim wget; RET_CODE=$?;
-			# elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
-			# 	echo "Info:  Calling [ apk update -y; apk add -y bc dos2unix git rsync vim wget; ]...";
-			# 	apk update -y; apk add -y bc dos2unix git rsync vim wget; RET_CODE=$?;
-			# fi;
-			# if [ ${RET_CODE} -ne 0 ]; then 
-				echo -e "\n""Error: Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
-				# sleep 60;
-				EXIT_CODE=1;
-			# fi;
+			echo -e "\n""Error:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
+			EXIT_CODE=1;
 		fi;
 		
 	fi;
@@ -368,6 +352,15 @@ else
 
 	TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
 	TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
+
+	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+		echo "";
+		echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+		echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+		echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
+		echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
+		echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
+	fi;
 
 	if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
 		UPDATE_SELF_REQUIRED=0;
@@ -394,71 +387,76 @@ else
 	fi;
 
 	if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then
-		#####  Sync 1-liner  -->  Pull the raw version of the file directly out of GitHub
-		echo -e "\n""Info:  Updating local runtime \"${THIS_SOURCECODE_LOCAL}\"...";
+		# Allow this script to update itself by downloading the latest version directly from the source
+		echo "  |--> Info:  Updating local runtime \"${THIS_SOURCECODE_LOCAL}\"...";
 		BENCHMARK_START=$(date +'%s.%N');
 		curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" -o "${THIS_SOURCECODE_LOCAL}" && chmod 0755 "${THIS_SOURCECODE_LOCAL}";
 		BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+		test ${ARGS_DEBUG_MODE} -eq 1 && echo "       |--> Finished after ${BENCHMARK_DELTA}s";
+		echo "  |--> Info:  Update complete";
 
+		echo -e "\n""--- Recursively calling self (to use latest/updated runtime) ---";
+		# Call the updated version of this script with the same parameters given to this (current) runtime
 		"${THIS_SOURCECODE_LOCAL}" $@;
+		EXIT_CODE=0;
 		exit 0;
 
 	else
-		# ------------------------------------------------------------
-		# Ensure the (GitHub) Repos directory exists, locally
-		if [ ! -d "${GIT_LOCAL_PARENT_PATH}" ]; then
-			mkdir -p "${GIT_LOCAL_PARENT_PATH}";
+
+		if [ -z "$(which git 2>'/dev/null')" ]; then
+			# Unable to pull updated version of code-repository via git
+			echo -e "\n""Info:  Skipped pulling the latest revision of the \"${GIT_REPO_NAME}\" repository (command \"git\" not found)";
+
+		else
+			# Ensure the (GitHub) Repos directory exists, locally
+			if [ ! -d "${GIT_LOCAL_PARENT_PATH}" ]; then
+				mkdir -p "${GIT_LOCAL_PARENT_PATH}";
+			fi;
+
+			# Fetch/Pull/Clone the Remote Repo
+			echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
+			echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
+			echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
+			BENCHMARK_START=$(date +'%s.%N');
+			# Clone the repo if it hasn't been synced, yet
+			if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
+				cd "${GIT_LOCAL_PARENT_PATH}" && \
+				git clone --quiet "${GIT_SOURCE_REPO_URL}";
+			fi;
+			# Sync local workstation's commands with the repo's commands
+			cd "${GIT_LOCAL_REPO_PATH}" && \
+			git fetch --quiet && \
+			git reset --quiet --hard "origin/master" && \
+			git pull --quiet;
+			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+
+			# Set ownership for git-repo files as-intended
+			echo -e "\n""Info:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
+			BENCHMARK_START=$(date +'%s.%N');
+			# find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
+			find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
+			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+
+			# Set ownership for git-repo directories as-intended
+			echo -e "\n""Info:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
+			BENCHMARK_START=$(date +'%s.%N');
+			# find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
+			find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
+			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 		fi;
 
-
-		# ------------------------------------------------------------
-		# Fetch/Pull/Clone the Remote Repo
-		echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository";
-		echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
-		echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
-		BENCHMARK_START=$(date +'%s.%N');
-		# Clone the repo if it hasn't been synced, yet
-		if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
-			cd "${GIT_LOCAL_PARENT_PATH}" && \
-			git clone --quiet "${GIT_SOURCE_REPO_URL}";
-		fi;
-		# Sync local workstation's commands with the repo's commands
-		cd "${GIT_LOCAL_REPO_PATH}" && \
-		git fetch --quiet && \
-		git reset --quiet --hard "origin/master" && \
-		git pull --quiet;
-		BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
-		# ------------------------------------------------------------
-		# Set ownership for git-repo files as-intended
-		echo -e "\n""Info:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
-		BENCHMARK_START=$(date +'%s.%N');
-		# find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
-		find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
-		BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
-		# Set ownership for git-repo directories as-intended
-		echo -e "\n""Info:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
-		BENCHMARK_START=$(date +'%s.%N');
-		# find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
-		find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
-		BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
-
-		# ------------------------------------------------------------
-		# Check for (Detect/Handle) WSL instance(s)
+		# Detect if current runtime is being executed within a WSL instance/terminal
 		if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
 			WSL_CHECK_EXISTS=$(which wsl_get_windows_username 2>'/dev/null');
 			if [ -n "${WSL_CHECK_EXISTS}" ]; then
+				# Attempt to resolve the Windows-user who is running the current WSL instance
 				echo -e "\n""Info:  Checking for Windows Subsystem for Linux (WSL) Environment";
 				WIN32_USERNAME=$(wsl_get_windows_username);
 				WIN32_USER_ERRORS="$?";
 			fi;
-			
 			if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
 				#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
 				echo -e "\n""Info:  Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
@@ -475,11 +473,9 @@ else
 			fi;
 		fi;
 
-
-		# ------------------------------------------------------------
 		if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
-			# If Windows/WSL check(s) failed (or were skipped), push forwards by checking for required Linux filepath(s)
-			# echo -e "\n""Info:  Unset/Empty variable: \${WIN32_HOMEDIR} ";
+			# Windows/WSL check(s) failed (or were skipped)
+			#  |--> Check for required Linux filepath(s) as a fallback
 			echo -e "\n""Info:  Checking for local repository files within user [ $(whoami) ]'s home-directory";
 			BENCHMARK_START=$(date +'%s.%N');
 			WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
@@ -509,11 +505,9 @@ else
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
+		else # Running in WSL environment/terminal on Windows-based OS
 
-		else
-			# Running WSL on Windows-based OS
-
-			# Create link to repo-manuals
+			# Create link to WSL-User's local repo-manual repository
 			WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/CodingPrivate/man";
 			if [ -d "${WSL_DIR}" ]; then
 				# Current User 
@@ -531,8 +525,7 @@ else
 					fi;
 				fi;
 			fi;
-			
-			# Create link to Desktop
+			# Create link to WSL-User's local desktop
 			WSL_DIR="${WIN32_HOMEDIR}/Desktop";
 			if [ -d "${WSL_DIR}" ]; then
 				# Current User 
@@ -554,17 +547,16 @@ else
 		fi;
 
 		# ------------------------------------------------------------
-		if [ -z "${DIR_REPO_BASE}" ]; then
-			# Error-out if any required variable(s) are empty/unset
-			EXIT_CODE=1;
 
+		if [ -z "${DIR_REPO_BASE}" ]; then
+			# Required variable(s) are empty/unset
+			EXIT_CODE=1;
 			echo "";
 			echo "Error:  Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 		elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
-			# Error-out if any required source directories are missing
+			# Required source directory/directories not found
 			EXIT_CODE=1;
-
 			if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
 				echo "";
 				echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
@@ -573,12 +565,11 @@ else
 				echo "";
 				echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 			fi;
+		fi;
 
-		else
-			# Required source directory/directories exist --> Sync them to local workstation/server
-			EXIT_CODE=0;
-			
-			
+		if [ ! -v EXIT_CODE ]; then
+			# Prereq success - No exit-code has been set up-until this point --> Pre-requisites are assumed to be met --> Continue by running the bulk of the sync-job
+
 			# ------------------------------------------------------------
 			#
 			# /usr/local/bin
@@ -1609,21 +1600,27 @@ else
 				fi;
 			fi;
 
+			# ------------------------------------------------------------
+			# Show runtime statistics (intended only to be shown during runs which complete without error)
+			echo -e "\n""Info:  End of \"sync_cloud_infrastructure\" runtime";
+			BENCHMARK_START=${START_SECONDS_NANOSECONDS};
+			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+			echo "";
+
 		fi;
 
-
-		# ------------------------------------------------------------
-		# Show Runtime Statistics
-		echo -e "\n""Info:  End of \"sync_cloud_infrastructure\" runtime";
-		BENCHMARK_START=${START_SECONDS_NANOSECONDS};
-		BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-		echo "";
 
 	fi;
 
 	# ------------------------------------------------------------
 	# Exit as-intended (force returned code)
-	exit ${EXIT_CODE};
 
+fi;
+
+#
+# Exit & return intended value back to caller
+#
+if [ -v EXIT_CODE ]; then
+	exit ${EXIT_CODE};
 fi;

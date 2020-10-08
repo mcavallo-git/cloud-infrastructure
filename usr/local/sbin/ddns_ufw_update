@@ -124,7 +124,6 @@ else
 			# If rule doesn't exist, then add (allow) it to UFW's ruleset
 			if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -z "${rule}" ]; then
 				ADD_RULE_SKIPPED=0;
-				echo "";
 				# echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "            |-->  result: [ add new rule ]";
 				echo "            |-->  call:  [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
@@ -492,60 +491,43 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
 
 	# Foreach on resolved (valid) CIDRv4 addresses
-	RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${RESOLVED_CIDRv4_ARR[@]}" | tr ',' ' '));
-	RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	if [ ${DEBUG_MODE} -eq 1 ]; then
 		echo "************************************************************";
 		echo "Debug:  !RESOLVED_CIDRv4_ARR[@] = [ ${!RESOLVED_CIDRv4_ARR[@]} ]";
 		echo "Debug:  RESOLVED_CIDRv4_ARR[@] = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
-		echo "Debug:  !RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${!RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
-		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
-		echo "Debug:  !RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${!RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
-		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
 	fi;
 
-	for EACH_CIDRv4_KEY in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-		EACH_CIDRv4_RESOLVED="${RESOLVED_CIDRv4_ARR[${EACH_CIDRv4_KEY}]}";
-		echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_CIDRv4_KEY}] = ${EACH_CIDRv4_RESOLVED}";
-	done;
-
-	for EACH_RESOLVED_PORT_PROTO in "${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]}"; do
-		EACH_COMMA_DELIMITED_PORT_PROTOS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_PORT_PROTO}]}";
+	for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+		EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+		EACH_PORT_PROTO_W_COMMAS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+		RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${EACH_PORT_PROTO_W_COMMAS}" | tr ',' ' '));
+		RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "--";
-			echo "Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
-			echo "Debug:  EACH_COMMA_DELIMITED_PORT_PROTOS = [ ${EACH_COMMA_DELIMITED_PORT_PROTOS} ]";
+			echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+			echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
+			echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
+			echo "Debug:  EACH_PORT_PROTO_W_COMMAS = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+			echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
+			echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
 		fi;
-		for EACH_RESOLVED_PORT_PROTO in $(echo "${EACH_COMMA_DELIMITED_PORT_PROTOS}" | sed "s/,/ /g"); do
+		for EACH_RESOLVED_PORT_PROTO in "${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]}"; do
+			EACH_RESOLVED_PORT="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1)";
+			EACH_RESOLVED_PROTO="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f2)";
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
+				echo "-- Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
+				echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
+				echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
 			fi;
-			EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+			# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
 			if [ ${DEBUG_MODE} -eq 1 ]; then
-				echo "============================================================";
-				echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
+				echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
 			fi;
-			# EACH_RESOLVED_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_PORT_PROTO}]}";
-			# For each substring in a comma delimited string
-			for EACH_PORT_PROTO in $(echo ${EACH_RESOLVED_PORT_PROTO} | sed "s/,/ /g"); do
-				EACH_RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1)";
-				EACH_RESOLVED_PROTO="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2)";
-				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "------------------------------------------------------------";
-					echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
-					echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
-				fi;
-				# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_PORT_PROTO}\" ]...";
-				fi;
-				ADD_RULE_SKIPPED=0;
-				add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_PORT_PROTO}";
-				if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
-					# Add the inverse of new rule to the undo-changes array
-					UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_PORT_PROTO} to any port ${EACH_RESOLVED_PORT};"]="");
-				fi;
-			done;
+			ADD_RULE_SKIPPED=0;
+			add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
+			if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
+				# Add the inverse of new rule to the undo-changes array
+				UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
+			fi;
 		done;
 	done;
 

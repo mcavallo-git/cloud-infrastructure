@@ -55,7 +55,7 @@ else
 
 	# ------------------------------------------------------------
 	# Log the starting timestamp for the current runtime
-	echo "\n""Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+	echo -e "\n""Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 	# ------------------------------------------------------------
 	#
@@ -1526,7 +1526,6 @@ else
 				fi;
 			fi;
 
-
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  jenkins
 			# ------------------------------------------------------------
@@ -1541,7 +1540,6 @@ else
 				fi;
 			fi;
 
-
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  nginx
 			# ------------------------------------------------------------
@@ -1554,7 +1552,6 @@ else
 					echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 				fi;
 			fi;
-
 
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  ssh
@@ -1569,7 +1566,6 @@ else
 					echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 				fi;
 			fi;
-
 
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  ufw
@@ -1587,7 +1583,6 @@ else
 					echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
 				fi;
 			fi;
-
 
 			# ------------------------------------------------------------
 			# Cleanup log files outside of the retention-policy's max-age
@@ -1621,7 +1616,7 @@ else
 
 		# ------------------------------------------------------------
 		# Log the ending timestamp for the current runtime
-		echo "\n""Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+		echo -e "\n""Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 	fi;
 

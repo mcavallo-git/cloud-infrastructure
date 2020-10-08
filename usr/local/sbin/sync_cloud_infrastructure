@@ -54,6 +54,10 @@ else
 	THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
 	# ------------------------------------------------------------
+	# Log the starting timestamp for the current runtime
+	echo "\n""Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+
+	# ------------------------------------------------------------
 	#
 	# Determine Dynamic Runtime-Variables
 	#
@@ -1608,6 +1612,16 @@ else
 
 		fi;
 
+		# ------------------------------------------------------------
+		# Log the ending timestamp for the current runtime
+
+		END_SECONDS_NANOSECONDS=$(date +'%s.%N');
+		END_EPOCHSECONDS=$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+		# END_NANOSECONDS=$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+		# END_MICROSECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-6);
+		# END_MILLISECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-3);
+		END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+		echo "\n""Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 	fi;
 

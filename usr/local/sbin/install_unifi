@@ -42,44 +42,36 @@ else
 
 		if [ -n "${1}" ]; then
 			#
-			# Allow user to pass a URL to directly install a '.deb' package from 
-			#  |--> view UniFi downloads page @ https://www.ui.com/download/?q=UniFi%20Network%20Controller
+			# Allow user to pass a single argument ($1) being a specific version of the UniFi Controller to attempt to install
+			#  |
+			#  |--> Ex)  install_unifi 5.10.23
+			#  |
+			#  |--> Uses bash convenience scripts from glennr.nl --> view available scripts & compatible versions @ https://glennr.nl/s/unifi-network-controller
 			#
-			DEB_PKG_URL="${1}";
+			SOURCE_URL="https://get.glennr.nl/unifi/install/unifi-${1}.sh";
 			echo "";
-			echo "Info:  Testing URL for validity:  [ ${DEB_PKG_URL} ]";
+			echo "Info:  Testing URL for validity:  [ ${SOURCE_URL} ]";
 			# check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
-			if [ "$(curl -Is ${DEB_PKG_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
+			if [ "$(curl -Is ${SOURCE_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
 				# VALID URL
-				DEB_PKG_BASENAME="$(basename ${DEB_PKG_URL})";
-				DEB_PKG_LOCAL_DIRNAME="${HOME}/install_unifi";
-				DEB_PKG_LOCAL_FULLPATH="${DEB_PKG_LOCAL_DIRNAME}/${DEB_PKG_BASENAME}";
+				# Install [ specific-revision'ed ] Unifi Controller via Bash convenience script
+				TMP_FILE="/tmp/unifi-install.sh";
 				echo "";
-				echo "Info:  URL validated - Returned an HTTP code of 200";
-				if [ ! -d "${DEB_PKG_LOCAL_DIRNAME}" ]; then
-					mkdir -p "${DEB_PKG_LOCAL_DIRNAME}";
-				fi;
-				cd "${DEB_PKG_LOCAL_DIRNAME}";
-				echo "";
-				echo "Info:  Attempting to download package from URL...";
-				curl -o "${DEB_PKG_LOCAL_FULLPATH}" "${DEB_PKG_URL}";
-				echo "";
-				echo "Info:  Attempting to install downloaded package...";
-				echo "  |";
-				echo "  |-->  If errors about dependencies are thrown, run [  apt-get -y -f install; ], then re-run this script (with URL inline)";
-				# apt-get -y -f install "${DEB_PKG_LOCAL_FULLPATH}";
-				dpkg -i "${DEB_PKG_LOCAL_FULLPATH}";
+				echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; chmod 0700 \"${TMP_FILE}\"; bash \"${TMP_FILE}\"; ]...";
+				mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; chmod 0700 "${TMP_FILE}"; bash "${TMP_FILE}";
 
 			else
 				# INVALID URL
 				echo "";
 				echo "Error:  Invalid URL - Failed to return an HTTP code of 200";
 				echo "";
-				echo "Info:  View available UniFi '.deb' Controller Download-URLs";
+				echo "Info:  Browse to the following URL to view available bash convenience scripts for installing specific versions of the UniFi Controller";
 				echo "  |";
-				echo "  |-->   https://www.ui.com/download/?q=UniFi%20Network%20Controller";
+				echo "  |-->   https://glennr.nl/s/unifi-network-controller";
 				echo "";
-				echo "Info:  Once you have your desired URL, call this script again with the URL as the first inline argument (\$1)";
+				echo "Info:  Once you have your desired version of the UniFi controller to install, call this script again with the version as the first inline argument (\$1)";
+				echo "  |";
+				echo "  |-->  Ex) install_unifi 5.10.23";
 				echo "";
 				exit 1;
 			fi;
@@ -88,7 +80,7 @@ else
 		
 			if [ 1 -eq 1 ]; then
 
-				# Install Unifi Controller (via Bash convenience script)
+				# Install [ latest-version'ed ] Unifi Controller via Bash convenience script
 				SOURCE_URL="https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh";
 				FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/ubuntu-18.04/unifi-5.10.23.sh";
 				SOURCE_URL="${FALLBACK_URL}";

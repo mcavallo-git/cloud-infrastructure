@@ -372,10 +372,10 @@ else
 		echo -e "\n""Info:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
 	elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=0;
-		echo -e "\n""Info:  Update skipped - Checksum equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
+		echo -e "\n""Info:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
 	elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
 		UPDATE_SELF_REQUIRED=1;
-		echo -e "\n""Info:  Update required - Checksums-difference detected between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE})";
+		echo -e "\n""Info:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
 	fi;
 
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
@@ -392,7 +392,7 @@ else
 		test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 		echo "Info:  Update complete";
 
-		echo -e "\n""---- Recursively calling latest version of this script (ID: ${START_SECONDS_NANOSECONDS})";
+		echo -e "\n""---- Recursively calling latest revision of this script (ID: ${START_SECONDS_NANOSECONDS})";
 		
 		# Call the updated version of this script with the same parameters given to this (current) runtime
 		# "${THIS_SOURCECODE_LOCAL}" "${ARGS}" && echo -e "\n""==== End of recursive call (ID: ${START_SECONDS_NANOSECONDS})" && exit 0;
@@ -404,7 +404,7 @@ else
 
 		if [ -z "$(which git 2>'/dev/null')" ]; then
 			# Unable to pull updated version of code-repository via git
-			echo -e "\n""Info:  Skipped pulling the latest revision of the \"${GIT_REPO_NAME}\" repository (command \"git\" not found)";
+			echo -e "\n""Info:  Skipped pulling the latest revision of the \"${GIT_REPO_NAME}\" repository - Pre-requisite command 'git' not found";
 
 		else
 			# Ensure the (GitHub) Repos directory exists, locally
@@ -707,7 +707,7 @@ else
 			if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
 				if [ -z "$(which ssh 2>'/dev/null')" ]; then
-					echo "Info:  Skipped SSH Config-Update (command \"ssh\" not found)";
+					echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
 
 				else
 					
@@ -747,16 +747,16 @@ else
 					dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
 					if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 						# SSH-Config file already fully up-to-date
-						echo -e "\n""Info:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
+						echo -e "\n""Info:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
 						echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
 					elif [ ! -d "/home/" ] || [ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
 						# Need another user other than root to SSH into this machine --> No user directories found in /home/.
-						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one user other than root to access this workstation (with home directory within  [ /home/. ] )";
+						echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one user other than root to access this workstation (with home directory within  [ /home/. ]";
 
 					elif [ ! -d "/etc/ssh/authorized_keys/" ] || [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
 						# Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
-						echo -e "\n""Info:  Skipped SSH Config-Update (must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ] )";
+						echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ]";
 
 					else
 						# At least one Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
@@ -776,7 +776,7 @@ else
 							echo "  |";
 							if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 								# User declined the config-update
-								echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+								echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
 							else
 								# User accepted/confirmed the config-update
 								echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
@@ -828,7 +828,7 @@ else
 								echo "  |";
 								if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
 									# User declined the config-update
-									echo -e "  |--> Info:  Skipped SSH Config-Update (user opt-out)";
+									echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
 								else
 									# User accepted/confirmed the config-update
 									echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
@@ -838,7 +838,7 @@ else
 										&& RESTART_SERVICE_SSH=1;
 								fi;
 							else
-								echo -e "\n""Info:  Skipped SSH Config-Update (checksum already equal to \"${SSHD_CONFIG_SED}\")";
+								echo -e "\n""Info:  Skipped SSH Config-Update - Already running the latest revision";
 							fi;
 							BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 							test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
@@ -1318,7 +1318,7 @@ else
 
 			else
 				# Service not found locally
-				echo -e "\n""Info:  Skipped Jenkins config-sync (not found as a local service)";
+				echo -e "\n""Info:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
 
 			fi;
 
@@ -1329,7 +1329,7 @@ else
 			if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
 				if [ -z "$(which nginx 2>'/dev/null')" ]; then
 					# NGINX does NOT exist locally
-					echo -e "\n""Info:  Skipped NGINX sync (not found as a local service)";
+					echo -e "\n""Info:  Skipped NGINX sync - No local 'nginx' service exists";
 
 				else
 					# NGINX exists locally
@@ -1418,7 +1418,7 @@ else
 				LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>'/dev/null';);
 				COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
 				if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
-					echo -e "\n""Info:  Skipped removal of cron sync-triggers (No scripts found matching \"/etc/cron.d/CRON_*\")";
+					echo -e "\n""Info:  Skipped removal of cron sync-triggers - No scripts found matching \"/etc/cron.d/CRON_*\"";
 				else
 					echo -e "\n""Info:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
 					for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do

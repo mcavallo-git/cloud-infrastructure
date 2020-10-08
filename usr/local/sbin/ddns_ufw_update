@@ -173,7 +173,10 @@ else
 				# echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
 				echo "            |-->  result: [ delete existing rule ]";
 				echo "            |-->  call:  [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]";
-				/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
+				echo "       *** DELETE DISABLED TEMPORARILY ***";
+				
+				### /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
+
 				# Example(s):
 				#   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
 			else

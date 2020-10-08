@@ -291,7 +291,6 @@ else
 				for EACH_MISSING_PKG in "${MISSING_PKGS_ARRAY[@]}"; do
 					echo -e "\n""Info:  Calling [ apt-get -y install ${EACH_MISSING_PKG}; ]...";
 					apt-get -y install ${EACH_MISSING_PKG};
-					# apt-get -y install "${EACH_MISSING_PKG}";
 				done;
 			else
 				# Debian distros (Ubuntu, Raspbian, etc.)

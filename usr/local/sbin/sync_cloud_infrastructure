@@ -395,8 +395,9 @@ else
 		echo -e "\n""---- Recursively calling latest version of this script (ID: ${START_SECONDS_NANOSECONDS})";
 		
 		# Call the updated version of this script with the same parameters given to this (current) runtime
-		"${THIS_SOURCECODE_LOCAL}" "${ARGS}" && \
-		echo -e "\n""==== End of recursive call (ID: ${START_SECONDS_NANOSECONDS})" && \
+		# "${THIS_SOURCECODE_LOCAL}" "${ARGS}" && echo -e "\n""==== End of recursive call (ID: ${START_SECONDS_NANOSECONDS})" && exit 0;
+		"${THIS_SOURCECODE_LOCAL}" $@
+		echo -e "\n""==== End of recursive call (ID: ${START_SECONDS_NANOSECONDS})";
 		exit 0;
 
 	else

@@ -33,12 +33,27 @@ else
 		echo "Info:  Creating file \"/var/run/reboot-required\"...";
 		sudo touch "/var/run/reboot-required";
 
+		# Ask user if they're ready to close their terminal
+		READ_TIMEOUT=60;
+		read -p "Shutdown WSL and close this terminal, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
-		echo "Info:  To finish shutdown, close this ${THIS_DISTRO} window (in Windows)";
-
-		# Exit Gracefully
-		echo "";
-		exit 0;
+		if [ ${RETURN_CODE_READ} -gt 128 ]; then
+			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+			echo "";
+			echo "Info:  To finish shutdown, close this window (in Windows)";
+			echo "";
+			exit 0;
+		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+			echo "Info:  Confirmed - Performing Action [ Shutdown WSL ] ...";
+			echo "";
+			logout 0;
+		else
+			echo "Info:  Denied - Skipping action [ Shutdown WSL ]";
+			echo "";
+			echo "Info:  To finish shutdown, close this window (in Windows)";
+			echo "";
+			exit 0;
+		fi;
 
 	else
 		# Non-WSL Environment detected

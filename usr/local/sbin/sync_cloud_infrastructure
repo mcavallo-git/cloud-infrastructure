@@ -86,7 +86,6 @@ else
 	GIT_REPO_NAME="$(basename ${GIT_SOURCE_REPO_URL} | cut -d. -f1;)";
 	THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/master/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
 
-
 	# ------------------------------------------------------------
 
 	GIT_LOCAL_PARENT_PATH="${HOME}/Documents/GitHub";
@@ -96,7 +95,6 @@ else
 	WIN32_HOMEDIR="";
 
 	DIR_REPO_BASE="";
-
 
 	# ------------------------------------------------------------
 	# Parse inline arguments (passed to current script)
@@ -206,7 +204,6 @@ else
 			if [ "${EACH_ARG}" == "--ufw" ]; then
 				ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
 			fi;
-
 
 		fi;
 
@@ -589,7 +586,6 @@ else
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
-
 			# ------------------------------------------------------------
 			#
 			# /usr/local/sbin
@@ -608,7 +604,6 @@ else
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
-
 			# ------------------------------------------------------------
 			#
 			# /etc/profile
@@ -624,7 +619,6 @@ else
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 				fi;
 			fi;
-
 
 			# ------------------------------------------------------------
 			#
@@ -651,7 +645,6 @@ else
 
 			fi;
 
-
 			# ------------------------------------------------------------
 			#
 			# /etc/profile.d/required_paths.sh
@@ -669,7 +662,6 @@ else
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
 
 			# ------------------------------------------------------------
 			#
@@ -689,7 +681,6 @@ else
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
-
 			# ------------------------------------------------------------
 			#
 			# /etc/whitelist.d
@@ -707,7 +698,6 @@ else
 			dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 			BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
 
 			# ------------------------------------------------------------
 			#
@@ -960,7 +950,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 
 			fi;
 
-
 			# ------------------------------------------------------------
 			#
 			# /etc/cron.d/...
@@ -1159,7 +1148,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
 			test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 
-
 			# ------------------------------------------------------------
 			#
 			# /etc/cron.d/CRON_ddns_updater
@@ -1180,7 +1168,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
 				fi;
 			fi;
-
 
 			# ------------------------------------------------------------
 			#
@@ -1247,7 +1234,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 					dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 					BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
 					test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
-
 
 					if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
 
@@ -1336,7 +1322,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 				echo -e "\n""Info:  Skipped Jenkins config-sync (not found as a local service)";
 
 			fi;
-
 
 			# ------------------------------------------------------------
 			#
@@ -1427,7 +1412,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 
 			fi;
 
-
 			if [ ${ARGS_CRONJOB_REMOVE} -eq 1 ]; then
 				#
 				# --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
@@ -1493,7 +1477,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 			DELDIR="/var/cache/jenkins/war";
 			TO_DEL="${DELDIR}Jenkins Artwork (jenkins.io).url"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
 			TO_DEL="${DELDIR}Jenkins Material Theme (GitHub).url"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
-
 
 			# ------------------------------------------------------------
 			# Restart Service (if needed)  -->  cron

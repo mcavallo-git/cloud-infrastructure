@@ -1011,7 +1011,7 @@ else
 						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 							SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 							FILE_PERMS="0644"; DIR_PERMS="0644";
-							echo "  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+							echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 							BENCHMARK_START=$(date +'%s.%N');
 							rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 							chown -R "root:root" "${DESTINATION_PATH}";
@@ -1041,7 +1041,7 @@ else
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo "  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+						echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";
@@ -1071,7 +1071,7 @@ else
 					if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 						SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
 						FILE_PERMS="0644"; DIR_PERMS="0644";
-						echo "  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+						echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
 						BENCHMARK_START=$(date +'%s.%N');
 						rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
 						chown -R "root:root" "${DESTINATION_PATH}";

@@ -279,7 +279,8 @@ else
 	# If any packages were determined to be missing, attempt to install them
 	if [ ${#MISSING_PKGS_ARRAY[@]} -ne 0 ]; then
 		if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-			echo -e "\n""Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
+			echo "";
+			echo "Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
 		fi;
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			if [ 1 -eq 1 ]; then
@@ -885,7 +886,8 @@ else
 						# Check UFW Enabled/Disabled Status
 						UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 						if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-							echo -e "\n""Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+							echo "";
+							echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
 						fi;
 						if [ ${UFW_ENABLED} -eq 0 ]; then
 
@@ -918,7 +920,8 @@ else
 							# 	# Re-check UFW Enabled/Disabled Status
 							# 	UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
 							# 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-							# 		echo -e "\n""Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+							# 		echo "";
+							# 		echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
 							# 	fi;
 							# fi;
 

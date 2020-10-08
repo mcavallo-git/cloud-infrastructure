@@ -571,7 +571,7 @@ else
 		fi;
 
 		if [ ! -v EXIT_CODE ]; then
-			# Prereq success - No exit-code has been set up-until this point --> Pre-requisites are assumed to be met --> Continue by running the bulk of the sync-job
+			# Prereq success - No exit-code was set up-until this point --> Pre-requisites are assumed to be met --> Continue by running the bulk of the sync-job
 
 			# ------------------------------------------------------------
 			#
@@ -1604,14 +1604,12 @@ else
 
 	fi;
 
-	# ------------------------------------------------------------
-	# Exit as-intended (force returned code)
-
 fi;
 
 #
 # Exit & return intended value back to caller
 #
-if [ -v EXIT_CODE ]; then
-	exit ${EXIT_CODE};
+if [ ! -v EXIT_CODE ]; then
+	EXIT_CODE=0;
 fi;
+exit ${EXIT_CODE};

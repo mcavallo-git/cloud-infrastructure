@@ -637,20 +637,26 @@ else
 	echo "------------------------  UFW STATUS  ----------------------";
 	/bin/systemctl status ufw;
 	echo "------------------------------------------------------------";
+
+	# Cleanup log files outside of the retention-policy's max-age
+	if [ -z "${LOGDIR}" ]; then
+		LOGDIR="/var/log/ddns_ufw_update";
+	fi;
+	if [ -d "${LOGDIR}" ]; then
+		# MAX_RETENTION_DAYS=14;
+		# find "${LOGDIR}" -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
+		echo -e "\n""Info:  Cleaning logs older than 14 days old from directory \"${LOGDIR}\"";
+		find "${LOGDIR}" -type f -mtime +14 -exec rm -- '{}' \;;
+	fi;
+
+
 	# Set ownership & privileges for the logging directory & its sub contents
 	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
 		chown -R "syslog:adm" "${LOGDIR}";
 	fi;
-
 	find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
 	find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
 
-	# Cleanup log files outside of the retention-policy's max-age
-	DIRECTORY_TO_CLEAN="${LOGDIR}/";
-	MAX_RETENTION_DAYS=3;
-	if [ -d "${DIRECTORY_TO_CLEAN}" ]; then
-		find ${DIRECTORY_TO_CLEAN} -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
-	fi;
 
 fi;
 

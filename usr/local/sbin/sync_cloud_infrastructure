@@ -873,6 +873,8 @@ else
 				fi;
 			fi;
 
+ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
+
 			# ------------------------------------------------------------
 			# Sync UFW ("Uncomplicated Firewall")
 			ENABLE_CRON_DDNS_UPDATER=0;
@@ -888,10 +890,7 @@ else
 							echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
 						fi;
 
-ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
-
 						if [ ${UFW_ENABLED} -eq 0 ]; then
-
 							# UFW DISABLED - Show recommendations for general-practice setup
 							echo -e "\n""!!! Warning !!!";
 							echo "  |";
@@ -910,7 +909,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 							echo "         ufw logging on; # enable logging";
 							echo "         ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
 							echo "         ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
-
 							# UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
 							# echo "  |";
 							# echo "  |--> UFW sync requested, however UFW is currently disabled";
@@ -925,7 +923,6 @@ ufw allow proto tcp from 24.26.60.110/32 to any port 22; # TEMP
 							# 		echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
 							# 	fi;
 							# fi;
-
 						fi;
 
 						# Proceed if UFW is, indeed, enabled

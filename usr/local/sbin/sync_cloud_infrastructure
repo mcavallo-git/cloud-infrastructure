@@ -285,7 +285,7 @@ else
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			if [ 1 -eq 1 ]; then
 				# Debian distros (Ubuntu, Raspbian, etc.)
-				#  |--> Individually-install missing packages (to avoid errors from single-packages from taking-out the entire bulk-install attempt)
+				#  |--> Individually install missing packages (to avoid errors from single-packages from taking-out the entire bulk-install attempt)
 				echo -e "\n""Info:  Calling [ apt-get update -y; ]...";
 				apt-get -y update;
 				for EACH_MISSING_PKG in "${MISSING_PKGS_ARRAY[@]}"; do
@@ -295,19 +295,19 @@ else
 				done;
 			else
 				# Debian distros (Ubuntu, Raspbian, etc.)
-				#  |--> Bulk-install missing packages
+				#  |--> Bulk install missing packages
 				echo -e "\n""Info:  Calling [ apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
 				apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
 			fi;
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# RHEL, CentOS distros
-			#  |--> Bulk-install missing packages
+			#  |--> Bulk install missing packages
 			echo -e "\n""Info:  Calling [ yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
 			yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]};
 
 		elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			# Alpine distros
-			#  |--> Bulk-install missing packages
+			#  |--> Bulk install missing packages
 			echo -e "\n""Info:  Calling [ apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
 			apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]};
 

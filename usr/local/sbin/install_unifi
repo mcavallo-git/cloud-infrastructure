@@ -41,20 +41,48 @@ else
 
 
 		if [ -n "${1}" ]; then
-			# Allow user to pass-in a URL to directly download the '.deb' package from
-			TARGET_URL="${1}";
+			#
+			# Allow user to pass a URL to directly install a '.deb' package from 
+			#  |--> view UniFi downloads page @ https://www.ui.com/download/?q=UniFi%20Network%20Controller
+			#
+			DEB_PKG_URL="${1}";
 			echo "";
-			echo "Info:  Testing URL for validity:  [ ${TARGET_URL} ]";
-			# Check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
-			if [ "$(curl -Is ${TARGET_URL} | head -n 1)" == "HTTP/1.1 200 OK" ]; then
+			echo "Info:  Testing URL for validity:  [ ${DEB_PKG_URL} ]";
+			# check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
+			if [ "$(curl -Is ${DEB_PKG_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
+				# VALID URL
+				DEB_PKG_BASENAME="$(basename ${DEB_PKG_URL})";
+				DEB_PKG_LOCAL_DIRNAME="${HOME}/install_unifi";
+				DEB_PKG_LOCAL_FULLPATH="${DEB_PKG_LOCAL_DIRNAME}/${DEB_PKG_BASENAME}";
 				echo "";
-				echo "Info:  URL validated - Returned 'HTTP/1.1 200 OK'";
-				# Direct URL install from a '.deb' file downloaded from the UniFi downloads page @ https://www.ui.com/download/?q=UniFi%20Network%20Controller
-			else
+				echo "Info:  URL validated - Returned an HTTP code of 200";
+				if [ ! -d "${DEB_PKG_LOCAL_DIRNAME}" ]; then
+					mkdir -p "${DEB_PKG_LOCAL_DIRNAME}";
+				fi;
+				cd "${DEB_PKG_LOCAL_DIRNAME}";
 				echo "";
-				echo "Error:  Invalid URL - Failed to return 'HTTP/1.1 200 OK'";
-			fi;
+				echo "Info:  Attempting to download package from URL...";
+				curl -o "${DEB_PKG_LOCAL_FULLPATH}" "${DEB_PKG_URL}";
+				echo "";
+				echo "Info:  Attempting to install downloaded package...";
+				echo "  |";
+				echo "  |-->  If errors about dependencies are thrown, run [  apt-get install -f; ], then re-run this script (with URL inline)";
+				echo "  |";
+				dpkg -i "${DEB_PKG_LOCAL_FULLPATH}";
 
+			else
+				# INVALID URL
+				echo "";
+				echo "Error:  Invalid URL - Failed to return an HTTP code of 200";
+				echo "";
+				echo "Info:  View available UniFi '.deb' Controller Download-URLs";
+				echo "  |";
+				echo "  |-->   https://www.ui.com/download/?q=UniFi%20Network%20Controller";
+				echo "";
+				echo "Info:  Once you have your desired URL, call this script again with the URL as the first inline argument (\$1)";
+				echo "";
+				exit 1;
+			fi;
 
 		else
 		

@@ -153,7 +153,7 @@ else
 				OS_UPDATES_AVAILABLE="$(echo "${OS_UPDATES_CHECK}" | grep '^New release' | wc -l;)";
 				if [ "${OS_UPDATES_AVAILABLE}" == "1" ]; then
 					echo "";
-					echo "Updates exist for current operating system:";
+					echo "!!!  Updates exist for current operating system:";
 					echo "${OS_UPDATES_CHECK}" | grep -v '^Check';
 				else
 					echo "";

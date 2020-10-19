@@ -3,14 +3,13 @@
 # LOCAL_SBIN="/usr/local/sbin/uninstall_unifi" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT REMOTELY:
+
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_unifi?t=$(date +'%s.%N')" | bash;
 
+
 fi;
-#
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
@@ -48,7 +47,9 @@ else
 		echo "";
 
 		# ------------------------------------------------------------
+		#
 		# Remove Service's associated package(s)
+		#
 		echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
 		if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 			echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
@@ -67,6 +68,7 @@ else
 fi;
 
 # ------------------------------------------------------------
+#
 # Citation(s)
 #
 #   help.ui.com  |  "UniFi - How to Uninstall the UniFi Network Controller – Ubiquiti Networks Support and Help Center"  |  https://help.ui.com/hc/en-us/articles/360015373734-UniFi-How-to-Uninstall-the-UniFi-Network-Controller

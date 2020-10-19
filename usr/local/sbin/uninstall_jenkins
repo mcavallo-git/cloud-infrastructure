@@ -34,11 +34,10 @@ else
 	# Uninstall Jenkins CI/CD Server
 	SERVICE_NAME="jenkins";
 
-
 	# ------------------------------------------------------------
 	# Require user-confirmation to perform this action
 	#
-	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime-user, runtime-group, service)";
+	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
 	read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 	echo "";
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -67,7 +66,7 @@ else
 		
 			# ------------------------------------------------------------
 			# Remove Service's associated package(s)
-			echo -e "\n""Info:  Removing Jenkins software-package(s)";
+			echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
 			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
 				apt-get remove -y "${SERVICE_NAME}";
@@ -79,7 +78,7 @@ else
 			# ------------------------------------------------------------
 			# Remove Service's Runtime-User
 			if [ -n "$(getent passwd 'jenkins';)" ]; then
-				echo -e "\n""Info:  Removing Jenkins' Runtime-User";
+				echo -e "\n""Info:  Removing runtime user for ${SERVICE_NAME} service";
 				echo "  |--> Calling [ userdel \"${SERVICE_NAME}\" --force --remove; ]...";
 				userdel "${SERVICE_NAME}" --force --remove;
 			fi;
@@ -87,7 +86,7 @@ else
 			# ------------------------------------------------------------
 			# Remove Service's Runtime-Group
 			if [ -n "$(getent group 'jenkins';)" ]; then
-				echo -e "\n""Info:  Removing Jenkins' Runtime-Group";
+				echo -e "\n""Info:  Removing runtime usergroup for ${SERVICE_NAME} service";
 				echo "  |--> Calling [ groupdel \"${SERVICE_NAME}\"; ]...";
 				groupdel "${SERVICE_NAME}";
 			fi;

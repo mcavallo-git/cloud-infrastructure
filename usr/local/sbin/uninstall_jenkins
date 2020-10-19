@@ -3,14 +3,13 @@
 # LOCAL_SBIN="/usr/local/sbin/uninstall_jenkins" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT REMOTELY:
+
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_jenkins?t=$(date +'%s.%N')" | bash;
 
+
 fi;
-#
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
@@ -31,10 +30,13 @@ if [ "$(id -un)" != "root" ]; then
 	exit 1;
 else
 	# ------------------------------------------------------------
+	#
 	# Uninstall Jenkins CI/CD Server
+	#
 	SERVICE_NAME="jenkins";
 
 	# ------------------------------------------------------------
+	#
 	# Require user-confirmation to perform this action
 	#
 	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
@@ -46,10 +48,10 @@ else
 		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
 			# ------------------------------------------------------------
+			#
 			# Instantiate runtime variables
-			
+			#
 			EXIT_CODE=1;
-
 			START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 			START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 			# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
@@ -59,13 +61,17 @@ else
 			START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
 			# ------------------------------------------------------------
+			#
 			# Remove Service's associated package(s)
+			#
 			echo -e "\n""Info:  Stopping service \"${SERVICE_NAME}\"";
 			echo "  |--> Calling [ systemctl stop \"${SERVICE_NAME}\"; ]...";
 			systemctl stop "${SERVICE_NAME}";
 		
 			# ------------------------------------------------------------
+			#
 			# Remove Service's associated package(s)
+			#
 			echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
 			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
@@ -76,7 +82,9 @@ else
 			fi;
 			
 			# ------------------------------------------------------------
+			#
 			# Remove Service's Runtime-User
+			#
 			if [ -n "$(getent passwd 'jenkins';)" ]; then
 				echo -e "\n""Info:  Removing runtime user for ${SERVICE_NAME} service";
 				echo "  |--> Calling [ userdel \"${SERVICE_NAME}\" --force --remove; ]...";
@@ -84,7 +92,9 @@ else
 			fi;
 
 			# ------------------------------------------------------------
+			#
 			# Remove Service's Runtime-Group
+			#
 			if [ -n "$(getent group 'jenkins';)" ]; then
 				echo -e "\n""Info:  Removing runtime usergroup for ${SERVICE_NAME} service";
 				echo "  |--> Calling [ groupdel \"${SERVICE_NAME}\"; ]...";
@@ -92,7 +102,9 @@ else
 			fi;
 
 			# ------------------------------------------------------------
+			#
 			# Remove Service
+			#
 			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 				echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
 				apt-get -y purge "${SERVICE_NAME}";
@@ -167,7 +179,6 @@ else
 			/bin/systemctl daemon-reload;
 			echo "  |--> Calling [ /bin/systemctl reset-failed; ]...";
 			/bin/systemctl reset-failed;
-		# ------------------------------------------------------------
 
 		fi;
 	fi;
@@ -179,6 +190,7 @@ else
 fi;
 
 # ------------------------------------------------------------
+#
 # Citation(s)
 #
 #   superuser.com  |  "How to remove systemd services"  |  https://superuser.com/a/1344239

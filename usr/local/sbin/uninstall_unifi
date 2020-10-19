@@ -54,17 +54,17 @@ else
 		if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 			echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
 			dpkg -P "${SERVICE_NAME}";
-		fi;
-		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+		elif [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 			echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
 			apt-get remove -y "${SERVICE_NAME}";
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 			echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
 			yum remove -y "${SERVICE_NAME}";
+		else
+			echo "  |--> Unable to determine package installer. Manual uninstallation of service \"${SERVICE_NAME}\" required";
 		fi;
-
+		echo "";
 	fi;
-
 fi;
 
 # ------------------------------------------------------------

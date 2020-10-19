@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/uninstall_unifi" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+# Sync 1-Liner ( See:  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md )
+#
+if [ 0 -eq 1 ]; then
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_unifi?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+	echo "";
+	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+	exit 1;
+else
+	# ------------------------------------------------------------
+	#
+	# Uninstall UniFi Network Controller
+	#
+	SERVICE_NAME="unifi";
+
+	# ------------------------------------------------------------
+	#
+	# Require user-confirmation to perform this action
+	#
+	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
+	read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+	echo "";
+	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+		read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+		echo "";
+
+		# ------------------------------------------------------------
+		# Remove Service's associated package(s)
+		echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
+		if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+			echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
+			dpkg -P "${SERVICE_NAME}";
+		fi;
+		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+			echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
+			apt-get remove -y "${SERVICE_NAME}";
+		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+			echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
+			yum remove -y "${SERVICE_NAME}";
+		fi;
+
+	fi;
+
+fi;
+
+# ------------------------------------------------------------
+# Citation(s)
+#
+#   help.ui.com  |  "UniFi - How to Uninstall the UniFi Network Controller – Ubiquiti Networks Support and Help Center"  |  https://help.ui.com/hc/en-us/articles/360015373734-UniFi-How-to-Uninstall-the-UniFi-Network-Controller
+#
+# ------------------------------------------------------------

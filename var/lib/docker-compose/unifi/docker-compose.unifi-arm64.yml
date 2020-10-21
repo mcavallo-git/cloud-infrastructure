@@ -9,8 +9,8 @@ services:
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
-      - UNIFI_VERSION=${UNIFI_VERSION}
-      - MEM_LIMIT=2048M #optional
+      - UNIFI_VERSION=${UNIFI_VERSION:-5.12.35}
+      - MEM_LIMIT=2048M    # Optional
     volumes:
       - /var/lib/unifi-arm64/config:/config
     ports:  # HOST:CONTAINER

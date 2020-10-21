@@ -1,0 +1,41 @@
+
+
+# WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env WEBPASSWORD="${WEBPASSWORD}" CONFIG_DIR="${CONFIG_DIR}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
+
+
+version: "3"
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      TZ: 'America/New_York'
+      # WEBPASSWORD: 'set a secure password here or it will be random'
+    # Volumes store your data between container upgrades
+    volumes:
+      - '${CONFIG_DIR:-.}/etc-pihole/:/etc/pihole/'
+      - '${CONFIG_DIR:-.}/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
+#
+#   github.com  |  "GitHub - pi-hole/docker-pi-hole: Pi-hole in a docker container"  |  https://github.com/pi-hole/docker-pi-hole/
+#
+#   hub.docker.com  |  "pihole/pihole - Docker Hub"  |  https://hub.docker.com/r/pihole/pihole
+#
+# ------------------------------------------------------------

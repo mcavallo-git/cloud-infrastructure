@@ -12,17 +12,17 @@ services:
       - MEM_LIMIT=1024M #optional
     volumes:
       - /var/lib/unifi-arm64:/config
-    ports:
-      - 3478:3478/udp
-      - 10001:10001/udp
-      - 8080:8080
-      - 8443:8443
-      - 1900:1900/udp #optional
-      - 8843:8843 #optional
-      - 8880:8880 #optional
-      - 6789:6789 #optional
-      - 5514:5514 #optional
-    restart: unless-stopped
+    ports:  # HOST:CONTAINER
+      - "1900:1900/udp"    # ???
+      - "3478:3478/udp"    # STUN
+      - "5514:5514"        # ???
+      - "6789:6789/tcp"    # Speed test
+      - "8080:8080/tcp"    # Device/ controller comm.
+      - "8443:8443/tcp"    # Controller GUI/API as seen in a web browser
+      - "8843:8843/tcp"    # HTTPS portal redirection
+      - "8880:8880/tcp"    # HTTP portal redirection
+      - "10001:10001/udp"  # AP discovery
+    restart: always
 
 
 # ------------------------------------------------------------

@@ -1,5 +1,5 @@
 
-# mkdir -p "/var/lib/docker-compose/unifi"; vi "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f /var/lib/docker-compose/unifi/docker-compose.yml up -d;
+# mkdir -p "/var/lib/docker-compose/unifi"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
 
 version: "2.1"
 services:

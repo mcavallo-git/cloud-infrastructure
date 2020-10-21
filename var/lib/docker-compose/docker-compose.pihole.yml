@@ -1,7 +1,5 @@
 
-
 # WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env WEBPASSWORD="${WEBPASSWORD}" CONFIG_DIR="${CONFIG_DIR}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
-
 
 version: "3"
 

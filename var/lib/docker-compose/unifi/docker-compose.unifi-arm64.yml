@@ -1,5 +1,5 @@
 
-# PUID="1200"; mkdir -p "/var/lib/docker-compose"; mkdir -p "/var/lib/unifi-arm64/config"; chown -R "${PUID}:${PUID}" "/var/lib/unifi-arm64/config"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.unifi-arm64.yml" -o "/var/lib/docker-compose/docker-compose.unifi-arm64.yml"; PUID="${PUID}" PGID="${PUID}" docker-compose -f "/var/lib/docker-compose/docker-compose.unifi-arm64.yml" up -d;
+# UNIFI_VERSION="5.12.35"; PUID="1200"; mkdir -p "/var/lib/docker-compose"; mkdir -p "/var/lib/unifi-arm64/config"; chown -R "${PUID}:${PUID}" "/var/lib/unifi-arm64/config"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.unifi-arm64.yml" -o "/var/lib/docker-compose/docker-compose.unifi-arm64.yml"; PUID="${PUID}" PGID="${PUID}" UNIFI_VERSION="${UNIFI_VERSION}" docker-compose -f "/var/lib/docker-compose/docker-compose.unifi-arm64.yml" up -d;
 
 version: "2.1"
 services:
@@ -9,6 +9,7 @@ services:
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
+      - UNIFI_VERSION=${UNIFI_VERSION}
       - MEM_LIMIT=2048M #optional
     volumes:
       - /var/lib/unifi-arm64/config:/config

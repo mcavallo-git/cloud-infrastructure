@@ -1,5 +1,5 @@
 
-# mkdir -p "/var/lib/docker-compose"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.unifi-arm64.yml" -o "/var/lib/docker-compose/docker-compose.unifi-arm64.yml"; mkdir -p "/var/lib/unifi-arm64"; docker-compose -f "/var/lib/docker-compose/docker-compose.unifi-arm64.yml" up -d;
+# PUID="1200"; mkdir -p "/var/lib/unifi-arm64/config"; chown -R "${PUID}:${PUID}" "/var/lib/unifi-arm64/config"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.unifi-arm64.yml" -o "/var/lib/docker-compose/docker-compose.unifi-arm64.yml"; mkdir -p "/var/lib/unifi-arm64"; PUID="${PUID}" PGID="${PUID}" docker-compose -f "/var/lib/docker-compose/docker-compose.unifi-arm64.yml" up -d;
 
 version: "2.1"
 services:
@@ -7,8 +7,8 @@ services:
     image: linuxserver/unifi-controller:arm64v8-latest
     container_name: unifi-arm64
     environment:
-      - PUID=1200
-      - PGID=1200
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - MEM_LIMIT=2048M #optional
     volumes:
       - /var/lib/unifi-arm64/config:/config

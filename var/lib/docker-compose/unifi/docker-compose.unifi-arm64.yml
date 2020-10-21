@@ -13,9 +13,9 @@ services:
     volumes:
       - /var/lib/unifi-arm64:/config
     ports:  # HOST:CONTAINER
-      - "1900:1900/udp"    # ???
+      - "1900:1900/udp"    # Required for "Make controller discoverable on L2 network" option
       - "3478:3478/udp"    # STUN
-      - "5514:5514"        # ???
+      - "5514:5514"        # Remote syslog port
       - "6789:6789/tcp"    # Speed test
       - "8080:8080/tcp"    # Device/ controller comm.
       - "8443:8443/tcp"    # Controller GUI/API as seen in a web browser

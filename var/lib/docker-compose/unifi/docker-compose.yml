@@ -63,10 +63,10 @@ services:
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
     environment:
+      TZ: America/New_York
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
-      TZ: America/New_York
     ports: # HOST:CONTAINER
       - "3478:3478/udp" # STUN
       - "6789:6789/tcp" # Speed test

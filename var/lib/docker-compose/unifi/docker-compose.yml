@@ -1,27 +1,32 @@
 
-# mkdir -p "/var/lib/docker-compose/unifi"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
+
+# mkdir -p "/var/lib/docker-compose/unifi/data"; mkdir -p "/var/lib/docker-compose/unifi/log"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
+
+
+# docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='America/New_York' -v /var/lib/docker-compose/unifi:/unifi --name unifi-docker jacobalberty/unifi:stable
+
 
 version: "2.1"
 services:
   unifi-controller:
-    image: linuxserver/unifi-controller:arm64v8-latest
-    container_name: unifi-controller
+    image: jacobalberty/unifi:stable
+    container_name: unifi-docker
     environment:
       - PUID=1000
       - PGID=1000
-      - MEM_LIMIT=1024M #optional
+      - TZ=America/New_York
     volumes:
-      - /var/lib/unifi-controller:/config
+      - /var/lib/unifi-docker:/unifi
     ports:
+      - 1900:1900/udp # optional
       - 3478:3478/udp
-      - 10001:10001/udp
+      - 5514:5514 # optional
       - 8080:8080
       - 8443:8443
-      - 1900:1900/udp #optional
-      - 8843:8843 #optional
-      - 8880:8880 #optional
-      - 6789:6789 #optional
-      - 5514:5514 #optional
+      - 8843:8843 # optional
+      - 8880:8880 # optional
+      - 6789:6789 # optional
+      - 10001:10001/udp
     restart: unless-stopped
 
 
@@ -29,6 +34,6 @@ services:
 #
 # Citation(s)
 #
-#   hub.docker.com  |  "linuxserver/unifi-controller | Docker Hub"  |  https://hub.docker.com/r/linuxserver/unifi-controller
+#   hub.docker.com  |  "jacobalberty/unifi - Docker Hub"  |  https://hub.docker.com/r/jacobalberty/unifi
 #
 # ------------------------------------------------------------

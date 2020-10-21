@@ -7,11 +7,11 @@ services:
     image: linuxserver/unifi-controller:arm64v8-latest
     container_name: unifi-arm64
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=1250
+      - PGID=1250
       - MEM_LIMIT=1024M #optional
     volumes:
-      - /var/lib/unifi-arm64:/config
+      - /var/lib/unifi-arm64/config:/config
     ports:  # HOST:CONTAINER
       - "1900:1900/udp"    # Required for "Make controller discoverable on L2 network" option
       - "3478:3478/udp"    # STUN

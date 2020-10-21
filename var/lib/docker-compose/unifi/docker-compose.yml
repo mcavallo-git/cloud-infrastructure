@@ -6,29 +6,6 @@
 # docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='America/New_York' -v /var/lib/docker-compose/unifi:/unifi --name unifi-docker jacobalberty/unifi:stable
 
 
-# version: "2.1"
-# services:
-#   unifi-docker:
-#     image: jacobalberty/unifi:stable
-#     container_name: unifi-docker
-#     environment:
-#       - TZ=America/New_York
-#     init: true
-#     volumes:
-#       - /var/lib/unifi-docker:/unifi
-#     ports:
-#       - 1900:1900/udp # optional
-#       - 3478:3478/udp
-#       - 5514:5514 # optional
-#       - 8080:8080
-#       - 8443:8443
-#       - 8843:8843 # optional
-#       - 8880:8880 # optional
-#       - 6789:6789 # optional
-#       - 10001:10001/udp
-#     restart: unless-stopped
-
-
 version: '2.3'
 services:
   mongo:

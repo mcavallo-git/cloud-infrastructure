@@ -3,7 +3,10 @@
 # mkdir -p "/var/lib/docker-compose/unifi"; mkdir -p "/var/lib/unifi-docker/data"; mkdir -p "/var/lib/unifi-docker/log"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
 
 
-# docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='America/New_York' -v /var/lib/docker-compose/unifi:/unifi --name unifi-docker jacobalberty/unifi:stable
+
+# mkdir -p "/var/lib/docker-compose/unifi"; mkdir -p "/var/lib/unifi-docker/data"; mkdir -p "/var/lib/unifi-docker/log"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
+
+# mkdir -p /var/lib/docker-compose; cd /var/lib/docker-compose; mkdir -p unifi/data; mkdir -p unifi/log; vi docker-compose.unifi-docker.yml; env COMPOSE_PROJECT_NAME="unifi" docker-compose -f docker-compose.unifi-docker.yml up -d;
 
 
 version: '2.3'
@@ -16,9 +19,9 @@ services:
     networks:
       - unifi
     restart: always
-    volumes: # HOST:CONTAINER
-      - /var/lib/unifi-docker/db:/data/db
-      - /var/lib/unifi-docker/dbcfg:/data/configdb
+    volumes:  # HOST:CONTAINER
+      - db:/data/db
+      - dbcfg:/data/configdb
   controller:
     image: "jacobalberty/unifi:${TAG:-latest}"
     container_name: ${COMPOSE_PROJECT_NAME:-unifi}_controller
@@ -28,14 +31,14 @@ services:
     networks:
       - unifi
     restart: always
-    volumes: # HOST:CONTAINER
-      - /var/lib/unifi-docker/dir:/unifi
-      - /var/lib/unifi-docker/data:/unifi/data
-      - /var/lib/unifi-docker/log:/unifi/log
-      - /var/lib/unifi-docker/cert:/unifi/cert
-      - /var/lib/unifi-docker/init:/unifi/init.d
-      - /var/lib/unifi-docker/run:/var/run/unifi
-      - /var/lib/unifi-docker/backup:/unifi/data/backup # Mount local folder for backups and autobackups
+    volumes:  # HOST:CONTAINER
+      - dir:/unifi
+      - data:/unifi/data
+      - log:/unifi/log
+      - cert:/unifi/cert
+      - init:/unifi/init.d
+      - run:/var/run/unifi
+      - ./backup:/unifi/data/backup  # Mount local folder for backups and autobackups
     user: unifi
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
@@ -44,14 +47,14 @@ services:
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
-    ports: # HOST:CONTAINER
-      - "3478:3478/udp" # STUN
-      - "6789:6789/tcp" # Speed test
-      - "8080:8080/tcp" # Device/ controller comm.
-      - "8443:8443/tcp" # Controller GUI/API as seen in a web browser
-      - "8880:8880/tcp" # HTTP portal redirection
-      - "8843:8843/tcp" # HTTPS portal redirection
-      - "10001:10001/udp" # AP discovery
+    ports:  # HOST:CONTAINER
+      - "3478:3478/udp"  # STUN
+      - "6789:6789/tcp"  # Speed test
+      - "8080:8080/tcp"  # Device/ controller comm.
+      - "8443:8443/tcp"  # Controller GUI/API as seen in a web browser
+      - "8880:8880/tcp"  # HTTP portal redirection
+      - "8843:8843/tcp"  # HTTPS portal redirection
+      - "10001:10001/udp"  # AP discovery
   logs:
     image: bash
     container_name: ${COMPOSE_PROJECT_NAME:-unifi}_logs
@@ -61,18 +64,18 @@ services:
       - controller
     command: bash -c 'tail -F /unifi/log/*.log'
     restart: always
-    volumes: # HOST:CONTAINER
-      - /var/lib/unifi-docker/log:/unifi/log
+    volumes:  # HOST:CONTAINER
+      - log:/unifi/log
 
-# volumes:
-#   db:
-#   dbcfg:
-#   data:
-#   log:
-#   cert:
-#   init:
-#   dir:
-#   run:
+volumes:
+  db:
+  dbcfg:
+  data:
+  log:
+  cert:
+  init:
+  dir:
+  run:
 
 networks:
   unifi:

@@ -1,17 +1,17 @@
 
-# mkdir -p "/var/lib/docker-compose/unifi"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.old.yml" -o "/var/lib/docker-compose/unifi/docker-compose.old.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.old.yml" up -d;
+# mkdir -p "/var/lib/docker-compose/unifi"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.aarch64.yml" -o "/var/lib/docker-compose/unifi/docker-compose.aarch64.yml"; docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.aarch64.yml" up -d;
 
 version: "2.1"
 services:
   unifi-controller:
     image: linuxserver/unifi-controller:arm64v8-latest
-    container_name: unifi-controller
+    container_name: unifi-arm64
     environment:
       - PUID=1000
       - PGID=1000
       - MEM_LIMIT=1024M #optional
     volumes:
-      - /var/lib/unifi-controller:/config
+      - /var/lib/unifi-arm64:/config
     ports:
       - 3478:3478/udp
       - 10001:10001/udp

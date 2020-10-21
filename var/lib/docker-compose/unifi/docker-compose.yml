@@ -29,13 +29,13 @@ services:
       - unifi
     restart: always
     volumes: # HOST:CONTAINER
-      - /var/lib/unifi-docker/backup:/unifi/data/backup # Mount local folder for backups and autobackups
       - /var/lib/unifi-docker/dir:/unifi
       - /var/lib/unifi-docker/data:/unifi/data
       - /var/lib/unifi-docker/log:/unifi/log
       - /var/lib/unifi-docker/cert:/unifi/cert
       - /var/lib/unifi-docker/init:/unifi/init.d
       - /var/lib/unifi-docker/run:/var/run/unifi
+      - /var/lib/unifi-docker/backup:/unifi/data/backup # Mount local folder for backups and autobackups
     user: unifi
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0

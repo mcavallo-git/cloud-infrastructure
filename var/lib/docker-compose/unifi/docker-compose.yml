@@ -6,33 +6,101 @@
 # docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='America/New_York' -v /var/lib/docker-compose/unifi:/unifi --name unifi-docker jacobalberty/unifi:stable
 
 
-version: "2.1"
+# version: "2.1"
+# services:
+#   unifi-docker:
+#     image: jacobalberty/unifi:stable
+#     container_name: unifi-docker
+#     environment:
+#       - TZ=America/New_York
+#     init: true
+#     volumes:
+#       - /var/lib/unifi-docker:/unifi
+#     ports:
+#       - 1900:1900/udp # optional
+#       - 3478:3478/udp
+#       - 5514:5514 # optional
+#       - 8080:8080
+#       - 8443:8443
+#       - 8843:8843 # optional
+#       - 8880:8880 # optional
+#       - 6789:6789 # optional
+#       - 10001:10001/udp
+#     restart: unless-stopped
+
+
+version: '2.3'
 services:
-  unifi-docker:
-    image: jacobalberty/unifi:stable
-    container_name: unifi-docker
+  mongo:
+    image: mongo:3.6
+    container_name: ${COMPOSE_PROJECT_NAME}_mongo
+    networks:
+      - unifi
+    restart: always
+    volumes: # HOST:CONTAINER
+      - /var/lib/unifi-docker/db:/data/db
+      - /var/lib/unifi-docker/dbcfg:/data/configdb
+  controller:
+    image: "jacobalberty/unifi:${TAG:-latest}"
+    container_name: ${COMPOSE_PROJECT_NAME}_controller
+    depends_on:
+      - mongo
+    init: true
+    networks:
+      - unifi
+    restart: always
+    volumes: # HOST:CONTAINER
+      - /var/lib/unifi-docker/backup:/unifi/data/backup # Mount local folder for backups and autobackups
+      - /var/lib/unifi-docker/dir:/unifi
+      - /var/lib/unifi-docker/data:/unifi/data
+      - /var/lib/unifi-docker/log:/unifi/log
+      - /var/lib/unifi-docker/cert:/unifi/cert
+      - /var/lib/unifi-docker/init:/unifi/init.d
+      - /var/lib/unifi-docker/run:/var/run/unifi
+    user: unifi
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: 0
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /var/lib/unifi-docker:/unifi
-    ports:
-      - 1900:1900/udp # optional
-      - 3478:3478/udp
-      - 5514:5514 # optional
-      - 8080:8080
-      - 8443:8443
-      - 8843:8843 # optional
-      - 8880:8880 # optional
-      - 6789:6789 # optional
-      - 10001:10001/udp
-    restart: unless-stopped
+      DB_URI: mongodb://mongo/unifi
+      STATDB_URI: mongodb://mongo/unifi_stat
+      DB_NAME: unifi
+    ports: # HOST:CONTAINER
+      - "3478:3478/udp" # STUN
+      - "6789:6789/tcp" # Speed test
+      - "8080:8080/tcp" # Device/ controller comm.
+      - "8443:8443/tcp" # Controller GUI/API as seen in a web browser
+      - "8880:8880/tcp" # HTTP portal redirection
+      - "8843:8843/tcp" # HTTPS portal redirection
+      - "10001:10001/udp" # AP discovery
+  logs:
+    image: bash
+    container_name: ${COMPOSE_PROJECT_NAME}_logs
+    depends_on:
+      - controller
+    command: bash -c 'tail -F /unifi/log/*.log'
+    restart: always
+    volumes: # HOST:CONTAINER
+      - /var/lib/unifi-docker/log:/unifi/log
+
+# volumes:
+#   db:
+#   dbcfg:
+#   data:
+#   log:
+#   cert:
+#   init:
+#   dir:
+#   run:
+
+networks:
+  unifi:
 
 
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   github.com  |  "unifi-docker/docker-compose.yml at master · jacobalberty/unifi-docker · GitHub"  |  https://github.com/jacobalberty/unifi-docker/blob/master/docker-compose.yml
 #
 #   hub.docker.com  |  "jacobalberty/unifi - Docker Hub"  |  https://hub.docker.com/r/jacobalberty/unifi
 #

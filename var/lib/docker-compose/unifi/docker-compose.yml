@@ -34,6 +34,8 @@ services:
   mongo:
     image: mongo:3.6
     container_name: ${COMPOSE_PROJECT_NAME:-unifi}_mongo
+    environment:
+      TZ: America/New_York
     networks:
       - unifi
     restart: always
@@ -64,6 +66,7 @@ services:
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
+      TZ: America/New_York
     ports: # HOST:CONTAINER
       - "3478:3478/udp" # STUN
       - "6789:6789/tcp" # Speed test
@@ -75,6 +78,8 @@ services:
   logs:
     image: bash
     container_name: ${COMPOSE_PROJECT_NAME:-unifi}_logs
+    environment:
+      TZ: America/New_York
     depends_on:
       - controller
     command: bash -c 'tail -F /unifi/log/*.log'

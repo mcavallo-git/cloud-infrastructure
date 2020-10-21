@@ -78,7 +78,28 @@ else
 				# Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
 				apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
 			fi;
-			curl -ssL "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+			if [ "$(uname -m)" == "aarch64" ]; then
+				#
+				# Docker-Compose Installer --> ARM64 CPUs (Raspberry Pis)
+				#  |--> Reference: [ https://github.com/docker/compose/issues/6831#issuecomment-558865087 ]
+				#
+				echo "Calling [ apt-get -y update ]...";
+				apt-get -y update;
+				echo "Calling [ apt-get -y install python3; ]...";
+				apt-get -y install python3;
+				echo "Calling [ apt-get -y install python3-pip; ]...";
+				apt-get -y install python3-pip;
+				echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
+				python3 -m pip install -IU docker-compose;
+			else
+				#
+				# Docker-Compose Installer --> Non-ARM64 CPUs
+				#  |--> Reference: [ https://docs.docker.com/compose/install ]
+				#
+				curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+				# curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
+			fi;
+
 			chmod 0755 "${BIN_DOCKER_COMPOSE}";
 
 		fi;
@@ -99,6 +120,8 @@ fi;
 #   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce-1
 #
 #   docs.docker.com  |  "Install Docker Compose"  |  https://docs.docker.com/compose/install/
+#
+#   github.com  |  "Release docker/compose image for armv7 / arm64v8 · Issue #6831 · docker/compose · GitHub"  |  https://github.com/docker/compose/issues/6831#issuecomment-558865087
 #
 #   stackoverflow.com  |  "Run Docker on Ubuntu on Windows Subsystem for Linux"  |  https://stackoverflow.com/a/48008676
 #

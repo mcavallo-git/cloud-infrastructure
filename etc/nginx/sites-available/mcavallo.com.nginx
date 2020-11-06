@@ -117,6 +117,12 @@ server {
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
+	if ($request_uri ~* "^/pay$") {
+		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+	}
+	if ($subdomain ~* "^pay.$") {
+		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+	}
 	if ($request_uri ~* "^/paypal$") {
 		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}

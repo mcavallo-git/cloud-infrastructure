@@ -97,6 +97,7 @@ GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ 
 
 DEFAULT_CONFIG_DIRNAME="${HOME}/.gpg_git";
 DEFAULT_CONFIG_FULLPATH="${DEFAULT_CONFIG_DIRNAME}/config";
+GIT_SYNC_CONFIG_FULLPATH="";
 
 # Create parent directory to the main config (if not found to exist)
 if [ ! -d "${DEFAULT_CONFIG_DIRNAME}" ]; then
@@ -104,8 +105,10 @@ if [ ! -d "${DEFAULT_CONFIG_DIRNAME}" ]; then
 fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
+	GIT_SYNC_CONFIG_FULLPATH="${1}";
 	source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
 elif [ -f "${DEFAULT_CONFIG_FULLPATH}" ]; then
+	GIT_SYNC_CONFIG_FULLPATH="${DEFAULT_CONFIG_FULLPATH}";
 	source "${DEFAULT_CONFIG_FULLPATH}"; # Default shell script which sets/instantiates all required config variables
 else
 	echo "";
@@ -785,7 +788,9 @@ fi;
 		fi;
 
 		if [ -z "${SSH_KEY}" ]; then
-			echo "  |--> No Sync-Array found matching \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
+			echo "  |--> No sync-array index exists for \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
+			echo "  |";
+			echo "  |--> Sync-array indices must be pre-emptively added to config-file  \$GIT_SYNC_CONFIG_FULLPATH = [ ${GIT_SYNC_CONFIG_FULLPATH} ]";
 		fi;
 
 		# ------------------------------------------------------------

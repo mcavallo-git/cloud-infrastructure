@@ -41,6 +41,12 @@ server {
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
+	if ($request_uri ~* "^/cash$") {
+		return 302 "https://cash.me/mcavallo";
+	}
+	if ($subdomain ~* "^cash.$") {
+		return 302 "https://cash.me/mcavallo";
+	}
 	if ($request_uri ~* "^/cashapp$") {
 		return 302 "https://cash.me/mcavallo";
 	}

@@ -280,7 +280,7 @@ server {
 ###   |--> Deletes LetsEncrypt Files
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
-# FQDN="mcavallo.com"; certbot certificates; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; certbot certificates;
+# FQDN="mcavallo.com"; certbot certificates; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; rm "/etc/nginx/sites-available/${FQDN}".nginx; certbot certificates;
 #
 #
 # ------------------------------------------------------------

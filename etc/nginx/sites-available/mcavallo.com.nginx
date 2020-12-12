@@ -173,6 +173,16 @@ server {
 
 
 	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
+	if ($request_uri ~* "^/youtube$") {
+		return 302 "https://www.youtube.com/user/italianbasegard";
+	}
+	if ($subdomain ~* "^youtube.$") {
+		return 302 "https://www.youtube.com/user/italianbasegard";
+	}
+
+
+	# ------------------------------------------------------------
 	# Shellscript Requests (commonly Linux-based bash scripts)
 	#
 	#   curl -ssL https://mcavallo.com | bash -s -- --all;

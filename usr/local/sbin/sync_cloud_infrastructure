@@ -452,7 +452,7 @@ else
 
 			if [ -z "$(which git 2>'/dev/null')" ]; then
 				# Unable to pull updated version of code-repository via git
-				echo -e "\n""Info:  Skipped pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the '${GIT_SOURCE_BRANCH}' branch - Pre-requisite command 'git' not found";
+				echo -e "\n""Info:  Skipped pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch - Pre-requisite command 'git' not found";
 
 			else
 				# Ensure the (GitHub) Repos directory exists, locally
@@ -461,7 +461,7 @@ else
 				fi;
 
 				# Fetch/Pull/Clone the Remote Repo
-				echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the '${GIT_SOURCE_BRANCH}' branch";
+				echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH} branch\"";
 				echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
 				echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
 				BENCHMARK_START=$(date +'%s.%N');

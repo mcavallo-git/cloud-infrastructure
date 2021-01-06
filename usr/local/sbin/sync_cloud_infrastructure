@@ -755,7 +755,7 @@ else
 				if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
 					if [ -z "$(which ssh 2>'/dev/null')" ]; then
-						echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command \"ssh\" not found";
+						echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
 
 					else
 						
@@ -944,7 +944,7 @@ else
 								echo "         ufw default allow outgoing; # allow all non-matched outgoing requests";
 								echo "         ufw default deny incoming;  # deny all non-matched incoming requests";
 								echo "         ufw logging on; # enable logging";
-								echo "         ufw enable; # enforce all ufw rules, including aforementioned \"allow\" and \"deny\" rules (if applied)";
+								echo "         ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
 								echo "         ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
 								# UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
 								# echo "  |";
@@ -1366,7 +1366,7 @@ else
 
 				else
 					# Service not found locally
-					echo -e "\n""Info:  Skipped Jenkins config-sync - No local \"jenkins\" service exists";
+					echo -e "\n""Info:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
 
 				fi;
 
@@ -1377,7 +1377,7 @@ else
 				if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
 					if [ -z "$(which nginx 2>'/dev/null')" ]; then
 						# NGINX does NOT exist locally
-						echo -e "\n""Info:  Skipped NGINX sync - No local \"nginx\" service exists";
+						echo -e "\n""Info:  Skipped NGINX sync - No local 'nginx' service exists";
 
 					else
 						# NGINX exists locally

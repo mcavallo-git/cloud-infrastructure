@@ -41,9 +41,6 @@ else
 
 	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
-	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
-	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
-	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
 	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
@@ -278,8 +275,6 @@ else
 
 	# If no errors are found up-until this point, continue
 	if [ ! -v EXIT_CODE ]; then
-
-		# ------------------------------------------------------------
 		# Make sure prerequisite-packages are installed
 		unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
 		unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array
@@ -1644,9 +1639,6 @@ else
 
 			END_SECONDS_NANOSECONDS="$(date +'%s.%N')";
 			END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1)";
-			# END_NANOSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9)";
-			# END_MICROSECONDS="$(echo ${END_NANOSECONDS} | cut --characters 1-6)";
-			# END_MILLISECONDS="$(echo ${END_NANOSECONDS} | cut --characters 1-3)";
 			END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 
 			# ------------------------------------------------------------

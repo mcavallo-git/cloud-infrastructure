@@ -233,6 +233,16 @@ else
 	fi;
 
 	# ------------------------------------------------------------
+	# Check for a valid WAN (internet) connection
+
+	WAN_TEST_RETURN_CODE="$(ping -c 1 -w 1 -W 1 ${WAN_TEST_IPV4} 1>'/dev/null' 2>&1; echo $?;)";
+	if [ "${WAN_TEST_RETURN_CODE}" != "0" ]; then
+		echo "";
+		echo "Error:  Unable to ping IPv4 address [ ${WAN_TEST_IPV4} ]  (used to test/verify WAN connection)";
+		EXIT_CODE=1;
+	fi;
+
+	# ------------------------------------------------------------
 
 	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 		echo "";
@@ -256,18 +266,6 @@ else
 		echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
 		echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
 		echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
-	fi;
-
-	# ------------------------------------------------------------
-	# Check for a valid WAN (internet) connection
-	WAN_TEST_RETURN_CODE="$(ping -c 1 -w 1 -W 1 ${WAN_TEST_IPV4} 1>'/dev/null' 2>&1; echo $?;)";
-	if [ "${WAN_TEST_RETURN_CODE}" != "0" ]; then
-		echo "";
-		echo "Error:  Unable to ping IPv4 address [ ${WAN_TEST_IPV4} ]  (used to test/verify WAN connection)";
-		EXIT_CODE=1;
-	fi;
-
-	if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
 		echo "";
 		echo "Debug:  WAN_TEST_IPV4 = [ ${WAN_TEST_IPV4} ]";
 		echo "Debug:  WAN_TEST_RETURN_CODE = [ ${WAN_TEST_RETURN_CODE} ]";

@@ -8,7 +8,7 @@ This file (on GitHub):
 
 <h3 id="cloud-infrastructure">
 	Cloud Infrastructure<br />
-	&nbsp;&nbsp;&nbsp;&nbsp;<sub>↳ <i id="readme">Scripts to enhance SSH-terminal efficiency & versatility</i></sub>
+	&nbsp;&nbsp;&nbsp;&nbsp;<sub>↳ <i id="readme">Shellscripts to enhance backend auditing & versatility</i></sub>
 </h3>
 <hr />
 <ul>

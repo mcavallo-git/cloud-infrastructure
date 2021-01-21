@@ -373,6 +373,7 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
 	else
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | Exiting after 20s...";
+		# ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}"; <-- CREATES BRANCH
 		sleep 20;
 		exit 1;
 	fi;

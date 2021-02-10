@@ -800,7 +800,7 @@ else
 
 						elif [ ! -d "/home/" ] || [ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
 							# Need another user other than root to SSH into this machine --> No user directories found in /home/.
-							echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one user other than root to access this workstation (with home directory within  [ /home/. ]";
+							echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one user other than root whose home directory is within  [ /home/. ] to access this workstation";
 
 						elif [ ! -d "/etc/ssh/authorized_keys/" ] || [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
 							# Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.

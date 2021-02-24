@@ -22,7 +22,7 @@ This file (on GitHub):
 	<ol>
 		<li>
 			<h6 id="">Sync Linux-shellscripts via the "sync_cloud_infrastructure" script by calling:</h6><br />
-			<pre id="sync_cloud_infrastructure"><code>curl -ssL https://mcavallo.com | bash;</code></pre></li>
+			<pre id="sync_cloud_infrastructure"><code>curl -ssL https://mcavallo.com/sh | bash;</code></pre></li>
 	</ol>
 <hr /></details></li>
 

@@ -15,16 +15,16 @@ server {
 	ssl_certificate_key "/etc/letsencrypt/live/mcavallo.net/privkey.pem";
 	ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.net/chain.pem";
 	location / {
-		if ($http_user_agent !~* "^curl") {
-			return 302 https://mcavallo.com;
-		}
+		#                    ~* [regex match, case-insensitive]
 		if ($http_user_agent ~* "^curl") {
-			return 302 https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure;
+			return 302 https://mcavallo.com/sh;  # curl -ssL https://mcavallo.net | bash -s -- --all;
+		}
+		#                    !~* [inversed regex, case-insensitive]
+		if ($http_user_agent !~* "^curl") {
+			return 302 https://${subdomain}mcavallo.com${request_uri};
 		}
 	}
-
 	include "/etc/nginx/nginx_error_locations.conf";
-
 }
 
 

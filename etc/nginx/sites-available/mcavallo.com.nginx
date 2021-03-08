@@ -41,143 +41,167 @@ server {
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/cash$") {
-		return 302 "https://cash.me/mcavallo";
-	}
 	if ($subdomain ~* "^cash.$") {
 		return 302 "https://cash.me/mcavallo";
 	}
-	if ($request_uri ~* "^/cashapp$") {
+	if ($request_uri ~* "^/cash$") {
 		return 302 "https://cash.me/mcavallo";
 	}
 	if ($subdomain ~* "^cashapp.$") {
 		return 302 "https://cash.me/mcavallo";
 	}
+	if ($request_uri ~* "^/cashapp$") {
+		return 302 "https://cash.me/mcavallo";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/cloud-infrastructure$") {
-		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
-	}
 	if ($subdomain ~* "^cloud-infrastructure.$") {
 		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
 	}
+	if ($request_uri ~* "^/cloud-infrastructure$") {
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/cv$") {
-		return 302 "https://linkedin.mcavallo.com";
-	}
 	if ($subdomain ~* "^cv.$") {
 		return 302 "https://linkedin.mcavallo.com";
 	}
+	if ($request_uri ~* "^/cv$") {
+		return 302 "https://linkedin.mcavallo.com";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/git$") {
-		return 302 "https://github.com/mcavallo-git/repositories";
-	}
 	if ($subdomain ~* "^git.$") {
 		return 302 "https://github.com/mcavallo-git/repositories";
 	}
+	if ($request_uri ~* "^/git$") {
+		return 302 "https://github.com/mcavallo-git/repositories";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/good-credit$") {
-		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
-	}
 	if ($subdomain ~* "^good-credit.$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
 	}
+	if ($request_uri ~* "^/good-credit$") {
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/linkedin$") {
-		return 302 "https://linkedin.com/in/matt-cavallo";
-	}
 	if ($subdomain ~* "^linkedin.$") {
 		return 302 "https://linkedin.com/in/matt-cavallo";
 	}
+	if ($request_uri ~* "^/linkedin$") {
+		return 302 "https://linkedin.com/in/matt-cavallo";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/linux$") {
-		return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
-	}
 	if ($subdomain ~* "^linux.$") {
 		return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
 	}
+	if ($request_uri ~* "^/linux$") {
+		return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/pay$") {
-		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-	}
 	if ($subdomain ~* "^pay.$") {
 		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}
-	if ($request_uri ~* "^/paypal$") {
+	if ($request_uri ~* "^/pay$") {
 		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}
 	if ($subdomain ~* "^paypal.$") {
 		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
 	}
+	if ($request_uri ~* "^/paypal$") {
+		return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/pc$") {
-		return 302 "https://youtu.be/1CJIw-Rxleo";
-	}
 	if ($subdomain ~* "^pc.$") {
 		return 302 "https://youtu.be/1CJIw-Rxleo";
 	}
+	if ($request_uri ~* "^/pc$") {
+		return 302 "https://youtu.be/1CJIw-Rxleo";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/resume$") {
-		return 302 "https://cv.mcavallo.com";
-	}
 	if ($subdomain ~* "^resume.$") {
 		return 302 "https://cv.mcavallo.com";
 	}
+	if ($request_uri ~* "^/resume$") {
+		return 302 "https://cv.mcavallo.com";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/repos$") {
-		return 302 "https://github.com/mcavallo-git/repositories";
-		# return 302 https://github.com/login?return_to=%2Fmcavallo-git%2Frepositories; # GitHub + Login
-	}
 	if ($subdomain ~* "^repos.$") {
 		return 302 "https://github.com/mcavallo-git/repositories";
 	}
+	if ($request_uri ~* "^/repos$") {
+		return 302 "https://github.com/mcavallo-git/repositories";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/venmo$") {
-		return 302 "https://venmo.com/cavalol";
+	if ($subdomain ~* "^spotify.$") {
+		return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
 	}
+	if ($request_uri ~* "^/spotify$") {
+		return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
+	}
+	if ($request_uri ~* "^/spotify/1$") {
+		return 302 "https://open.spotify.com/playlist/3SfJ6rFJsjcPuHeFKpBGPu?si=yIz9vG9KT-ucNEL6fu3JHQ";  #  Spotify Playlist [ Driving ]
+	}
+	if ($request_uri ~* "^/spotify/2$") {
+		return 302 "https://open.spotify.com/playlist/7rnogAsAA7QO7RErbd0XM6?si=b4e007d3490e435a";  #  Spotify Playlist [ Shindig, ya dig ]
+	}
+	if ($request_uri ~* "^/spotify/3$") {
+		return 302 "https://open.spotify.com/playlist/0f6ikyxba7qXRDxmv6pLvH?si=4e94462a954b4626";  #  Spotify Playlist [ Electronica - Chill ]
+	}
+	if ($request_uri ~* "^/spotify/4$") {
+		return 302 "https://open.spotify.com/playlist/7HeDI1N5X1FuB5joKnk2Fm?si=5f73c987a59746b4";  #  Spotify Playlist [ Electronica - Hype ]
+	}
+	if ($request_uri ~* "^/spotify/5$") {
+		return 302 "https://open.spotify.com/playlist/20OcRbSy40B1qTVI3mVs4A?si=3eb7033e12314b0a";  #  Spotify Playlist [ Electronica - Retro ]
+	}
+
+
+	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^venmo.$") {
 		return 302 "https://venmo.com/cavalol";
 	}
+	if ($request_uri ~* "^/venmo$") {
+		return 302 "https://venmo.com/cavalol";
+	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/youtube$") {
+	if ($subdomain ~* "^youtube.$") {
 		return 302 "https://www.youtube.com/user/italianbasegard";
 	}
-	if ($subdomain ~* "^youtube.$") {
+	if ($request_uri ~* "^/youtube$") {
 		return 302 "https://www.youtube.com/user/italianbasegard";
 	}
 
@@ -188,16 +212,16 @@ server {
 	#   curl -ssL https://mcavallo.com/sh | bash -s -- --all;
 	#
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/sh$") {
-		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-	}
 	if ($subdomain ~* "^sh.$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
-	if ($request_uri ~* "^/sync$") {
+	if ($request_uri ~* "^/sh$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 	if ($subdomain ~* "^sync.$") {
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+	}
+	if ($request_uri ~* "^/sync$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
 	}
 
@@ -222,16 +246,16 @@ server {
 		}
 	}
 	# Fallthrough PowerShell script/module requests
-	if ($request_uri ~* "^/ps$") {
-		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
-	}
 	if ($subdomain ~* "^ps.$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
-	if ($request_uri ~* "^/sync-ps$") {
+	if ($request_uri ~* "^/ps$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 	if ($subdomain ~* "^sync-ps.$") {
+		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+	}
+	if ($request_uri ~* "^/sync-ps$") {
 		return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
 	}
 
@@ -241,10 +265,10 @@ server {
 	#  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
 	#
 	#                ~* [regex match, case-insensitive]
-	if ($request_uri ~* "^/$") {
+	if ($subdomain ~* "^$") {
 		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
 	}
-	if ($subdomain ~* "^$") {
+	if ($request_uri ~* "^/$") {
 		return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
 	}
 

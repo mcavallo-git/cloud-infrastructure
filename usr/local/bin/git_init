@@ -5,15 +5,20 @@
 # ------------------------------------------------------------
 #
 if [ 0 -eq 1 ]; then
-#
-# Linux - Download & run this pre-packaged script
+
+# DOWNLOAD & RUN THIS SCRIPT
+#   Note: for Windows machines, run the below command in a 'Git Bash' terminal - If Git isn't installed locally, download/install it from [ https://git-scm.com/download/win ]
 LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
-#
-# Linux - Run cloud-synced script
-env REMOTE_HOST="github.com" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="cloud-infrastructure" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" /usr/local/bin/git_init;
-#
-# Windows - Git Bash
-env REMOTE_HOST="bitbucket.org" REMOTE_OWNER="mcavallo-git" REMOTE_REPOSITORY="bitbucket-public" REMOTE_PRIVATE_KEY="${HOME}/.ssh/authorized_keys" "$HOME/Documents/GitHub/cloud-infrastructure/usr/local/bin/git_init";
+
+# Example Call - Pull an Azure DevOps repository
+export REMOTE_HOST="ssh.dev.azure.com" REMOTE_OWNER="ORGANIZATION_NAME/PROJECT_NAME" REMOTE_REPOSITORY="REPOSITORY_NAME" REMOTE_PRIVATE_KEY="PATH_TO_PIVATE_KEY_ON_LOCAL_WORKSTATION" && git_init;
+
+# Example Call - Pull a BitBucket repository
+export REMOTE_HOST="bitbucket.org" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="PATH_TO_PIVATE_KEY_ON_LOCAL_WORKSTATION" && git_init;
+
+# Example Call - Pull a GitHub repository
+export REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="PATH_TO_PIVATE_KEY_ON_LOCAL_WORKSTATION" && git_init;
+
 fi;
 #
 # ------------------------------------------------------------
@@ -25,21 +30,20 @@ mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
-#
+
 # ------------------------------------------------------------
-#
+
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 	source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
 fi;
-#
+
 # ------------------------------------------------------------
 #
 # Ensure that runtime variables are set
 #
 FAIL_MSG="";
-#
-# if acting as the "root" user and the "git" module is not installed, then attempt to install it
-#
+
+# If acting as the "root" user and the "git" module is not installed, then attempt to install git
 if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 	if [ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]; then
 		# Ubuntu
@@ -74,17 +78,14 @@ echo "";
 echo "------------------------------------------------------------";
 echo "";
 
-#
+
 # Fail-out if git is not installed & could not be installed
-#
 which git > /dev/null 2>&1; ERROR_CODE=$?;
 if [ ${ERROR_CODE} -ne 0 ]; then 
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Git runtime not installed.\n";
 fi;
 
-#
 # Verify Repo Host
-#
 if [ -z "${REMOTE_HOST}" ]; then
 	read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 -r;
 	REMOTE_HOST="${REPLY}";
@@ -93,9 +94,7 @@ if [ -z "${REMOTE_HOST}" ]; then
 	fi;
 fi;
 
-#
 # Verify Repo Owner
-#
 if [ -z "${REMOTE_OWNER}" ]; then
 	read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 -r;
 	REMOTE_OWNER="${REPLY}";
@@ -183,7 +182,6 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME
 # ------------------------------------------------------------
 # Set the target checkout branch
 CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-master}}}}";
-echo -e "\n""Target branch-name: \"${CHECKOUT_BRANCH}\"...";
 
 # ------------------------------------------------------------
 # Set 'git' as default username (if none is set)
@@ -241,7 +239,7 @@ GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL}";
 # ------------------------------------------------------------
 # TARGET REPOSITORY
 if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
-	ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (No ".git" appended)
+	ORIGIN_GIT="git@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (No ".git" appended)
 else
 	ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;
@@ -250,16 +248,24 @@ fi;
 # ORIGIN_HTTPS="https://${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
 #
 # ------------------------------------------------------------
+#
+# Show runtime variables/values to user (as well as save them to the logfile)
+#
+echo "$(date '+%Y-%m-%d %H:%M:%S') |Showing Runtime Variables:";
+echo "CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
+echo "GIT_CLI=\"${GIT_CLI}\"";
+echo "GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
+echo "GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
+echo "ORIGIN_GIT=\"${ORIGIN_GIT}\"";
+echo "REMOTE_HOST=\"${REMOTE_HOST}\"";
+echo "REMOTE_OWNER=\"${REMOTE_OWNER}\"";
+echo "REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
+
+# ------------------------------------------------------------
 
 # Override SSH (which is what Git connects through)'s config settings to force RSA key usage
 export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Exported \$GIT_SSH_COMMAND = \"${GIT_SSH_COMMAND}\":";
-
-
-# Show the git working tree
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Git Working Tree:";
-echo "${GIT_WORK_TREE}";
-echo "";
 
 # Create default-directory for SSH's configs
 if [ ! -d "${HOME}/.ssh" ]; then
@@ -270,7 +276,6 @@ fi;
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
 # ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts"; # Enforce public-key checking
 ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
-
 
 # Clone repo (if non existent)
 FIRST_CLONE_OF_REPO="0";
@@ -297,7 +302,7 @@ else
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git remote add origin \"${ORIGIN_GIT}\"";
 	${GIT_CLI} remote add origin "${ORIGIN_GIT}";
 fi;
-#
+
 # [config]  core.sshcommand
 # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
 ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no";
@@ -308,7 +313,6 @@ if [ -n "$(${GIT_CLI} config core.compression)" ]; then
 	${GIT_CLI} config --unset core.compression;
 fi;
 
-
 # [config]  user.name
 if [ -n "${REMOTE_USER_NAME}" ]; then
 	LOCAL_CURRENT_USER_NAME=$(${GIT_CLI} config user.name);
@@ -318,7 +322,7 @@ if [ -n "${REMOTE_USER_NAME}" ]; then
 		${GIT_CLI} config user.name "${REMOTE_USER_NAME}";
 	fi;
 fi;
-#
+
 # [config]  user.email
 if [ -n "${REMOTE_USER_EMAIL}" ]; then
 	LOCAL_CURRENT_USER_EMAIL=$(${GIT_CLI} config user.email);
@@ -329,7 +333,6 @@ if [ -n "${REMOTE_USER_EMAIL}" ]; then
 	fi;
 fi;
 
-
 # [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
 REPO_PRUNE_ACTIVE=$(${GIT_CLI} config remote.origin.prune);
 if [ "${REPO_PRUNE_ACTIVE}" != "true" ]; then
@@ -337,7 +340,7 @@ if [ "${REPO_PRUNE_ACTIVE}" != "true" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config remote.origin.prune true";
 	${GIT_CLI} config remote.origin.prune true;
 fi;
-#
+
 # fetch all
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} fetch --all";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git fetch --all";

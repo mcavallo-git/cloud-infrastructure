@@ -4,10 +4,10 @@
 #
 # ------------------------------------------------------------
 #
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT:
 
-# DOWNLOAD & RUN THIS SCRIPT
-#   Note: for Windows machines, run the below command in a 'Git Bash' terminal - If Git isn't installed locally, download/install it from [ https://git-scm.com/download/win ]
+# Download & run this script
+#   Note: Requires 'Git Bash' required for Windows devices ( download from https://git-scm.com/download/win )
 LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
 
 # Example Call - Pull an Azure DevOps repository
@@ -20,7 +20,7 @@ export REMOTE_HOST="bitbucket.org" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOS
 export REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="PATH_TO_PIVATE_KEY_ON_LOCAL_WORKSTATION" && git_init;
 
 fi;
-#
+
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
@@ -78,7 +78,6 @@ echo "";
 echo "------------------------------------------------------------";
 echo "";
 
-
 # Fail-out if git is not installed & could not be installed
 which git > /dev/null 2>&1; ERROR_CODE=$?;
 if [ ${ERROR_CODE} -ne 0 ]; then 
@@ -103,9 +102,7 @@ if [ -z "${REMOTE_OWNER}" ]; then
 	fi;
 fi;
 
-#
 # Verify Repo Basename
-#
 if [ -z "${REMOTE_REPOSITORY}" ]; then
 	read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 -r;
 	REMOTE_REPOSITORY="${REPLY}";
@@ -114,9 +111,7 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
 	fi;
 fi;
 
-#
 # Verify Repo SSH Private-Keys
-#
 REMOTE_PRIVATE_KEY="${REMOTE_PRIVATE_KEY:-${REMOTE_SSH_KEY}}";
 if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 -r;
@@ -128,9 +123,7 @@ if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	fi;
 fi;
 
-#
-# fail-out if any startup errors were found
-#
+# Fail-out if any startup errors were found
 if [ -n "${FAIL_MSG}" ]; then
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Exiting after 20s...";
 	echo -e "${FAIL_MSG}";
@@ -138,53 +131,35 @@ if [ -n "${FAIL_MSG}" ]; then
 	exit 1;
 fi;
 
-
-# ------------------------------------------------------------
-#
 # Welcome the User
-#
 LINE_BREAK="------------------------------------------------------------";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Git Setup/Config";
-#
-# set default git-repo dir
+
+# Set default git repos dir
 if [ "$(id -un)" != "root" ]; then
 	ALL_REPOS_DIR="${HOME}/git";
 else
 	ALL_REPOS_DIR="/var/lib/git";
 fi;
 
-
-# Ensure that the git repos-dir exists
+# Ensure that the git repos dir exists
 if [ ! -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${ALL_REPOS_DIR}\"";
 	mkdir -p "${ALL_REPOS_DIR}";
 fi;
 
-# ------------------------------------------------------------
-# set default privileges (user:group) for git-repo dirs
+# Set default privileges (user:group) for git-repo dirs
 MATCH_CHOWN=$(dirname "${ALL_REPOS_DIR}");
-
-echo "$(date '+%Y-%m-%d %H:%M:%S') | Obtaining user & group info (to apply to Git directory & subdirectories)";
-
 GIT_CHOWN_UID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $3}');
-echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
-
 GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
-echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
-
 GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
-echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
-
 GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
-echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
 
-# ------------------------------------------------------------
 # Set the target checkout branch
 CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-master}}}}";
 
-# ------------------------------------------------------------
-# Set 'git' as default username (if none is set)
+# Default git username to 'git' (if none is set)
 REMOTE_USER_NAME="${REMOTE_USER_NAME:-git}";
 
 # Verify that the git repos-dir has correct ownership & access-privileges set
@@ -194,7 +169,7 @@ if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
 	chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 fi;
-#
+
 # Remove undesired variables from the environment
 if [ -n "$(git config --global http.sslCAInfo)" ]; then git config --global --unset http.sslCAInfo; fi; # [global-config]  http.sslCAInfo  (UNSET)
 if [ -n "$(git config --global http.sslKey)" ]; then git config --global --unset http.sslKey; fi; # [global-config]  http.sslKey  (UNSET)
@@ -206,66 +181,81 @@ if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; 
 if [ -n "${GIT_WORK_TREE}" ]; then unset GIT_WORK_TREE; fi; # export GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
 if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git";
 if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config";
-#
+
 # ------------------------------------------------------------
-# Runtime git command
+#
+# Setup git command(s), filepath(s), URI(s), etc.
+#
 GIT_HOST_DIR="${ALL_REPOS_DIR}/${REMOTE_HOST}";
 if [ ! -d "${GIT_HOST_DIR}" ]; then
 	mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
 fi;
-#
+
 GIT_LOCAL_CEILING="${GIT_HOST_DIR}/${REMOTE_OWNER}";
 if [ ! -d "${GIT_LOCAL_CEILING}" ]; then
 	mkdir -p "${GIT_LOCAL_CEILING}" && chmod 700 "${GIT_LOCAL_CEILING}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_LOCAL_CEILING}";
 fi;
-#
+
 GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
 GIT_WORK_TREE_REL=".";
 if [ ! -d "${GIT_WORK_TREE}" ]; then
 	mkdir -p "${GIT_WORK_TREE}" && chmod 700 "${GIT_WORK_TREE}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 fi;
-#
+
 GIT_GITDIR="${GIT_WORK_TREE}/.git";
 	GIT_GITDIR_REL="${GIT_WORK_TREE_REL}/.git";
-#
+
 GIT_CLI_NOCONF="git";
 # GIT_CLI_NOCONF="${GIT_CLI_NOCONF} -C ${GIT_LOCAL_CEILING}";
-#
+
 GIT_CLI="git";
 # GIT_CLI="${GIT_CLI} -C ${GIT_WORK_TREE}";
 GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL}";
 GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL}";
-#
-# ------------------------------------------------------------
+
 # TARGET REPOSITORY
 if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
 	ORIGIN_GIT="git@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (No ".git" appended)
 else
 	ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;
-#
+
 # ORIGIN_HTTPS="https://${REMOTE_USER_NAME}@${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
 # ORIGIN_HTTPS="https://${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
-#
-# ------------------------------------------------------------
-#
-# Show runtime variables/values to user (as well as save them to the logfile)
-#
-echo "$(date '+%Y-%m-%d %H:%M:%S') |Showing Runtime Variables:";
-echo "CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
-echo "GIT_CLI=\"${GIT_CLI}\"";
-echo "GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
-echo "GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
-echo "ORIGIN_GIT=\"${ORIGIN_GIT}\"";
-echo "REMOTE_HOST=\"${REMOTE_HOST}\"";
-echo "REMOTE_OWNER=\"${REMOTE_OWNER}\"";
-echo "REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
 
-# ------------------------------------------------------------
-
-# Override SSH (which is what Git connects through)'s config settings to force RSA key usage
+# Override SSH runtime's default/current config settings (which is what Git connects through) to force RSA key usage
 export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Exported \$GIT_SSH_COMMAND = \"${GIT_SSH_COMMAND}\":";
+
+# ------------------------------------------------------------
+#
+# Final runtime values - echo them so that they're shown to the user & saved to the logfile (for possible future reference)
+#
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ------------------------------------------------------------";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Runtime Variables:";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_HOST=\"${REMOTE_HOST}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_OWNER=\"${REMOTE_OWNER}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  ORIGIN_GIT=\"${ORIGIN_GIT}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CLI=\"${GIT_CLI}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ------------------------------------------------------------";
+
+# ------------------------------------------------------------
+#
+#  ! ! !   BEGIN PROCESSING COMPILED VARIABLES/VALUES   ! ! !
+#
 
 # Create default-directory for SSH's configs
 if [ ! -d "${HOME}/.ssh" ]; then
@@ -307,7 +297,7 @@ fi;
 # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
 ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no";
 # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
-#
+
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then
 	${GIT_CLI} config --unset core.compression;
@@ -345,7 +335,7 @@ fi;
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} fetch --all";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git fetch --all";
 ${GIT_CLI} fetch --all;
-#
+
 # new clones - automatically checkout master first
 if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> FIRST_CLONE_OF_REPO == 1, PULLING MASTER FIRST";
@@ -356,7 +346,6 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
 	${GIT_CLI} pull -v;
 fi;
-
 
 # get current branch
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} branch | grep '*' | awk '{print \$2}'  # (get current branch)";
@@ -390,12 +379,10 @@ else
 	${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
 fi;
 
-
 # pull the desired branch
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
 ${GIT_CLI} pull -v;
-
 
 # show final config
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list --show-origin";
@@ -403,18 +390,15 @@ ${GIT_CLI} pull -v;
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config --list";
 ${GIT_CLI} config --list;
 
-
 # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} status";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git status";
 ${GIT_CLI} status;
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 
-
 chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 chmod -R 0700 "${GIT_WORK_TREE}";
 # chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 # chmod -R 0700 "${ALL_REPOS_DIR}";
-
 
 # ------------------------------------------------------------
 #
@@ -426,7 +410,6 @@ if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; 
 if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
 if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
 if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config"; fi;
-
 
 # ------------------------------------------------------------
 #

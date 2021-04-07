@@ -10,14 +10,14 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT:
 #   Note: Requires 'Git Bash' required for Windows devices ( download from https://git-scm.com/download/win )
 LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
 
-# Example Call - Pull an Azure DevOps repository
-env REMOTE_HOST="ssh.dev.azure.com" REMOTE_OWNER="ORGANIZATION_NAME/PROJECT_NAME" REMOTE_REPOSITORY="REPOSITORY_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" git_init;
+# Example Call (Azure DevOps repository)
+env REMOTE_HOST="ssh.dev.azure.com" REMOTE_OWNER="ORGANIZATION_NAME/PROJECT_NAME" REMOTE_REPOSITORY="REPOSITORY_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
-# Example Call - Pull a BitBucket repository
-env REMOTE_HOST="bitbucket.org" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" git_init;
+# Example Call (BitBucket repository)
+env REMOTE_HOST="bitbucket.org" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
-# Example Call - Pull a GitHub repository
-env REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" git_init;
+# Example Call (GitHub repository)
+env REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
 fi;
 
@@ -143,27 +143,28 @@ else
 	ALL_REPOS_DIR="/var/lib/git";
 fi;
 
-# Ensure that the git repos dir exists
+# Ensure that the git repo parent dir exists
 if [ ! -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating default Git directory \"${ALL_REPOS_DIR}\"";
 	mkdir -p "${ALL_REPOS_DIR}";
 fi;
 
-# Set default privileges (user:group) for git-repo dirs
+# Determine the default privileges (user:group) to set for other git-repo dirs
 MATCH_CHOWN=$(dirname "${ALL_REPOS_DIR}");
 GIT_CHOWN_UID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $3}');
-GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
 GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
-GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
+# if [ "${GIT_CHOWN_UID}" != 0 ]; then
+# 	GIT_CHOWN_USERNAME=$(id --user --name "${GIT_CHOWN_UID}");
+# else
+# 	GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
+# fi;
+# GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
 
 # Set the target checkout branch
 CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-master}}}}";
 
-# Default git username to 'git' (if none is set)
-REMOTE_USER_NAME="${REMOTE_USER_NAME:-git}";
-
 # Verify that the git repos-dir has correct ownership & access-privileges set
-if [ -n "${GIT_CHOWN_USERNAME}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
+if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file permissions to \"0700\"";
 	chmod 0700 "${ALL_REPOS_DIR}";
  	echo "$(date '+%Y-%m-%d %H:%M:%S') | Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
@@ -210,8 +211,8 @@ GIT_CLI_NOCONF="git";
 
 GIT_CLI="git";
 # GIT_CLI="${GIT_CLI} -C ${GIT_WORK_TREE}";
-GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL}";
-GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL}";
+GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL// /\\ }";
+GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL// /\\ }";
 
 # TARGET REPOSITORY
 if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
@@ -220,11 +221,27 @@ else
 	ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;
 
-# ORIGIN_HTTPS="https://${REMOTE_USER_NAME}@${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
-# ORIGIN_HTTPS="https://${REMOTE_HOST}/${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git";
-
 # Override SSH runtime's default/current config settings (which is what Git connects through) to force RSA key usage
-export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
+GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
+export GIT_SSH_COMMAND;
+
+# Determine commit user's fullname
+LOCAL_GIT_FULLNAME=$(${GIT_CLI} config user.name);  # Config value specific to git directory
+HOMEDIR_GIT_FULLNAME=$(git config user.name);  # Config value specific to current user
+CURRENT_USERNAME=$(whoami);
+if [ "${COMMIT_USER_FULLNAME}" == "git" ]; then COMMIT_USER_FULLNAME=""; fi;
+if [ "${LOCAL_GIT_FULLNAME}" == "git" ]; then LOCAL_GIT_FULLNAME=""; fi;
+if [ "${HOMEDIR_GIT_FULLNAME}" == "git" ]; then HOMEDIR_GIT_FULLNAME=""; fi;
+if [ "${CURRENT_USERNAME}" == "git" ]; then CURRENT_USERNAME=""; fi;
+COMMIT_USER_FULLNAME="${COMMIT_USER_FULLNAME:-${LOCAL_GIT_FULLNAME:-${HOMEDIR_GIT_FULLNAME:-${CURRENT_USERNAME}}}}";
+
+# Determine commit user's email address
+LOCAL_GIT_USER_EMAIL=$(${GIT_CLI} config user.email);  # Config value specific to git directory
+HOMEDIR_GIT_USER_EMAIL=$(git config user.email);  # Config value specific to current user
+if [ "${COMMIT_USER_EMAIL}" == "git" ]; then COMMIT_USER_EMAIL=""; fi;
+if [ "${LOCAL_GIT_USER_EMAIL}" == "git" ]; then LOCAL_GIT_USER_EMAIL=""; fi;
+if [ "${HOMEDIR_GIT_USER_EMAIL}" == "git" ]; then HOMEDIR_GIT_USER_EMAIL=""; fi;
+COMMIT_USER_EMAIL="${COMMIT_USER_EMAIL:-${LOCAL_GIT_USER_EMAIL:-${HOMEDIR_GIT_USER_EMAIL}}}";
 
 # ------------------------------------------------------------
 #
@@ -235,6 +252,8 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') |";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Runtime Variables:";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_HOST=\"${REMOTE_HOST}\"";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ";
+echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_HOST=\"${REMOTE_HOST}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_OWNER=\"${REMOTE_OWNER}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
@@ -242,9 +261,9 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') |";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  ORIGIN_GIT=\"${ORIGIN_GIT}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
-echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
-echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
+# echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
+# echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_CLI=\"${GIT_CLI}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
@@ -304,22 +323,22 @@ if [ -n "$(${GIT_CLI} config core.compression)" ]; then
 fi;
 
 # [config]  user.name
-if [ -n "${REMOTE_USER_NAME}" ]; then
-	LOCAL_CURRENT_USER_NAME=$(${GIT_CLI} config user.name);
-	if [ "${REMOTE_USER_NAME}" != "${LOCAL_CURRENT_USER_NAME}" ]; then
-		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} config user.name ${REMOTE_USER_NAME}";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.name ${REMOTE_USER_NAME}";
-		${GIT_CLI} config user.name "${REMOTE_USER_NAME}";
+if [ -n "${COMMIT_USER_FULLNAME}" ]; then
+	CURRENT_LOCAL_GIT_FULLNAME=$(${GIT_CLI} config user.name);
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.name ${COMMIT_USER_FULLNAME}";
+	${GIT_CLI} config user.name "${COMMIT_USER_FULLNAME}";
+	if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
+		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Previous value:  '${CURRENT_LOCAL_GIT_FULLNAME}'";
 	fi;
 fi;
 
 # [config]  user.email
-if [ -n "${REMOTE_USER_EMAIL}" ]; then
-	LOCAL_CURRENT_USER_EMAIL=$(${GIT_CLI} config user.email);
-	if [ "${LOCAL_CURRENT_USER_EMAIL}" != "${REMOTE_USER_EMAIL}" ]; then
-		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} config user.email ${REMOTE_USER_EMAIL}";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.email ${REMOTE_USER_EMAIL}";
-		${GIT_CLI} config user.email "${REMOTE_USER_EMAIL}";
+if [ -n "${COMMIT_USER_EMAIL}" ]; then
+	CURRENT_LOCAL_GIT_USER_EMAIL=$(${GIT_CLI} config user.email);
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.email ${COMMIT_USER_EMAIL}";
+	${GIT_CLI} config user.email "${COMMIT_USER_EMAIL}";
+	if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
+		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Previous value:  '${CURRENT_LOCAL_GIT_USER_EMAIL}'";
 	fi;
 fi;
 

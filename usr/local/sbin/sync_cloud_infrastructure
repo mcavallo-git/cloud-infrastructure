@@ -274,8 +274,8 @@ else
 	# If no errors are found up-until this point, continue
 	if [ ! -v EXIT_CODE ]; then
 		# Make sure prerequisite-packages are installed
-		unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash indexed array (-a)
-		unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash indexed array (-a)
+		unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash indexed array
+		unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash indexed array
 		REQUIRED_PKGS_ARRAY=();
 		REQUIRED_PKGS_ARRAY+=("bc");
 		REQUIRED_PKGS_ARRAY+=("dos2unix");
@@ -361,7 +361,7 @@ else
 			fi;
 
 			# Verify that all required packages (which are needed later in this script) are installed as-intended
-			unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash indexed array (-a)
+			unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash indexed array
 			for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
 				if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 					# Query Debian's Package-Manager for each package

@@ -19,7 +19,7 @@ else
 	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
 	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
 
-	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # [Re-]Instantiate bash associative array (-A)
+	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # [Re-]Instantiate bash associative array
 
 	EACH_KEY=0;
 	# MIN_KEY=$((EACH_KEY+1));
@@ -68,7 +68,7 @@ else
 				E2="COLUMNS=$(tput cols)";
 				DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
 
-				unset DOCKER_RUN_ARR; declare -a DOCKER_RUN_ARR; # [Re-]instantiate bash indexed array (-a)
+				unset DOCKER_RUN_ARR; declare -a DOCKER_RUN_ARR; # [Re-]Instantiate bash indexed array
 				# DOCKER_RUN_ARR+=("-u root");
 				DOCKER_RUN_ARR+=("--rm");
 				DOCKER_RUN_ARR+=("-d");

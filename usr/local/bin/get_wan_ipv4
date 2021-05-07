@@ -25,7 +25,7 @@ fi;
 # REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
 
 # External servers to resolve WAN-IP through
-unset IP_RESOLVERS; declare -a IP_RESOLVERS; # [Re-]Instantiate bash array
+unset IP_RESOLVERS; declare -a IP_RESOLVERS; # [Re-]Instantiate bash indexed array (-a)
 IP_RESOLVERS+=("https://icanhazip.com");
 IP_RESOLVERS+=("https://ipecho.net/plain");
 IP_RESOLVERS+=("https://ident.me");

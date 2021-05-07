@@ -74,7 +74,7 @@ else
 	#           tcp:22:demo.example.com
 	#           tcp:22:localhost.localdomain
 	#
-	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
+	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash associative array (-A)
 	RUNTIME_SERVICE_USERS+=(["sshd"]="root");       # SSH/OpenSSH listener
 	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");  # NGINX Web Server
 	RUNTIME_SERVICE_USERS+=(["unifi"]="unifi");  # Unifi Controller
@@ -232,13 +232,13 @@ else
 	fi;
 
 	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
-	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
+	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash associative array (-A)
 	
-	unset RESOLVED_CIDRv4_1D; declare -a RESOLVED_CIDRv4_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_HOSTS_1D; declare -a RESOLVED_HOSTS_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_IPv4_1D; declare -a RESOLVED_IPv4_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_PORTS_1D; declare -a RESOLVED_PORTS_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_PROTOS_1D; declare -a RESOLVED_PROTOS_1D; # [Re-]Instantiate bash array
+	unset RESOLVED_CIDRv4_1D; declare -a RESOLVED_CIDRv4_1D; # [Re-]Instantiate bash indexed array (-a)
+	unset RESOLVED_HOSTS_1D; declare -a RESOLVED_HOSTS_1D; # [Re-]Instantiate bash indexed array (-a)
+	unset RESOLVED_IPv4_1D; declare -a RESOLVED_IPv4_1D; # [Re-]Instantiate bash indexed array (-a)
+	unset RESOLVED_PORTS_1D; declare -a RESOLVED_PORTS_1D; # [Re-]Instantiate bash indexed array (-a)
+	unset RESOLVED_PROTOS_1D; declare -a RESOLVED_PROTOS_1D; # [Re-]Instantiate bash indexed array (-a)
 
 	# HOTFIX (TO-REMOVE-AFTER-2020-05-01) - Cleanup ddns double-deep (duplicated) depth directory
 	if [ -d "/etc/nginx/conf.ddns/conf.ddns" ]; then
@@ -500,7 +500,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 	done;
 
 	# Array containing rules deleted from UFW
-	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
+	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash associative array (-A)
 
 	# Foreach on resolved (valid) CIDRv4 addresses
 	if [ ${DEBUG_MODE} -eq 1 ]; then

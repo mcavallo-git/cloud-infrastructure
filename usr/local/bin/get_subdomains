@@ -49,9 +49,8 @@ else
 			fi;
 		fi;
 
-		# [Re-]Instantiate bash array via unset + declare
-		test -v ARR_IPV4_IDX && unset ARR_IPV4_IDX; declare -A ARR_IPV4_IDX;
-		test -v ARR_FQDN_IDX && unset ARR_FQDN_IDX; declare -A ARR_FQDN_IDX;
+		test -v ARR_IPV4_IDX && unset ARR_IPV4_IDX; declare -A ARR_IPV4_IDX; # [Re-]Instantiate bash associative array (-A)
+		test -v ARR_FQDN_IDX && unset ARR_FQDN_IDX; declare -A ARR_FQDN_IDX; # [Re-]Instantiate bash associative array (-A)
 
 		# Resolved IPv4 addresses for given domain ( as ${1} )
 		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do

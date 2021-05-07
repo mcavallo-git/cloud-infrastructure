@@ -6,7 +6,7 @@
 
 if [ -v PATH ] && [ -n "${PATH}" ]; then
 
-	unset REQUIRED_PATHS; declare -a REQUIRED_PATHS; # [Re-]Instantiate bash indexed array (-a)
+	unset REQUIRED_PATHS; declare -a REQUIRED_PATHS; # [Re-]Instantiate bash array
 	REQUIRED_PATHS=();
 	REQUIRED_PATHS+=("/usr/local/bin");
 	REQUIRED_PATHS+=("/usr/local/sbin");

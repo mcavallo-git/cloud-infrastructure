@@ -6,8 +6,8 @@ if [ -n "$0" ]; then
 
 	else
 
-		unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash associative array (-A)
-		unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash associative array (-A)
+		unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash array
+		unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash array
 
 		DOCKER_CONTAINER_IDS=$(docker ps --format "{{.ID}}");
 

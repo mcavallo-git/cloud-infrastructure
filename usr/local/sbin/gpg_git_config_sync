@@ -624,7 +624,7 @@ fi;
 	echo ""
 	echo "Beginning Exclusions search..."
 
-	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash associative array (-A)
+	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
 	# AppData
 	if [ -d "${HOME}/AppData" ]; then
@@ -669,7 +669,7 @@ fi;
 
 	EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 
-	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash associative array (-A)
+	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
 	echo "------------------------------------------------------------";
 	echo "";

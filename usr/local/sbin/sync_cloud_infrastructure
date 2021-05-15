@@ -554,18 +554,20 @@ else
 
 			else # Running in WSL environment/terminal on Windows-based OS
 
-				# Create link to WSL-User's local repo-manual repository
+				# Create link to WSL-User's local CLI-manuals directory
 				WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/Coding/man";
 				if [ -d "${WSL_DIR}" ]; then
-					# Current User 
-					if [ -d "${HOME}" ] && [ ! -h "${HOME}/$(basename ${WSL_DIR})" ]; then
-						ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
+					# Current User
+					if [ -d "${HOME}" ]; then
+						if [ ! -h "${HOME}/$(basename ${WSL_DIR})" ] || [ ! -e "${HOME}/$(basename ${WSL_DIR})" ]; then
+							ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
+						fi;
 					fi;
 					if [ -v SUDO_USER ]; then
 						# Sudoer User (also create link in default user's homedir)
 						SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 						if [ -d "${SUDOER_HOMEDIR}" ]; then
-							if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
+							if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ] || [ ! -e "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
 								ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 							fi;
 							chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
@@ -575,15 +577,17 @@ else
 				# Create link to WSL-User's local desktop
 				WSL_DIR="${WIN32_HOMEDIR}/Desktop";
 				if [ -d "${WSL_DIR}" ]; then
-					# Current User 
-					if [ -d "${HOME}" ] && [ ! -h "${HOME}/$(basename ${WSL_DIR})" ]; then
-						ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
+					# Current User
+					if [ -d "${HOME}" ]; then
+						if [ ! -h "${HOME}/$(basename ${WSL_DIR})" ] || [ ! -e "${HOME}/$(basename ${WSL_DIR})" ]; then
+							ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
+						fi;
 					fi;
 					if [ -v SUDO_USER ]; then
 						# Sudoer User (also create link in default user's homedir)
 						SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
 						if [ -d "${SUDOER_HOMEDIR}" ]; then
-							if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
+							if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ] || [ ! -e "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
 								ln -sf "${WSL_DIR}" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";
 							fi;
 							chown --no-dereference "${SUDO_USER}:$(id -gn ${SUDO_USER})" "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})";

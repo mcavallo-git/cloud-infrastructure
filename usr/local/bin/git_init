@@ -361,7 +361,6 @@ BRANCH_CHECKED_OUT=0;
 if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> FIRST_CLONE_OF_REPO == 1";
 	# get default branch(es)
-	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Default branch 'main' not found";
 	if [ -n "${CHECKOUT_BRANCH}" ]; then
 		TRY_BRANCH="${CHECKOUT_BRANCH}";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";

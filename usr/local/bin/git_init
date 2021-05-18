@@ -193,11 +193,13 @@ if [ ! -d "${GIT_HOST_DIR}" ]; then
 fi;
 
 GIT_LOCAL_CEILING="${GIT_HOST_DIR}/${REMOTE_OWNER}";
+WINDOWS_GITHUB_LOCAL_CEILING="${HOME}/Documents/GitHub";
 if [ ! -d "${GIT_LOCAL_CEILING}" ]; then
 	mkdir -p "${GIT_LOCAL_CEILING}" && chmod 700 "${GIT_LOCAL_CEILING}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_LOCAL_CEILING}";
 fi;
 
 GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
+WINDOWS_GITHUB_WORK_TREE="${WINDOWS_GITHUB_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
 GIT_WORK_TREE_REL=".";
 if [ ! -d "${GIT_WORK_TREE}" ]; then
 	mkdir -p "${GIT_WORK_TREE}" && chmod 700 "${GIT_WORK_TREE}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
@@ -452,10 +454,31 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git status";
 ${GIT_CLI} status;
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 
+FINAL_PARENT_DIR="${HOME}/Documents/GitHub";
+if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
+	if [ ! -d "${WINDOWS_GITHUB_WORK_TREE}" ]; then
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Attempting to relocate the git repository's root directory...";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> from \"${GIT_WORK_TREE}\"";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
+		mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
+		GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
+	else
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Directory already exists (unable to relocate git work tree to):";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | --> \"${WINDOWS_GITHUB_WORK_TREE}\"";
+
+	fi;
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
+fi;
+
 chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 chmod -R 0700 "${GIT_WORK_TREE}";
 # chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 # chmod -R 0700 "${ALL_REPOS_DIR}";
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
+
 
 # ------------------------------------------------------------
 #

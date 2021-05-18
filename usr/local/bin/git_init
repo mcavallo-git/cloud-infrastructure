@@ -364,8 +364,7 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	if [ -n "${CHECKOUT_BRANCH}" ]; then
 		TRY_BRANCH="${CHECKOUT_BRANCH}";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}";
-		CHECKOUT_ERROR_CODE=$?;
+		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
 			BRANCH_CHECKED_OUT=1;
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -376,8 +375,7 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
 		TRY_BRANCH="main";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}";
-		CHECKOUT_ERROR_CODE=$?;
+		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
 			BRANCH_CHECKED_OUT=1;
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -390,8 +388,7 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
 		TRY_BRANCH="master";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}";
-		CHECKOUT_ERROR_CODE=$?;
+		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
 			BRANCH_CHECKED_OUT=1;
 			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";

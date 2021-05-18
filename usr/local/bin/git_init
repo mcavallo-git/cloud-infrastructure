@@ -79,8 +79,8 @@ echo "------------------------------------------------------------";
 echo "";
 
 # Fail-out if git is not installed & could not be installed
-which git > /dev/null 2>&1; ERROR_CODE=$?;
-if [ ${ERROR_CODE} -ne 0 ]; then 
+which git > /dev/null 2>&1; MODULE_FOUND_ERROR_CODE=$?;
+if [ ${MODULE_FOUND_ERROR_CODE} -ne 0 ]; then 
 	FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Git runtime not installed.\n";
 fi;
 
@@ -161,7 +161,7 @@ GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
 # GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
 
 # Set the target checkout branch
-CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-master}}}}";
+CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH}}}}";
 
 # Verify that the git repos-dir has correct ownership & access-privileges set
 if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
@@ -249,7 +249,7 @@ COMMIT_USER_EMAIL="${COMMIT_USER_EMAIL:-${LOCAL_GIT_USER_EMAIL:-${HOMEDIR_GIT_US
 #
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ------------------------------------------------------------";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |";
-echo "$(date '+%Y-%m-%d %H:%M:%S') | Runtime Variables:";
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Debug: Runtime Variables:";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  COMMIT_USER_EMAIL=\"${COMMIT_USER_EMAIL}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |  COMMIT_USER_FULLNAME=\"${COMMIT_USER_FULLNAME}\"";
@@ -357,24 +357,49 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git fetch --all";
 ${GIT_CLI} fetch --all;
 
 # new clones - automatically checkout default branch, first
+BRANCH_CHECKED_OUT=0;
 if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> FIRST_CLONE_OF_REPO == 1";
 	# get default branch(es)
-	BRANCH_MAIN=$(ls "${GIT_WORK_TREE}/.git/refs/heads" | grep '^main$' | head -n 1;);
-	BRANCH_MASTER=$(ls "${GIT_WORK_TREE}/.git/refs/heads" | grep '^master$' | head -n 1;);
-	BRANCH_OTHER=$(ls "${GIT_WORK_TREE}/.git/refs/heads" | head -n 1;);
-	DEFAULT_BRANCH=${BRANCH_MAIN:-${BRANCH_MASTER:-${BRANCH_OTHER}}};
-	if [ "${CHECKOUT_BRANCH}" == "main" ] && [ -z "${BRANCH_MAIN}" ]; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Branch 'main' not found - setting variable \${CHECKOUT_BRANCH} to value \"\${DEFAULT_BRANCH}\"";
-		CHECKOUT_BRANCH="${DEFAULT_BRANCH}";
-	elif [ "${CHECKOUT_BRANCH}" == "master" ] && [ -z "${BRANCH_MASTER}" ]; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Branch 'master' not found - setting variable \${CHECKOUT_BRANCH} to value \"\${DEFAULT_BRANCH}\"";
-		CHECKOUT_BRANCH="${DEFAULT_BRANCH}";
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Default branch 'main' not found";
+	if [ -n "${CHECKOUT_BRANCH}" ]; then
+		TRY_BRANCH="${CHECKOUT_BRANCH}";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+		CHECKOUT_ERROR_CODE=$(${GIT_CLI} checkout -f "${TRY_BRANCH}"; echo $?;);
+		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+			BRANCH_CHECKED_OUT=1;
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+		else
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+		fi;
 	fi;
-	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Pulling branch '${DEFAULT_BRANCH}', first";
-	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${DEFAULT_BRANCH}";
-	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${DEFAULT_BRANCH}";
-	${GIT_CLI} checkout -f ${DEFAULT_BRANCH};
+	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
+		TRY_BRANCH="main";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+		CHECKOUT_ERROR_CODE=$(${GIT_CLI} checkout -f "${TRY_BRANCH}"; echo $?;);
+		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+			BRANCH_CHECKED_OUT=1;
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+			CHECKOUT_BRANCH="${TRY_BRANCH}";
+		else
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+		fi;
+	fi;
+	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
+		TRY_BRANCH="master";
+		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+		CHECKOUT_ERROR_CODE=$(${GIT_CLI} checkout -f "${TRY_BRANCH}"; echo $?;);
+		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+			BRANCH_CHECKED_OUT=1;
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+			CHECKOUT_BRANCH="${TRY_BRANCH}";
+		else
+			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+		fi;
+	fi;
+	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
 	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git pull -v";
 	${GIT_CLI} pull -v;

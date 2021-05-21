@@ -39,12 +39,12 @@ server {
 
 	# # ------------------------------------------------------------
 	# #                ~* [regex match, case-insensitive]
-	# if ($subdomain ~* "^pay.$") {
-	# 	return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-	# }
-	# if ($request_uri ~* "^/pay$") {
-	# 	return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-	# }
+	if ($subdomain ~* "^pay.$") {
+		return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
+	if ($request_uri ~* "^/pay$") {
+		return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
 	# if ($subdomain ~* "^paypal.$") {
 	# 	return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
 	# }

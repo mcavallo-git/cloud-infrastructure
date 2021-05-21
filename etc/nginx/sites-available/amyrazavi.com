@@ -1,0 +1,121 @@
+# ------------------------------------------------------------
+#
+#==--  amyrazavi.com
+#==--  *.amyrazavi.com
+#
+server {
+	listen 80;
+	listen 443 ssl http2;
+	listen [::]:80;
+	listen [::]:443 ssl http2;
+	server_name ~^(?<subdomain>.+\.)?amyrazavi\.com$;
+	include "/etc/nginx/nginx_error_locations.conf";
+	access_log "/var/log/nginx/access_$host.excessive.log" excessive;
+
+	if ($scheme != "https") {
+		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+	}
+
+	ssl_certificate "/etc/letsencrypt/live/amyrazavi.com/fullchain.pem";
+	ssl_certificate_key "/etc/letsencrypt/live/amyrazavi.com/privkey.pem";
+	ssl_trusted_certificate "/etc/letsencrypt/live/amyrazavi.com/chain.pem";
+
+
+	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
+	if ($subdomain ~* "^cash.$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+	if ($request_uri ~* "^/cash$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+	if ($subdomain ~* "^cashapp.$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+	if ($request_uri ~* "^/cashapp$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+
+
+	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
+	if ($subdomain ~* "^pay.$") {
+		return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
+	if ($request_uri ~* "^/pay$") {
+		return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
+	if ($subdomain ~* "^paypal.$") {
+		return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
+	if ($request_uri ~* "^/paypal$") {
+		return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+	}
+
+
+	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
+	if ($subdomain ~* "^spotify.$") {
+		return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
+	}
+	if ($request_uri ~* "^/spotify$") {
+		return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
+	}
+	if ($request_uri ~* "^/spotify/1$") {
+		return 302 "https://open.spotify.com/playlist/6mYwZqVLsbduB5Nta874vb?si=03d594b249664cce";  #  Spotify Playlist [ Shower Hollerin' ]
+	}
+	if ($request_uri ~* "^/spotify/2$") {
+		return 302 "https://open.spotify.com/playlist/6Ctl8ygAgkMvsszmfq2BRj?si=561e738fbdf34fa6";  #  Spotify Playlist [ Wanna Dance? ]
+	}
+	if ($request_uri ~* "^/spotify/3$") {
+		return 302 "https://open.spotify.com/playlist/5v9ceIifWZ04TkmHvV2Gg4?si=ce4bd58b1fb74f7a";  #  Spotify Playlist [ Workout ]
+	}
+
+
+	# ------------------------------------------------------------
+	#                ~* [regex match, case-insensitive]
+	if ($subdomain ~* "^venmo.$") {
+		return 302 "https://venmo.com/hello_itsamy";
+	}
+	if ($request_uri ~* "^/venmo$") {
+		return 302 "https://venmo.com/hello_itsamy";
+	}
+
+
+	# ------------------------------------------------------------
+	# Fallthrough Request Handler
+	#  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
+	#
+	#                ~* [regex match, case-insensitive]
+	if ($subdomain ~* "^$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+	if ($request_uri ~* "^/$") {
+		return 302 "https://cash.me/hithereitsamy";
+	}
+
+}
+
+
+# ------------------------------------------------------------
+### Enable NGINX Host
+#
+# DN="amyrazavi.com"; NG="/etc/nginx/sites-available/${DN}.nginx"; echo "" > ${NG}; vi ${NG}; ln -sf ${NG} /etc/nginx/sites-enabled/${DN}; reload_nginx;
+#
+#
+# ------------------------------------------------------------
+### Create/Renew SSL-Certificate (Wildcard, Let's Encrypt)
+#
+# DN="amyrazavi.com"; certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DN}" -d "*.${DN}"; certbot certificates -d "${DN}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
+#
+#
+# ------------------------------------------------------------
+### Remove Domain(s) & Revoke Certificate(s)
+###   |--> Deletes NGINX Files & Symlinks
+###   |--> Deletes LetsEncrypt Files
+###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
+#
+# FQDN="amyrazavi.com"; certbot certificates; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; rm "/etc/nginx/sites-available/${FQDN}".nginx; certbot certificates;
+#
+#
+# ------------------------------------------------------------

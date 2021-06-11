@@ -2,9 +2,9 @@
 
 if [ 0 -eq 1 ]; then echo 1; else echo 0; fi;
   # OneLiner (Option 1)
-  docker rm --force $(docker stop $(docker ps --all --quiet)); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --quiet --filter driver=null);
+  docker rm --force $(docker stop $(docker ps --all --quiet)); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}');
   # OneLiner (Option 2)
-  docker stop $(docker ps --quiet); docker rm --force $(docker ps --all --quiet); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --quiet --filter driver=null);
+  docker stop $(docker ps --quiet); docker rm --force $(docker ps --all --quiet); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}');
 fi;
 
 
@@ -56,7 +56,7 @@ if [ $count_networks -gt 0 ]; then
   # docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none';
   # docker network ls --quiet --filter driver=null;
   # docker network disconnect -f $(docker network ls | awk '{print $1}');
-  docker network rm $(docker network ls --quiet --filter driver=null);
+	docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}');
   printf "\n";
 else
   printf "No Action Necessary\n";

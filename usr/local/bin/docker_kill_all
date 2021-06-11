@@ -1,8 +1,10 @@
 #!/bin/bash
 
 if [ 0 -eq 1 ]; then echo 1; else echo 0; fi;
-	# OneLiner
-	docker stop $(docker ps --quiet); docker rm --force $(docker ps --all --quiet); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --quiet --filter driver=null);
+  # OneLiner (Option 1)
+  docker rm --force $(docker stop $(docker ps --all --quiet)); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --quiet --filter driver=null);
+  # OneLiner (Option 2)
+  docker stop $(docker ps --quiet); docker rm --force $(docker ps --all --quiet); docker rmi --force $(docker images --all --quiet); docker network rm $(docker network ls --quiet --filter driver=null);
 fi;
 
 

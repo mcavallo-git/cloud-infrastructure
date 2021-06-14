@@ -10,8 +10,8 @@ fi;
 
 # Dockers Instances - Stop all Instances currently running
 number_of_live_dockers=$(docker ps --quiet | awk '{print $1}' | wc -l);
-printf "[ $number_of_live_dockers ] Instances Running - ";
-if [[ "${number_of_live_dockers}" -gt "0" ]]; then
+printf "[ ${number_of_live_dockers:-0} ] Instances Running - ";
+if [[ "${number_of_live_dockers:-0}" -gt "0" ]]; then
   printf "Performing STOP on all Running Instances...\n";
   docker stop $(docker ps --quiet) 2>/dev/null;
   printf "\n";
@@ -22,8 +22,8 @@ fi;
 
 # Docker Containers - Remove all Containers stored Locally
 count_containers=$(docker ps --all --quiet | awk '{print $1}' | wc -l);
-printf "[ $count_containers ] Containers Stored Locally - ";
-if [[ "${count_containers}" -gt "0" ]]; then
+printf "[ ${count_containers:-0} ] Containers Stored Locally - ";
+if [[ "${count_containers:-0}" -gt "0" ]]; then
   printf "Performing REMOVE on all Local Containers...\n";
   docker rm --force $(docker ps --all --quiet) 2>/dev/null;
   # docker rm --force $(docker stop $(docker ps --all --quiet)); 
@@ -36,8 +36,8 @@ fi;
 # Prune Images
 count_prunable_images=$(docker images --all --quiet | wc -l);
 count_prunable_skipOS_images=$(docker images --all | grep -v 'IMAGE' | grep -v 'centos' | grep -v  'openjdk' | grep -v  'postgres' | grep -v  'sonarqube' | awk '{print $3}' | wc -l);
-printf "[ $count_prunable_images ] Dangling Images - ";
-if [[ "${count_prunable_images}" -gt "0" ]]; then
+printf "[ ${count_prunable_images:-0} ] Dangling Images - ";
+if [[ "${count_prunable_images:-0}" -gt "0" ]]; then
   printf "Performing PRUNE on all Dangling Images...\n";
   # docker rmi --force $(docker images --all | grep -v 'IMAGE' | grep -v 'centos' | grep -v  'openjdk' | grep -v  'postgres' | grep -v  'sonarqube' | awk '{print $3}');
   # docker rmi --force $(docker images --all | grep -v 'IMAGE' | awk '{print $3}');
@@ -51,8 +51,8 @@ fi;
 # Prune Networks
 # count_networks=$(docker network ls --quiet --filter driver=null | wc -l);
 count_networks=$(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none');
-printf "[ ${count_networks} ] Networks Stored Locally - ";
-if [[ "${count_networks}" -gt "0" ]]; then
+printf "[ ${count_networks:-0} ] Networks Stored Locally - ";
+if [[ "${count_networks:-0}" -gt "0" ]]; then
   printf "Performing PRUNE on all local networks...\n";
   # docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none';
   # docker network ls --quiet --filter driver=null;

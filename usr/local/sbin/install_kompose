@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_kompose" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_kompose?t=$(date +'%s.%N')" | bash;
+
+fi;
+if [ "1" == "1" ]; then
+  # Install Kompose (converts docker-compose YAML files to kubectl YAML files, which kubectl can then deploy to K8S (Kubneretes) clusters)
+  if [ $(which kompose 2>'/dev/null' | wc -l;) -eq 0 ]; then
+    echo "Downloading Kompose...";
+    if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
+      # Install Kompose for Linux
+      curl -L "curl -L https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-linux-amd64" -o kompose;
+    elif [[ "${OSTYPE}" == "darwin"* ]]; then
+      # Install Kompose for MacOS
+      curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-darwin-amd64" -o kompose;
+    else
+      # Install Kompose for Windows
+      curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-windows-amd64.exe" -o kompose.exe;
+    fi;
+    chmod +x "kompose";
+    # Determine the local executable directory to place Kompose into (which exists on the PATH)
+    BIN_DIR="/usr/local/bin";
+    # Test directory write permissions (required for Git Bash, as Windows doesn't show filepath write permissions accurately until a write is actually performed (and fails))
+    BIN_PATH_TESTWRITE="${BIN_DIR}/testwrite-$(date +'%Y%m%d_%H%M%S')";
+    ERRORS_FOUND=$(touch "${BIN_PATH_TESTWRITE}" 2>&1 | grep 'Permission denied' | wc -l);
+    if [ $(touch "${BIN_PATH_TESTWRITE}" 2>&1 | grep 'Permission denied' | wc -l;) -gt 0 ]; then
+      BIN_DIR="${HOME}/bin";
+      mkdir -p "${BIN_DIR}";
+    else
+      rm "${BIN_PATH_TESTWRITE}";
+    fi;
+    # Move the Kompose executable into target executables directory which is included in the PATH environment variable
+    mv "kompose" "${BIN_DIR}/kompose" --force;
+  fi;
+  echo "";
+  echo "which kompose = [ $(which kompose 2>'/dev/null';) ]";
+  echo "";
+  echo "Change directory to the directory containing your \"docker-compose.yml\" file (to convert), then call [ kompose convert ] to convert it to kubectl YAML file(s)";
+  echo "";
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   kubernetes.io  |  "Translate a Docker Compose File to Kubernetes Resources | Kubernetes"  |  https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/#install-kompose
+#
+# ------------------------------------------------------------

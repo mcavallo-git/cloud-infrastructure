@@ -50,7 +50,7 @@ fi;
 
 # Prune Networks
 # count_networks=$(docker network ls --quiet --filter driver=null | wc -l);
-count_networks=$(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none');
+count_networks=$(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | wc -l);
 printf "[ ${count_networks:-0} ] Networks Stored Locally - ";
 if [[ "${count_networks:-0}" -gt "0" ]]; then
   printf "Performing PRUNE on all local networks...\n";

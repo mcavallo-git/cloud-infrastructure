@@ -1524,8 +1524,10 @@ else
         TO_DEL="${DELDIR}/docker_check_installation_status"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/docker_list_volume_maps.sh"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_enabled_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_lan_ipv4"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
         TO_DEL="${DELDIR}/get_wan_ip"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+        TO_DEL="${DELDIR}/get_wan_ipv4"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
         DELDIR="/usr/local/sbin/";
         TO_DEL="${DELDIR}/disable_mail_alerts"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;

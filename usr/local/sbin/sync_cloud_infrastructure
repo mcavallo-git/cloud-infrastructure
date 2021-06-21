@@ -191,7 +191,7 @@ else
       if [ "${EACH_ARG}" == "--jenkins" ]; then
         ARGS_SYNC_JENKINS=1; # Parse JENKINS-Sync Calls
       fi;
-      
+
       if [ "${EACH_ARG}" == "--nginx" ]; then
         ARGS_SYNC_NGINX=1; # Parse NGINX-Sync Calls
       fi;
@@ -384,7 +384,7 @@ else
         echo -e "\n""Error:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
         EXIT_CODE=1;
       fi;
-      
+
     fi;
 
     # ------------------------------------------------------------
@@ -441,7 +441,7 @@ else
       echo "Info:  Update complete";
 
       echo -e "\n""---- Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
-      
+
       # Call the updated version of this script with the same parameters given to this (current) runtime
       # "${THIS_SOURCECODE_LOCAL}" "${ARGS[@]}" && echo -e "\n""==== End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})" && exit 0;
       "${THIS_SOURCECODE_LOCAL}" $@
@@ -762,7 +762,7 @@ else
             echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
 
           else
-            
+
             # Backup & Update the sshd_config (SSH Server) file
             SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
             SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_MFA}" "${SSHD_CONFIG_MFA}";
@@ -987,7 +987,7 @@ else
             fi;
 
           fi;
-          
+
           if [ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]; then
             CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
             echo -e "\n""Info:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
@@ -1553,7 +1553,7 @@ else
         DELDIR="/etc/nginx/conf.ddns";
         TO_DEL="${DELDIR}/rz.mcavallo.com"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200115-224618
         TO_DEL="${DELDIR}/x1.mcavallo.com"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200115-224620
-    
+
         DELDIR="/etc/nginx/conf.vendor";
         TO_DEL="${DELDIR}/LAN_subnets.conf"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-192658
 

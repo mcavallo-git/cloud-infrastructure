@@ -79,19 +79,19 @@ else
 
 		# Check if this is the last inline-argument or if there are more to follow
 		if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
-			NEXT_ARG="";
+      NEXT_ARG="";
 		else
-			NEXT_ARG=${ARGS[$((${i}+1))]};
-			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+      NEXT_ARG=${ARGS[$((${i}+1))]};
+      if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
-			fi;
+      fi;
 		fi;
 
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-			if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
+      if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
         ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
-			fi;
+      fi;
 
 		fi;
 
@@ -106,14 +106,14 @@ else
 		READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo -e "Response timed out after ${READ_TIMEOUT}s";
-			exit 1;
+      echo -e "Response timed out after ${READ_TIMEOUT}s";
+      exit 1;
 		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo -e "\n""Proceeding...\n";
-			sleep 1;
+      echo -e "\n""Proceeding...\n";
+      sleep 1;
 		else
-			echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
-			exit 1;
+      echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
+      exit 1;
 		fi;
 	fi;
 
@@ -161,32 +161,32 @@ else
 		# Install Fonts (Requirement for Jenkins)
 		PACKAGE_YUM="dejavu-sans-fonts";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
-			yum -y check-update;
-			yum -y install "${PACKAGE_YUM}";
+      yum -y check-update;
+      yum -y install "${PACKAGE_YUM}";
 		fi;
 		PACKAGE_YUM="fontconfig";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
-			yum -y check-update;
-			yum -y install "${PACKAGE_YUM}";
+      yum -y check-update;
+      yum -y install "${PACKAGE_YUM}";
 		fi;
 		PACKAGE_YUM="xorg-x11-server-Xvfb";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
-			yum -y check-update;
-			yum -y install "${PACKAGE_YUM}";
+      yum -y check-update;
+      yum -y install "${PACKAGE_YUM}";
 		fi;
 		# PACKAGE_YUM="openldap*";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
-			yum -y check-update;
-			yum -y install openldap*;
+      yum -y check-update;
+      yum -y install openldap*;
 		fi;
 
 		# ------------------------------------------------------------
 		# Install Jenkins
 		PACKAGE_YUM="jenkins";
 		if [ $(yum list installed | sed -rne "s/^(${PACKAGE_YUM})\.(x86_64|noarch)\s+.+$/\1/p" | wc -l;) -eq 0 ]; then
-			wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
-			rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
-			yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Jenkins
+      wget -O "/etc/yum.repos.d/jenkins.repo" "https://pkg.jenkins.io/redhat-stable/jenkins.repo";  # Add Jenkins' package repository
+      rpm --import "https://pkg.jenkins.io/redhat-stable/jenkins.io.key" 2>'/dev/null'; # Import Jenkins' official GPG Key
+      yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Jenkins
 		fi;
 
 	fi;
@@ -226,10 +226,10 @@ else
 		FIREWALL_SERVICE="firewalld";
 		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
-			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
+      SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
+      if [ -n "${SERVICE_ENABLED_GREP}" ]; then
         # Open necessary firewall port(s)
-			
+      
         NGINX_SVC_RET_CODE=$(/usr/sbin/service "nginx" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
         HTTPD_SVC_RET_CODE=$(/usr/sbin/service "httpd" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
         if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
@@ -257,7 +257,7 @@ else
         firewall-cmd --set-default-zone=public;
         firewall-cmd --reload;
         firewall-cmd --list-all;
-			fi;
+      fi;
 		fi;
 
 	else
@@ -279,26 +279,26 @@ else
 
 	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
 		if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
-			# Not Forced
-			echo "";
-			READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-			echo "";
+      # Not Forced
+      echo "";
+      READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+      echo "";
 		else
-			# Forced (Skipped)
-			RETURN_CODE_READ=0;
-			REPLY="y";
+      # Forced (Skipped)
+      RETURN_CODE_READ=0;
+      REPLY="y";
 		fi;
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo -e "Response timed out after ${READ_TIMEOUT}s";
+      echo -e "Response timed out after ${READ_TIMEOUT}s";
 		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
-			echo -e "\n""Info:  Downloading & Syncing Jenkins config from \"cloud-infrastructure\" repository";
-			echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
-			mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
-			wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
-			chmod 0644 "${JENKINS_CONFIG_PATH}";
+      CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
+      echo -e "\n""Info:  Downloading & Syncing Jenkins config from \"cloud-infrastructure\" repository";
+      echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
+      mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";
+      wget "${CLOUD_SYNC_URL}" -O "${JENKINS_CONFIG_PATH}" -q;
+      chmod 0644 "${JENKINS_CONFIG_PATH}";
 		else
-			echo "Denied - Skipping Jenkins config-file sync";
+      echo "Denied - Skipping Jenkins config-file sync";
 		fi;
 	fi;
 
@@ -369,8 +369,8 @@ ${SERVICE_INITIAL_TOKEN}
 		echo "*************************************************************";
 		echo "";
 		if [ -f "$(which get_ipv4_lan)" ]; then
-			echo "To begin using Jenkins, open a web browser to http://$(get_ipv4_lan):8080";
-			echo "";
+      echo "To begin using Jenkins, open a web browser to http://$(get_ipv4_lan):8080";
+      echo "";
 		fi;
 
 		# Find the default admin password for the user (so they don't have to go digging through a logfile for it)

@@ -107,12 +107,12 @@ else
 	ADD_RULE_SKIPPED=0;
 	add_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
-			local proto=$1;
-			local port=$2;
-			local ip=$3;
-			local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
-			local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      local proto=$1;
+      local port=$2;
+      local ip=$3;
+      local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
+      local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  IN FUNCTION [ add_rule()  ]";
         echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
         echo "            |-->  proto = [ ${proto} ]";
@@ -120,9 +120,9 @@ else
         echo "            |-->  ip = [ ${ip} ]";
         echo "            |-->  regex = [ ${regex} ]";
         echo "            |-->  rule = [ ${rule} ]";
-			fi;
-			# If rule doesn't exist, then add (allow) it to UFW's ruleset
-			if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -z "${rule}" ]; then
+      fi;
+      # If rule doesn't exist, then add (allow) it to UFW's ruleset
+      if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -z "${rule}" ]; then
         ADD_RULE_SKIPPED=0;
         # echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
         echo "            |-->  result: [ add new rule ]";
@@ -132,15 +132,15 @@ else
         #   /usr/sbin/ufw allow proto tcp from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
         #   /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
         #   /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
-			else
+      else
         ADD_RULE_SKIPPED=1;
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "            |-->  result: [ SKIPPED adding new rule ]";
         fi;
-			fi;
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      fi;
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "            |-->  ADD_RULE_SKIPPED = [ ${ADD_RULE_SKIPPED} ]";
-			fi;
+      fi;
 		fi;
 	}
 
@@ -152,12 +152,12 @@ else
 	DELETE_RULE_SKIPPED=0;
 	delete_rule() {
 		if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
-			local proto=$1;
-			local port=$2;
-			local ip=$3;
-			local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
-			local rule=$(ufw status numbered | grep ${regex});
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      local proto=$1;
+      local port=$2;
+      local ip=$3;
+      local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
+      local rule=$(ufw status numbered | grep ${regex});
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  IN FUNCTION [ delete_rule()  ]";
         echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
         echo "            |-->  proto = [ ${proto} ]";
@@ -165,9 +165,9 @@ else
         echo "            |-->  ip = [ ${ip} ]";
         echo "            |-->  regex = [ ${regex} ]";
         echo "            |-->  rule = [ ${rule} ]";
-			fi;
-			# If rule exists, then remove (delete) it from UFW's ruleset
-			if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -n "${rule}" ]; then
+      fi;
+      # If rule exists, then remove (delete) it from UFW's ruleset
+      if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -n "${rule}" ]; then
         DELETE_RULE_SKIPPED=0;
         # echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
         echo "            |-->  result: [ delete existing rule ]";
@@ -178,15 +178,15 @@ else
 
         # Example(s):
         #   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
-			else
+      else
         DELETE_RULE_SKIPPED=1;
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "            |-->  result: [ SKIPPED deleting rule ]";
         fi;
-			fi;
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      fi;
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "            |-->  DELETE_RULE_SKIPPED = [ ${DELETE_RULE_SKIPPED} ]";
-			fi;
+      fi;
 		fi;
 	}
 
@@ -197,36 +197,36 @@ else
 	#
 	if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
 		if [ -f "${UFW_CONFIG_FILEPATH}" ]; then
-			
-			# Set UFW Defaults --> Incoming Requests
-			CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-			DESIRED_DEFAULT_INPUT_POLICY="DROP";
-			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+      
+      # Set UFW Defaults --> Incoming Requests
+      CURRENT_DEFAULT_INPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_INPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+      DESIRED_DEFAULT_INPUT_POLICY="DROP";
+      if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
         /usr/sbin/ufw default deny incoming;  # DEFAULT_INPUT_POLICY="DROP"
         # sed --in-place --regexp-extended --expression="/^DEFAULT_INPUT_POLICY/c\DEFAULT_INPUT_POLICY=\"${DESIRED_DEFAULT_INPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
-			fi;
+      fi;
 
-			# Set UFW Defaults --> Outgoing Requests
-			CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-			DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
-			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
+      # Set UFW Defaults --> Outgoing Requests
+      CURRENT_DEFAULT_OUTPUT_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_OUTPUT_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+      DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
+      if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "Debug:  Calling  [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
         fi;
         /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
         # sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
-			fi;
+      fi;
 
-			# Set UFW Defaults --> ROuted Requests
-			CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
-			DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
-			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
+      # Set UFW Defaults --> ROuted Requests
+      CURRENT_DEFAULT_APPLICATION_POLICY=$(sed --regexp-extended --quiet --expression='s/^DEFAULT_APPLICATION_POLICY="(.+)"$/\1/p' "${UFW_CONFIG_FILEPATH}";);
+      DESIRED_DEFAULT_APPLICATION_POLICY="SKIP";
+      if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_INPUT_POLICY}" ]; then
         # /usr/sbin/ufw default skip routed;
         sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "Debug:  Calling  [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
         fi;
-			fi;
+      fi;
 
 		fi;
 	fi;
@@ -268,9 +268,9 @@ else
 		SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${EACH_SERVICE_NAME}.service" | grep "^${EACH_SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally & is currently active
 
-			MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "${EACH_RUNTIME_USER}" | wc -l;);
+      MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "${EACH_RUNTIME_USER}" | wc -l;);
 
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "";
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
         echo "Starting new instance of ddns_ufw_update";
@@ -278,14 +278,14 @@ else
         echo "\${0} = [ ${0} ]";
         echo "MATCHED_PROCS_PGREP = [ ${MATCHED_PROCS_PGREP} ]";
         echo "MATCHED_PROCS_PS = [ ${MATCHED_PROCS_PS} ]";
-			fi;
+      fi;
 
-			if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
+      if [ ${MATCHED_PROCS_PS} -eq 0 ]; then
         # Service does NOT exist locally - do NOT whitelist associated ports/hosts
         echo "";
         echo "Info:  Skipping whitelisting for service \"${EACH_SERVICE_NAME}\" (not found locally)";
 
-			else
+      else
         # Service DOES exist locally - DO whitelist associated ports/hosts
 
         if [ ! -f "${EACH_WHITELIST_FILE}" ]; then
@@ -482,19 +482,19 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
         fi;
 
-			fi;
+      fi;
 
 		fi;
 
 		# Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
 		if [ "${EACH_SERVICE_NAME}" == "nginx" ] && [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${NGINX_DDNS_RESULTS}" ]; then
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  NGINX_CONF_DDNS = [ ${NGINX_CONF_DDNS} ]";
         echo "Debug:  NGINX_DDNS_CONF = [ ${NGINX_DDNS_CONF} ]";
         echo "Debug:  NGINX_DDNS_RESULTS = [ ${NGINX_DDNS_RESULTS} ]";
-			fi;
-			echo -e "Info:  Calling  [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
-			echo -e "${NGINX_DDNS_RESULTS}" > "${NGINX_DDNS_CONF}";
+      fi;
+      echo -e "Info:  Calling  [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
+      echo -e "${NGINX_DDNS_RESULTS}" > "${NGINX_DDNS_CONF}";
 		fi;
 	
 	done;
@@ -553,21 +553,21 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 		EACH_UFW_PROTO="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
 
 		if [ ${DEBUG_MODE} -eq 1 ]; then
-			echo "-- Debug:  EACH_UFW_LINE = [ ${EACH_UFW_LINE} ]";
-			echo "Debug:  EACH_UFW_CIDRv4 = [ ${EACH_UFW_CIDRv4} ]";
-			echo "Debug:  EACH_UFW_IPv4 = [ ${EACH_UFW_IPv4} ]";
-			echo "Debug:  EACH_UFW_PORT = [ ${EACH_UFW_PORT} ]";
-			echo "Debug:  EACH_UFW_PROTO = [ ${EACH_UFW_PROTO} ]";
+      echo "-- Debug:  EACH_UFW_LINE = [ ${EACH_UFW_LINE} ]";
+      echo "Debug:  EACH_UFW_CIDRv4 = [ ${EACH_UFW_CIDRv4} ]";
+      echo "Debug:  EACH_UFW_IPv4 = [ ${EACH_UFW_IPv4} ]";
+      echo "Debug:  EACH_UFW_PORT = [ ${EACH_UFW_PORT} ]";
+      echo "Debug:  EACH_UFW_PROTO = [ ${EACH_UFW_PROTO} ]";
 		fi;
 		
 		DELETE_RULE=1;
 		for (( i=0; i<${#RESOLVED_CIDRv4_1D[@]}; i++ )); do
-			# EACH_WHITELIST_HOST+=("${RESOLVED_HOSTS_1D[$i]}");
-			# EACH_RESOLVED_IPv4+=("${RESOLVED_IPv4_1D[$i]}");
-			EACH_RESOLVED_CIDRv4+=("${RESOLVED_CIDRv4_1D[$i]}");
-			EACH_RESOLVED_PORT+=("${RESOLVED_PORTS_1D[$i]}");
-			EACH_RESOLVED_PROTO+=("${RESOLVED_PROTOS_1D[$i]}");
-			if [ "${EACH_UFW_CIDRv4}" == "${EACH_RESOLVED_CIDRv4}" ]; then # Matched on valid Port
+      # EACH_WHITELIST_HOST+=("${RESOLVED_HOSTS_1D[$i]}");
+      # EACH_RESOLVED_IPv4+=("${RESOLVED_IPv4_1D[$i]}");
+      EACH_RESOLVED_CIDRv4+=("${RESOLVED_CIDRv4_1D[$i]}");
+      EACH_RESOLVED_PORT+=("${RESOLVED_PORTS_1D[$i]}");
+      EACH_RESOLVED_PROTO+=("${RESOLVED_PROTOS_1D[$i]}");
+      if [ "${EACH_UFW_CIDRv4}" == "${EACH_RESOLVED_CIDRv4}" ]; then # Matched on valid Port
         if [ "${EACH_UFW_PORT}" == "${EACH_RESOLVED_PORT}" ]; then # Matched on valid Port
           if [ "${EACH_UFW_PROTO}" == "${EACH_RESOLVED_PROTO}" ]; then # Matched on valid Protocol
             # All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
@@ -575,7 +575,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
             break;
           fi;
         fi;
-			fi;
+      fi;
 		done;
 
 		# Check resolved array for a value matching these values (Port, Protocol, CIDRv4), exactly - otherwise, delete the rule
@@ -634,21 +634,21 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 		# fi;
 
 		if [ ${DELETE_RULE} -eq 1 ]; then
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  Deleting existing rule [ \"${EACH_UFW_LINE}\" ] - not found to match any [ CIDRv4 + Port + Proto ] combinations";
-			fi;
-			DELETE_RULE_SKIPPED=0;
-			# Delete the firewall rule
-			delete_rule ${EACH_UFW_PROTO} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
-			# Add the inverse of new rule to the undo-changes array
-			if [ ${DELETE_RULE_SKIPPED} -eq 0 ]; then
+      fi;
+      DELETE_RULE_SKIPPED=0;
+      # Delete the firewall rule
+      delete_rule ${EACH_UFW_PROTO} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
+      # Add the inverse of new rule to the undo-changes array
+      if [ ${DELETE_RULE_SKIPPED} -eq 0 ]; then
         UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw allow proto ${EACH_UFW_PROTO} from ${EACH_UFW_CIDRv4} to any port ${EACH_UFW_PORT};"]="");
-			fi;
+      fi;
 		else
-			# Keep the firewall rule
-			if [ ${DEBUG_MODE} -eq 1 ]; then
+      # Keep the firewall rule
+      if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  Keeping existing rule [ ${EACH_UFW_LINE} ] - matched by [ CIDRv4 + Port + Proto ] combination to resolved values";
-			fi;
+      fi;
 		fi;
 	done;
 	IFS="${ROLLBACK_IFS}";

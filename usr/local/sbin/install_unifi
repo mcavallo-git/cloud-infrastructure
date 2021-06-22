@@ -40,18 +40,18 @@ else
 	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 
 		if [ -n "${1}" ]; then
-			#
-			# Allow user to pass a single argument ($1) being a specific version of the UniFi Controller to attempt to install
-			#  |
-			#  |--> Ex)  install_unifi 5.10.23
-			#  |
-			#  |--> Uses bash convenience scripts from glennr.nl --> view available scripts & compatible versions @ https://glennr.nl/s/unifi-network-controller
-			#
-			SOURCE_URL="https://get.glennr.nl/unifi/install/unifi-${1}.sh";
-			echo "";
-			echo "Info:  Testing URL for validity:  [ ${SOURCE_URL} ]";
-			# check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
-			if [ "$(curl -Is ${SOURCE_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
+      #
+      # Allow user to pass a single argument ($1) being a specific version of the UniFi Controller to attempt to install
+      #  |
+      #  |--> Ex)  install_unifi 5.10.23
+      #  |
+      #  |--> Uses bash convenience scripts from glennr.nl --> view available scripts & compatible versions @ https://glennr.nl/s/unifi-network-controller
+      #
+      SOURCE_URL="https://get.glennr.nl/unifi/install/unifi-${1}.sh";
+      echo "";
+      echo "Info:  Testing URL for validity:  [ ${SOURCE_URL} ]";
+      # check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
+      if [ "$(curl -Is ${SOURCE_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
         # VALID URL
         # Install [ specific-revision'ed ] Unifi Controller via Bash convenience script
         TMP_FILE="/tmp/unifi-install.sh";
@@ -59,7 +59,7 @@ else
         echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; chmod 0700 \"${TMP_FILE}\"; bash \"${TMP_FILE}\"; ]...";
         mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; chmod 0700 "${TMP_FILE}"; bash "${TMP_FILE}";
 
-			else
+      else
         # INVALID URL
         echo "";
         echo "Error:  Invalid URL - Failed to return an HTTP code of 200";
@@ -73,12 +73,12 @@ else
         echo "  |-->  Ex) install_unifi 5.10.23";
         echo "";
         exit 1;
-			fi;
+      fi;
 
 		else
 		
-			USE_DOCKER_CONTAINER=0;
-			if [ $(which docker 2>'/dev/null' | wc -l;) -gt 0 ]; then
+      USE_DOCKER_CONTAINER=0;
+      if [ $(which docker 2>'/dev/null' | wc -l;) -gt 0 ]; then
         if [ $(which docker-compose 2>'/dev/null' | wc -l;) -gt 0 ]; then
           # If docker & docker-compose are both already installed, offer to install the service as a docker container
           echo "";
@@ -87,9 +87,9 @@ else
             USE_DOCKER_CONTAINER=1;
           fi;
         fi;
-			fi;
-			
-			if [ "${USE_DOCKER_CONTAINER}" == "1" ]; then
+      fi;
+      
+      if [ "${USE_DOCKER_CONTAINER}" == "1" ]; then
         # Install/run service as a Docker container
 
         echo "";
@@ -104,7 +104,7 @@ else
         echo "Info:  Calling  [ docker-compose -f \"/var/lib/docker-compose/unifi/docker-compose.yml\" up -d; ]...";
         docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
 
-			else
+      else
         # Install/run service from Host OS (non-containerized)
 
         if [ 1 -eq 1 ]; then
@@ -157,7 +157,7 @@ else
         
         fi;
 
-			fi;
+      fi;
 
 		fi;
 
@@ -165,7 +165,7 @@ else
 		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
 		if [ -z "${THIS_LAN_IPV4}" ]; then
-			THIS_LAN_IPV4=$(hostname -i | awk '{print $1}' 2>'/dev/null';);
+      THIS_LAN_IPV4=$(hostname -i | awk '{print $1}' 2>'/dev/null';);
 		fi;
 
 		# Point the user to the Unifi Controller's URL to continue installation

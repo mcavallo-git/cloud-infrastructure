@@ -13,32 +13,32 @@ if [ -n "$0" ]; then
 
 		CHOICE_KEY=0;
 		for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
-			CHOICE_KEY=$((CHOICE_KEY+1));
-			EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
-			ARR_CONTAINER_IDS+=(["${CHOICE_KEY}"]="${EACH_CONTAINER_ID}");
-			ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
+      CHOICE_KEY=$((CHOICE_KEY+1));
+      EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
+      ARR_CONTAINER_IDS+=(["${CHOICE_KEY}"]="${EACH_CONTAINER_ID}");
+      ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
 		done;
 
 		if [ ${CHOICE_KEY} -le 0 ]; then
-			echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
-			
+      echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
+      
 		else
-			echo "";
-			echo "Found the following dockers, locally:";
-			echo "------------------------------------------------------------";
-			for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+      echo "";
+      echo "Found the following dockers, locally:";
+      echo "------------------------------------------------------------";
+      for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
         EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
         EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
         echo "   ${EACH_KEY}	|  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
-			done;
-			echo "------------------------------------------------------------";
-			echo "";
+      done;
+      echo "------------------------------------------------------------";
+      echo "";
 
-			MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
-			if [ -z "${REPLY}" ]; then
+      MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
+      if [ -z "${REPLY}" ]; then
         echo "";
         echo "Error: Response timed out after ${MAX_READ_WAIT}s";
-			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
+      elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
         USER_SELECTION_KEY=$((0+${REPLY}));
         if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
           echo "Error: Invalid selection of \"${REPLY}\"";
@@ -55,10 +55,10 @@ if [ -n "$0" ]; then
           docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>"/dev/null" || \
           docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
         fi;
-			else
+      else
         echo "";
         echo "Error: Malformed user-input (must be an integer selection from the table, above)";
-			fi;
+      fi;
 
 		fi;
 

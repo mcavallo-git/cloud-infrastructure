@@ -70,16 +70,16 @@ else
 
 		LOCAL_JAVA_FONTS_DIR="${LOCAL_JAVA_HOME}/lib/fonts/"; echo "LOCAL_JAVA_FONTS_DIR = [ ${LOCAL_JAVA_FONTS_DIR} ]";
 		if [ ! -d "${LOCAL_JAVA_FONTS_DIR}" ]; then
-			echo "";
-			echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
-			mkdir -p "${LOCAL_JAVA_FONTS_DIR}";
+      echo "";
+      echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
+      mkdir -p "${LOCAL_JAVA_FONTS_DIR}";
 		fi;
 
 		LOCAL_JAVA_FONTCONFIG_PROPS="${LOCAL_JAVA_HOME}/lib/fontconfig.properties"; echo "LOCAL_JAVA_FONTCONFIG_PROPS = [ ${LOCAL_JAVA_FONTCONFIG_PROPS} ]";
 		if [ ! -f "${LOCAL_JAVA_FONTS_DIR}" ]; then
-			echo "";
-			echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
-			touch "${LOCAL_JAVA_FONTCONFIG_PROPS}";
+      echo "";
+      echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
+      touch "${LOCAL_JAVA_FONTCONFIG_PROPS}";
 		fi;
 		echo "";
 		echo "Info:  Calling [ chmod 0644 \"${LOCAL_JAVA_FONTCONFIG_PROPS}\"; ]...";

@@ -84,19 +84,19 @@ else
 		# Walk through any inline-arguments passed to this function
 		for (( i=0;i<$ARGS_COUNT;i++ )); do
 
-			EACH_ARG=${ARGS[${i}]};
+      EACH_ARG=${ARGS[${i}]};
 
-			# Check if this is the last inline-argument or if there are more to follow
-			if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
+      # Check if this is the last inline-argument or if there are more to follow
+      if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
         NEXT_ARG="";
-			else
+      else
         NEXT_ARG=${ARGS[$((${i}+1))]};
         if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
           NEXT_ARG="";
         fi;
-			fi;
+      fi;
 
-			if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+      if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
         if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
           ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
@@ -114,7 +114,7 @@ else
           ARGS_SELINUX_STATUS=1; # Get SELinux status
         fi;
 	
-			fi;
+      fi;
 
 		done;
 
@@ -127,17 +127,17 @@ else
 
 
 		if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
-			# ERROR - Invalid action selected
-			echo "${ERROR_INVALID_ACTION}";
-			EXIT_CODE=1;
+      # ERROR - Invalid action selected
+      echo "${ERROR_INVALID_ACTION}";
+      EXIT_CODE=1;
 
 		else
 
-			# Determine the enabled/disabled status defined in SELinux's config-file(s)
-			SERVICE_CONF1_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF1_PATH}";);
-			SERVICE_CONF2_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF2_PATH}";);
+      # Determine the enabled/disabled status defined in SELinux's config-file(s)
+      SERVICE_CONF1_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF1_PATH}";);
+      SERVICE_CONF2_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF2_PATH}";);
 
-			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
+      if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
         # ------------------------------------------------------------
         # SELinux - Disable
         if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
@@ -193,7 +193,7 @@ else
         fi;
 
 
-			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
+      elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
         # ------------------------------------------------------------
         # SELinux - Enable
         if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
@@ -248,7 +248,7 @@ else
         fi;
 
 
-			else
+      else
         # ------------------------------------------------------------
         # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
         # SELinux - Get status
@@ -295,7 +295,7 @@ else
         # Check SELinux error logs specifically for lines mentioning 'nginx' and 'denied'
         # cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
 
-			fi;
+      fi;
 
 		fi;
 
@@ -315,13 +315,13 @@ else
 		# ------------------------------------------------------------
 		# Reboot Server (if needed) --> Require user confirmation
 		if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
-			echo "";
-			echo "Info:  ${REBOOT_REQUIRED_MSG}";
-			read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
-			echo "";
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "";
+      echo "Info:  ${REBOOT_REQUIRED_MSG}";
+      read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+      echo "";
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         reboot now;
-			fi;
+      fi;
 		fi;
 
 	fi;

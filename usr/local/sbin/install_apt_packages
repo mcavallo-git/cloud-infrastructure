@@ -51,25 +51,25 @@ else
 	for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
 		ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);
 		if [ "${ALREADY_INSTALLED}" != "0" ]; then
-			echo "✓ Package \"${EACH_PKG}\" is already installed";
+      echo "✓ Package \"${EACH_PKG}\" is already installed";
 		else
-			echo "× Package \"${EACH_PKG}\" not found locally - installing...";
-			if [[ "${EACH_PKG}" == "nginx"* ]]; then
+      echo "× Package \"${EACH_PKG}\" not found locally - installing...";
+      if [[ "${EACH_PKG}" == "nginx"* ]]; then
         if [ $(apt policy 2>"/dev/null" | grep "http://ppa.launchpad.net/nginx" | wc -l;) -eq 0 ]; then
           add-apt-repository --yes --update "ppa:nginx/stable";
         fi;
-			elif [ "${EACH_PKG}" == "certbot" ] || [ "${EACH_PKG}" == "python-certbot-nginx" ]; then
+      elif [ "${EACH_PKG}" == "certbot" ] || [ "${EACH_PKG}" == "python-certbot-nginx" ]; then
         if [ $(apt policy 2>"/dev/null" | grep "http://ppa.launchpad.net/certbot" | wc -l;) -eq 0 ]; then
           add-apt-repository --yes --update "ppa:certbot/certbot";
         fi;
-			elif [ "${EACH_PKG}" == "git" ]; then
+      elif [ "${EACH_PKG}" == "git" ]; then
         if [ $(apt policy 2>"/dev/null" | grep "http://ppa.launchpad.net/git" | wc -l;) -eq 0 ]; then
           add-apt-repository --yes --update "ppa:git-core/ppa";
         fi;
-			else
+      else
         apt-get update --yes;
-			fi;
-			apt-get install --yes "${EACH_PKG}";
+      fi;
+      apt-get install --yes "${EACH_PKG}";
 		fi;
 	done;
 

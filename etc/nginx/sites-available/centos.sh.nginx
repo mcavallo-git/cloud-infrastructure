@@ -17,11 +17,11 @@ server {
 	location / {
 		#                    ~* [regex match, case-insensitive]
 		if ($http_user_agent ~* "^curl") {
-			return 302 https://mcavallo.com/sh;  # curl -ssL https://centos.sh | bash -s -- --all;
+      return 302 https://mcavallo.com/sh;  # curl -ssL https://centos.sh | bash -s -- --all;
 		}
 		#                    !~* [inversed regex, case-insensitive]
 		if ($http_user_agent !~* "^curl") {
-			return 302 https://${subdomain}mcavallo.com${request_uri};
+      return 302 https://${subdomain}mcavallo.com${request_uri};
 		}
 	}
 	include "/etc/nginx/nginx_error_locations.conf";

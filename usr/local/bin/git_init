@@ -52,24 +52,24 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 		apt -qq -y update && apt -qq -y install --ignore-missing git;
 	else
 		if [ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]; then
-			# Debian
-			echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Debian Linux) - Attempting to install via:";
-			echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
-			apt -qq -y update && apt -qq -y install --ignore-missing git;
+      # Debian
+      echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Debian Linux) - Attempting to install via:";
+      echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
+      apt -qq -y update && apt -qq -y install --ignore-missing git;
 		else
-			if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
+      if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
         # CentOS
         echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (CentOS Linux) - Attempting to install via:";
         echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> yum -y update && yum -y install --skip-broken git;";
         yum -y update && yum -y install --skip-broken git;
-			else
+      else
         if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
           # Alpine
           echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Alpine Linux) - Attempting to install via:";
           echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apk update && apk add git;";
           apk update && apk add git;
         fi;
-			fi;
+      fi;
 		fi;
 	fi;
 fi;
@@ -368,10 +368,10 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
 		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
-			BRANCH_CHECKED_OUT=1;
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+      BRANCH_CHECKED_OUT=1;
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
 		else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
 		fi;
 	fi;
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
@@ -379,12 +379,12 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
 		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
-			BRANCH_CHECKED_OUT=1;
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
-			CHECKOUT_BRANCH="${TRY_BRANCH}";
+      BRANCH_CHECKED_OUT=1;
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+      CHECKOUT_BRANCH="${TRY_BRANCH}";
 		else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
 		fi;
 	fi;
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
@@ -392,12 +392,12 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
 		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
 		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
-			BRANCH_CHECKED_OUT=1;
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
-			CHECKOUT_BRANCH="${TRY_BRANCH}";
+      BRANCH_CHECKED_OUT=1;
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+      CHECKOUT_BRANCH="${TRY_BRANCH}";
 		else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
 		fi;
 	fi;
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
@@ -416,11 +416,11 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
 	if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
 		# checkout specific branch if not already on it
 		if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
-			# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
-			${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
+      # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
+      ${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
 		else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
 		fi;
 		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} reset --hard \"origin/${CHECKOUT_BRANCH}\"";
 		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";

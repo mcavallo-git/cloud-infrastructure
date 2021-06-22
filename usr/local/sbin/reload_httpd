@@ -34,14 +34,14 @@ else
 	else
 		# Service EXISTS locally
 		if [ -f "/etc/init.d/apache2" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
-			/etc/init.d/apache2 reload;
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
+      /etc/init.d/apache2 reload;
 		elif [ -n "$(which httpd 2>'/dev/null';)" ]; then
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
-			httpd -t && httpd -k restart;
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
+      httpd -t && httpd -k restart;
 		else
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
 		fi;
 
 	fi;

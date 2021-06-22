@@ -40,20 +40,20 @@ else
 		yum -y check-update;
 		yum -y install open-vm-tools;
 		if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
-			echo "";
-			echo "Info:  Successfully installed VMware Tools v$(vmware-toolbox-cmd -v)";
-			echo "  |";
-			echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
-			echo "";
-			echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  System reboot is required to apply change(s)";
-			read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 -r;
-			echo "";
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "";
+      echo "Info:  Successfully installed VMware Tools v$(vmware-toolbox-cmd -v)";
+      echo "  |";
+      echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
+      echo "";
+      echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  System reboot is required to apply change(s)";
+      read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+      echo "";
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         reboot now;
-			fi;
+      fi;
 		else
-			echo "Error during installation of VMware tools, exiting...";
-			EXIT_CODE=1;
+      echo "Error during installation of VMware tools, exiting...";
+      EXIT_CODE=1;
 		fi;
 	fi;
 

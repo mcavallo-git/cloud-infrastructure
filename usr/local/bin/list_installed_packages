@@ -17,16 +17,16 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
 		# Determine if argument $1 (if given) exists/is-installed as a local package
 		CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
 		if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
-			echo "Info:  Package \"${1}\" not found, locally";
-			RET_CODE=1;
+      echo "Info:  Package \"${1}\" not found, locally";
+      RET_CODE=1;
 		else
-			echo "Info:  Package \"${1}\" already exists locally";
-			RET_CODE=0;
+      echo "Info:  Package \"${1}\" already exists locally";
+      RET_CODE=0;
 		fi;
 	else
 		if [ -n "$(which yum 2>'/dev/null';)" ]; then #
-			# If this is a Fedora-based OS, list all installed packages without x86_64 & noarch extension after each
-			INSTALLED_PACKAGES=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
+      # If this is a Fedora-based OS, list all installed packages without x86_64 & noarch extension after each
+      INSTALLED_PACKAGES=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
 		fi;
 		echo "${INSTALLED_PACKAGES}";
 		RET_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above

@@ -44,7 +44,7 @@ else
 		echo "$(date +'%D  %r')   Downloading Latest version of Jenkins...";
 		WGET_LOGFILE="${LOGFILE}.wget";
 		if [ -f "${WGET_LOGFILE}" ]; then
-			rm -f "${WGET_LOGFILE}";
+      rm -f "${WGET_LOGFILE}";
 		fi;
 		DOWNLOAD_URL="https://updates.jenkins-ci.org/latest/jenkins.war";
 		wget --quiet --server-response --output-document="${JENKINS_RUNTIME_DOWNLOADED}" --output-file="${WGET_LOGFILE}" "${DOWNLOAD_URL}";
@@ -65,39 +65,39 @@ else
 		echo "";
 		echo "$(date +'%D  %r')   DOWNLOAD_FILESIZE = \"${DOWNLOAD_FILESIZE}\"";
 		if [ ! -n "${JENKINS_VERSION_DOWNLOADED}" ] || [ "${JENKINS_VERSION_DOWNLOADED}" == "" ]; then
-			echo "";
-			echo "$(date +'%D  %r')   Empty runtime detected: \"${JENKINS_RUNTIME_SYSTEM}\"";
-			echo "$(date +'%D  %r')   Reverting to previous runtime: \"${JENKINS_RUNTIME_BACKUP}\"";
+      echo "";
+      echo "$(date +'%D  %r')   Empty runtime detected: \"${JENKINS_RUNTIME_SYSTEM}\"";
+      echo "$(date +'%D  %r')   Reverting to previous runtime: \"${JENKINS_RUNTIME_BACKUP}\"";
 
 		else
-			# Compare Jenkins Versions
-			JENKINS_VERSION_SYSTEM=$(java -jar "${JENKINS_RUNTIME_SYSTEM}" --version);
-			JENKINS_VERSION_DOWNLOADED=$(java -jar "${JENKINS_RUNTIME_DOWNLOADED}" --version);
+      # Compare Jenkins Versions
+      JENKINS_VERSION_SYSTEM=$(java -jar "${JENKINS_RUNTIME_SYSTEM}" --version);
+      JENKINS_VERSION_DOWNLOADED=$(java -jar "${JENKINS_RUNTIME_DOWNLOADED}" --version);
 
-			echo "";
-			echo "$(date +'%D  %r')   JENKINS_VERSION_SYSTEM = \"${JENKINS_VERSION_SYSTEM}\"";
-			echo "$(date +'%D  %r')   JENKINS_VERSION_DOWNLOADED = \"${JENKINS_VERSION_DOWNLOADED}\"";
+      echo "";
+      echo "$(date +'%D  %r')   JENKINS_VERSION_SYSTEM = \"${JENKINS_VERSION_SYSTEM}\"";
+      echo "$(date +'%D  %r')   JENKINS_VERSION_DOWNLOADED = \"${JENKINS_VERSION_DOWNLOADED}\"";
 
-			if [ "${JENKINS_VERSION_DOWNLOADED}" == "2.185" ]; then
+      if [ "${JENKINS_VERSION_DOWNLOADED}" == "2.185" ]; then
         # Skip buggy Jenkins runtime(s)
         echo "";
         echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
         echo "$(date +'%D  %r')     |-->  Version: ${JENKINS_VERSION_DOWNLOADED}";
         echo "$(date +'%D  %r')     |-->  Reason: Has a bug (error) in its Java's SSH runtime which breaks ability to SSH into nodes as-intended (all nodes go offline)";
 
-			# elif [ "${JENKINS_VERSION_DOWNLOADED}" == "OTHER-BUGGY-VERSION" ]; then
-			# 	# Skip buggy Jenkins runtime(s)
-			# 	echo "";
-			# 	echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
-			# 	echo "$(date +'%D  %r')     |-->  Version: OTHER-BUGGY-VERSION";
-			# 	echo "$(date +'%D  %r')     |-->  Reason: Explanation of why this version is buggy and shouldn't be used in production";
+      # elif [ "${JENKINS_VERSION_DOWNLOADED}" == "OTHER-BUGGY-VERSION" ]; then
+      # 	# Skip buggy Jenkins runtime(s)
+      # 	echo "";
+      # 	echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
+      # 	echo "$(date +'%D  %r')     |-->  Version: OTHER-BUGGY-VERSION";
+      # 	echo "$(date +'%D  %r')     |-->  Reason: Explanation of why this version is buggy and shouldn't be used in production";
 
-			elif [ "${JENKINS_VERSION_SYSTEM}" == "${JENKINS_VERSION_DOWNLOADED}" ]; then
+      elif [ "${JENKINS_VERSION_SYSTEM}" == "${JENKINS_VERSION_DOWNLOADED}" ]; then
         # No update to version #
         echo "";
         echo "$(date +'%D  %r')   No update to jenkins version number detected (remained constant @ v${JENKINS_VERSION_SYSTEM})";
 
-			else
+      else
         # Install the downloaded runtime
 
         # Backup [ a Version-stamped copy ] of [ the current jenkins runtime ]
@@ -151,7 +151,7 @@ else
           sync_cloud_infrastructure --jenkins;
         fi;
 
-			fi;
+      fi;
 
 		fi;
 

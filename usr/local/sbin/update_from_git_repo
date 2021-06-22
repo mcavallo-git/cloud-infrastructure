@@ -43,12 +43,12 @@ else
 		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
 		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
 		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
-			echo "";
-			echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
-			exit 1;
+      echo "";
+      echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+      exit 1;
 		else
-			DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
-			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+      DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
+      DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
 		fi;
 
 	else
@@ -60,12 +60,12 @@ else
 		SOURCE_DIR_ERRS=$?;
 
 		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
-			#  Linux OS - Locate source directory from amongst Non-Sudo User's files
-			SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
-			SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-			DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
-			DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-			SOURCE_DIR_ERRS=$?;
+      #  Linux OS - Locate source directory from amongst Non-Sudo User's files
+      SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
+      SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+      DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
+      DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+      SOURCE_DIR_ERRS=$?;
 		fi;
 	
 	fi;
@@ -82,12 +82,12 @@ else
 		EXIT_CODE=1;
 
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
-			echo "";
-			echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
+      echo "";
+      echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
 		fi;
 		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
-			echo "";
-			echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
+      echo "";
+      echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
 		fi;
 
 	else
@@ -133,16 +133,16 @@ else
 		#   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
 		USERNAMES_MOSTCHARS=0;
 		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
-			EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
-			if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
+      EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
+      if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
         USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
-			fi;
+      fi;
 		done;
 		echo "";
 		echo "❖ Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
-			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
+      if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
         echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
         SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
         for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
@@ -169,7 +169,7 @@ else
             echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
           fi;
         done;
-			fi;
+      fi;
 		done;
 		echo "";
 

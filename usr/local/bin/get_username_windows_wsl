@@ -16,29 +16,29 @@ else
 
 		Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
 		if [ -f "${Invalid_UsersFile}" ]; then
-			rm -f "${Invalid_UsersFile}";
+      rm -f "${Invalid_UsersFile}";
 		fi;
 
 		Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
 		if [ -f "${Potential_UsersFile}" ]; then
-			rm -f "${Potential_UsersFile}";
+      rm -f "${Potential_UsersFile}";
 		fi;
 
 		WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
 		if [ -f "${Valid_UsersFile}" ]; then
-			rm -f "${Valid_UsersFile}";
+      rm -f "${Valid_UsersFile}";
 		fi;
 		
 		# Make sure required runtime(s) are installed
 		if [ -z "$(which bc 2>'/dev/null';)" ]; then
-			apt-get-update -y; apt-get install -y bc;
+      apt-get-update -y; apt-get install -y bc;
 		fi;
 
 		if [ "${1}" == "verbose" ]; then
-			echo "";
-			echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
-			echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
-			echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
+      echo "";
+      echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
+      echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
+      echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
 		fi;
 
 		find "${DIR_WIN32_USERS}" \
@@ -50,39 +50,39 @@ else
 		-not -path "${DIR_WIN32_USERS}/Public" \
 		-print0 \
 		| while IFS= read -r -d $'\0' EachUserDir; do
-			LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
-			if [ "${LastExitCode}" == "0" ]; then
+      LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
+      if [ "${LastExitCode}" == "0" ]; then
         if [ "${1}" == "verbose" ]; then echo ""; echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
         echo $(basename "${EachUserDir}") >> "${Potential_UsersFile}";
-			else
+      else
         if [ "${1}" == "verbose" ]; then echo ""; echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
         echo $(basename "${EachUserDir}") >> "${Invalid_UsersFile}";
-			fi;
+      fi;
 		done;
 		
 		if [ -f "${Potential_UsersFile}" ]; then
-			CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
+      CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
 		else
-			CountMatchedUsers="0";
+      CountMatchedUsers="0";
 		fi;
 		
 		if [ $(echo "${CountMatchedUsers} == 1" | bc) -eq 1 ]; then # Matched exactly 1 user
-			if [ "${1}" == "verbose" ]; then
+      if [ "${1}" == "verbose" ]; then
         echo "";
         echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s):";
-			fi;
-			cat "${Potential_UsersFile}";
-			exit 0;
+      fi;
+      cat "${Potential_UsersFile}";
+      exit 0;
 		elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
 
-			if [ "${1}" == "verbose" ]; then
+      if [ "${1}" == "verbose" ]; then
         echo "";
         echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s): ";
         cat "${Potential_UsersFile}";
-			fi;
+      fi;
 
-			First_WSL_User="";
-			cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
+      First_WSL_User="";
+      cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
         DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
         if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
           if [ "${1}" == "verbose" ]; then
@@ -94,25 +94,25 @@ else
             echo -n "${EachMatchedUser}" > "${WSL_HostUser_File}"; # output the first WSL user to-be-identified
           fi;
         fi;
-			done;
+      done;
 
-			if [ -f "${WSL_HostUser_File}" ]; then
+      if [ -f "${WSL_HostUser_File}" ]; then
         cat "${WSL_HostUser_File}";
-			fi;
-			if [ "${1}" == "verbose" ]; then
+      fi;
+      if [ "${1}" == "verbose" ]; then
         echo "";
-			fi;
+      fi;
 
-			exit 0;
+      exit 0;
 
 		else
-			echo "";
-			echo "Error: No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]";
-			exit 1;
+      echo "";
+      echo "Error: No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]";
+      exit 1;
 
 		fi;
 		if [ "${1}" == "verbose" ]; then
-			echo "";
+      echo "";
 		fi;
 
 	else

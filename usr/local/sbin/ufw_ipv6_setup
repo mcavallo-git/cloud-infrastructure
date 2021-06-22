@@ -38,9 +38,9 @@ else
 		#
 		ALLOW_ICMPv6_ECHO=$(cat "/etc/ufw/before6.rules" | sed --regexp-extended --quiet --expression='s/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/\0/p');
 		if [ -n "${ALLOW_ICMPv6_ECHO}" ]; then
-			echo -e "\n""IPv6 Pinging is currently ENABLED";
-			read -p "DISABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r; echo ""; # Await single keypress
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n""IPv6 Pinging is currently ENABLED";
+      read -p "DISABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r; echo ""; # Await single keypress
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         sed \
           --regexp-extended \
           --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
@@ -48,10 +48,10 @@ else
           --expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/d' \
           "/etc/ufw/before6.rules";
         RESTART_SERVICE_UFW=1;
-			fi;
+      fi;
 		else
-			echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r;
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r;
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         sed \
           --regexp-extended \
           --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
@@ -59,7 +59,7 @@ else
           --expression='/^COMMIT$/i\# Allow ICMPv6 Pinging\n-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
           "/etc/ufw/before6.rules";
         RESTART_SERVICE_UFW=1;
-			fi;
+      fi;
 		fi;
 		# ------------------------------------------------------------
 		#
@@ -68,10 +68,10 @@ else
 		#
 		ALLOW_ICMPv6_MULTICAST=$(cat "/etc/ufw/before6.rules" | sed --regexp-extended --quiet --expression='s/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/\0/p');
 		if [ -n "${ALLOW_ICMPv6_MULTICAST}" ]; then
-			echo -e "\n""IPv6 Multicast is currently ENABLED";
-			read -p "DISABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
-			echo "";
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n""IPv6 Multicast is currently ENABLED";
+      read -p "DISABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+      echo "";
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         sed \
           --regexp-extended \
           --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
@@ -79,12 +79,12 @@ else
           --expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/d' \
           "/etc/ufw/before6.rules";
         RESTART_SERVICE_UFW=1;
-			fi;
+      fi;
 		else
-			echo -e "\n""IPv6 Multicast is currently DISABLED";
-			read -p "ENABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
-			echo "";
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n""IPv6 Multicast is currently DISABLED";
+      read -p "ENABLE IPv6 Multicast, Now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+      echo "";
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         sed \
           --regexp-extended \
           --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
@@ -92,15 +92,15 @@ else
           --expression='/^COMMIT$/i\# Allow ICMPv6 Multicast\n-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
           "/etc/ufw/before6.rules";
         RESTART_SERVICE_UFW=1;
-			fi;
+      fi;
 		fi;
 		# ------------------------------------------------------------
 		# Restart necessary service(s)
 		# ------------------------------------------------------------
 		if [ ${RESTART_SERVICE_UFW} -eq 1 ]; then
-			SERVICE_NAME="ufw";
-			/usr/sbin/service "${SERVICE_NAME}" restart;
-			# /usr/sbin/service "${SERVICE_NAME}" status;
+      SERVICE_NAME="ufw";
+      /usr/sbin/service "${SERVICE_NAME}" restart;
+      # /usr/sbin/service "${SERVICE_NAME}" status;
 		fi;
 	else
 		echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";

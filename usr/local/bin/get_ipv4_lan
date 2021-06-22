@@ -62,16 +62,16 @@ elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # --------------------------
 		EACH_INET=$(echo "${EACH_LINE}" | sed -rne "${SED_INET}";);
 
 		if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
-			# If the parsed IPv4 is not a loopback IPv4, then save it
-			THIS_LAN_IPV4="${EACH_INET}";
+      # If the parsed IPv4 is not a loopback IPv4, then save it
+      THIS_LAN_IPV4="${EACH_INET}";
 
-			# Parse the Netmask & Broadcast from the ifconfig string
-			EACH_NETMASK=$(echo "${EACH_LINE}" | sed -rne "${SED_NETMASK}";);
-			EACH_BROADCAST=$(echo "${EACH_LINE}" | sed -rne "${SED_BROADCAST}";);
-			if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
+      # Parse the Netmask & Broadcast from the ifconfig string
+      EACH_NETMASK=$(echo "${EACH_LINE}" | sed -rne "${SED_NETMASK}";);
+      EACH_BROADCAST=$(echo "${EACH_LINE}" | sed -rne "${SED_BROADCAST}";);
+      if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
         THIS_LAN_NETMASK="${EACH_NETMASK}";
         THIS_LAN_BROADCAST="${EACH_BROADCAST}";
-			fi;
+      fi;
 
 		fi;
 

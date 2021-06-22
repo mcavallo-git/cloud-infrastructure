@@ -44,9 +44,9 @@ else
 
 		INDEX_RESULTS_BY="IPV4";
 		if [ -n "${2}" ]; then
-			if [ "${2}" == "-fqdn" ] || [ "${2}" == "--fqdn" ]; then
+      if [ "${2}" == "-fqdn" ] || [ "${2}" == "--fqdn" ]; then
         INDEX_RESULTS_BY="FQDN";
-			fi;
+      fi;
 		fi;
 
 		# [Re-]Instantiate bash array via unset + declare
@@ -55,23 +55,23 @@ else
 
 		# Resolved IPv4 addresses for given domain ( as ${1} )
 		curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | sort | while read EACH_LINE; do
-			EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
-			EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
-			test -v ARR_IPV4_IDX["${EACH_IPV4}"] && ARR_IPV4_IDX+=(["${EACH_IPV4}"]+=", ");
-			test -v ARR_IPV4_IDX["${EACH_FQDN}"] && ARR_IPV4_IDX+=(["${EACH_FQDN}"]+=", ");
-			ARR_FQDN_IDX+=(["${EACH_FQDN}"]+="${EACH_IPV4}");
-			ARR_IPV4_IDX+=(["${EACH_IPV4}"]+="${EACH_FQDN}");
+      EACH_FQDN=$(echo ${EACH_LINE} | cut -d, -f 1;);
+      EACH_IPV4=$(echo ${EACH_LINE} | cut -d, -f 2;);
+      test -v ARR_IPV4_IDX["${EACH_IPV4}"] && ARR_IPV4_IDX+=(["${EACH_IPV4}"]+=", ");
+      test -v ARR_IPV4_IDX["${EACH_FQDN}"] && ARR_IPV4_IDX+=(["${EACH_FQDN}"]+=", ");
+      ARR_FQDN_IDX+=(["${EACH_FQDN}"]+="${EACH_IPV4}");
+      ARR_IPV4_IDX+=(["${EACH_IPV4}"]+="${EACH_FQDN}");
 		done;
 
 		# Sort the table by IPv4 address
 		ROLLBACK_IFS="${IFS}";
 		IFS=$'\n'; # Set the global delimiter
 		if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
-			# Group & Sort by FQDN
-			ARR_SORTED_RESULTS=($(sort <<<"${!ARR_FQDN_IDX[*]}"));
+      # Group & Sort by FQDN
+      ARR_SORTED_RESULTS=($(sort <<<"${!ARR_FQDN_IDX[*]}"));
 		else
-			# Group & Sort by IPv4
-			ARR_SORTED_RESULTS=($(sort <<<"${!ARR_IPV4_IDX[*]}"));
+      # Group & Sort by IPv4
+      ARR_SORTED_RESULTS=($(sort <<<"${!ARR_IPV4_IDX[*]}"));
 		fi;
 		IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
@@ -80,15 +80,15 @@ else
 		echo "   IPv4            | FQDN              ";
 		echo "  -----------------|-------------------";
 		for EACH_KEY in "${ARR_SORTED_RESULTS[@]}"; do
-			# if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
-			# 	EACH_VAL="${ARR_FQDN_IDX[${EACH_KEY}]}";
-			# else
+      # if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
+      # 	EACH_VAL="${ARR_FQDN_IDX[${EACH_KEY}]}";
+      # else
         EACH_VAL="${ARR_IPV4_IDX[${EACH_KEY}]}";
-			# fi;
-			EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
-			EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
-			echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
-			echo "                   | ";
+      # fi;
+      EACH_KEY_RPAD="${EACH_KEY}$(printf %15s;)";
+      EACH_KEY_RPAD="${EACH_KEY_RPAD:0:15}";
+      echo "   ${EACH_KEY_RPAD} | ${EACH_VAL}";
+      echo "                   | ";
 		done;
 		echo "";
 

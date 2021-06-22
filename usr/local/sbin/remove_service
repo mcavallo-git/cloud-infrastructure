@@ -45,28 +45,28 @@ else
 
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing service \"${SERVICE_NAME}\"...";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing service \"${SERVICE_NAME}\"...";
 
-			# Stop the service
-			/usr/sbin/service "${SERVICE_NAME}" stop;
+      # Stop the service
+      /usr/sbin/service "${SERVICE_NAME}" stop;
 
-			# Disable the service from attempting to start
-			/usr/sbin/service "${SERVICE_NAME}" disable;
+      # Disable the service from attempting to start
+      /usr/sbin/service "${SERVICE_NAME}" disable;
 
-			# Remove any files which auto-start the service
-			if [ -f "/etc/systemd/system/${SERVICE_NAME}" ]; then
+      # Remove any files which auto-start the service
+      if [ -f "/etc/systemd/system/${SERVICE_NAME}" ]; then
         rm "/etc/systemd/system/${SERVICE_NAME}";
-			fi;
+      fi;
 
-			# Reload systemd manager configurations
-			/bin/systemctl daemon-reload;
+      # Reload systemd manager configurations
+      /bin/systemctl daemon-reload;
 
-			# Reset the 'failed' state of all services
-			/bin/systemctl reset-failed;
+      # Reset the 'failed' state of all services
+      /bin/systemctl reset-failed;
 
 		else
 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
 
 		fi;
 

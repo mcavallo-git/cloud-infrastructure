@@ -56,36 +56,36 @@ else
 
 		# Check if this is the last inline-argument or if there are more to follow
 		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
-			NEXT_ARG="";
+      NEXT_ARG="";
 		else
-			NEXT_ARG=${ARGS[$((${i}+1))]};
-			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+      NEXT_ARG=${ARGS[$((${i}+1))]};
+      if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
-			fi;
+      fi;
 		fi;
 
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-			# Parse inline hostname
-			if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
+      # Parse inline hostname
+      if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
         NEXT_ARG="${EACH_ARG}";
         EACH_ARG="--hostname";
-			fi;
+      fi;
 
-			if [ "${EACH_ARG}" == "--wan" ]; then # --force
+      if [ "${EACH_ARG}" == "--wan" ]; then # --force
         USE_WAN_IPV4=1;
-			fi;
+      fi;
 
-			# Static-IP
-			if [ "${EACH_ARG}" == "--static-ip" ]; then
+      # Static-IP
+      if [ "${EACH_ARG}" == "--static-ip" ]; then
         USE_STATIC_IPV4=1;
         if [ -n "${NEXT_ARG}" ]; then
           SET_STATIC_IPV4="${NEXT_ARG}";
         fi;
-			fi;
+      fi;
 
-			# Domain Name
-			if [ "${EACH_ARG}" == "--domain" ]; then
+      # Domain Name
+      if [ "${EACH_ARG}" == "--domain" ]; then
         USE_SEARCH_DOMAIN=1;
         if [ -n "${NEXT_ARG}" ]; then
           DNS_SEARCH_DOMAIN="${NEXT_ARG}";
@@ -93,37 +93,37 @@ else
           echo "Error:  Must specify domain-name to set after argument --domain, e.g. use syntax [ --domain DOMAIN.TLD ]";
           exit 1;
         fi;
-			fi;
+      fi;
 
-			# Primary DNS Server (#1)
-			if [ "${EACH_ARG}" == "--dns1" ]; then
+      # Primary DNS Server (#1)
+      if [ "${EACH_ARG}" == "--dns1" ]; then
         if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_1="${NEXT_ARG}";
         else
           echo "Error:  Must specify dns hostname / IPv4 --dns1, e.g. use syntax [ --dns1 I.P.V.4 ]";
           exit 1;
         fi;
-			fi;
+      fi;
 
-			# Secondary DNS Server (#2)
-			if [ "${EACH_ARG}" == "--dns2" ]; then
+      # Secondary DNS Server (#2)
+      if [ "${EACH_ARG}" == "--dns2" ]; then
         if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_2="${NEXT_ARG}";
         else
           echo "Error:  Must specify dns hostname / IPv4 --dns2, e.g. use syntax [ --dns2 I.P.V.4 ]";
           exit 1;
         fi;
-			fi;
+      fi;
 
-			# Tertiary DNS Server (#3)
-			if [ "${EACH_ARG}" == "--dns3" ]; then
+      # Tertiary DNS Server (#3)
+      if [ "${EACH_ARG}" == "--dns3" ]; then
         if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_3="${NEXT_ARG}";
         else
           echo "Error:  Must specify dns hostname / IPv4 --dns3, e.g. use syntax [ --dns3 I.P.V.4 ]";
           exit 1;
         fi;
-			fi;
+      fi;
 
 		fi;
 	done;
@@ -136,7 +136,7 @@ else
 		#
 		DNSV4_SERVERS=$(nmcli device show | grep 'IP4.DNS' | awk '{print $2}');
 		if [ -n "${DNSV4_SERVERS}" ]; then
-			for EACH_DNSV4_SERVER in ${DNSV4_SERVERS}; do
+      for EACH_DNSV4_SERVER in ${DNSV4_SERVERS}; do
         if [ -z "${DHCP_NAMESRVR_1}" ]; then
           DHCP_NAMESRVR_1="${EACH_DNSV4_SERVER}"; # Set primary DNS Server
         elif [ -z "${DHCP_NAMESRVR_2}" ]; then
@@ -144,7 +144,7 @@ else
         elif [ -z "${DHCP_NAMESRVR_3}" ]; then
           DHCP_NAMESRVR_3="${EACH_DNSV4_SERVER}"; # Set tertiary DNS Server
         fi;
-			done;
+      done;
 		fi;
 	fi;
 
@@ -221,52 +221,52 @@ else
 	elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 
-			#
-			# Required package:
-			#   resolvconf
-			#
-			# Method(s) used:
-			#   > resolvconf   ### manage nameserver information
-			#
-			REQUIRED_PACKAGE_NAME="resolvconf";
-			REQUIRED_METHOD_NAME="resolvconf";
-			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+      #
+      # Required package:
+      #   resolvconf
+      #
+      # Method(s) used:
+      #   > resolvconf   ### manage nameserver information
+      #
+      REQUIRED_PACKAGE_NAME="resolvconf";
+      REQUIRED_METHOD_NAME="resolvconf";
+      if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
         echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
-			else
+      else
         echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
         echo -e "\n""Info:  Please install required package via:";
         echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
         echo ""; exit 1;
-			fi;
+      fi;
 
-			#
-			# Required package:
-			#   ifupdown
-			#
-			# Method(s) used:
-			#   > ifup        ### bring a network interface up
-			#   > ifdown      ### take a network interface down
-			#
-			REQUIRED_PACKAGE_NAME="ifupdown";
-			REQUIRED_METHOD_NAME="ifup";
-			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+      #
+      # Required package:
+      #   ifupdown
+      #
+      # Method(s) used:
+      #   > ifup        ### bring a network interface up
+      #   > ifdown      ### take a network interface down
+      #
+      REQUIRED_PACKAGE_NAME="ifupdown";
+      REQUIRED_METHOD_NAME="ifup";
+      if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
         echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
         echo -e "\n""Info:  Please install required package via:";
         echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
         echo ""; exit 1;
-			fi;
-			REQUIRED_PACKAGE_NAME="ifupdown";
-			REQUIRED_METHOD_NAME="ifdown";
-			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
+      fi;
+      REQUIRED_PACKAGE_NAME="ifupdown";
+      REQUIRED_METHOD_NAME="ifdown";
+      if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
         echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
         echo -e "\n""Info:  Please install required package via:";
         echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
         echo ""; exit 1;
-			fi;
+      fi;
 
 		else
-			echo "Error:  Linux kernel/distro not supported";
-			exit 1;
+      echo "Error:  Linux kernel/distro not supported";
+      exit 1;
 		fi;
 	fi;
 
@@ -286,12 +286,12 @@ else
 
 		if [ ! -f "${NMCLI_CONF}" ]; then 
 
-			echo "ERROR: DNS Config-File not found @ path \"${NMCLI_CONF}\" - exiting...";
-			exit 1;
+      echo "ERROR: DNS Config-File not found @ path \"${NMCLI_CONF}\" - exiting...";
+      exit 1;
 
 		else
 
-			if [ ${USE_STATIC_IPV4} -eq 1 ]; then
+      if [ ${USE_STATIC_IPV4} -eq 1 ]; then
 
         if [ -z "${SET_STATIC_IPV4}" ]; then
           SET_STATIC_IPV4="${THIS_LAN_IPV4}";
@@ -395,11 +395,11 @@ else
 
           # ------------------------------------------------------------
         fi;
-			fi;
+      fi;
 
 
-			# Set DNS Nameserver(s)
-			if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
+      # Set DNS Nameserver(s)
+      if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
         echo -e "\n";
         echo "Info: Request to set DNS NameServers to \"${DNS_NAMESRVR_1}\" (Primary) & \"${DNS_NAMESRVR_2}\" (Secondary)";
         read -p "  |--> Set DNS Nameservers, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
@@ -445,19 +445,19 @@ else
 
           # ------------------------------------------------------------
         fi;
-			fi;
+      fi;
 
-			echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; /etc/init.d/network restart; ] )";
-			read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; /etc/init.d/network restart; ] )";
+      read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "\n""Info:  Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
         nmcli connection reload;
         /etc/init.d/network restart;
         # service NetworkManager restart;
-			else
+      else
         echo -e "\n""Info:  Postponing NetworkManager restart";
         exit 1;
-			fi;
+      fi;
 
 		fi;
 
@@ -472,32 +472,32 @@ else
 		FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_BASE}";
 		FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_TAIL}";
 		if [ "${IS_WINDOWS_WSL}" == "1" ]; then
-			FILE_NETWORK_RESOLVER="${ETC_RESOLVCONF}"; # Windows subsystem for linux - wipe all of resolver (for testing-only as it is rebuilt on WSL-close, or 'shut down' from its perspective)
+      FILE_NETWORK_RESOLVER="${ETC_RESOLVCONF}"; # Windows subsystem for linux - wipe all of resolver (for testing-only as it is rebuilt on WSL-close, or 'shut down' from its perspective)
 		fi;
 
 		# Backup-filepaths
 		BACKUP_CONFIGS_DIR="/root/backup/update_dns_config";
 		OLD_BACKUP_CONFIGS_DIR="/root/backup_network_configs";
 		if [ -d "${OLD_BACKUP_CONFIGS_DIR}" ]; then
-			mkdir -p $(dirname "${BACKUP_CONFIGS_DIR}");
-			mv "${OLD_BACKUP_CONFIGS_DIR}" "${BACKUP_CONFIGS_DIR}";
+      mkdir -p $(dirname "${BACKUP_CONFIGS_DIR}");
+      mv "${OLD_BACKUP_CONFIGS_DIR}" "${BACKUP_CONFIGS_DIR}";
 		else
-			mkdir -p "${BACKUP_CONFIGS_DIR}";
+      mkdir -p "${BACKUP_CONFIGS_DIR}";
 		fi;
 		chmod 700 "${BACKUP_CONFIGS_DIR}"; chown "root:root" "${BACKUP_CONFIGS_DIR}";
 
 		# Backup necesarry config file(s), if-existent
 		FILE_TO_BACKUP="${ETC_RESOLVCONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
-			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
-			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
+      BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
+      echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
+      cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 		FILE_TO_BACKUP="${DEBIAN_NETWORK_CONF}";
 		if [ -f "${FILE_TO_BACKUP}" ]; then
-			BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
-			echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
-			cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
+      BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
+      echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
+      cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
 		fi;
 
 		# Setup the nameserver info to make it (eventually) into resolv.conf
@@ -510,49 +510,49 @@ else
 
 		if [ "${IS_WINDOWS_WSL}" != "1" ]; then
 
-			# show "${ETC_RESOLVCONF}" file (configuration before-start)
-			echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
-			echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
+      # show "${ETC_RESOLVCONF}" file (configuration before-start)
+      echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
+      echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
 
-			# show DNS_NAMESRVR_1,2,3 & Domain-search vars
-			echo -e "\n""Info:  Attempting to configure $(hostname) to use the following DNS Next-Hops:";
-			echo "${DASHES}";
-			echo "DNS_NAMESRVR_1 = \"${DNS_NAMESRVR_1}\"";
-			echo "DNS_NAMESRVR_2 = \"${DNS_NAMESRVR_2}\"";
-			echo "DNS_NAMESRVR_3 = \"${DNS_NAMESRVR_3}\"";
-			echo "DNS_SEARCH_DOMAIN = \"${DNS_SEARCH_DOMAIN}\"";
-			echo "${DASHES}";
+      # show DNS_NAMESRVR_1,2,3 & Domain-search vars
+      echo -e "\n""Info:  Attempting to configure $(hostname) to use the following DNS Next-Hops:";
+      echo "${DASHES}";
+      echo "DNS_NAMESRVR_1 = \"${DNS_NAMESRVR_1}\"";
+      echo "DNS_NAMESRVR_2 = \"${DNS_NAMESRVR_2}\"";
+      echo "DNS_NAMESRVR_3 = \"${DNS_NAMESRVR_3}\"";
+      echo "DNS_SEARCH_DOMAIN = \"${DNS_SEARCH_DOMAIN}\"";
+      echo "${DASHES}";
 
-			# Create the eth0 config file (if it is a valid filepath yet doesnt exist)
-			if [ -n "${DEBIAN_NETWORK_CONF}" ] && [ ! -f "${DEBIAN_NETWORK_CONF}" ]; then
+      # Create the eth0 config file (if it is a valid filepath yet doesnt exist)
+      if [ -n "${DEBIAN_NETWORK_CONF}" ] && [ ! -f "${DEBIAN_NETWORK_CONF}" ]; then
         echo -e "\n""Info:  Calling [echo \"\" > \"${DEBIAN_NETWORK_CONF}\";]...";
         echo "" > "${DEBIAN_NETWORK_CONF}";
-			fi;
+      fi;
 
-			THIS_HYPERVISOR="/sys/hypervisor/uuid";
-			AWS_HV_STARTS_WITH="ec2";
-			if [ ! -v DNS_SEARCH_DOMAIN ] && [ -f "${THIS_HYPERVISOR}" ]; then
+      THIS_HYPERVISOR="/sys/hypervisor/uuid";
+      AWS_HV_STARTS_WITH="ec2";
+      if [ ! -v DNS_SEARCH_DOMAIN ] && [ -f "${THIS_HYPERVISOR}" ]; then
         if [[ "$(cat ${THIS_HYPERVISOR})" == "${AWS_HV_STARTS_WITH}"* ]] && [ -n "${DOMAIN}" ]; then
           DNS_SEARCH_DOMAIN="${DOMAIN}";
         fi;
-			fi;
+      fi;
 
-			DNS_LOOKUP_1=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_1});
-			DNS_LOOKUP_2=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_2});
-			DNS_LOOKUP_3=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_3});
+      DNS_LOOKUP_1=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_1});
+      DNS_LOOKUP_2=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_2});
+      DNS_LOOKUP_3=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_3});
 
-			REFRESH_DNS_FILE="0";
+      REFRESH_DNS_FILE="0";
 
-			ACTION_DOMAIN_RESOLUTION="";
-			DOMAIN_RESOLUTION_CONFIGURED="$(cat ${DEBIAN_NETWORK_CONF} | grep 'search ')";
-			if [ -n "${DNS_SEARCH_DOMAIN}" ]; then
+      ACTION_DOMAIN_RESOLUTION="";
+      DOMAIN_RESOLUTION_CONFIGURED="$(cat ${DEBIAN_NETWORK_CONF} | grep 'search ')";
+      if [ -n "${DNS_SEARCH_DOMAIN}" ]; then
         DOMAIN_RESOLUTION_CONFIGURED="$(echo ${DOMAIN_RESOLUTION_CONFIGURED} | grep ${DNS_SEARCH_DOMAIN};)";
         if [ ! -n "${DOMAIN_RESOLUTION_CONFIGURED}" ]; then
           ACTION_DOMAIN_RESOLUTION="SET"; # Need to configure local domain-name resolution
         fi;
-			fi;
+      fi;
 
-			if [ ${USE_STATIC_IPV4} -eq 1 ]; then
+      if [ ${USE_STATIC_IPV4} -eq 1 ]; then
         if [ -z "${SET_STATIC_IPV4}" ]; then
           SET_STATIC_IPV4="${THIS_LAN_IPV4}";
         fi;
@@ -593,13 +593,13 @@ else
             echo "static domain_name_servers=${DNS_NAMESRVR_1}" >> "${ETC_DHCPCD_CONF}";
           fi;
         fi;
-			fi;
+      fi;
 
-			if [ -n "${DNS_LOOKUP_1}" ] && [ -n "${DNS_LOOKUP_2}" ] && [ -n "${DNS_LOOKUP_3}" ] && [ -n "${ACTION_DOMAIN_RESOLUTION}" ]; then # all variables are not null
+      if [ -n "${DNS_LOOKUP_1}" ] && [ -n "${DNS_LOOKUP_2}" ] && [ -n "${DNS_LOOKUP_3}" ] && [ -n "${ACTION_DOMAIN_RESOLUTION}" ]; then # all variables are not null
 
         echo -e "\n""Info:  \"${DEBIAN_NETWORK_CONF}\"'s DNS settings are up-to-date";
         
-			else # at least one DNS-IP/Hostname is missing
+      else # at least one DNS-IP/Hostname is missing
 
         echo -e "\n""Info:  Updating DNS Servers which build out of file \"${DEBIAN_NETWORK_CONF}\"";
         
@@ -636,12 +636,12 @@ else
         
         REFRESH_DNS_FILE="1";
 
-			fi;
+      fi;
 
-			SystemResolveConf="/etc/systemd/resolved.conf";
-			SystemNetworkConfDir="/etc/systemd/network";
+      SystemResolveConf="/etc/systemd/resolved.conf";
+      SystemNetworkConfDir="/etc/systemd/network";
 
-			if [ -f "${SystemResolveConf}" ]; then
+      if [ -f "${SystemResolveConf}" ]; then
 
         echo "Updating Hostname-Resolving Service \"systemd-resolve\" via associated config-file \"${SystemResolveConf}\" ...";
         CAN_USE_SYSRESOLVE_STATUS="$(systemd-resolve --help | grep status)";
@@ -673,10 +673,10 @@ else
           done;
         fi;
         REFRESH_DNS_FILE="1";
-			fi;
+      fi;
 
 
-			if [ "${REFRESH_DNS_FILE}" == "1" ]; then
+      if [ "${REFRESH_DNS_FILE}" == "1" ]; then
         # Take down the main network interface & bring it back up (in one statement)
         echo -e "\n""Info:  Calling [ ifdown -a && ifup -a; ] (takes down the main network interface & bring it back up, in one statement)...";
         echo "${DASHES}"; ifdown -a && ifup -a; echo "${DASHES}";
@@ -712,7 +712,7 @@ else
             echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
           fi;
         fi;
-			fi;
+      fi;
 
 		fi;
 	

@@ -50,20 +50,20 @@ else
 		JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
 
 		if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
-			echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
-			exit 1;
+      echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
+      exit 1;
 
 		else # good to go - begin deleting dirs
 
-			FIND_PARENT="${JENKINS_UHOME}/jobs/";
-			FIND_REGEX="^${FIND_PARENT}.+/builds/[0-9]+$";
+      FIND_PARENT="${JENKINS_UHOME}/jobs/";
+      FIND_REGEX="^${FIND_PARENT}.+/builds/[0-9]+$";
 
-			echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
-			echo "  File hasn't been modified for at least ${MAX_AGE_DAYS} days";
-			echo "  Filepath starts with: \"${FIND_PARENT}\"";
-			echo "  Filepath matches regex: \"${FIND_REGEX}\"...";
+      echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
+      echo "  File hasn't been modified for at least ${MAX_AGE_DAYS} days";
+      echo "  Filepath starts with: \"${FIND_PARENT}\"";
+      echo "  Filepath matches regex: \"${FIND_REGEX}\"...";
 
-			find "${FIND_PARENT}" \
+      find "${FIND_PARENT}" \
         -maxdepth 3 \
         -type d \
         -regex "${FIND_REGEX}" \

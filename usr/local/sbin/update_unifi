@@ -34,29 +34,29 @@ else
 
 		if [ 1 -eq 1 ]; then
 
-			# Update Unifi Controller (via Bash convenience script)
-			SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";
-			FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
-			SOURCE_URL="${FALLBACK_URL}";
-			TMP_FILE="/tmp/unifi-update.sh";
-			echo "";
-			echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
-			mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
+      # Update Unifi Controller (via Bash convenience script)
+      SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";
+      FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
+      SOURCE_URL="${FALLBACK_URL}";
+      TMP_FILE="/tmp/unifi-update.sh";
+      echo "";
+      echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
+      mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
 
 		else
 
-			# Update UniFi
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ apt-get update -y; ]...";
-			apt-get update -y;
+      # Update UniFi
+      echo "";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ apt-get update -y; ]...";
+      apt-get update -y;
 
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
-			echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
+      echo "";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
+      echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
 
-			echo "";
-			echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
-			DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
+      echo "";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
+      DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
 
 		fi;
 

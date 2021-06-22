@@ -29,19 +29,19 @@ for GROUP_ROW in $(cat "/etc/group"); do
 
 	# Specifies a group name that is unique on the system. # See the mkgroup command for information on the restrictions for naming groups.
 	THIS_GNAME=$( echo "${GROUP_ROW}" | awk -F":" "{print \$1}" );
-			# echo "${THIS_GNAME}";
+      # echo "${THIS_GNAME}";
 
 	# Not used. # Group administrators are provided instead of group passwords. # See the /etc/security/group file for more information.
 	THIS_GADMINS=$( echo "${GROUP_ROW}" | awk -F":" "{print \$2}" );
-			# echo "${THIS_GADMINS}";
+      # echo "${THIS_GADMINS}";
 	
 	# Specifies the group ID. # The value is a unique decimal integer string. # The maximum value is 4,294,967,295 (4 GB).
 	THIS_GID=$( echo "${GROUP_ROW}" | awk -F":" "{print \$3}" );
-			# echo "${THIS_GID}";
+      # echo "${THIS_GID}";
 
 	# Identifies a list of one or more users. # Separate group member names with commas. # Each user must already be defined in the local database configuration files.
 	THIS_USERLIST=$( echo "${GROUP_ROW}" | awk -F":" "{print \$4}" | tr "," " " );
-			# echo "${THIS_USERLIST}";
+      # echo "${THIS_USERLIST}";
 	
 	# Save the converted group-id fresh from "/etc/group"
 	if [ "${THIS_GNAME}" == "${TARGET_GROUP_GNAME}" ]; then
@@ -54,13 +54,13 @@ for GROUP_ROW in $(cat "/etc/group"); do
 	for EACH_MEMBER in "${THIS_USERLIST_NO_DUPES[@]}"; do
 	{
 		if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
-			USER_LIST_GNAMES+=("${THIS_GNAME}");
+      USER_LIST_GNAMES+=("${THIS_GNAME}");
 		fi;
 		if [ "${THIS_GNAME}" == "${TARGET_GROUP_GNAME}" ]; then
-			GROUP_LIST_UNAMES+=("${EACH_MEMBER}");
-			if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
+      GROUP_LIST_UNAMES+=("${EACH_MEMBER}");
+      if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
         IS_USER_IN_GROUP="YES";
-			fi;
+      fi;
 		fi;
 	} done;
 
@@ -90,10 +90,10 @@ for USER_ROW in $(cat "/etc/passwd"); do
 		TARGET_USER_UID="${THIS_UID}";
 		TARGET_USER_GID="${THIS_GID}";
 		if [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
-			# Target-User ($1) actually has their default/primary group set to the same value as the target usergroup ($2)
-			#   |--> Note that this logic does NOT flow in reverse, e.g. the user may not even be a member of his/her DEFAULT usergroup
-			USER_LIST_GNAMES+=("${TARGET_GROUP_GNAME}");
-			IS_USER_IN_GROUP="YES";
+      # Target-User ($1) actually has their default/primary group set to the same value as the target usergroup ($2)
+      #   |--> Note that this logic does NOT flow in reverse, e.g. the user may not even be a member of his/her DEFAULT usergroup
+      USER_LIST_GNAMES+=("${TARGET_GROUP_GNAME}");
+      IS_USER_IN_GROUP="YES";
 		fi;
 	fi;
 
@@ -109,7 +109,7 @@ for GROUP_ROW in $(cat "/etc/group"); do
 	if [ -n "${TARGET_USER_GID}" ] && [ "${THIS_GID}" == "${TARGET_USER_GID}" ]; then
 		USER_LIST_GNAMES+=("${THIS_GNAME}");
 		if [ -n "${TARGET_GROUP_GID}" ] && [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
-			IS_USER_IN_GROUP="YES";
+      IS_USER_IN_GROUP="YES";
 		fi;
 	fi;
 }; done;

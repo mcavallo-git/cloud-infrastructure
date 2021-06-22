@@ -44,7 +44,7 @@ else
 		read -p " Create a user with what username?   " -t 60 -r;
 		USER_NAME="${REPLY}";
 		if [ -n "${USER_NAME}" ]; then
-			break;
+      break;
 		fi;
 	done;
 
@@ -96,19 +96,19 @@ else
 		exit 1;
 
 	elif [[ -v USER_NAME ]] \
-			&& [[ -v USER_UID ]] \
-			&& [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
-			&& [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
-			&& [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
+      && [[ -v USER_UID ]] \
+      && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
+      && [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
+      && [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
 
 	elif [[ -v USER_GNAME ]] \
-			&& [[ -v USER_GID ]] \
-			&& [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
-			&& [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
-			&& [ "$(getent group ${USER_GID} | cut -d: -f1;)" != "${USER_GNAME}" ]; then
+      && [[ -v USER_GID ]] \
+      && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
+      && [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
+      && [ "$(getent group ${USER_GID} | cut -d: -f1;)" != "${USER_GNAME}" ]; then
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
 		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
 		exit 1;
@@ -125,8 +125,8 @@ else
 		# GROUP-CREATION
 
 		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
-			# Non System Users
-			if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
+      # Non System Users
+      if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
         # Group-Add Command
         GROUPADD_ARR=(groupadd);
         # Group-ID
@@ -139,7 +139,7 @@ else
         echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
         ${GROUPADD_ARR[@]};
         USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
-			fi;
+      fi;
 		fi;
 
 		# ------------------------------------------------------------
@@ -149,39 +149,39 @@ else
 
 		# User Home-Directory
 		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
-			USERADD_ARR+=(--home-dir "${DIR_USER_HOME}");
+      USERADD_ARR+=(--home-dir "${DIR_USER_HOME}");
 		fi;
 
 		# Create Home-Directory (y/n)
 		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
-			USERADD_ARR+=(--create-home);
+      USERADD_ARR+=(--create-home);
 		fi;
 
 		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
-			# System Users
-			USERADD_ARR+=(--system);
+      # System Users
+      USERADD_ARR+=(--system);
 
 
 		else
-			# Non System Users
+      # Non System Users
 		
-			# User ID
-			if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
+      # User ID
+      if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
         USERADD_ARR+=(--uid ${USER_UID});
-			fi;
+      fi;
 
-			# User Default Group (Group-ID/Group-Name)
-			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+      # User Default Group (Group-ID/Group-Name)
+      if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
         USERADD_ARR+=(--gid ${USER_GID});
-			elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
+      elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
         USERADD_ARR+=(--gid "${USER_GNAME}");
-			fi;
+      fi;
 
 		fi;
 
 		# User Shell
 		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
-			USERADD_ARR+=(--shell "${USER_SHELL}");
+      USERADD_ARR+=(--shell "${USER_SHELL}");
 		fi;
 
 		USERADD_ARR+=("${USER_NAME}");
@@ -200,33 +200,33 @@ else
 		# Make user a sudoer (able to run as root using 'sudo' command)
 		if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then
 
-			# Add user to the "sudo" usergroup (if not already in it)
-			SUDO_GROUP="sudo";
-			if [ -f "/usr/local/sbin/is_user_in_group" ] && [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
+      # Add user to the "sudo" usergroup (if not already in it)
+      SUDO_GROUP="sudo";
+      if [ -f "/usr/local/sbin/is_user_in_group" ] && [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
         usermod --append --groups "${SUDO_GROUP}" "${USER_NAME}";
-			fi;
+      fi;
 
-			# Add user-named-file into the sudoer.d directory to strengthen logins (and get away from typed passwords)
-			SUDOER_FILEPATH="/etc/sudoers.d/${USER_NAME}";
-			if [ "${SUDO_REQUIRES_PASS}" == "0" ]; then
+      # Add user-named-file into the sudoer.d directory to strengthen logins (and get away from typed passwords)
+      SUDOER_FILEPATH="/etc/sudoers.d/${USER_NAME}";
+      if [ "${SUDO_REQUIRES_PASS}" == "0" ]; then
         # Choice 1/2: No password required for user to run 'sudo' commands
         echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "${SUDOER_FILEPATH}";
         chmod 440 "${SUDOER_FILEPATH}";
-			else
+      else
         # Choice 2/2: Require a password when user runs 'sudo' commands
         echo "${USER_NAME} ALL=(ALL) ALL" > "${SUDOER_FILEPATH}";
         chmod 440 "${SUDOER_FILEPATH}";
-			fi;
+      fi;
 
-			# Refer to "/etc/ssh/sshd_config" for more-advanced SSH config
+      # Refer to "/etc/ssh/sshd_config" for more-advanced SSH config
 
 		fi;
 
 
 		if [ "${SET_USER_PASSWORD}" != "0" ]; then
-			passwd "${USER_NAME}";
-			#				[Enter password] > ENTER
-			#			[Confirm password] > ENTER
+      passwd "${USER_NAME}";
+      #				[Enter password] > ENTER
+      #			[Confirm password] > ENTER
 		fi;
 
 		echo -e "\n ==---  New User Stats  ---===";

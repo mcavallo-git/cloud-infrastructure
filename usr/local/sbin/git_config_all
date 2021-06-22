@@ -57,26 +57,26 @@ else
 		2>"/dev/null" \
 		| while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
-			EACH_GIT_WIN32=$(realpath "${EACH_GIT_EXE}");
-			EACH_GIT_LINUX=""; MM="${EACH_GIT_WIN32/C:/\/c}"; MM="${MM//\\/\/}"; EACH_GIT_LINUX=$(realpath "${MM}");
-			GIT_EXE_ALREADY_NOTED=$(cat "${ALL_GIT_EXE_PATHS}" | grep "${EACH_GIT_LINUX}");
-			if [ ! -n "${GIT_EXE_ALREADY_NOTED}" ]; then
+      EACH_GIT_WIN32=$(realpath "${EACH_GIT_EXE}");
+      EACH_GIT_LINUX=""; MM="${EACH_GIT_WIN32/C:/\/c}"; MM="${MM//\\/\/}"; EACH_GIT_LINUX=$(realpath "${MM}");
+      GIT_EXE_ALREADY_NOTED=$(cat "${ALL_GIT_EXE_PATHS}" | grep "${EACH_GIT_LINUX}");
+      if [ ! -n "${GIT_EXE_ALREADY_NOTED}" ]; then
         echo "${EACH_GIT_LINUX}" >> "${ALL_GIT_EXE_PATHS}";
-			fi;
+      fi;
 
-			SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-			SYSTEM_CONF_LINUX=""; MM="${SYSTEM_CONF_PATH/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX=$(realpath "${MM}");
-			SYSTEM_ALREADY_NOTED=$(cat "${ALL_SYSTEM_CONFIGS}" | grep "${SYSTEM_CONF_LINUX}");
-			if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
+      SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+      SYSTEM_CONF_LINUX=""; MM="${SYSTEM_CONF_PATH/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX=$(realpath "${MM}");
+      SYSTEM_ALREADY_NOTED=$(cat "${ALL_SYSTEM_CONFIGS}" | grep "${SYSTEM_CONF_LINUX}");
+      if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
         echo "${SYSTEM_CONF_LINUX}" >> "${ALL_SYSTEM_CONFIGS}";
-			fi;
+      fi;
 
-			GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-			GLOBAL_CONF_LINUX=""; MM="${GLOBAL_CONF_PATH/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX=$(realpath "${MM}");
-			GLOBAL_ALREADY_NOTED=$(cat "${ALL_GLOBAL_CONFIGS}" | grep "${GLOBAL_CONF_LINUX}");
-			if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
+      GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+      GLOBAL_CONF_LINUX=""; MM="${GLOBAL_CONF_PATH/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX=$(realpath "${MM}");
+      GLOBAL_ALREADY_NOTED=$(cat "${ALL_GLOBAL_CONFIGS}" | grep "${GLOBAL_CONF_LINUX}");
+      if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
         echo "${GLOBAL_CONF_LINUX}" >> "${ALL_GLOBAL_CONFIGS}";
-			fi;
+      fi;
 
 		done;
 	done;
@@ -119,16 +119,16 @@ else
 		echo "  |";
 		echo "  |--> Key: [$1]";
 		for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
-			# Show git config-value (BEFORE update)
-			GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
-			if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
-			echo "  |";
-			echo "  |----> File: \"${EACH_CONFIG}\"";
-			echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
-			if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
+      # Show git config-value (BEFORE update)
+      GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
+      if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+      echo "  |";
+      echo "  |----> File: \"${EACH_CONFIG}\"";
+      echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
+      if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
         # Config-value is already up-to-date
         echo "  |------> ✓ Already up-to-date";
-			else
+      else
         # Perform update on git config-value
         if [ "$2" == "--unset" ]; then
           git config --file "${EACH_CONFIG}" --unset "$1";
@@ -139,7 +139,7 @@ else
         GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
         if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
         echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
-			fi;
+      fi;
 		done;
 
 		# ------------------------------------------------------------
@@ -150,16 +150,16 @@ else
 		echo "  |";
 		echo "  |--> Key: [$1]";
 		for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
-			# Show git config-value (BEFORE update)
-			GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
-			if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
-			echo "  |";
-			echo "  |----> File: \"${EACH_CONFIG}\"";
-			echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
-			if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
+      # Show git config-value (BEFORE update)
+      GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
+      if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
+      echo "  |";
+      echo "  |----> File: \"${EACH_CONFIG}\"";
+      echo "  |------> Current-Val: [${GIT_CONFIG_VALUE}]";
+      if [ "${GIT_CONFIG_VALUE}" == "$2" ]; then
         # Config-value is already up-to-date
         echo "  |------> ✓ Already up-to-date";
-			else
+      else
         # Perform update on git config-value
         if [ "$2" == "--unset" ]; then
           git config --file "${EACH_CONFIG}" --unset "$1";
@@ -170,7 +170,7 @@ else
         GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
         if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
         echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
-			fi;
+      fi;
 		done;
 
 		# ------------------------------------------------------------

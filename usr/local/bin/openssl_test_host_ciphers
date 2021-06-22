@@ -37,15 +37,15 @@ else
 		echo -n Testing $cipher...
 		result=$(echo -n | openssl s_client -cipher "$cipher" -connect $SERVER 2>&1)
 		if [[ "$result" =~ ":error:" ]] ; then
-			error=$(echo -n $result | cut -d':' -f6);
-			echo NO \($error\);
+      error=$(echo -n $result | cut -d':' -f6);
+      echo NO \($error\);
 		else
-			if [[ "$result" =~ "Cipher is ${cipher}" || "$result" =~ "Cipher    :" ]] ; then
+      if [[ "$result" =~ "Cipher is ${cipher}" || "$result" =~ "Cipher    :" ]] ; then
         echo "YES";
-			else
+      else
         echo "UNKNOWN RESPONSE";
         echo $result;
-			fi;
+      fi;
 		fi;
 		sleep $DELAY;
 	done;

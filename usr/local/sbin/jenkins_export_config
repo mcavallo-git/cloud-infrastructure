@@ -59,15 +59,15 @@ else
 
 		if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
 
-			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
+      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
 
-			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
-			ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
-			7z -v49m a "${FILEPATH_ARCHIVE_7Z_FULL}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/" && \
-			chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" \
-			;
+      mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
+      ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
+      7z -v49m a "${FILEPATH_ARCHIVE_7Z_FULL}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/" && \
+      chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" \
+      ;
 
-			if [ "$?" == "0" ]; then
+      if [ "$?" == "0" ]; then
         shopt -s "globstar" && \
         source "${REPO_CREDS}" && \
         cd "${GIT_WORK_TREE}" && \
@@ -82,37 +82,37 @@ else
         git add "${GIT_WORK_TREE}/"**/* && \
         git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
         git push;
-			fi;
+      fi;
 
 		else
 
-			# echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
-			# du -sh "${JENKINS_HOME}/**/config.xml";
+      # echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
+      # du -sh "${JENKINS_HOME}/**/config.xml";
 
-			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
+      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
 
-			cd "$(dirname ${JENKINS_HOME})" && \
-			find "$(basename ${JENKINS_HOME})/" \
+      cd "$(dirname ${JENKINS_HOME})" && \
+      find "$(basename ${JENKINS_HOME})/" \
         -mindepth 1 \
         -maxdepth 1 \
         -name '*.xml' \
         -type f \
         -exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
 
-			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
-			ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}"* "${POINTER_LATEST_7Z_CONFIG}" && \
-			cd "$(dirname ${JENKINS_HOME})" && \
-			find "$(basename ${JENKINS_HOME})/" \
+      mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
+      ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}"* "${POINTER_LATEST_7Z_CONFIG}" && \
+      cd "$(dirname ${JENKINS_HOME})" && \
+      find "$(basename ${JENKINS_HOME})/" \
         -mindepth 2 \
         -maxdepth 3 \
         -name 'config.xml' \
         -not -path "./config-history/*" \
         -type f \
         -exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; && \
-			chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" \
-			;
+      chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" \
+      ;
         
-			if [ "$?" == "0" ]; then
+      if [ "$?" == "0" ]; then
         shopt -s "globstar" && \
         source "${REPO_CREDS}" && \
         cd "${GIT_WORK_TREE}" && \
@@ -129,22 +129,22 @@ else
         git push;
 
 
-			fi;
-			# ------------------------------------------------------------
-			# Export all files contained in the 'plugins' directory
+      fi;
+      # ------------------------------------------------------------
+      # Export all files contained in the 'plugins' directory
 
-			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
-			du -sh "${JENKINS_HOME}/plugins/";
+      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
+      du -sh "${JENKINS_HOME}/plugins/";
 
-			echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
-			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" && \
-			ln -sf "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${POINTER_LATEST_7Z_PLUGINS}" && \
-			cd "$(dirname ${JENKINS_HOME})" && \
-			7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/" && \
-			chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" \
-			;
+      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
+      mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" && \
+      ln -sf "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${POINTER_LATEST_7Z_PLUGINS}" && \
+      cd "$(dirname ${JENKINS_HOME})" && \
+      7z -v49m a "${FILEPATH_ARCHIVE_7Z_PLUGINS}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "${JENKINS_HOME}/plugins/" && \
+      chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" \
+      ;
 
-			if [ "$?" == "0" ]; then
+      if [ "$?" == "0" ]; then
 
         shopt -s "globstar" && \
         source "${REPO_CREDS}" && \
@@ -161,65 +161,65 @@ else
         git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
         git push;
 
-			fi;
+      fi;
 
 		fi;
 
 		if [ 0 -eq 1 ]; then
-			# ------------------------------------------------------------
-			#
-			# Roll-Back Jenkins plugins to [ latest export ]
-			#  |
-			#  |--> NOTE:  This command will reference the file pointed-to (see below) located at "${JENKINS_HOME}/jenkins_export_plugins.latest.7z"
-			#  |
-			#  |--> NOTE:  If a different plugins backup-file (7z archive) other than "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" is needed to-be-rolled-back-to, SSH into the
-			#                Jenkins server and redirect the symbolic link to the desired target-archive by overwriting/updating the link
-			#                located @ "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" to point to your desired file/archive.
-			#              Once you have updated the symbolic link to point-to your desired archive, use the same command, below (as-if nothing changed, since it uses the same sym-link)
-			#
-			SERVICE_NAME="jenkins" && \
-			USERNAME_JENKINS="jenkins" && \
-			JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6) && \
-			BAK_CURRENT_CONFIG="${JENKINS_HOME}/config.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
-			LATEST_ARCHIVE_CONFIG=$(realpath "${JENKINS_HOME}/jenkins_export_config.latest.7z") && \
-			BAK_CURRENT_PLUGINS="${JENKINS_HOME}/plugins.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
-			LATEST_ARCHIVE_PLUGINS=$(realpath "${JENKINS_HOME}/jenkins_export_plugins.latest.7z") && \
-			test -f "${LATEST_ARCHIVE_PLUGINS}" && \
-			cd $(dirname "${LATEST_ARCHIVE_PLUGINS}") && \
-			7z x $(basename "${LATEST_ARCHIVE_PLUGINS}") && \
-			/usr/sbin/service "${SERVICE_NAME}" stop && \
-			mv "${JENKINS_HOME}/plugins" "${BAK_CURRENT_PLUGINS}" && \
-			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${BAK_CURRENT_PLUGINS}" && \
-			mv "$(dirname "${LATEST_ARCHIVE_PLUGINS}")/${JENKINS_HOME}/plugins" "${JENKINS_HOME}/plugins" && \
-			chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${JENKINS_HOME}/plugins" && \
-			/usr/sbin/service "${SERVICE_NAME}" start && \
-			rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
-			df -h ".";
+      # ------------------------------------------------------------
+      #
+      # Roll-Back Jenkins plugins to [ latest export ]
+      #  |
+      #  |--> NOTE:  This command will reference the file pointed-to (see below) located at "${JENKINS_HOME}/jenkins_export_plugins.latest.7z"
+      #  |
+      #  |--> NOTE:  If a different plugins backup-file (7z archive) other than "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" is needed to-be-rolled-back-to, SSH into the
+      #                Jenkins server and redirect the symbolic link to the desired target-archive by overwriting/updating the link
+      #                located @ "${JENKINS_HOME}/jenkins_export_plugins.latest.7z" to point to your desired file/archive.
+      #              Once you have updated the symbolic link to point-to your desired archive, use the same command, below (as-if nothing changed, since it uses the same sym-link)
+      #
+      SERVICE_NAME="jenkins" && \
+      USERNAME_JENKINS="jenkins" && \
+      JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6) && \
+      BAK_CURRENT_CONFIG="${JENKINS_HOME}/config.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
+      LATEST_ARCHIVE_CONFIG=$(realpath "${JENKINS_HOME}/jenkins_export_config.latest.7z") && \
+      BAK_CURRENT_PLUGINS="${JENKINS_HOME}/plugins.$(date +'%Y-%m-%d_%H-%M-%S').bak" && \
+      LATEST_ARCHIVE_PLUGINS=$(realpath "${JENKINS_HOME}/jenkins_export_plugins.latest.7z") && \
+      test -f "${LATEST_ARCHIVE_PLUGINS}" && \
+      cd $(dirname "${LATEST_ARCHIVE_PLUGINS}") && \
+      7z x $(basename "${LATEST_ARCHIVE_PLUGINS}") && \
+      /usr/sbin/service "${SERVICE_NAME}" stop && \
+      mv "${JENKINS_HOME}/plugins" "${BAK_CURRENT_PLUGINS}" && \
+      chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${BAK_CURRENT_PLUGINS}" && \
+      mv "$(dirname "${LATEST_ARCHIVE_PLUGINS}")/${JENKINS_HOME}/plugins" "${JENKINS_HOME}/plugins" && \
+      chown -R "${USERNAME_JENKINS}:$(id -gn ${USERNAME_JENKINS})" "${JENKINS_HOME}/plugins" && \
+      /usr/sbin/service "${SERVICE_NAME}" start && \
+      rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
+      df -h ".";
 		fi;
 
 
 		if [ 0 -eq 1 ]; then
-			# ------------------------------------------------------------
-			#
-			# Backup [ Docker-based Jenkins instance ]
-			#
-			BASE_DIR="${HOME}/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
-			mkdir -p "${BASE_DIR}" && \
-			7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
+      # ------------------------------------------------------------
+      #
+      # Backup [ Docker-based Jenkins instance ]
+      #
+      BASE_DIR="${HOME}/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
+      mkdir -p "${BASE_DIR}" && \
+      7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
 		fi;
 
 
 		if [ 0 -eq 1 ]; then
-			# ------------------------------------------------------------
-			#
-			# Update [ Docker-based Jenkins instance ]
-			#
-			REPO_CREDS="${HOME}/.ssh/jenkins-config.pull" && \
-			GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
-			cd "${GIT_WORK_TREE}";
-			# 7z x "LATEST_ARCHIVE.7z";
-			# rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
-			# ------------------------------------------------------------
+      # ------------------------------------------------------------
+      #
+      # Update [ Docker-based Jenkins instance ]
+      #
+      REPO_CREDS="${HOME}/.ssh/jenkins-config.pull" && \
+      GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git') && \
+      cd "${GIT_WORK_TREE}";
+      # 7z x "LATEST_ARCHIVE.7z";
+      # rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
+      # ------------------------------------------------------------
 		fi;
 
 	fi;

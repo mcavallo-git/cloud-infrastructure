@@ -36,20 +36,20 @@ else
 		THIS_SCRIPT=$(basename "${0}");
 		THIS_DIRNAME=$(dirname "${0}");
 		if [ "$(date +%A)" == "Sunday" ] || [ "${1}" == "now" ] || [ "${1}" == "-now" ] || [ "${1}" == "--now" ]; then
-			echo "------------------------------------------------------------";
-			echo "";
-			echo "$(date '+%Y-%m-%d %H:%M:%S') | Starting \"${THIS_SCRIPT}\"";
-			echo "";
-			echo "------------------------------------------------------------";
-			#
-			# apt / apt-get
-			if [ $(which apt 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      echo "------------------------------------------------------------";
+      echo "";
+      echo "$(date '+%Y-%m-%d %H:%M:%S') | Starting \"${THIS_SCRIPT}\"";
+      echo "";
+      echo "------------------------------------------------------------";
+      #
+      # apt / apt-get
+      if [ $(which apt 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
-			elif [ $(which apt-get 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      elif [ $(which apt-get 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" not found";
-			else
+      else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(which apt 2>'/dev/null')";
         echo "";
@@ -72,14 +72,14 @@ else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y clean";
         sudo apt-get -y clean;
-			fi;
-			echo "------------------------------------------------------------";
-			#
-			# yum
-			if [ -z "$(which yum 2>'/dev/null')" ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      #
+      # yum
+      if [ -z "$(which yum 2>'/dev/null')" ]; then
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" not found";
 
-			else
+      else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(which yum 2>'/dev/null')";
         echo "";
@@ -91,40 +91,40 @@ else
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
           sudo yum -y update;
         fi;
-			fi;
-			echo "------------------------------------------------------------";
-			#
-			# updatedb
-			if [ $(which updatedb 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      #
+      # updatedb
+      if [ $(which updatedb 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"updatedb\" not found";
-			else
+      else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"updatedb\" resolved to $(which updatedb)";
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo updatedb";
         sudo updatedb;
-			fi;
-			echo "------------------------------------------------------------";
-			#
-			# ldconfig
-			if [ $(which ldconfig 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      #
+      # ldconfig
+      if [ $(which ldconfig 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" not found";
-			else
+      else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" resolved to $(which ldconfig 2>'/dev/null')";
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo ldconfig";
         sudo ldconfig;
-			fi;
-			echo "------------------------------------------------------------";
-			#
-			# pip
-			if [ "skip pip" == "skip pip" ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      #
+      # pip
+      if [ "skip pip" == "skip pip" ]; then
           echo "";
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
-			else 
+      else 
         if [ $(which pip 2>'/dev/null' | wc -l;) -eq 0 ]; then
           echo "";
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
@@ -143,12 +143,12 @@ else
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo -H pip install -U;";
           sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 sudo -H pip install -U;
         fi;
-			fi;
-			echo "------------------------------------------------------------";
-			if [ $(which do-release-upgrade 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      if [ $(which do-release-upgrade 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"do-release-upgrade\" not found";
-			else
+      else
         OS_UPDATES_CHECK="$(do-release-upgrade --check-dist-upgrade-only;)";
         OS_UPDATES_AVAILABLE="$(echo "${OS_UPDATES_CHECK}" | grep '^New release' | wc -l;)";
         if [ "${OS_UPDATES_AVAILABLE}" == "1" ]; then
@@ -159,11 +159,11 @@ else
           echo "";
           echo "No operating system updates found";
         fi;
-			fi;
-			echo "------------------------------------------------------------";
-			#
-			# Check if reboot is required
-			if [ -f "/var/run/reboot-required" ]; then
+      fi;
+      echo "------------------------------------------------------------";
+      #
+      # Check if reboot is required
+      if [ -f "/var/run/reboot-required" ]; then
         # The File '/var/run/reboot-required' is an Ubuntu native, and signifies that at least one recent update requires a reboot to fully complete their install/update.
         # If we find that ^ file on our current host (after running updates), then the system is in the reboot preparation phase -> set it just to restart after 2 minutes
         echo "";
@@ -173,17 +173,17 @@ else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo shutdown -r \"${SCHEDULED_RESTART_TIME}\"";
         shutdown -r "${SCHEDULED_RESTART_TIME}";
-			fi;
+      fi;
 		else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Use argument '--now' to run system update";
 		fi;
 		if [ -f "/usr/local/bin/get_os" ]&& [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
-			#
-			# WSL (Windows Subsystem for Linux)
-			#  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
-			#       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
-			touch "/var/run/reboot-required";
+      #
+      # WSL (Windows Subsystem for Linux)
+      #  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
+      #       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
+      touch "/var/run/reboot-required";
 		fi;
 		# Exit Gracefully
 		echo "";

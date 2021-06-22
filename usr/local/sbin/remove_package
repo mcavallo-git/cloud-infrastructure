@@ -45,21 +45,21 @@ else
 
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing package \"${PACKAGE_NAME}\"...";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing package \"${PACKAGE_NAME}\"...";
 
-			apt-get -y remove "${PACKAGE_NAME}";
+      apt-get -y remove "${PACKAGE_NAME}";
 
-			apt-get -y purge "${PACKAGE_NAME}";
+      apt-get -y purge "${PACKAGE_NAME}";
 
-			apt-get -y autoremove;
+      apt-get -y autoremove;
 
-			apt-get -y autoclean;
+      apt-get -y autoclean;
 
-			remove_service "${PACKAGE_NAME}";
+      remove_service "${PACKAGE_NAME}";
 
 		else
 
-			echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
 
 		fi;
 

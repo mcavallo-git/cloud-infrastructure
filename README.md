@@ -21,8 +21,8 @@ This file (on GitHub):
 	</summary>
 	<ol>
 		<li>
-			<h6 id="">Sync Linux-shellscripts via the "sync_cloud_infrastructure" script by calling:</h6><br />
-			<pre id="sync_cloud_infrastructure"><code>curl -ssL https://mcavallo.com/sh | bash;</code></pre></li>
+      <h6 id="">Sync Linux-shellscripts via the "sync_cloud_infrastructure" script by calling:</h6><br />
+      <pre id="sync_cloud_infrastructure"><code>curl -ssL https://mcavallo.com/sh | bash;</code></pre></li>
 	</ol>
 <hr /></details></li>
 
@@ -34,9 +34,9 @@ This file (on GitHub):
 	</summary>
 	<ol>
 		<li>
-			<h6>Setup remote utility packages by calling:</h6>
-			<pre><code>sudo install_apt_packages;</code></pre>
-			<sub>⚠️ This step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced via <code>sync_cloud_infrastructure (from step "Setup Repository Sync")</code></sub>
+      <h6>Setup remote utility packages by calling:</h6>
+      <pre><code>sudo install_apt_packages;</code></pre>
+      <sub>⚠️ This step assumes that <code>/usr/local/bin</code> & <code>/usr/local/sbin</code> have been synced via <code>sync_cloud_infrastructure (from step "Setup Repository Sync")</code></sub>
 		</li>
 	</ol>
 <hr /></details></li>
@@ -49,11 +49,11 @@ This file (on GitHub):
 	</summary>
 	<ol>
 		<li>
-			<h6>Create a backup snapshot of EBS Volume via the AWS Dashboard @ https://console.aws.amazon.com/ec2#Snapshots</h6>
+      <h6>Create a backup snapshot of EBS Volume via the AWS Dashboard @ https://console.aws.amazon.com/ec2#Snapshots</h6>
 		</li><br />
 		<li>
-			<h6>Modify a given Linux-Instance's SSH-configuration by calling the following:</h6><br />
-			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.no_mfa" && LOCAL_FILE="${SSHD_CONFIG}.no_mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;</code></pre></li>
+      <h6>Modify a given Linux-Instance's SSH-configuration by calling the following:</h6><br />
+      <pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.no_mfa" && LOCAL_FILE="${SSHD_CONFIG}.no_mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;</code></pre></li>
 	</ol>
 <hr /></details></li>
 
@@ -65,10 +65,10 @@ This file (on GitHub):
 	</summary>
 	<ol>
 		<li>
-			<h6>Follow Duo's updated installation guide for their pam_duo module, which may be found @ <b>https://duo.com/docs/duounix</b> → refer to section titled: <b>Install pam_duo</b></h6></li><br />
+      <h6>Follow Duo's updated installation guide for their pam_duo module, which may be found @ <b>https://duo.com/docs/duounix</b> → refer to section titled: <b>Install pam_duo</b></h6></li><br />
 		<li>
-			<h6>Once previous step is complete, run the following line of code to modify the ssh configuration script by [ backing-up the existing script ] & [ updating the script to require public-key AND multifactor authentication ]:</h6>
-			<pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.mfa" && LOCAL_FILE="${SSHD_CONFIG}.mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;</code></pre>
+      <h6>Once previous step is complete, run the following line of code to modify the ssh configuration script by [ backing-up the existing script ] & [ updating the script to require public-key AND multifactor authentication ]:</h6>
+      <pre><code>SSHD_CONFIG="/etc/ssh/sshd_config"; cp -f "${SSHD_CONFIG}" "${SSHD_CONFIG}.$(date +'%Y%m%d_%H%M%S')"; REPO_FILE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/ssh/sshd_config.mfa" && LOCAL_FILE="${SSHD_CONFIG}.mfa" && wget "${REPO_FILE}" --output-document="${LOCAL_FILE}" && chmod 0644 "${LOCAL_FILE}" && cp -f "${LOCAL_FILE}" "${SSHD_CONFIG}"; SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;</code></pre>
 		</li>
 	</ol>
 <hr /></details></li>

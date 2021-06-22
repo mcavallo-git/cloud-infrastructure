@@ -43,9 +43,9 @@ else
 
 		# Download Docker Desktop (if not found locally)
 		if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
-			echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
-			"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
-			exit 1;
+      echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
+      "/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
+      exit 1;
 		fi;
 
 		# if [ -v SUDO_USER ]; then
@@ -63,29 +63,29 @@ else
 		#
 
 		if [ ! -f "${BIN_DOCKER}" ]; then
-			curl -ssL "https://get.docker.com/" | sh;
+      curl -ssL "https://get.docker.com/" | sh;
 		fi;
 
 		SERVICE_NAME="docker";
 		if [ -z "$(/usr/sbin/service ${SERVICE_NAME} status | grep 'Active: active (running)')" ]; then
-			echo "Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
-			/usr/sbin/service "${SERVICE_NAME}" start;
+      echo "Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
+      /usr/sbin/service "${SERVICE_NAME}" start;
 		fi;
 
 		if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
 
-			if [ -n "$(which apk 2>/dev/null)" ]; then
+      if [ -n "$(which apk 2>/dev/null)" ]; then
         # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
         apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
-			fi;
-			if [ "$(uname -m)" == "x86_64" ]; then
+      fi;
+      if [ "$(uname -m)" == "x86_64" ]; then
         #
         # Docker-Compose Installer --> x86_64 CPUs
         #  |--> Reference: [ https://docs.docker.com/compose/install ]
         #
         curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
         # curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
-			else
+      else
         #
         # Docker-Compose Installer --> Non-x86_64 CPUs (namely Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs)
         #  |--> Reference: [ https://github.com/docker/compose/issues/6831#issuecomment-558865087 ]
@@ -100,9 +100,9 @@ else
         pip3 install --upgrade pip;
         echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
         python3 -m pip install -IU docker-compose;
-			fi;
+      fi;
 
-			chmod 0755 "${BIN_DOCKER_COMPOSE}";
+      chmod 0755 "${BIN_DOCKER_COMPOSE}";
 
 		fi;
 		

@@ -34,9 +34,9 @@ else
 		PACKAGE_CONF="/etc/chrony.conf";
 		SERVICE_NAME="chronyd";
 		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
+      apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
 		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+      yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 		fi;
 		timedatectl set-ntp yes;
 		systemctl restart "${SERVICE_NAME}";
@@ -48,8 +48,8 @@ else
 		# PRIMARY_NTP_SUGGESTION="pool.ntp.org";
 		# PRIMARY_NTP_SUGGESTION="time.google.com";
 		if [ -f "${PACKAGE_CONF}" ]; then
-			CURRENT_NTP_SERVER_LINES="$(cat ${PACKAGE_CONF} | grep '^server ' | awk '{print $2}' 2>'/dev/null';)";
-			if [ -n "${CURRENT_NTP_SERVER_LINES}" ] && [ $(echo "${CURRENT_NTP_SERVER_LINES}" | grep "^${PRIMARY_NTP_SUGGESTION}$" | wc -l 2>'/dev/null';) -eq 0 ]; then
+      CURRENT_NTP_SERVER_LINES="$(cat ${PACKAGE_CONF} | grep '^server ' | awk '{print $2}' 2>'/dev/null';)";
+      if [ -n "${CURRENT_NTP_SERVER_LINES}" ] && [ $(echo "${CURRENT_NTP_SERVER_LINES}" | grep "^${PRIMARY_NTP_SUGGESTION}$" | wc -l 2>'/dev/null';) -eq 0 ]; then
         CURRENT_NTP_PRIMARY_SERVER=$(echo "${CURRENT_NTP_SERVER_LINES}" | head -n 1;);
         echo "";
         read -p "$(date +'%Y-%m-%d %H:%M:%S') Add  [ ${PRIMARY_NTP_SUGGESTION} ]  as primary NTP source, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
@@ -62,7 +62,7 @@ else
           cat "${PACKAGE_CONF}";
           echo "------------------------------------------------------------";
         fi;
-			fi;
+      fi;
 		fi;
 		# ------------------------------------------------------------
 		#
@@ -72,8 +72,8 @@ else
 		read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 		echo "";
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			hwclock --systohc;
-			timedatectl set-ntp yes;
+      hwclock --systohc;
+      timedatectl set-ntp yes;
 		fi;
 		# ------------------------------------------------------------
 		#

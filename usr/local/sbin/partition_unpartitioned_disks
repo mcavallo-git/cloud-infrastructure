@@ -43,9 +43,9 @@ else
 	# Install helper package(s)
 	if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-			apt-get -y install nfs-common;
+      apt-get -y install nfs-common;
 		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-			yum -y install nfs-utils cifs-utils samba-client samba-common;
+      yum -y install nfs-utils cifs-utils samba-client samba-common;
 		fi;
 	fi;
 
@@ -60,39 +60,39 @@ else
 
 		# Partition un-partitioned disk(s)
 		if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
-			echo "";
-			READ_TIMEOUT=60;
-			read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-			echo "";
-			if [ ${RETURN_CODE_READ} -gt 128 ]; then
+      echo "";
+      READ_TIMEOUT=60;
+      read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+      echo "";
+      if [ ${RETURN_CODE_READ} -gt 128 ]; then
         echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+      elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "Info:  Confirmed - Calling [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ] ...";
         parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos';
-			else
+      else
         echo "Info:  Denied - Skipping call [ parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; ]";
-			fi;
+      fi;
 		else
-			echo "Info:  Skipping disk-partitioning for device [ ${EACH_DISK_DEVICE} ] (already partitioned as ${EACH_PARTITION_TABLE})";
+      echo "Info:  Skipping disk-partitioning for device [ ${EACH_DISK_DEVICE} ] (already partitioned as ${EACH_PARTITION_TABLE})";
 		fi;
 
 		# Add volume(s) to empty disk(s)
 		EACH_DISK_VOLUME_COUNT="$(parted -s ${EACH_DISK_DEVICE} print 2>&1 | grep -E '^\s+[0-9]\s' | wc -l;)";
 		if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
-			echo "";
-			READ_TIMEOUT=60;
-			read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-			echo "";
-			if [ ${RETURN_CODE_READ} -gt 128 ]; then
+      echo "";
+      READ_TIMEOUT=60;
+      read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+      echo "";
+      if [ ${RETURN_CODE_READ} -gt 128 ]; then
         echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-			elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+      elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "Info:  Confirmed - Calling [ umount -f \"${EACH_DISK_DEVICE}\" 2>/dev/null; fsck -a \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
         umount -f "${EACH_DISK_DEVICE}" 2>/dev/null; fsck -a "${EACH_DISK_DEVICE}"; mkfs "${EACH_DISK_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
-			else
+      else
         echo "Info:  Denied - Skipping call  [ fsck -a \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
-			fi;
+      fi;
 		else
-			echo "Info:  Skipping volume-creation for device [ ${EACH_DISK_DEVICE} ] (already contains [ ${EACH_DISK_VOLUME_COUNT} ] volume(s))";
+      echo "Info:  Skipping volume-creation for device [ ${EACH_DISK_DEVICE} ] (already contains [ ${EACH_DISK_VOLUME_COUNT} ] volume(s))";
 		fi;
 
 		# Mount un-mounted volume(s)
@@ -102,7 +102,7 @@ else
 		EACH_DISK_PARTITIONS=$(lsblk -p -n -o KNAME,TYPE,MOUNTPOINT | grep -E '[part|disk] $' | awk '{print $1}';);
 		ROLLBACK_IFS="${IFS}"; IFS=$'\n';
 		for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
-			EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>/dev/null | grep "^${EACH_SUB_DEVICE} " 2>/dev/null | wc -l);
+      EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>/dev/null | grep "^${EACH_SUB_DEVICE} " 2>/dev/null | wc -l);
  			if [ ${EACH_CHILD_DEPENDENCY_COUNT} -eq 0 ]; then
         EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
         if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
@@ -126,9 +126,9 @@ else
         else
           echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (already mounted @ [ ${EACH_DISK_MOUNT_POINTS} ] location(s))";
         fi;
-			else
+      else
         echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (has [ ${EACH_CHILD_DEPENDENCY_COUNT} ] child-nodes(s))";
-			fi;
+      fi;
 		done; # IFS="${ROLLBACK_IFS}";
 
 	done; IFS="${ROLLBACK_IFS}";

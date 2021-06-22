@@ -279,14 +279,14 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 		SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
 		SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
 		if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
-			echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
+      echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
 		fi;
 
 		GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
 		GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
 		GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
 		if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
-			echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";
+      echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";
 		fi;
 
 	done;
@@ -336,16 +336,16 @@ for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
 	EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
 	if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ]; then # 
 		if [ -L "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
-			EACH_FILE_OUTPUT=$(ls -al "${GPG4WIN_EXE_DIR_LINUX}" | awk '{print $9,$10,$11}' | grep "${EACH_FILE}");
-			# echo "Pass - ${EACH_FILE_OUTPUT}";
+      EACH_FILE_OUTPUT=$(ls -al "${GPG4WIN_EXE_DIR_LINUX}" | awk '{print $9,$10,$11}' | grep "${EACH_FILE}");
+      # echo "Pass - ${EACH_FILE_OUTPUT}";
 		else
-			if [ -f "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
+      if [ -f "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
         echo "";
         mv --verbose "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" "${GIT_EXE_DIR_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
-			fi;
-			# Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
-			echo "";
-			echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+      fi;
+      # Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
+      echo "";
+      echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 		fi;
 	fi;
 done;
@@ -659,11 +659,11 @@ fi;
 		EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
 		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
 		if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
-			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
-			DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
-			if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
+      EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
+      DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
+      if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
         EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
-			fi;
+      fi;
 		fi;
 	done;
 
@@ -680,23 +680,23 @@ fi;
 
 		DIR_IS_EXCLUDED=0;
 		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+      if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
         DIR_IS_EXCLUDED=1;
-			fi;
+      fi;
 		done;
 
 		if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
-			echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
-			# Not an excluded directory - search it for directories with name ".git"
-			find "${EACH_HOMEDIR}" \
-			-maxdepth 4 \
-			-type d \
-			-name ".git" \
-			-print0 2>"/dev/null" \
-			| while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
+      echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
+      # Not an excluded directory - search it for directories with name ".git"
+      find "${EACH_HOMEDIR}" \
+      -maxdepth 4 \
+      -type d \
+      -name ".git" \
+      -print0 2>"/dev/null" \
+      | while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
         EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
         REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
-			done;
+      done;
 		fi;
 	done;
 
@@ -706,15 +706,15 @@ fi;
 		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
 		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
 		if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
-			# Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
+      # Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
+      EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+      EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+      EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		else
-			# Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
-			EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
-			EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
-			EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
+      # Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
+      EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
+      EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
+      EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
 		fi;
 		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 
@@ -730,10 +730,10 @@ fi;
 		# ------------------------------------------------------------
 
 		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
-			# Use Primary ID Array values, first
-			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
-			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
-			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
+      # Use Primary ID Array values, first
+      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
+      TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
+      if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
         TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
         if [ -z "${TEST_SSH_KEY}" ]; then
@@ -755,14 +755,14 @@ fi;
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
           fi;
         fi;
-			fi;
+      fi;
 		fi;
 
 		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
-			# Fallback to Secondary ID Array values
-			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
-			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
-			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
+      # Fallback to Secondary ID Array values
+      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
+      TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
+      if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
         TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
         if [ -z "${TEST_SSH_KEY}" ]; then
@@ -784,41 +784,41 @@ fi;
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
           fi;
         fi;
-			fi;
+      fi;
 		fi;
 
 		if [ -z "${SSH_KEY}" ]; then
-			echo "  |--> No sync-array index exists for \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
-			echo "  |";
-			echo "  |--> Sync-array indices must be pre-emptively added to config-file  \$GIT_SYNC_CONFIG_FULLPATH = [ ${GIT_SYNC_CONFIG_FULLPATH} ]";
+      echo "  |--> No sync-array index exists for \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
+      echo "  |";
+      echo "  |--> Sync-array indices must be pre-emptively added to config-file  \$GIT_SYNC_CONFIG_FULLPATH = [ ${GIT_SYNC_CONFIG_FULLPATH} ]";
 		fi;
 
 		# ------------------------------------------------------------
 
 		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ] && [ -n "${SSH_KEY}" ]; then
 
-			cd "${EACH_REPO_FULLPATH}";
+      cd "${EACH_REPO_FULLPATH}";
 
-			GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-			GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
-			GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
-			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
+      GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+      GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
+      GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
+      GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 
-			# SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
-			# echo "";
-			# echo "${SSH_KEY}";
+      # SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
+      # echo "";
+      # echo "${SSH_KEY}";
 
-			# Strings
-			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
-			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
-			KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
-			KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
-			KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
-			if [ -z "${GPG_KEY_ID}" ]; then
+      # Strings
+      KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
+      KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
+      KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+      # Strings - Formatting (Line-Endings/Syntax-Highlighting)
+      KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
+      KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
+      KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
+      if [ -z "${GPG_KEY_ID}" ]; then
         echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
-			else
+      else
         # Strings (GPG)
         KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
         KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
@@ -826,33 +826,33 @@ fi;
         KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
         # Unsets
         KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-			fi;
-			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
+      fi;
+      if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
         echo "------------------------------------------------------------";
         echo "$(git config --local --list --show-origin)";
         echo "------------------------------------------------------------";
-			fi;
+      fi;
 
-			echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
+      echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
 
-			# for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-			# 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-			# 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-			# 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
-			# done;
+      # for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
+      # 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+      # 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+      # 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+      # done;
 
-			# EACH_REPO_BASENAME
+      # EACH_REPO_BASENAME
 
-			# for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-			# 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
-			# 		DIR_IS_EXCLUDED=1;
-			# 	fi;
-			# done;
+      # for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
+      # 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+      # 		DIR_IS_EXCLUDED=1;
+      # 	fi;
+      # done;
 
-			# ${GIT_SYNC_REPOS_ID1}
-			# ${GIT_SYNC_REPOS_ID2}
-			# ${GIT_SYNC_GPG_KEYS}
-			# ${GIT_SYNC_FULLNAMES}
+      # ${GIT_SYNC_REPOS_ID1}
+      # ${GIT_SYNC_REPOS_ID2}
+      # ${GIT_SYNC_GPG_KEYS}
+      # ${GIT_SYNC_FULLNAMES}
 
 		fi;
 

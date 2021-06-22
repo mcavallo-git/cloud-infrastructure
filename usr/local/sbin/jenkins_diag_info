@@ -36,14 +36,14 @@ else
 		read -p "Install the Java Developer Toolkit, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 		echo "";
 		if [ ${RETURN_CODE_READ} -gt 128 ]; then
-			echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-			exit 1;
+      echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+      exit 1;
 		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-			# install_java - Instals Java + Java Developer Toolkit
-			curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java?t=$(date +'%s.%N')" | bash;
+      # install_java - Instals Java + Java Developer Toolkit
+      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java?t=$(date +'%s.%N')" | bash;
 		else
-			echo "Info:  Required package-install denied  -->  Exiting...";
-			exit 1;
+      echo "Info:  Required package-install denied  -->  Exiting...";
+      exit 1;
 		fi;
 	fi;
 

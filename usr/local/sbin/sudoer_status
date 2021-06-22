@@ -52,18 +52,18 @@ else
 
 		# Check if this is the last inline-argument or if there are more to follow
 		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
-			NEXT_ARG="";
+      NEXT_ARG="";
 		else
-			NEXT_ARG=${ARGS[$((${i}+1))]};
-			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+      NEXT_ARG=${ARGS[$((${i}+1))]};
+      if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
-			fi;
+      fi;
 		fi;
 
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-			# ------------------------------------------------------------
-			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
+      # ------------------------------------------------------------
+      if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
         if [ -n "${EDIT_ACTION}" ]; then
           # Error: Multiple add/remove actions defined
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
@@ -77,10 +77,10 @@ else
           # Show user's sudoer-status
           EDIT_ACTION="";
         fi;
-			fi;
+      fi;
 
-			# ------------------------------------------------------------
-			if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
+      # ------------------------------------------------------------
+      if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
         if [ -n "${TARGET_USER}" ]; then
           # Error: Multiple users defined
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
@@ -93,15 +93,15 @@ else
         else
           TARGET_USER="${NEXT_ARG}";
         fi;
-			fi;
+      fi;
 
-			# ------------------------------------------------------------
-			# Skip requiring user-pass when they call the 'sudo' command
-			if [ "${EACH_ARG}" == "--nopass" ]; then
+      # ------------------------------------------------------------
+      # Skip requiring user-pass when they call the 'sudo' command
+      if [ "${EACH_ARG}" == "--nopass" ]; then
         SUDO_REQUIRES_USERPASS="0";
-			fi;
+      fi;
 
-			# ------------------------------------------------------------
+      # ------------------------------------------------------------
 
 		fi;
 
@@ -125,19 +125,19 @@ else
 
 		SUDOERS_D="";
 		if [ -d "/etc/sudoers.d" ]; then
-			SUDOERS_D="/etc/sudoers.d";
+      SUDOERS_D="/etc/sudoers.d";
 		elif [ -d "/etc/local/sudoers.d" ]; then
-			SUDOERS_D="/etc/local/sudoers.d";
+      SUDOERS_D="/etc/local/sudoers.d";
 		fi;
 
 		if [ -z "${SUDOERS_D}" ]; then
-			echo "";
-			echo "Error:  No sudoers.d directory found amongst \"/etc/sudoers.d/\" and \"/etc/local/sudoers.d\"";
+      echo "";
+      echo "Error:  No sudoers.d directory found amongst \"/etc/sudoers.d/\" and \"/etc/local/sudoers.d\"";
 
 		else
-			
-			# ------------------------------------------------------------
-			if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
+      
+      # ------------------------------------------------------------
+      if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
         # Allow user to masquerade as the root user (via the 'sudo' command)
 
         SUDOER_FILE_CONTENTS="";
@@ -162,8 +162,8 @@ else
         # Add the user to the group 'sudo'
         usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
 
-			# ------------------------------------------------------------
-			elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
+      # ------------------------------------------------------------
+      elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
         # Deny user from masquerading as the root user (via the 'sudo' command)
 
         # Remove the user-specific 'sudo' config-file
@@ -176,12 +176,12 @@ else
         GROUP_SUDOERS="sudo";
         gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
 
-			else
+      else
         #	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 
-			fi;
+      fi;
 
 		# ------------------------------------------------------------
 		# Show sudoer status for target user

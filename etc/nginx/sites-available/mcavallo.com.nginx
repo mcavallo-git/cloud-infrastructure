@@ -236,13 +236,13 @@ server {
 	#        ~* [regex match, case-insensitive]
 	location ~* "^/codesign$" {
 		if ($subdomain ~* "^ps.$") { # PowerShell code signing (nginx catch 1-of-2)
-			return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
 		}
 	}
 	#        ~* [regex match, case-insensitive]
 	location ~* "^/ps$" {
 		if ($subdomain ~* "^codesign.$") { # PowerShell code signing (nginx catch 2-of-2)
-			return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
 		}
 	}
 	# Fallthrough PowerShell script/module requests

@@ -106,7 +106,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 	else
 		NEXT_ARG=${ARGS[$((${i}+1))]};
 		if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-			NEXT_ARG="";
+      NEXT_ARG="";
 		fi;
 	fi;
 
@@ -114,18 +114,18 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 
 		# Parse cronjob calls
 		if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
-			PROTO_OVERRIDE="";
-			for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
+      PROTO_OVERRIDE="";
+      for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
         EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
         if [ "${NEXT_ARG}" == "${EACH_PROTO}" ]; then
           PROTO_OVERRIDE="${EACH_PROTO}";
           break;
         fi;
-			done;
-			if [ -n "${PROTO_OVERRIDE}" ]; then
+      done;
+      if [ -n "${PROTO_OVERRIDE}" ]; then
         PROTO_STARTTLS="${PROTO_OVERRIDE}";
         echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
-			else
+      else
         if [ -n "${PROTO_STARTTLS}" ]; then
           echo "";
           echo "Info:  User passed a blank/undefined value for the \"${EACH_ARG}\" argument";
@@ -148,7 +148,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
           echo "";
           PROTO_STARTTLS="";
         fi;
-			fi;
+      fi;
 		fi;
 
 	fi;

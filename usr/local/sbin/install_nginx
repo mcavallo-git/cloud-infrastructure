@@ -60,9 +60,9 @@ else
 		# ------------------------------------------------------------
 		# Update Diffie-Hellman Parameter
 		if [ ! -f "/etc/ssl/certs/dhparam.pem" ]; then
-			DH_KEY_SIZE_BITS=2048;
-			echo "Creating Diffie-Hellman parameter with key size of [ ${DH_KEY_SIZE_BITS}-bit ] @ filepath \"/etc/ssl/certs/dhparam.pem\"...";
-			openssl dhparam -out "/etc/ssl/certs/dhparam.pem" ${DH_KEY_SIZE_BITS};
+      DH_KEY_SIZE_BITS=2048;
+      echo "Creating Diffie-Hellman parameter with key size of [ ${DH_KEY_SIZE_BITS}-bit ] @ filepath \"/etc/ssl/certs/dhparam.pem\"...";
+      openssl dhparam -out "/etc/ssl/certs/dhparam.pem" ${DH_KEY_SIZE_BITS};
 		fi;
 
 		# ------------------------------------------------------------
@@ -70,9 +70,9 @@ else
 		FIREWALL_SERVICE="firewalld";
 		SERVICE_RET_CODE=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-			# Open necessary firewall port(s)
-			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
-			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
+      # Open necessary firewall port(s)
+      SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
+      if [ -n "${SERVICE_ENABLED_GREP}" ]; then
         echo "";
         echo "------------------------------------------------------------";
         firewall-cmd --info-service={http,https};
@@ -82,13 +82,13 @@ else
         firewall-cmd --permanent --zone=public --add-service={http,https} && \
         firewall-cmd --reload && \
         firewall-cmd --list-all;
-			fi;
+      fi;
 		fi;
 
 
 		# Configure SELinux as-needed
 		if [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(which getsebool 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(which setsebool 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-			if [ $(selinuxenabled; echo $?;) -eq 0 ]; then
+      if [ $(selinuxenabled; echo $?;) -eq 0 ]; then
         # SELinux is currently enabled
         SELINUX_BOOL_WEBSERVER="httpd_can_network_connect";
         if [ $(getsebool ${SELINUX_BOOL_WEBSERVER} | grep 'on$' | wc -l;) -eq 0 ]; then 
@@ -96,24 +96,24 @@ else
           echo -e "\n""Info:  Setting SELinux boolean parameter \"${SELINUX_BOOL_WEBSERVER}\" to \"on\"\n";
           setsebool -P ${SELINUX_BOOL_WEBSERVER} "on";
         fi;
-			else
+      else
         # SELinux already enabled
         echo -e "\n""Info: Skipped SELinux web-server configuration (SELinux is currently disabled)";
-			fi;
+      fi;
 		fi;
 
 
 		# ------------------------------------------------------------
 		# (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
 		if [ 0 -eq 1 ]; then
-			if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
+      if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
         add-apt-repository "ppa:maxmind/ppa";
         apt -y update;
         apt -y install geoip-database geoip-database-extra php-geoip;
         apt -y install geoipupdate;
         # Locate the geoip database(s)
         dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
-			fi;
+      fi;
 		fi;
 
 	fi;

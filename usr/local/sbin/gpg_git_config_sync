@@ -31,6 +31,10 @@ fi;
 #
 # ------------------------------------------------------------
 
+START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
+
+# ------------------------------------------------------------
+
 # if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${OSTYPE}" != "darwin"* ]]; then
 #   OS_IS_WINDOWS=1;
 # else
@@ -94,8 +98,6 @@ GIT_SYNC_GPG_KEYS=""; # Git Emails (Key) and their associated GnuPG-Key Fingerpr
 GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ Implemented 2019-11-06 ]
 
 # ------------------------------------------------------------
-
-START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
 
 DISK_ROOT="";
 if [ -d "/c" ]; then

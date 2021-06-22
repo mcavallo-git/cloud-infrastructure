@@ -10,24 +10,24 @@
 # If connected session is running Bash
 if [ -n "${BASH_VERSION}" ]; then
 
-	# If environment variable ${HOME} is set as-intended...
-	if [ -n "${HOME}" ] && [ -d "${HOME}" ]; then
-		# Run "~/.bashrc" upon logging-in (if it exists)
-		if [ -f "${HOME}/.bashrc" ]; [ -f "${HOME}/.bashrc" ]; then
-			. "${HOME}/.bashrc";
-		fi;
+  # If environment variable ${HOME} is set as-intended...
+  if [ -n "${HOME}" ] && [ -d "${HOME}" ]; then
+    # Run "~/.bashrc" upon logging-in (if it exists)
+    if [ -f "${HOME}/.bashrc" ]; [ -f "${HOME}/.bashrc" ]; then
+      . "${HOME}/.bashrc";
+    fi;
 
-		# Set ${HOME} as default directory upon logging-in
-		cd "${HOME}";
+    # Set ${HOME} as default directory upon logging-in
+    cd "${HOME}";
 
-	fi;
+  fi;
 
-	# Set 'Vim' as default text-editor (if it exists)
-	#  |--> avoids using 'Nano' for commands such as [ crontab -e ], etc.
-	if [ -n "$(which vim 2>'/dev/null')" ] && [ -f "$(which vim 2>'/dev/null')" ]; then
-		export EDITOR=vim;
-		export VISUAL=vim;
-	fi;
+  # Set 'Vim' as default text-editor (if it exists)
+  #  |--> avoids using 'Nano' for commands such as [ crontab -e ], etc.
+  if [ -n "$(which vim 2>'/dev/null')" ] && [ -f "$(which vim 2>'/dev/null')" ]; then
+    export EDITOR=vim;
+    export VISUAL=vim;
+  fi;
 
 fi;
 

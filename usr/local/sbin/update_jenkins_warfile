@@ -102,12 +102,12 @@ else
 
 				# Backup [ a Version-stamped copy ] of [ the current jenkins runtime ]
 				if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}" ]; then
-					cp --verbose --force "${JENKINS_RUNTIME_SYSTEM}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}";
+          cp --verbose --force "${JENKINS_RUNTIME_SYSTEM}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}";
 				fi;
 
 				# Backup [ a Version-stamped copy ] of [ the downloaded runtime ]
 				if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}" ]; then
-					cp --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}";
+          cp --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}";
 				fi;
 
 				# Stop the Jenkins service (before updating its runtime warfile)
@@ -121,7 +121,7 @@ else
 
 				# Re-Sync to repo/cloud-sync settings
 				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
-					sync_cloud_infrastructure --jenkins;
+          sync_cloud_infrastructure --jenkins;
 				fi;
 
 				# Start the Jenkins service (after updating its runtime warfile)
@@ -131,24 +131,24 @@ else
 
 				# Reload NGINX (if found locally)
 				if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
-					if [ $(which reload_nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+          if [ $(which reload_nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
             echo "";
             echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
             reload_nginx;
-					else
+          else
             echo "";
             echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
             nginx -t && sleep 1 && /usr/sbin/service nginx stop;
-					fi;
+          fi;
 				else
-					echo "";
-					echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
+          echo "";
+          echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
 				fi;
 
 				# Re-Sync to repo/cloud-sync settings
 				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
-					sleep 30;
-					sync_cloud_infrastructure --jenkins;
+          sleep 30;
+          sync_cloud_infrastructure --jenkins;
 				fi;
 
 			fi;

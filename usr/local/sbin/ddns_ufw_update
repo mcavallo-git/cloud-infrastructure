@@ -135,7 +135,7 @@ else
 			else
 				ADD_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "            |-->  result: [ SKIPPED adding new rule ]";
+          echo "            |-->  result: [ SKIPPED adding new rule ]";
 				fi;
 			fi;
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -181,7 +181,7 @@ else
 			else
 				DELETE_RULE_SKIPPED=1;
 				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "            |-->  result: [ SKIPPED deleting rule ]";
+          echo "            |-->  result: [ SKIPPED deleting rule ]";
 				fi;
 			fi;
 			if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -211,7 +211,7 @@ else
 			DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
 			if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
 				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "Debug:  Calling  [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
+          echo "Debug:  Calling  [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
 				fi;
 				/usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
 				# sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
@@ -224,7 +224,7 @@ else
 				# /usr/sbin/ufw default skip routed;
 				sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
 				if [ ${DEBUG_MODE} -eq 1 ]; then
-					echo "Debug:  Calling  [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
+          echo "Debug:  Calling  [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
 				fi;
 			fi;
 
@@ -289,20 +289,20 @@ else
 				# Service DOES exist locally - DO whitelist associated ports/hosts
 
 				if [ ! -f "${EACH_WHITELIST_FILE}" ]; then
-					echo "";
-					echo "Error:  Whitelist hosts file for service \"${EACH_SERVICE_NAME}\" not found @ filepath \"${EACH_WHITELIST_FILE}\"";
-					echo "  |--> Skipping Whitelist for Service \"${EACH_WHITELIST_FILE}\"";
+          echo "";
+          echo "Error:  Whitelist hosts file for service \"${EACH_SERVICE_NAME}\" not found @ filepath \"${EACH_WHITELIST_FILE}\"";
+          echo "  |--> Skipping Whitelist for Service \"${EACH_WHITELIST_FILE}\"";
 
 				else
 
-					echo "";
-					echo "Info:  Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE_NAME}\" Service";
-					echo "  |-> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
+          echo "";
+          echo "Info:  Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE_NAME}\" Service";
+          echo "  |-> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
 
-					# Iterate-over each line in the whitelist file
-					sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | \
-					sed '/^[[:space:]]*#/d' | \
-					while read EACH_WHITELIST_LINE;	do
+          # Iterate-over each line in the whitelist file
+          sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | \
+          sed '/^[[:space:]]*#/d' | \
+          while read EACH_WHITELIST_LINE;	do
 
             if [ ${DEBUG_MODE} -eq 1 ]; then
               echo "";
@@ -478,7 +478,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
             fi;
 
-					done;
+          done;
 
 				fi;
 
@@ -569,11 +569,11 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 			EACH_RESOLVED_PROTO+=("${RESOLVED_PROTOS_1D[$i]}");
 			if [ "${EACH_UFW_CIDRv4}" == "${EACH_RESOLVED_CIDRv4}" ]; then # Matched on valid Port
 				if [ "${EACH_UFW_PORT}" == "${EACH_RESOLVED_PORT}" ]; then # Matched on valid Port
-					if [ "${EACH_UFW_PROTO}" == "${EACH_RESOLVED_PROTO}" ]; then # Matched on valid Protocol
+          if [ "${EACH_UFW_PROTO}" == "${EACH_RESOLVED_PROTO}" ]; then # Matched on valid Protocol
             # All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
             DELETE_RULE=0;
             break;
-					fi;
+          fi;
 				fi;
 			fi;
 		done;

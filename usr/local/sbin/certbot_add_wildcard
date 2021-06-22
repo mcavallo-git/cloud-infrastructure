@@ -51,10 +51,10 @@ else
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-					# Add required package repo(s)
-					add-apt-repository -y ppa:certbot/certbot;
-					# Install required package(s)
-					apt-get -y update; apt-get -y install python-certbot-nginx;
+          # Add required package repo(s)
+          add-apt-repository -y ppa:certbot/certbot;
+          # Install required package(s)
+          apt-get -y update; apt-get -y install python-certbot-nginx;
 				fi;
 			fi;
 		fi;

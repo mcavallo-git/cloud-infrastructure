@@ -58,7 +58,7 @@ else
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
 				sudo apt-get -y update;
 				if [ $(which update_unifi 2>'/dev/null' | wc -l;) -eq 0 ]; then
-					sudo update_unifi;
+          sudo update_unifi;
 				fi;
 				echo "";
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt list --upgradable";
@@ -86,10 +86,10 @@ else
 				echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum list --upgradable";
 				sudo yum check-update; RET_CODE_YUM_CHECK_UPDATE=$?;
 				if [ ${RET_CODE_YUM_CHECK_UPDATE} -eq 100 ]; then
-					# Command [ yum check-update ] returns exit value of 100 if there are packages available for an update
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
-					sudo yum -y update;
+          # Command [ yum check-update ] returns exit value of 100 if there are packages available for an update
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
+          sudo yum -y update;
 				fi;
 			fi;
 			echo "------------------------------------------------------------";
@@ -122,26 +122,26 @@ else
 			#
 			# pip
 			if [ "skip pip" == "skip pip" ]; then
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
 			else 
 				if [ $(which pip 2>'/dev/null' | wc -l;) -eq 0 ]; then
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" not found";
 				else
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" resolved to $(which pip 2>'/dev/null')";
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip install --upgrade pip;";
-					sudo pip install --upgrade pip;
-					# Update pip modules - 'newer' version of pip (version??)
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 sudo -H pip install -U;";
-					sudo pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo -H pip install -U;
-					# Update pip modules - 'older' version of pip (version??)
-					echo "";
-					echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo -H pip install -U;";
-					sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 sudo -H pip install -U;
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"pip\" resolved to $(which pip 2>'/dev/null')";
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip install --upgrade pip;";
+          sudo pip install --upgrade pip;
+          # Update pip modules - 'newer' version of pip (version??)
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 sudo -H pip install -U;";
+          sudo pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo -H pip install -U;
+          # Update pip modules - 'older' version of pip (version??)
+          echo "";
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo -H pip install -U;";
+          sudo pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 sudo -H pip install -U;
 				fi;
 			fi;
 			echo "------------------------------------------------------------";
@@ -152,12 +152,12 @@ else
 				OS_UPDATES_CHECK="$(do-release-upgrade --check-dist-upgrade-only;)";
 				OS_UPDATES_AVAILABLE="$(echo "${OS_UPDATES_CHECK}" | grep '^New release' | wc -l;)";
 				if [ "${OS_UPDATES_AVAILABLE}" == "1" ]; then
-					echo "";
-					echo "!!!  Updates exist for current operating system:";
-					echo "${OS_UPDATES_CHECK}" | grep -v '^Check';
+          echo "";
+          echo "!!!  Updates exist for current operating system:";
+          echo "${OS_UPDATES_CHECK}" | grep -v '^Check';
 				else
-					echo "";
-					echo "No operating system updates found";
+          echo "";
+          echo "No operating system updates found";
 				fi;
 			fi;
 			echo "------------------------------------------------------------";

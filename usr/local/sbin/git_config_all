@@ -131,9 +131,9 @@ else
 			else
 				# Perform update on git config-value
 				if [ "$2" == "--unset" ]; then
-					git config --file "${EACH_CONFIG}" --unset "$1";
+          git config --file "${EACH_CONFIG}" --unset "$1";
 				else
-					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
+          git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
 				fi;
 				# Show git config-value (AFTER update)
 				GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
@@ -162,9 +162,9 @@ else
 			else
 				# Perform update on git config-value
 				if [ "$2" == "--unset" ]; then
-					git config --file "${EACH_CONFIG}" --unset "$1";
+          git config --file "${EACH_CONFIG}" --unset "$1";
 				else
-					git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
+          git config --file "${EACH_CONFIG}" --replace-all "$1" "$2";
 				fi;
 				# Show git config-value (AFTER update)
 				GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");

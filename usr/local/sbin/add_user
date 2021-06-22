@@ -131,7 +131,7 @@ else
 				GROUPADD_ARR=(groupadd);
 				# Group-ID
 				if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
-					GROUPADD_ARR+=(--gid ${USER_GID});
+          GROUPADD_ARR+=(--gid ${USER_GID});
 				fi;
 				# Group Name
 				GROUPADD_ARR+=("${USER_GNAME}");

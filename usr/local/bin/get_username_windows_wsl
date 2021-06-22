@@ -85,14 +85,14 @@ else
 			cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
 				DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
 				if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
-					if [ "${1}" == "verbose" ]; then
+          if [ "${1}" == "verbose" ]; then
             echo "";
             echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
             echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
-					fi;
-					if [ ! -f "${WSL_HostUser_File}" ]; then
+          fi;
+          if [ ! -f "${WSL_HostUser_File}" ]; then
             echo -n "${EachMatchedUser}" > "${WSL_HostUser_File}"; # output the first WSL user to-be-identified
-					fi;
+          fi;
 				fi;
 			done;
 

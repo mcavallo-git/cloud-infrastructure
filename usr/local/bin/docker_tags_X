@@ -73,21 +73,21 @@ else
 			elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 				USER_SELECTION_KEY=$((0+${REPLY}));
 				if [ -z "${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}" ]; then
-					# Error: User-input key not found as an index within the Docker-Image-Tags array
-					echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
+          # Error: User-input key not found as an index within the Docker-Image-Tags array
+          echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
 
 				else
 
-					# Success - User selected a valid tag
-					E1="LINES=$(tput lines)";
-					E2="COLUMNS=$(tput cols)";
-					DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
+          # Success - User selected a valid tag
+          E1="LINES=$(tput lines)";
+          E2="COLUMNS=$(tput cols)";
+          DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
 
-					unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
-					if [ -v DOCKER_RUN_ARGS ] && [ -n "${DOCKER_RUN_ARGS}" ]; then
+          unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
+          if [ -v DOCKER_RUN_ARGS ] && [ -n "${DOCKER_RUN_ARGS}" ]; then
             # Apply predefined docker-run arguments
             DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
-					else
+          else
             read -p "Bash into the docker, now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               # Create & Bash into the Docker
@@ -97,13 +97,13 @@ else
               DOCKER_RUN_ARR+=("-d");
               DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
             fi;
-					fi;
+          fi;
 
-					echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
-					# docker run ${DOCKER_RUN_PARAMS};
-					docker run ${DOCKER_RUN_ARR[@]};
+          echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
+          # docker run ${DOCKER_RUN_PARAMS};
+          docker run ${DOCKER_RUN_ARR[@]};
 
-					# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+          # docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
 
 				fi;
 

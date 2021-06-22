@@ -118,8 +118,8 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 			for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
 				EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
 				if [ "${NEXT_ARG}" == "${EACH_PROTO}" ]; then
-					PROTO_OVERRIDE="${EACH_PROTO}";
-					break;
+          PROTO_OVERRIDE="${EACH_PROTO}";
+          break;
 				fi;
 			done;
 			if [ -n "${PROTO_OVERRIDE}" ]; then
@@ -127,26 +127,26 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 				echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
 			else
 				if [ -n "${PROTO_STARTTLS}" ]; then
-					echo "";
-					echo "Info:  User passed a blank/undefined value for the \"${EACH_ARG}\" argument";
-					echo "";
-					read -p "  Do you want to use protocol-specific (STARTTLS) messaging (openssl s_client -starttls \"${PROTO_STARTTLS}\")? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-					if [[ $REPLY =~ ^[Yy]$ ]]; then
+          echo "";
+          echo "Info:  User passed a blank/undefined value for the \"${EACH_ARG}\" argument";
+          echo "";
+          read -p "  Do you want to use protocol-specific (STARTTLS) messaging (openssl s_client -starttls \"${PROTO_STARTTLS}\")? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+          if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo "Confirmed";
             echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
-					else
+          else
             echo "Denied";
             echo "Protocol-specific (STARTTLS) messaging will NOT be used (REMOVED: openssl s_client -starttls \"${PROTO_STARTTLS}\")";
             PROTO_STARTTLS="";
-					fi;
+          fi;
 				else
-					echo "";
-					echo "Invalid STARTTLS argument passed:  \"${EACH_ARG}\" ${NEXT_ARG}"
-					echo "  |--> For an exhaustive list of available starttls protocols, run 'man openssl-sclient' and search for '-starttls' (which will list said protocols)";
-					echo "";
-					echo "Protocol-specific (STARTTLS) messaging will NOT be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
-					echo "";
-					PROTO_STARTTLS="";
+          echo "";
+          echo "Invalid STARTTLS argument passed:  \"${EACH_ARG}\" ${NEXT_ARG}"
+          echo "  |--> For an exhaustive list of available starttls protocols, run 'man openssl-sclient' and search for '-starttls' (which will list said protocols)";
+          echo "";
+          echo "Protocol-specific (STARTTLS) messaging will NOT be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
+          echo "";
+          PROTO_STARTTLS="";
 				fi;
 			fi;
 		fi;

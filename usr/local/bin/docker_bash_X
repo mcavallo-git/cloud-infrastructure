@@ -41,19 +41,19 @@ if [ -n "$0" ]; then
 			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
 				USER_SELECTION_KEY=$((0+${REPLY}));
 				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
-					echo "Error: Invalid selection of \"${REPLY}\"";
+          echo "Error: Invalid selection of \"${REPLY}\"";
 				else
-					E1="LINES=$(tput lines)";
-					E2="COLUMNS=$(tput cols)";
-					CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
-					DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
-					echo "        |----> ID: \"${CONTAINER_ID}\"";
-					echo "        |-> Image: \"${DOCKER_IMAGE}\"";
-					echo "";
-					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
-					# docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
-					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>"/dev/null" || \
-					docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
+          E1="LINES=$(tput lines)";
+          E2="COLUMNS=$(tput cols)";
+          CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
+          DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+          echo "        |----> ID: \"${CONTAINER_ID}\"";
+          echo "        |-> Image: \"${DOCKER_IMAGE}\"";
+          echo "";
+          # docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
+          # docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
+          docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>"/dev/null" || \
+          docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
 				fi;
 			else
 				echo "";

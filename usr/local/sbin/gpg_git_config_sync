@@ -737,23 +737,23 @@ fi;
 				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
 				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
 				if [ -z "${TEST_SSH_KEY}" ]; then
-					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
-					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
-					EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
-					EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
-					# SSH_KEY="${EACH_SSH_KEY_WIN32}";
-					SSH_KEY="${EACH_SSH_KEY_LINUX}";
-					COMMIT_EMAIL="${TEST_EMAIL}";
-					COMMIT_NAME="${TEST_FULLNAME}";
-					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
-					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
-					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+          echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+          # SSH_KEY="${EACH_SSH_KEY_WIN32}";
+          SSH_KEY="${EACH_SSH_KEY_LINUX}";
+          COMMIT_EMAIL="${TEST_EMAIL}";
+          COMMIT_NAME="${TEST_FULLNAME}";
+          TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+          LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+          if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
             GPG_KEY_ID="${TEST_GPG_KEY}";
             echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\" & Full-Name \"${COMMIT_NAME}\"";
-					else
+          else
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
-					fi;
+          fi;
 				fi;
 			fi;
 		fi;
@@ -766,23 +766,23 @@ fi;
 				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
 				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
 				if [ -z "${TEST_SSH_KEY}" ]; then
-					echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
 				else
-					echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
-					EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
-					EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
-					# SSH_KEY="${EACH_SSH_KEY_WIN32}";
-					SSH_KEY="${EACH_SSH_KEY_LINUX}";
-					COMMIT_EMAIL="${TEST_EMAIL}";
-					COMMIT_NAME="${TEST_FULLNAME}";
-					TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
-					LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
-					if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
+          echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+          # SSH_KEY="${EACH_SSH_KEY_WIN32}";
+          SSH_KEY="${EACH_SSH_KEY_LINUX}";
+          COMMIT_EMAIL="${TEST_EMAIL}";
+          COMMIT_NAME="${TEST_FULLNAME}";
+          TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+          LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+          if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
             GPG_KEY_ID="${TEST_GPG_KEY}";
             echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\" & Full-Name \"${COMMIT_NAME}\"";
-					else
+          else
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
-					fi;
+          fi;
 				fi;
 			fi;
 		fi;

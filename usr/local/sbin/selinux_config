@@ -92,26 +92,26 @@ else
 			else
 				NEXT_ARG=${ARGS[$((${i}+1))]};
 				if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-					NEXT_ARG="";
+          NEXT_ARG="";
 				fi;
 			fi;
 
 			if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
 				if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
-					ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
+          ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
 				fi;
 
 				if [ "${EACH_ARG}" == "-d" ] || [ "${EACH_ARG}" == "--disable" ]; then
-					ARGS_SELINUX_DISABLE=1; # Disable SELinux
+          ARGS_SELINUX_DISABLE=1; # Disable SELinux
 				fi;
 
 				if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
-					ARGS_SELINUX_ENABLE=1; # Enable SELinux
+          ARGS_SELINUX_ENABLE=1; # Enable SELinux
 				fi;
 	
 				if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
-					ARGS_SELINUX_STATUS=1; # Get SELinux status
+          ARGS_SELINUX_STATUS=1; # Get SELinux status
 				fi;
 	
 			fi;
@@ -141,18 +141,18 @@ else
 				# ------------------------------------------------------------
 				# SELinux - Disable
 				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
-					# SELinux already disabled in every location
-					echo "Info:  SELinux is already disabled";
-					EXIT_CODE=0;
+          # SELinux already disabled in every location
+          echo "Info:  SELinux is already disabled";
+          EXIT_CODE=0;
 
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
-					# SELinux already disabled in every config-file, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="SELinux is already configured as disabled, but requires machine to be rebooted";
-					EXIT_CODE=0;
+          # SELinux already disabled in every config-file, but still awaiting reboot
+          REBOOT_REQUIRED_MSG="SELinux is already configured as disabled, but requires machine to be rebooted";
+          EXIT_CODE=0;
 
 				else
-					# SELinux NOT already disabled in every location
-					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+          # SELinux NOT already disabled in every location
+          if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
             echo "Warning:  This will DISABLE SELinux on this system (and may allow unwarranted access to necessary services, such as SSH)";
             READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
@@ -167,9 +167,9 @@ else
               echo "Denied - Exiting...";
               exit 1;
             fi;
-					fi;
+          fi;
 
-					if [ "${SERVICE_CONF2_STATUS,,}" != "disabled" ] || [ "${SERVICE_CONF2_STATUS,,}" != "disabled" ]; then
+          if [ "${SERVICE_CONF2_STATUS,,}" != "disabled" ] || [ "${SERVICE_CONF2_STATUS,,}" != "disabled" ]; then
             # Update config file(s) 
             if [ "${SERVICE_CONF1_STATUS,,}" != "disabled" ]; then
               if [ -f "${SERVICE_CONF1_PATH}" ]; then
@@ -182,13 +182,13 @@ else
               fi;
             fi;
             REBOOT_REQUIRED_MSG="Reboot required to finish disabling SELinux";
-					else
+          else
             # Set SELinux enforcement-setting
             setenforce 0; EXIT_CODE=$?;
             if [ ${EXIT_CODE} -eq 0 ]; then
               REBOOT_REQUIRED_MSG="Reboot required to finish disabling SELinux";
             fi;
-					fi;
+          fi;
 
 				fi;
 
@@ -197,18 +197,18 @@ else
 				# ------------------------------------------------------------
 				# SELinux - Enable
 				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
-					# SELinux already enabled in every location
-					echo "Info:  SELinux is already enabled";
-					EXIT_CODE=0;
+          # SELinux already enabled in every location
+          echo "Info:  SELinux is already enabled";
+          EXIT_CODE=0;
 
 				elif [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
-					# SELinux already enabled in every location, but still awaiting reboot
-					REBOOT_REQUIRED_MSG="SELinux is already configured as enabled, but requires machine to be rebooted";
-					EXIT_CODE=0;
+          # SELinux already enabled in every location, but still awaiting reboot
+          REBOOT_REQUIRED_MSG="SELinux is already configured as enabled, but requires machine to be rebooted";
+          EXIT_CODE=0;
 
 				else
-					# SELinux NOT already enabled in every location
-					if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+          # SELinux NOT already enabled in every location
+          if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
             echo "Warning:  This will ENABLE SELinux on this system (and may restrict access to necessary services, such as SSH)";
             READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
@@ -223,9 +223,9 @@ else
               echo "Denied - Exiting...";
               exit 1;
             fi;
-					fi;
+          fi;
 
-					if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ] || [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
+          if [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ] || [ "${SERVICE_CONF2_STATUS,,}" != "enforcing" ]; then
             # Update config file(s)
             if [ "${SERVICE_CONF1_STATUS,,}" != "enforcing" ]; then
               if [ -f "${SERVICE_CONF1_PATH}" ]; then
@@ -238,13 +238,13 @@ else
               fi;
             fi;
             REBOOT_REQUIRED_MSG="Reboot required to finish enabling SELinux";
-					else
+          else
             # Set SELinux enforcement-setting
             setenforce 1; EXIT_CODE=$?;
             if [ ${EXIT_CODE} -eq 0 ]; then
               REBOOT_REQUIRED_MSG="Reboot required to finish enabling SELinux";
             fi;
-					fi;
+          fi;
 				fi;
 
 
@@ -256,11 +256,11 @@ else
 				echo "------------------------------------------------------------";
 				echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
 				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
-					echo "1 (SELinux is DISABLED - updating this requires a reboot)";
+          echo "1 (SELinux is DISABLED - updating this requires a reboot)";
 				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
-					echo "0 (SELinux is ENABLED - updating this requires a reboot)";
+          echo "0 (SELinux is ENABLED - updating this requires a reboot)";
 				else
-					selinuxenabled; echo $?;
+          selinuxenabled; echo $?;
 				fi;
 
 				echo "------------------------------------------------------------";

@@ -64,10 +64,10 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 				yum -y update && yum -y install --skip-broken git;
 			else
 				if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
-					# Alpine
-					echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Alpine Linux) - Attempting to install via:";
-					echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apk update && apk add git;";
-					apk update && apk add git;
+          # Alpine
+          echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Alpine Linux) - Attempting to install via:";
+          echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apk update && apk add git;";
+          apk update && apk add git;
 				fi;
 			fi;
 		fi;

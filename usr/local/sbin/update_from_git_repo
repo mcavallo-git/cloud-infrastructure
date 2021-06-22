@@ -146,11 +146,11 @@ else
 				echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
 				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
 				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
-					EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
-					DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
-					USERNAME_RPAD="        "$(printf '%-'${USERNAMES_MOSTCHARS}'s' ↪ ${EACH_SSH_USER});
-					# Only copy files to SSH-Enabled user home-directories (plus root)
-					if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
+          EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
+          DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
+          USERNAME_RPAD="        "$(printf '%-'${USERNAMES_MOSTCHARS}'s' ↪ ${EACH_SSH_USER});
+          # Only copy files to SSH-Enabled user home-directories (plus root)
+          if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
             DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
             if [ -d "${SRC_FULLPATH}" ] && [ -f "${SRC_FULLPATH}/"* ]; then
               # Directories containing at least one file
@@ -167,7 +167,7 @@ else
               chmod 600 "${DEST_FULLPATH}";
             fi;
             echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
-					fi;
+          fi;
 				done;
 			fi;
 		done;

@@ -42,22 +42,22 @@ else
 			read -p "DISABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r; echo ""; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
-					--regexp-extended \
-					--in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
-					--expression='/^# Allow ICMPv6 Pinging$/d' \
-					--expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/d' \
-					"/etc/ufw/before6.rules";
+          --regexp-extended \
+          --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
+          --expression='/^# Allow ICMPv6 Pinging$/d' \
+          --expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT$/d' \
+          "/etc/ufw/before6.rules";
 				RESTART_SERVICE_UFW=1;
 			fi;
 		else
 			echo -e "\n""IPv6 Pinging is currently DISABLED"; read -p "ENABLE IPv6 Pinging, Now? ( y/n )  " -n 1 -t 20 -r;
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
-					--regexp-extended \
-					--in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
-					--expression='/^#.+line or these rules.+$/d' \
-					--expression='/^COMMIT$/i\# Allow ICMPv6 Pinging\n-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
-					"/etc/ufw/before6.rules";
+          --regexp-extended \
+          --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
+          --expression='/^#.+line or these rules.+$/d' \
+          --expression='/^COMMIT$/i\# Allow ICMPv6 Pinging\n-A ufw6-before-input -p icmpv6 --icmpv6-type echo-request -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
+          "/etc/ufw/before6.rules";
 				RESTART_SERVICE_UFW=1;
 			fi;
 		fi;
@@ -73,11 +73,11 @@ else
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
-					--regexp-extended \
-					--in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
-					--expression='/^# Allow ICMPv6 Multicast$/d' \
-					--expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/d' \
-					"/etc/ufw/before6.rules";
+          --regexp-extended \
+          --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
+          --expression='/^# Allow ICMPv6 Multicast$/d' \
+          --expression='/^-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT$/d' \
+          "/etc/ufw/before6.rules";
 				RESTART_SERVICE_UFW=1;
 			fi;
 		else
@@ -86,11 +86,11 @@ else
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 				sed \
-					--regexp-extended \
-					--in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
-					--expression='/^#.+line or these rules.+$/d' \
-					--expression='/^COMMIT$/i\# Allow ICMPv6 Multicast\n-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
-					"/etc/ufw/before6.rules";
+          --regexp-extended \
+          --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" \
+          --expression='/^#.+line or these rules.+$/d' \
+          --expression='/^COMMIT$/i\# Allow ICMPv6 Multicast\n-A ufw6-before-input -p icmpv6 --icmpv6-type 130 -j ACCEPT\n# dont delete the COMMIT line or these rules wont be processed' \
+          "/etc/ufw/before6.rules";
 				RESTART_SERVICE_UFW=1;
 			fi;
 		fi;

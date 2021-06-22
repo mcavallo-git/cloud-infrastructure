@@ -447,7 +447,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 												#   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
 												#   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
 												if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
-													rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
+                          rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
 												fi;
 												NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
 											else

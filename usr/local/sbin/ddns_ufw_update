@@ -610,20 +610,20 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
     # 		fi;
     # 		if [ "${EACH_UFW_PORT}" == "${RESOLVED_PORT}" ]; then # Matched on valid Port
     # 			if [ "${EACH_UFW_PROTO}" == "${RESOLVED_PROTOCOL}" ]; then # Matched on valid Protocol
-    # 				# All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
-    # 				DELETE_RULE=0;
-    # 				if [ ${DEBUG_MODE} -eq 1 ]; then
+    #         # All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
+    #         DELETE_RULE=0;
+    #         if [ ${DEBUG_MODE} -eq 1 ]; then
     #           echo "Debug:  Match success (CIDRv4 + Port + Proto) - [ \"${EACH_UFW_PROTO}\" == \"${RESOLVED_PROTOCOL}\" ] returned false";
-    # 				fi;
-    # 				break;
+    #         fi;
+    #         break;
     # 			else
-    # 				if [ ${DEBUG_MODE} -eq 1 ]; then
+    #         if [ ${DEBUG_MODE} -eq 1 ]; then
     #           echo "Debug:  Match failed (protocol) - [ \"${EACH_UFW_PROTO}\" == \"${RESOLVED_PROTOCOL}\" ] returned false";
-    # 				fi;
+    #         fi;
     # 			fi;
     # 		else
     # 			if [ ${DEBUG_MODE} -eq 1 ]; then
-    # 				echo "Debug:  Match failed (port) - [ \"${EACH_UFW_PORT}\" == \"${RESOLVED_PORT}\" ] returned false";
+    #         echo "Debug:  Match failed (port) - [ \"${EACH_UFW_PORT}\" == \"${RESOLVED_PORT}\" ] returned false";
     # 			fi;
     # 		fi;
     # 	done;

@@ -369,28 +369,28 @@ else
 										if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$ ]]; then
 											# Host is formatted using IP or CIDR notation (address resolution not required)
 											if [[ ${WHITELIST_HOST} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
-												# Add "/32" to the end of string, if no CIDR notation is found - ex: 192.168.0.1/32
-												RESOLVED_IPv4="${WHITELIST_HOST}";
-												RESOLVED_CIDRv4="${WHITELIST_HOST}/32";
+                        # Add "/32" to the end of string, if no CIDR notation is found - ex: 192.168.0.1/32
+                        RESOLVED_IPv4="${WHITELIST_HOST}";
+                        RESOLVED_CIDRv4="${WHITELIST_HOST}/32";
 											else
-												# Valid IPv4 in CIDR Notation - ex: 192.168.0.0/16
-												RESOLVED_IPv4=$(echo ${WHITELIST_HOST} | cut -d"/" -f1);
-												RESOLVED_CIDRv4="${WHITELIST_HOST}";
+                        # Valid IPv4 in CIDR Notation - ex: 192.168.0.0/16
+                        RESOLVED_IPv4=$(echo ${WHITELIST_HOST} | cut -d"/" -f1);
+                        RESOLVED_CIDRv4="${WHITELIST_HOST}";
 											fi;
 										else
 											# Host is NOT formatted using IP or CIDR notation (address resolution is required)
 											HOST_ADDRESS_LOOKUP="$(dig +short "${WHITELIST_HOST}" | tail -n 1 2>'/dev/null';)";
 											if [[ ${HOST_ADDRESS_LOOKUP} =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(())$ ]]; then
-												# IPv4 resolved successfully
-												RESOLVED_IPv4="${HOST_ADDRESS_LOOKUP}"; 
-												RESOLVED_CIDRv4="${HOST_ADDRESS_LOOKUP}/32"; 
-												WHITELIST_FQDN="${WHITELIST_HOST}";
+                        # IPv4 resolved successfully
+                        RESOLVED_IPv4="${HOST_ADDRESS_LOOKUP}"; 
+                        RESOLVED_CIDRv4="${HOST_ADDRESS_LOOKUP}/32"; 
+                        WHITELIST_FQDN="${WHITELIST_HOST}";
 											else
-												# ERROR - Unable to resolve host
-												echo "Error:  Address resolution failed for host \"${WHITELIST_HOST}\"";
-												RESOLVED_IPv4=""
-												RESOLVED_CIDRv4="";
-												WHITELIST_FQDN="";
+                        # ERROR - Unable to resolve host
+                        echo "Error:  Address resolution failed for host \"${WHITELIST_HOST}\"";
+                        RESOLVED_IPv4=""
+                        RESOLVED_CIDRv4="";
+                        WHITELIST_FQDN="";
 											fi;
 
 										fi;
@@ -443,21 +443,21 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 											# Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
 											NEXT_NGINX_LINE="";
 											if [ -n "${WHITELIST_FQDN}" ]; then
-												# DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
-												#   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
-												#   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
-												if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
+                        # DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
+                        #   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
+                        #   |--> Needed upon update to allow CIDRv4 notation in whitelist files (21-Apr-2020) which required a different approach for nginx-conf filenames, as CIDRv4 strings by-definition contain a forward-slash '/' character
+                        if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
                           rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
-												fi;
-												NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
+                        fi;
+                        NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
 											else
-												NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};";
+                        NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};";
 											fi;
 											# Append this line to the total string of lines to put into the nginx service-config-file
 											if [ -z "${NGINX_DDNS_RESULTS}" ]; then
-												NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
+                        NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
 											else
-												NGINX_DDNS_RESULTS="${NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
+                        NGINX_DDNS_RESULTS="${NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
 											fi;
 										fi;
 										# END NGINX ONLY

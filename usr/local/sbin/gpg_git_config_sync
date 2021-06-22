@@ -159,9 +159,9 @@ START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
 
 DISK_ROOT="";
 if [ -d "/c" ]; then
-DISK_ROOT="/c";
+  DISK_ROOT="/c";
 elif [ -d "/mnt/c" ]; then
-DISK_ROOT="/mnt/c";
+  DISK_ROOT="/mnt/c";
 fi;
 
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";

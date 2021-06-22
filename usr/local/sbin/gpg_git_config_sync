@@ -886,20 +886,20 @@ exit 0;
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 # 		if [ -z "${GPG_KEY_ID}" ]; then
-# 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+#       echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 # 		else
-# 			# Strings (GPG)
-# 			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
-# 			# Booleans
-# 			KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
-# 			# Unsets
-# 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+#       # Strings (GPG)
+#       KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
+#       # Booleans
+#       KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
+#       # Unsets
+#       KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 # 		fi;
 # 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-# 			echo "------------------------------------------------------------";
-# 			echo "$(git config --local --list --show-origin)";
-# 			echo "------------------------------------------------------------";
+#       echo "------------------------------------------------------------";
+#       echo "$(git config --local --list --show-origin)";
+#       echo "------------------------------------------------------------";
 # 		fi;
 # 	fi;
 # done;
@@ -913,22 +913,22 @@ exit 0;
 # 	PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # 	for REPO in "${PERSONAL_PRIVATE_REPOS_NO_DUPES[@]}"; do
 # 		if [ -d "${REPOS_DIR}/${REPO}" ]; then
-# 			cd "${REPOS_DIR}/${REPO}";
-# 			GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-# 			GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
-# 			GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
-# 			echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
-# 			# Strings
-# 			KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
-# 			# Strings - Formatting (Line-Endings/Syntax-Highlighting)
-# 			KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
-# 			KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
-# 			if [ -z "${GPG_KEY_ID}" ]; then
+#       cd "${REPOS_DIR}/${REPO}";
+#       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+#       GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+#       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
+#       echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
+#       # Strings
+#       KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
+#       # Strings - Formatting (Line-Endings/Syntax-Highlighting)
+#       KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
+#       KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
+#       if [ -z "${GPG_KEY_ID}" ]; then
 #         echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
-# 			else
+#       else
 #         # Strings (GPG)
 #         KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
 #         KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
@@ -936,13 +936,13 @@ exit 0;
 #         KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
 #         # Unsets
 #         KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
-# 			fi;
-# 			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
+#       fi;
+#       if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
 #         echo "------------------------------------------------------------";
 #         echo "$(git config --local --list --show-origin)";
 #         echo "$(git config --local --list --show-origin)";
 #         echo "------------------------------------------------------------";
-# 			fi;
+#       fi;
 # 		fi;
 # 	done;
 # fi;
@@ -988,20 +988,20 @@ exit 0;
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 # 		if [ -z "${GPG_KEY_ID}" ]; then
-# 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+#       echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 # 		else
-# 			# Strings (GPG)
-# 			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
-# 			# Booleans
-# 			KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
-# 			# Unsets
-# 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+#       # Strings (GPG)
+#       KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
+#       # Booleans
+#       KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
+#       # Unsets
+#       KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 # 		fi;
 # 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-# 			echo "------------------------------------------------------------";
-# 			echo "$(git config --local --list --show-origin)";
-# 			echo "------------------------------------------------------------";
+#       echo "------------------------------------------------------------";
+#       echo "$(git config --local --list --show-origin)";
+#       echo "------------------------------------------------------------";
 # 		fi;
 # 	fi;
 # done;
@@ -1028,20 +1028,20 @@ exit 0;
 # 		KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 # 		KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 # 		if [ -z "${GPG_KEY_ID}" ]; then
-# 			echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+#       echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 # 		else
-# 			# Strings (GPG)
-# 			KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
-# 			KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
-# 			# Booleans
-# 			KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
-# 			# Unsets
-# 			KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+#       # Strings (GPG)
+#       KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
+#       # Booleans
+#       KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
+#       # Unsets
+#       KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 # 		fi;
 # 		if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-# 			echo "------------------------------------------------------------";
-# 			echo "$(git config --local --list --show-origin)";
-# 			echo "------------------------------------------------------------";
+#       echo "------------------------------------------------------------";
+#       echo "$(git config --local --list --show-origin)";
+#       echo "------------------------------------------------------------";
 # 		fi;
 # 	fi;
 # done;

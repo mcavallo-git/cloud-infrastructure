@@ -72,16 +72,16 @@ fi;
 # # Setup Duck-DNS DDNS Hostname(s)
 # DUCKDNS_SECRET="${HOME}/.duck-dns/secret";
 # if [ ! -f "${DUCKDNS_SECRET}" ]; then
-# 	if [ ! -d "$(dirname ${DUCKDNS_SECRET})" ]; then
+#   if [ ! -d "$(dirname ${DUCKDNS_SECRET})" ]; then
 #     mkdir -p "$(dirname ${DUCKDNS_SECRET})";
-# 	fi;
-# 	curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
+#   fi;
+#   curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
 # fi;
 # 
 # # Set permissions as-intended for the secrets file, then read it in and update the DDNS Hostname
 # if [ -f "${DUCKDNS_SECRET}" ]; then
-# 	chmod 0400 "${DUCKDNS_SECRET}";
-# 	curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
+#   chmod 0400 "${DUCKDNS_SECRET}";
+#   curl --max-time 10 --connect-timeout 10 "$(cat ${DUCKDNS_SECRET} | base64 --decode)" && echo "";
 # fi;
 # 
 # ------------------------------------------------------------

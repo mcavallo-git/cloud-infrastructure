@@ -4,8 +4,8 @@
 #
 # 
 # map "$hostname:$request_uri" $redirect_action {
-# 	default 0;
-# 	"~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
+#   default 0;
+#   "~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
 # }
 # 
 # 
@@ -276,13 +276,13 @@ server {
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
   # if ($subdomain ~* "^cv.$") {
-  # 	root /var/www/html/wordpress; # webroot
-  # 	index index.php;
-  # 	location / {
+  #   root /var/www/html/wordpress; # webroot
+  #   index index.php;
+  #   location / {
   #     try_files $uri $uri/ /index.php?$args;
-  # 	}
+  #   }
   #            ~* [regex match, case-insensitive]
-  # 	location ~* \.php$ { #  *.php requests
+  #   location ~* \.php$ { #  *.php requests
   #     try_files $uri $uri/ /index.php?$args;
   #     fastcgi_read_timeout 120;
   #     fastcgi_index   index.php;
@@ -290,7 +290,7 @@ server {
   #     fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
   #     fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
   #     fastcgi_pass    unix:/run/php/php7.2-fpm.sock;
-  # 	}
+  #   }
   # }
 
 }

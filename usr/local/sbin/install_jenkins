@@ -121,8 +121,8 @@ else
   # Check for the Jenkins service locally
   # SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
   # if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-  # 	# Jenkins is already installed
-  # 	echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
+  #   # Jenkins is already installed
+  #   echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
   # else
 
   # ------------------------------------------------------------
@@ -314,13 +314,13 @@ else
   # echo "*************************************************************";
   # Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
   # if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
-  # 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
-  # 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-  # 	sleep 1;
+  #   SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
+  #   tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
+  #   sleep 1;
   # fi;
   # while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
-  # 	sleep 2;
-  # 	echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
+  #   sleep 2;
+  #   echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
   # done;
   #
 

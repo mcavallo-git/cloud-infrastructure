@@ -143,7 +143,7 @@ fi;
 if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "Y" ]]; then
   
   # Append the newly created key's public-file onto [ /etc/ssh/authorized_keys/$USER_NAME ]
-  # 	Note 1: The public-key matches with client-passed private-key at time of ssh-connection
+  #   Note 1: The public-key matches with client-passed private-key at time of ssh-connection
   #   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
   echo "";
   echo "    Appending Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";

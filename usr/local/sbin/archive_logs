@@ -88,15 +88,15 @@ else
 
       ### Archive each log-file found (which is not the latest logfile, as-to avoid collisions with application file-access)
       # for EACH_FILE in $(find "${DIR_LOGS}/${SERVICE_NAME}/" -type f -name "${GLOB_PATTERN}"); do
-      # 	BASENAME=$(basename "${EACH_FILE}");
-      # 	PATH_LOGS="${DIR_LOGS}/${SERVICE_NAME}/${BASENAME}"; 
-      # 	PATH_ARCH="${DIR_ARCH}/${SERVICE_NAME}/${BASENAME}";
-      # 	if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
+      #   BASENAME=$(basename "${EACH_FILE}");
+      #   PATH_LOGS="${DIR_LOGS}/${SERVICE_NAME}/${BASENAME}"; 
+      #   PATH_ARCH="${DIR_ARCH}/${SERVICE_NAME}/${BASENAME}";
+      #   if [ -e "${PATH_LOGS}" ] && [ ! -e "${PATH_ARCH}" ]; then
       #     echo "Archiving log file  [ ${PATH_LOGS} ]  to path  [${PATH_ARCH} ]  ...";
       #     mv "${PATH_LOGS}" "${PATH_ARCH}";
       #     chmod 0400 "${PATH_ARCH}";
       #     ln -sf "${PATH_ARCH}" "${PATH_LOGS}";
-      # 	fi;
+      #   fi;
       # done;
 
     fi;

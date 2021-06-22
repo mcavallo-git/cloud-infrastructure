@@ -154,9 +154,9 @@ MATCH_CHOWN=$(dirname "${ALL_REPOS_DIR}");
 GIT_CHOWN_UID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $3}');
 GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
 # if [ "${GIT_CHOWN_UID}" != 0 ]; then
-# 	GIT_CHOWN_USERNAME=$(id --user --name "${GIT_CHOWN_UID}");
+#   GIT_CHOWN_USERNAME=$(id --user --name "${GIT_CHOWN_UID}");
 # else
-# 	GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
+#   GIT_CHOWN_USERNAME=$(getent passwd "${GIT_CHOWN_UID}" | cut -d: -f1); # calling [ id --name 0 ] is invalid
 # fi;
 # GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
 
@@ -293,12 +293,12 @@ ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
 FIRST_CLONE_OF_REPO="0";
 if [ ! -d "${GIT_GITDIR}" ]; then
   FIRST_CLONE_OF_REPO="1";
-# 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
-# 	cd "${GIT_LOCAL_CEILING}";
-# 	export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
-# 	# export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
-# 	${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
-# 	unset GIT_SSH_COMMAND;
+#   echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
+#   cd "${GIT_LOCAL_CEILING}";
+#   export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
+#   # export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
+#   ${GIT_CLI_NOCONF} clone "${ORIGIN_GIT}";
+#   unset GIT_SSH_COMMAND;
 fi;
 
 cd "${GIT_WORK_TREE}";

@@ -21,7 +21,7 @@ fi;
 # ------------------------------------------------------------
 #
 # INSTALL "Gpg4win" FOR WINDOWS, FIRST
-# 	|--> Updated Installer for Gpg4win @ https://www.gpg4win.org/thanks-for-download.html
+#   |--> Updated Installer for Gpg4win @ https://www.gpg4win.org/thanks-for-download.html
 #
 # ------------------------------------------------------------
 #
@@ -309,7 +309,7 @@ fi;
 #  |--> There are many places in Windows that GnuPG will look for the pin-entry executable
 #  |
 #  |--> Quote from [   man gpg-agent   ]  :
-# 	"
+#   "
 #     ...
 #     On a Windows platform the default is to use the first existing program from this list: ‘bin\pinen‐
 #     try.exe’,  ‘..\Gpg4win\bin\pinentry.exe’,  ‘..\Gpg4win\pinentry.exe’, ‘..\GNU\GnuPG\pinentry.exe’,
@@ -492,35 +492,35 @@ fi;
 
 # Personal Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
 # if [ ! -f "${GIT_SSH_PERSONAL}" ]; then
-# 	GPG_KEY_ID_PERSONAL="";
-# 	GPG_PASS_FILE_PERSONAL="";
+#   GPG_KEY_ID_PERSONAL="";
+#   GPG_PASS_FILE_PERSONAL="";
 # fi;
 
 # # Work Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
 # if [ ! -f "${GIT_SSH_WORK}" ]; then
-# 	GPG_KEY_ID_WORK="";
-# 	GPG_PASS_FILE_WORK="";
+#   GPG_KEY_ID_WORK="";
+#   GPG_PASS_FILE_WORK="";
 # fi;
 
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
-# 	#  PERSONAL SSH-KEY EXISTS
-# 	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
-# 	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}";
-# 	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_PERSONAL}";
-# 	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_PERSONAL}";
+#   #  PERSONAL SSH-KEY EXISTS
+#   # GLOBAL_COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
+#   # GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}";
+#   GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_PERSONAL}";
+#   # GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_PERSONAL}";
 
 # elif [ ! -f "${GIT_SSH_PERSONAL}" ] && [ -f "${GIT_SSH_WORK}" ]; then
-# 	#  PERSONAL SSH-KEY DOESN'T EXIST BUT WORK SSH-KEY EXISTS
-# 	# GLOBAL_COMMIT_NAME="${COMMIT_NAME_WORK}";
-# 	# GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_WORK}";
-# 	GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_WORK}";
-# 	# GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_WORK}";
+#   #  PERSONAL SSH-KEY DOESN'T EXIST BUT WORK SSH-KEY EXISTS
+#   # GLOBAL_COMMIT_NAME="${COMMIT_NAME_WORK}";
+#   # GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_WORK}";
+#   GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_WORK}";
+#   # GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_WORK}";
 
 # else 
-# 	echo "";
-# 	echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
-# 	sleep 60;
-# 	exit 1;
+#   echo "";
+#   echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
+#   sleep 60;
+#   exit 1;
 
 # fi;
 
@@ -580,9 +580,9 @@ fi;
 # echo "";
 # echo "[ GLOBAL ] Git-Config Updated:";
 # if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "0" ]; then
-# 	echo "------------------------------------------------------------";
-# 	echo "$(git config --global --list;)";
-# 	echo "------------------------------------------------------------";
+#   echo "------------------------------------------------------------";
+#   echo "$(git config --global --list;)";
+#   echo "------------------------------------------------------------";
 # fi;
 
 
@@ -592,25 +592,25 @@ fi;
 
 # SSH-Key, Email
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
-# 	COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
-# 	COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
-# 	SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
-# 	if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
+#   COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
+#   COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
+#   SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
+#   if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_PERSONAL}"; # GPG-Key
-# 	fi;
+#   fi;
 # elif [ -f "${GIT_SSH_WORK}" ]; then
-# 	COMMIT_NAME="${COMMIT_NAME_WORK}";
-# 	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
-# 	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
-# 	if [ -n "${GPG_KEY_ID_WORK}" ]; then
+#   COMMIT_NAME="${COMMIT_NAME_WORK}";
+#   COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
+#   SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
+#   if [ -n "${GPG_KEY_ID_WORK}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
-# 	fi;
+#   fi;
 # else
-# 	echo "";
-# 	echo "Error: No SSH-Key(s) found for personal git-repos";
-# 	echo "";
-# 	sleep 60;
-# 	exit 1;
+#   echo "";
+#   echo "Error: No SSH-Key(s) found for personal git-repos";
+#   echo "";
+#   sleep 60;
+#   exit 1;
 # fi;
 
 
@@ -836,17 +836,17 @@ fi;
       echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
 
       # for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-      # 	EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-      # 	EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-      # 	echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+      #   EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+      #   EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+      #   echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
       # done;
 
       # EACH_REPO_BASENAME
 
       # for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-      # 	if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+      #   if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
       #     DIR_IS_EXCLUDED=1;
-      # 	fi;
+      #   fi;
       # done;
 
       # ${GIT_SYNC_REPOS_ID1}
@@ -871,7 +871,7 @@ exit 0;
 # #
 # PERSONAL_PUBLIC_REPOS_NO_DUPES=($(echo "${PERSONAL_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
-# 	if [ -d "${REPOS_DIR}/${REPO}" ]; then
+#   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
 #     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
@@ -901,7 +901,7 @@ exit 0;
 #       echo "$(git config --local --list --show-origin)";
 #       echo "------------------------------------------------------------";
 #     fi;
-# 	fi;
+#   fi;
 # done;
 
 
@@ -910,8 +910,8 @@ exit 0;
 # #		 |--> PERSONAL, PRIVATE
 # #
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
-# 	PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-# 	for REPO in "${PERSONAL_PRIVATE_REPOS_NO_DUPES[@]}"; do
+#   PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+#   for REPO in "${PERSONAL_PRIVATE_REPOS_NO_DUPES[@]}"; do
 #     if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #       cd "${REPOS_DIR}/${REPO}";
 #       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
@@ -944,7 +944,7 @@ exit 0;
 #         echo "------------------------------------------------------------";
 #       fi;
 #     fi;
-# 	done;
+#   done;
 # fi;
 
 
@@ -953,17 +953,17 @@ exit 0;
 # # ------------------------------------------------------------
 # GPG_KEY_ID="";
 # if [ -f "${GIT_SSH_WORK}" ]; then
-# 	COMMIT_NAME="${COMMIT_NAME_WORK}";
-# 	COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
-# 	SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
-# 	if [ -n "${GPG_KEY_ID_WORK}" ]; then
+#   COMMIT_NAME="${COMMIT_NAME_WORK}";
+#   COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
+#   SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
+#   if [ -n "${GPG_KEY_ID_WORK}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
-# 	fi;
+#   fi;
 # else
-# 	echo "";
-# 	echo "Error: No SSH-Key(s) found for work git-repos";
-# 	sleep 60;
-# 	exit 1;
+#   echo "";
+#   echo "Error: No SSH-Key(s) found for work git-repos";
+#   sleep 60;
+#   exit 1;
 # fi;
 
 
@@ -973,7 +973,7 @@ exit 0;
 # #
 # WORK_PUBLIC_REPOS_NO_DUPES=($(echo "${WORK_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
-# 	if [ -d "${REPOS_DIR}/${REPO}" ]; then
+#   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
 #     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
@@ -1003,7 +1003,7 @@ exit 0;
 #       echo "$(git config --local --list --show-origin)";
 #       echo "------------------------------------------------------------";
 #     fi;
-# 	fi;
+#   fi;
 # done;
 
 
@@ -1013,7 +1013,7 @@ exit 0;
 # #
 # WORK_PRIVATE_REPOS_NO_DUPES=($(echo "${WORK_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
-# 	if [ -d "${REPOS_DIR}/${REPO}" ]; then
+#   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
 #     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
@@ -1043,20 +1043,20 @@ exit 0;
 #       echo "$(git config --local --list --show-origin)";
 #       echo "------------------------------------------------------------";
 #     fi;
-# 	fi;
+#   fi;
 # done;
 
 
 # # ------------------------------------------------------------
 
 # if [ -f "${GIT_CONF_GLOBAL_PATHS_LINUX}" ]; then
-# 	rm -f "${GIT_CONF_GLOBAL_PATHS_LINUX}";
+#   rm -f "${GIT_CONF_GLOBAL_PATHS_LINUX}";
 # fi;
 # GIT_CONF_GLOBAL_PATHS_LINUX="";
 # GIT_CONF_GLOBAL_PATHS_WIN32="";
 
 # if [ -f "${GIT_CONF_SYSTEM_PATHS_LINUX}" ]; then
-# 	rm -f "${GIT_CONF_SYSTEM_PATHS_LINUX}";
+#   rm -f "${GIT_CONF_SYSTEM_PATHS_LINUX}";
 # fi;
 # GIT_CONF_SYSTEM_PATHS_LINUX="";
 # GIT_CONF_SYSTEM_PATHS_WIN32="";

@@ -95,6 +95,28 @@ GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ 
 
 # ------------------------------------------------------------
 
+WIN32_USERNAME=$(get_username_windows_wsl);
+
+if [ ! -v APPDATA ]; then
+  export APPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Roaming";
+fi;
+
+if [ ! -v LOCALAPPDATA ]; then
+  export LOCALAPPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Local";
+fi;
+
+if [ ! -v ProgramData ]; then
+  export ProgramData="${DISK_ROOT}/ProgramData";
+fi;
+
+if [ ! -v PROGRAMFILES ]; then
+  export PROGRAMFILES="${DISK_ROOT}/Program Files";
+fi;
+
+if [ ! -v USERPROFILE ]; then
+  export USERPROFILE="${DISK_ROOT}/Users/${WIN32_USERNAME}";
+fi;
+
 DEFAULT_CONFIG_DIRNAME="${USERPROFILE}/.gpg_git";
 DEFAULT_CONFIG_FULLPATH="${DEFAULT_CONFIG_DIRNAME}/config";
 GIT_SYNC_CONFIG_FULLPATH="";
@@ -166,28 +188,6 @@ fi;
 
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${USERPROFILE}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
-
-WIN32_USERNAME=$(get_username_windows_wsl);
-
-if [ ! -v APPDATA ]; then
-  export APPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Roaming";
-fi;
-
-if [ ! -v LOCALAPPDATA ]; then
-  export LOCALAPPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Local";
-fi;
-
-if [ ! -v ProgramData ]; then
-  export ProgramData="${DISK_ROOT}/ProgramData";
-fi;
-
-if [ ! -v PROGRAMFILES ]; then
-  export PROGRAMFILES="${DISK_ROOT}/Program Files";
-fi;
-
-if [ ! -v USERPROFILE ]; then
-  export USERPROFILE="${DISK_ROOT}/Users/${WIN32_USERNAME}";
-fi;
 
 APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
 APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; APPDATA_WIN32="${MM}";

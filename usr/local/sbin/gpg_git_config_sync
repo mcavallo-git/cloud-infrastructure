@@ -838,7 +838,7 @@ fi;
       # for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
       #   EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
       #   EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-      #   echo "        ${EACH_KEY}	-  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+      #   echo "        ${EACH_KEY} -  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
       # done;
 
       # EACH_REPO_BASENAME
@@ -865,9 +865,9 @@ exit 0;
 # fi;
 
 
-# #	------------------------------------------------------------
-# #		GIT REPOS
-# #		 |--> PERSONAL, PUBLIC
+# # ------------------------------------------------------------
+# #   GIT REPOS
+# #    |--> PERSONAL, PUBLIC
 # #
 # PERSONAL_PUBLIC_REPOS_NO_DUPES=($(echo "${PERSONAL_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
@@ -905,9 +905,9 @@ exit 0;
 # done;
 
 
-# #	------------------------------------------------------------
-# #		GIT REPOS
-# #		 |--> PERSONAL, PRIVATE
+# # ------------------------------------------------------------
+# #   GIT REPOS
+# #    |--> PERSONAL, PRIVATE
 # #
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
 #   PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
@@ -967,9 +967,9 @@ exit 0;
 # fi;
 
 
-# #	------------------------------------------------------------
-# #		GIT REPOS
-# #		 |--> WORK, PUBLIC
+# # ------------------------------------------------------------
+# #   GIT REPOS
+# #    |--> WORK, PUBLIC
 # #
 # WORK_PUBLIC_REPOS_NO_DUPES=($(echo "${WORK_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
@@ -1007,9 +1007,9 @@ exit 0;
 # done;
 
 
-# #	------------------------------------------------------------
-# #		GIT REPOS
-# #		 |--> WORK, PRIVATE
+# # ------------------------------------------------------------
+# #   GIT REPOS
+# #    |--> WORK, PRIVATE
 # #
 # WORK_PRIVATE_REPOS_NO_DUPES=($(echo "${WORK_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 # for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do

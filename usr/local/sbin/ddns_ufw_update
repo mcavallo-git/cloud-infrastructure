@@ -302,7 +302,7 @@ else
           # Iterate-over each line in the whitelist file
           sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | \
           sed '/^[[:space:]]*#/d' | \
-          while read EACH_WHITELIST_LINE;	do
+          while read EACH_WHITELIST_LINE; do
 
             if [ ${DEBUG_MODE} -eq 1 ]; then
               echo "";

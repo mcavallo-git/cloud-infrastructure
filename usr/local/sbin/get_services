@@ -34,7 +34,7 @@ else
 
   fi;
 
-  ###	List only services matching a given state, such as "enabled"
+  ### List only services matching a given state, such as "enabled"
   ### /bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
 
 fi;

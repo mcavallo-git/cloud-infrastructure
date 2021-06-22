@@ -31,15 +31,15 @@ fi;
 #
 # ------------------------------------------------------------
 
-if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${OSTYPE}" != "darwin"* ]]; then
-  OS_IS_WINDOWS=1;
-else
-  OS_IS_WINDOWS=0;
-  echo "";
-  echo "Error: Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
-  echo "";
-  exit 1;
-fi;
+# if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${OSTYPE}" != "darwin"* ]]; then
+#   OS_IS_WINDOWS=1;
+# else
+#   OS_IS_WINDOWS=0;
+#   echo "";
+#   echo "Error: Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
+#   echo "";
+#   exit 1;
+# fi;
 
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 

@@ -25,46 +25,46 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Uninstall UniFi Network Controller
-	#
-	SERVICE_NAME="unifi";
+  # ------------------------------------------------------------
+  #
+  # Uninstall UniFi Network Controller
+  #
+  SERVICE_NAME="unifi";
 
-	# ------------------------------------------------------------
-	#
-	# Require user-confirmation to perform this action
-	#
-	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
-	read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-	echo "";
-	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-		read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-		echo "";
+  # ------------------------------------------------------------
+  #
+  # Require user-confirmation to perform this action
+  #
+  echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
+  read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  echo "";
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+    read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+    echo "";
 
-		# ------------------------------------------------------------
-		#
-		# Remove service's dependent package(s)
-		#
-		echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
-		if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-			echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
-			dpkg -P "${SERVICE_NAME}";
-		elif [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-			echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
-			apt-get remove -y "${SERVICE_NAME}";
-		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-			echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
-			yum remove -y "${SERVICE_NAME}";
-		else
-			echo "  |--> Unable to determine package installer. Manual uninstallation of service \"${SERVICE_NAME}\" required";
-		fi;
-		echo "";
-	fi;
+    # ------------------------------------------------------------
+    #
+    # Remove service's dependent package(s)
+    #
+    echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
+    if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
+      dpkg -P "${SERVICE_NAME}";
+    elif [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
+      apt-get remove -y "${SERVICE_NAME}";
+    elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+      echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
+      yum remove -y "${SERVICE_NAME}";
+    else
+      echo "  |--> Unable to determine package installer. Manual uninstallation of service \"${SERVICE_NAME}\" required";
+    fi;
+    echo "";
+  fi;
 fi;
 
 # ------------------------------------------------------------

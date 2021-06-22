@@ -157,6 +157,13 @@ fi;
 
 START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
 
+DISK_ROOT="";
+if [ -d "${DISK_ROOT}" ]; then
+DISK_ROOT="${DISK_ROOT}";
+elif [ -d "/mnt/c" ]; then
+DISK_ROOT="/mnt/c";
+fi;
+
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
 
@@ -237,13 +244,6 @@ fi;
 
 ROLLBACK_IFS="${IFS}";
 IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
-
-DISK_ROOT="";
-if [ -d "${DISK_ROOT}" ]; then
-DISK_ROOT="${DISK_ROOT}";
-elif [ -d "/mnt/c" ]; then
-DISK_ROOT="/mnt/c";
-fi;
 
 GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>/dev/null);
 GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/mingw64/etc/gitconfig" 2>/dev/null);

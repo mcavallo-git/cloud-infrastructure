@@ -95,6 +95,15 @@ GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ 
 
 # ------------------------------------------------------------
 
+START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
+
+DISK_ROOT="";
+if [ -d "/c" ]; then
+  DISK_ROOT="/c";
+elif [ -d "/mnt/c" ]; then
+  DISK_ROOT="/mnt/c";
+fi;
+
 WIN32_USERNAME=$(get_username_windows_wsl);
 
 if [ ! -v APPDATA ]; then
@@ -185,15 +194,6 @@ fi;
 # ------------------------------------------------------------
 # Environment Variables
 #  |--> Convert filepaths into both Win32 && Linux compatible variables
-
-START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
-
-DISK_ROOT="";
-if [ -d "/c" ]; then
-  DISK_ROOT="/c";
-elif [ -d "/mnt/c" ]; then
-  DISK_ROOT="/mnt/c";
-fi;
 
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${USERPROFILE}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";

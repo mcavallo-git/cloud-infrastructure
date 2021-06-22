@@ -49,10 +49,10 @@ else
 
 	UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 	for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
-		ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);
-		if [ "${ALREADY_INSTALLED}" != "0" ]; then
+    ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);
+    if [ "${ALREADY_INSTALLED}" != "0" ]; then
       echo "✓ Package \"${EACH_PKG}\" is already installed";
-		else
+    else
       echo "× Package \"${EACH_PKG}\" not found locally - installing...";
       if [[ "${EACH_PKG}" == "nginx"* ]]; then
         if [ $(apt policy 2>"/dev/null" | grep "http://ppa.launchpad.net/nginx" | wc -l;) -eq 0 ]; then
@@ -70,7 +70,7 @@ else
         apt-get update --yes;
       fi;
       apt-get install --yes "${EACH_PKG}";
-		fi;
+    fi;
 	done;
 
 	OPTIONAL_PACKAGES=();

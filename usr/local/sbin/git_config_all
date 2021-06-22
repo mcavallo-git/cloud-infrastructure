@@ -44,18 +44,18 @@ else
 	HIDDEN_CONFIG_WIN32=$(realpath "${PROGRAMDATA:-${ALLUSERSPROFILE}}/Git/config");
 	HIDDEN_CONFIG_LINUX=""; MM="${HIDDEN_CONFIG_WIN32/C:/\/c}"; MM="${MM//\\/\/}"; HIDDEN_CONFIG_LINUX=$(realpath "${MM}");
 	if [ -f "${HIDDEN_CONFIG_LINUX}" ]; then
-		echo "${HIDDEN_CONFIG_LINUX}" >> "${ALL_GLOBAL_CONFIGS}";
+    echo "${HIDDEN_CONFIG_LINUX}" >> "${ALL_GLOBAL_CONFIGS}";
 	fi;
 
 	for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 
-		EACH_DIR_REALPATH=$(realpath "${EACH_DIRECTORY}");
+    EACH_DIR_REALPATH=$(realpath "${EACH_DIRECTORY}");
 
-		find "${EACH_DIR_REALPATH}" \
-		-name 'git.exe' \
-		-print0 \
-		2>"/dev/null" \
-		| while IFS= read -r -d $'\0' EACH_GIT_EXE; do
+    find "${EACH_DIR_REALPATH}" \
+    -name 'git.exe' \
+    -print0 \
+    2>"/dev/null" \
+    | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
       EACH_GIT_WIN32=$(realpath "${EACH_GIT_EXE}");
       EACH_GIT_LINUX=""; MM="${EACH_GIT_WIN32/C:/\/c}"; MM="${MM//\\/\/}"; EACH_GIT_LINUX=$(realpath "${MM}");
@@ -78,7 +78,7 @@ else
         echo "${GLOBAL_CONF_LINUX}" >> "${ALL_GLOBAL_CONFIGS}";
       fi;
 
-		done;
+    done;
 	done;
 	# ------------------------------------------------------------
 
@@ -111,14 +111,14 @@ else
 	# Apply a specific [ git config ] value to each file found, call this script with inline-params $1 and $2 as follows:
 	if [ -n "$1" ] && [ -n "$2" ]; then
 
-		# ------------------------------------------------------------
-		# [GLOBAL] SHOW & UPDATE EACH CONFIG-FILE
+    # ------------------------------------------------------------
+    # [GLOBAL] SHOW & UPDATE EACH CONFIG-FILE
 
-		echo "";
-		echo "[GLOBAL] - Show & Update Git Config-Value(s)";
-		echo "  |";
-		echo "  |--> Key: [$1]";
-		for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
+    echo "";
+    echo "[GLOBAL] - Show & Update Git Config-Value(s)";
+    echo "  |";
+    echo "  |--> Key: [$1]";
+    for EACH_CONFIG in $(cat "${ALL_GLOBAL_CONFIGS}"); do
       # Show git config-value (BEFORE update)
       GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
       if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
@@ -140,16 +140,16 @@ else
         if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
         echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
       fi;
-		done;
+    done;
 
-		# ------------------------------------------------------------
-		# [SYSTEM] SHOW & UPDATE EACH CONFIG-FILE
+    # ------------------------------------------------------------
+    # [SYSTEM] SHOW & UPDATE EACH CONFIG-FILE
 
-		echo "";
-		echo "[SYSTEM] - Show & Update Git Config-Value(s)";
-		echo "  |";
-		echo "  |--> Key: [$1]";
-		for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
+    echo "";
+    echo "[SYSTEM] - Show & Update Git Config-Value(s)";
+    echo "  |";
+    echo "  |--> Key: [$1]";
+    for EACH_CONFIG in $(cat "${ALL_SYSTEM_CONFIGS}"); do
       # Show git config-value (BEFORE update)
       GIT_CONFIG_VALUE=$(git config --file "${EACH_CONFIG}" "$1");
       if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
@@ -171,16 +171,16 @@ else
         if [ "$?" != "0" ]; then GIT_CONFIG_VALUE="--unset"; fi;
         echo "  |------> Updated Val: [${GIT_CONFIG_VALUE}]";
       fi;
-		done;
+    done;
 
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
 
 	else
 
-		echo "";
-		echo "Call with inline params \$1 and \$2 to apply a config-value to every config-file found";
-		echo "Example:";
-		echo "    > \"$0\" core.autocrlf input";
+    echo "";
+    echo "Call with inline params \$1 and \$2 to apply a config-value to every config-file found";
+    echo "Example:";
+    echo "    > \"$0\" core.autocrlf input";
 
 	fi;
 

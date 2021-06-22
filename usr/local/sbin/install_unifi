@@ -36,10 +36,10 @@ else
 	READ_TIMEOUT=60; read -p "Install Unifi service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 	echo "";
 	if [ ${RETURN_CODE_READ} -gt 128 ]; then
-		echo "Response timed out after ${READ_TIMEOUT}s";
+    echo "Response timed out after ${READ_TIMEOUT}s";
 	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 
-		if [ -n "${1}" ]; then
+    if [ -n "${1}" ]; then
       #
       # Allow user to pass a single argument ($1) being a specific version of the UniFi Controller to attempt to install
       #  |
@@ -75,8 +75,8 @@ else
         exit 1;
       fi;
 
-		else
-		
+    else
+    
       USE_DOCKER_CONTAINER=0;
       if [ $(which docker 2>'/dev/null' | wc -l;) -gt 0 ]; then
         if [ $(which docker-compose 2>'/dev/null' | wc -l;) -gt 0 ]; then
@@ -159,37 +159,37 @@ else
 
       fi;
 
-		fi;
+    fi;
 
-		# Get LAN-Local IPv4
-		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
-		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
-		if [ -z "${THIS_LAN_IPV4}" ]; then
+    # Get LAN-Local IPv4
+    THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
+    THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
+    if [ -z "${THIS_LAN_IPV4}" ]; then
       THIS_LAN_IPV4=$(hostname -i | awk '{print $1}' 2>'/dev/null';);
-		fi;
+    fi;
 
-		# Point the user to the Unifi Controller's URL to continue installation
-		echo "------------------------------------------------------------";
-		echo "";
-		echo "Info:  Support/Help Guides:";
-		echo "";
-		echo "          https://community.ui.com/questions/UniFi-Installation-Scripts-or-UniFi-Easy-Update-Script-or-UniFi-Lets-Encrypt-or-Ubuntu-16-04-18-04-/ccbc7530-dd61-40a7-82ec-22b17f027776";
-		echo "";
-		echo "          https://help.ui.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu";
-		echo "";
-		echo "------------------------------------------------------------";
-		echo "";
-		echo "Info:  Browse to:";
-		echo "";
-		echo "         UniFi Controller (Hostname):   https://$(hostname):8443";
-		echo "";
-		echo "         UniFi Controller (LAN-IPv4):   https://${THIS_LAN_IPV4}:8443";
-		echo "";
-		echo "------------------------------------------------------------";
+    # Point the user to the Unifi Controller's URL to continue installation
+    echo "------------------------------------------------------------";
+    echo "";
+    echo "Info:  Support/Help Guides:";
+    echo "";
+    echo "          https://community.ui.com/questions/UniFi-Installation-Scripts-or-UniFi-Easy-Update-Script-or-UniFi-Lets-Encrypt-or-Ubuntu-16-04-18-04-/ccbc7530-dd61-40a7-82ec-22b17f027776";
+    echo "";
+    echo "          https://help.ui.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu";
+    echo "";
+    echo "------------------------------------------------------------";
+    echo "";
+    echo "Info:  Browse to:";
+    echo "";
+    echo "         UniFi Controller (Hostname):   https://$(hostname):8443";
+    echo "";
+    echo "         UniFi Controller (LAN-IPv4):   https://${THIS_LAN_IPV4}:8443";
+    echo "";
+    echo "------------------------------------------------------------";
 
 	else
-		echo "";
-		echo "Denied - Skipping command";
+    echo "";
+    echo "Denied - Skipping command";
 	fi;
 
 fi;

@@ -28,22 +28,22 @@ else
 
 	if [ -z "${1}" ]; then
 
-		# Required variable empty
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No value given for first parameter (\$1)";
-		echo "Please set \$1 to [ service-name-to-remove ]\" & re-run this script";
-		echo "  ( e.g. ${0} \"wget\"; )";
-		echo "";
-		exit 1;
+    # Required variable empty
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No value given for first parameter (\$1)";
+    echo "Please set \$1 to [ service-name-to-remove ]\" & re-run this script";
+    echo "  ( e.g. ${0} \"wget\"; )";
+    echo "";
+    exit 1;
 
 	else
 
-		SERVICE_NAME="$1";
+    SERVICE_NAME="$1";
 
-		echo "";
-		read -p "$(date +'%Y-%m-%d %H:%M:%S') Remove service \"${SERVICE_NAME}\", now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
-		echo "";
+    echo "";
+    read -p "$(date +'%Y-%m-%d %H:%M:%S') Remove service \"${SERVICE_NAME}\", now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+    echo "";
 
-		if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
 
       echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing service \"${SERVICE_NAME}\"...";
 
@@ -64,15 +64,15 @@ else
       # Reset the 'failed' state of all services
       /bin/systemctl reset-failed;
 
-		else
+    else
 
       echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
 
-		fi;
+    fi;
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Finished - Exiting...";
-		echo "";
-		exit;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Finished - Exiting...";
+    echo "";
+    exit;
 
 	fi;
 

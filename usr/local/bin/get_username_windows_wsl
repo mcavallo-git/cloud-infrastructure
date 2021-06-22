@@ -12,44 +12,44 @@ else
 	DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
 
 	if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
-		# Assumed to be a Windows based OS
+    # Assumed to be a Windows based OS
 
-		Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
-		if [ -f "${Invalid_UsersFile}" ]; then
+    Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
+    if [ -f "${Invalid_UsersFile}" ]; then
       rm -f "${Invalid_UsersFile}";
-		fi;
+    fi;
 
-		Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
-		if [ -f "${Potential_UsersFile}" ]; then
+    Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
+    if [ -f "${Potential_UsersFile}" ]; then
       rm -f "${Potential_UsersFile}";
-		fi;
+    fi;
 
-		WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
-		if [ -f "${Valid_UsersFile}" ]; then
+    WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
+    if [ -f "${Valid_UsersFile}" ]; then
       rm -f "${Valid_UsersFile}";
-		fi;
-		
-		# Make sure required runtime(s) are installed
-		if [ -z "$(which bc 2>'/dev/null';)" ]; then
+    fi;
+    
+    # Make sure required runtime(s) are installed
+    if [ -z "$(which bc 2>'/dev/null';)" ]; then
       apt-get-update -y; apt-get install -y bc;
-		fi;
+    fi;
 
-		if [ "${1}" == "verbose" ]; then
+    if [ "${1}" == "verbose" ]; then
       echo "";
       echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
       echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
       echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
-		fi;
+    fi;
 
-		find "${DIR_WIN32_USERS}" \
-		-mindepth 1 \
-		-maxdepth 1 \
-		-name '*' \
-		-type 'd' \
-		-not -path "${DIR_WIN32_USERS}/Default" \
-		-not -path "${DIR_WIN32_USERS}/Public" \
-		-print0 \
-		| while IFS= read -r -d $'\0' EachUserDir; do
+    find "${DIR_WIN32_USERS}" \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -name '*' \
+    -type 'd' \
+    -not -path "${DIR_WIN32_USERS}/Default" \
+    -not -path "${DIR_WIN32_USERS}/Public" \
+    -print0 \
+    | while IFS= read -r -d $'\0' EachUserDir; do
       LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
       if [ "${LastExitCode}" == "0" ]; then
         if [ "${1}" == "verbose" ]; then echo ""; echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
@@ -58,22 +58,22 @@ else
         if [ "${1}" == "verbose" ]; then echo ""; echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
         echo $(basename "${EachUserDir}") >> "${Invalid_UsersFile}";
       fi;
-		done;
-		
-		if [ -f "${Potential_UsersFile}" ]; then
+    done;
+    
+    if [ -f "${Potential_UsersFile}" ]; then
       CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
-		else
+    else
       CountMatchedUsers="0";
-		fi;
-		
-		if [ $(echo "${CountMatchedUsers} == 1" | bc) -eq 1 ]; then # Matched exactly 1 user
+    fi;
+    
+    if [ $(echo "${CountMatchedUsers} == 1" | bc) -eq 1 ]; then # Matched exactly 1 user
       if [ "${1}" == "verbose" ]; then
         echo "";
         echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s):";
       fi;
       cat "${Potential_UsersFile}";
       exit 0;
-		elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
+    elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
 
       if [ "${1}" == "verbose" ]; then
         echo "";
@@ -105,21 +105,21 @@ else
 
       exit 0;
 
-		else
+    else
       echo "";
       echo "Error: No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]";
       exit 1;
 
-		fi;
-		if [ "${1}" == "verbose" ]; then
+    fi;
+    if [ "${1}" == "verbose" ]; then
       echo "";
-		fi;
+    fi;
 
 	else
-		# Assumed to be a NON-Windows based OS
-		echo "Info: Directory not-found/empty: \"${DIR_WIN32_USERS}\"";
-		echo "Info: Assuming that this is a Non-Windows based OS";
-		exit 1;
+    # Assumed to be a NON-Windows based OS
+    echo "Info: Directory not-found/empty: \"${DIR_WIN32_USERS}\"";
+    echo "Info: Assuming that this is a Non-Windows based OS";
+    exit 1;
 
 	fi;
 

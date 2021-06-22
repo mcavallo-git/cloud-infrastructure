@@ -70,9 +70,9 @@ elif [ -z "$(hostname 2>'/dev/null';)" ]; then
 	THIS_FQDN="";
 else
 	if [ -n "$(hostname -d 2>'/dev/null';)" ]; then
-		THIS_FQDN="$(hostname 2>'/dev/null';).$(hostname -d 2>'/dev/null';)";
+    THIS_FQDN="$(hostname 2>'/dev/null';).$(hostname -d 2>'/dev/null';)";
 	else
-		THIS_FQDN="$(hostname 2>'/dev/null';)";
+    THIS_FQDN="$(hostname 2>'/dev/null';)";
 	fi;
 fi;
 
@@ -153,10 +153,10 @@ if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHK
 else
 	
 	if [ "$(id -un)" == "root" ]; then
-		echo "";
-		echo "    Skipped Etc-Authkey";
+    echo "";
+    echo "    Skipped Etc-Authkey";
 	fi;
-		
+    
 	# Setup filepaths for [ ${USER_HOME}/.ssh/authorized_keys ]
 	#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 	USERHOME_SSH="${USER_HOME}/.ssh";
@@ -169,14 +169,14 @@ else
 	APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
 	
 	if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then
-		echo "";
-		echo "    Appending Private Key onto  \"${USERHOME_SSH_AUTHKEY}\" ...";
-		mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
-		cat "${PRIVATE_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
+    echo "";
+    echo "    Appending Private Key onto  \"${USERHOME_SSH_AUTHKEY}\" ...";
+    mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
+    cat "${PRIVATE_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
 
 	else
-		echo "";
-		echo "    Skipped Userhome-Authkey";
+    echo "";
+    echo "    Skipped Userhome-Authkey";
 	fi;
 	
 fi;

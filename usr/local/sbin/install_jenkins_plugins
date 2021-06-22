@@ -26,9 +26,9 @@ else
 	# Instantiate runtime variables
 	
 	if [ -n "$1" ]; then
-		java -jar jenkins-cli.jar -s http://127.0.0.1:8080/ install-plugin "$1";
+    java -jar jenkins-cli.jar -s http://127.0.0.1:8080/ install-plugin "$1";
 	else
-		echo "Error: Please include plugin name as first parameter (\$1)";
+    echo "Error: Please include plugin name as first parameter (\$1)";
 	fi;
 
 	# # Log all shell output & error output to Logfile

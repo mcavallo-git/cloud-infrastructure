@@ -48,19 +48,19 @@ else
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
-		EACH_ARG=${ARGS[${i}]};
+    EACH_ARG=${ARGS[${i}]};
 
-		# Check if this is the last inline-argument or if there are more to follow
-		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+    # Check if this is the last inline-argument or if there are more to follow
+    if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
       NEXT_ARG="";
-		else
+    else
       NEXT_ARG=${ARGS[$((${i}+1))]};
       if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
       fi;
-		fi;
+    fi;
 
-		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+    if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
       # ------------------------------------------------------------
       if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
@@ -103,7 +103,7 @@ else
 
       # ------------------------------------------------------------
 
-		fi;
+    fi;
 
 	done;
 
@@ -111,30 +111,30 @@ else
 	# Verify validity of argument(s) passed to script
 	if [ -z "${TARGET_USER}" ]; then 
 
-		# Error: Empty/Unset target-user
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
-		echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
+    # Error: Empty/Unset target-user
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
+    echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
 	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
-		# Error: User not found
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
-		echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
+    # Error: User not found
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
+    echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
 	else
 
-		SUDOERS_D="";
-		if [ -d "/etc/sudoers.d" ]; then
+    SUDOERS_D="";
+    if [ -d "/etc/sudoers.d" ]; then
       SUDOERS_D="/etc/sudoers.d";
-		elif [ -d "/etc/local/sudoers.d" ]; then
+    elif [ -d "/etc/local/sudoers.d" ]; then
       SUDOERS_D="/etc/local/sudoers.d";
-		fi;
+    fi;
 
-		if [ -z "${SUDOERS_D}" ]; then
+    if [ -z "${SUDOERS_D}" ]; then
       echo "";
       echo "Error:  No sudoers.d directory found amongst \"/etc/sudoers.d/\" and \"/etc/local/sudoers.d\"";
 
-		else
+    else
       
       # ------------------------------------------------------------
       if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
@@ -183,14 +183,14 @@ else
 
       fi;
 
-		# ------------------------------------------------------------
-		# Show sudoer status for target user
-		sudo -l -U "${TARGET_USER}";
+    # ------------------------------------------------------------
+    # Show sudoer status for target user
+    sudo -l -U "${TARGET_USER}";
 
-		fi;
+    fi;
 
 
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
 	fi;
 
 fi;

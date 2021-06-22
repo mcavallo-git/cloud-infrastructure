@@ -56,12 +56,12 @@ elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # --------------------------
 	SED_BROADCAST='s/^\s*inet\s+'${REGEX_IPV4}'\s+netmask\s+'${REGEX_IPV4}'\s+broadcast\s+'${REGEX_IPV4}'\s*$/\9/p';
 
 	ifconfig | while read EACH_LINE; do
-		EACH_SED_LINE=$(echo "${EACH_LINE}" | sed -rne "${SED_LINE}";);
+    EACH_SED_LINE=$(echo "${EACH_LINE}" | sed -rne "${SED_LINE}";);
 
-		# Parse the LAN IPv4 ("inet") from the ifconfig string
-		EACH_INET=$(echo "${EACH_LINE}" | sed -rne "${SED_INET}";);
+    # Parse the LAN IPv4 ("inet") from the ifconfig string
+    EACH_INET=$(echo "${EACH_LINE}" | sed -rne "${SED_INET}";);
 
-		if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
+    if [ -n "${EACH_INET}" ] && [ "${EACH_INET}" != "${LOOPBACK_IPV4}" ]; then
       # If the parsed IPv4 is not a loopback IPv4, then save it
       THIS_LAN_IPV4="${EACH_INET}";
 
@@ -73,7 +73,7 @@ elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # --------------------------
         THIS_LAN_BROADCAST="${EACH_BROADCAST}";
       fi;
 
-		fi;
+    fi;
 
 	done;
 
@@ -101,13 +101,13 @@ if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
 elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
 	# "Quiet" output (lan ipv4 w/ NO trailing newline)
 	if [ -v THIS_LAN_IPV4 ] && [ -n "${THIS_LAN_IPV4}" ]; then
-		echo -n "${THIS_LAN_IPV4}";
+    echo -n "${THIS_LAN_IPV4}";
 	fi;
 
 else
 	# "Normal" output (lan ipv4 w/ newline)
 	if [ -v THIS_LAN_IPV4 ] && [ -n "${THIS_LAN_IPV4}" ]; then
-		echo "${THIS_LAN_IPV4}";
+    echo "${THIS_LAN_IPV4}";
 	fi;
 
 fi;

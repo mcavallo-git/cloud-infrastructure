@@ -6,9 +6,9 @@ if [ -n "$0" ]; then
 	SUBDOMAIN="";
 	DOMAIN="boneal.net";
 	if [ -n "$3" ]; then
-		LOGFILE_TARGET="$3";
+    LOGFILE_TARGET="$3";
 	else
-		if [[ "$0" == *"rfq"* ]]; then
+    if [[ "$0" == *"rfq"* ]]; then
       SUBDOMAIN="www";
       if [[ "$1" == *"access"* ]]; then # RFQ Access-Log
         LOG_TYPE="access";
@@ -24,27 +24,27 @@ if [ -n "$0" ]; then
         LOGFILE_2="${DIR_LOGS}/ssl_error_log_www";
       fi;
 
-		elif [[ "$0" == *"dev.bonedge"* ]]; then # dev.bonedge.boneal.net
+    elif [[ "$0" == *"dev.bonedge"* ]]; then # dev.bonedge.boneal.net
       LOG_TYPE="error";
       SUBDOMAIN="dev.bonedge";
       LOGFILE_1="${DIR_LOGS}/error_log_dev.bonedge";
 
-		elif [[ "$0" == *"prod.bonedge"* ]]; then # prod.bonedge.boneal.net
+    elif [[ "$0" == *"prod.bonedge"* ]]; then # prod.bonedge.boneal.net
       LOG_TYPE="error";
       SUBDOMAIN="prod.bonedge";
       LOGFILE_1="${DIR_LOGS}/error_log_prod.bonedge";
 
-		elif [[ "$0" == *"qa.bonedge"* ]]; then # qa.bonedge.boneal.net
+    elif [[ "$0" == *"qa.bonedge"* ]]; then # qa.bonedge.boneal.net
       LOG_TYPE="error";
       SUBDOMAIN="qa.bonedge";
       LOGFILE_1="${DIR_LOGS}/error_log_qa.bonedge";
 
-		elif [[ "$0" == *"uat.bonedge"* ]]; then # uat.bonedge.boneal.net
+    elif [[ "$0" == *"uat.bonedge"* ]]; then # uat.bonedge.boneal.net
       LOG_TYPE="error";
       SUBDOMAIN="uat.bonedge";
       LOGFILE_1="${DIR_LOGS}/error_log_uat.bonedge";
       
-		elif [[ "$0" == *"mdev"* ]]; then
+    elif [[ "$0" == *"mdev"* ]]; then
       SUBDOMAIN="mdev";
       if [[ "$1" == *"access"* ]]; then # MDEV Access-Log
         LOG_TYPE="access";
@@ -60,7 +60,7 @@ if [ -n "$0" ]; then
         LOGFILE_2="${DIR_LOGS}/ssl_error_log_mdev";
         # tail -f file1 & tail -f file2
       fi;
-		elif [[ "$0" == *"rdev"* ]]; then
+    elif [[ "$0" == *"rdev"* ]]; then
       SUBDOMAIN="rdev";
       if [[ "$1" == *"access"* ]]; then # RDEV Access-Log
         LOG_TYPE="access";
@@ -75,7 +75,7 @@ if [ -n "$0" ]; then
         LOGFILE_1="${DIR_LOGS}/error_log_rdev";
         LOGFILE_2="${DIR_LOGS}/ssl_error_log_rdev";
       fi;
-		elif [[ "$0" == *"dev"* ]]; then
+    elif [[ "$0" == *"dev"* ]]; then
       SUBDOMAIN="dev";
       if [[ "$1" == *"access"* ]]; then # DEV Access-Log
         LOG_TYPE="access";
@@ -90,33 +90,33 @@ if [ -n "$0" ]; then
         LOGFILE_1="${DIR_LOGS}/error_log_dev";
         LOGFILE_2="${DIR_LOGS}/ssl_error_log_dev";
       fi;
-		else
+    else
       echo "";
       echo "Error: Invalid / Undefined tail command \"${0}\"";
       echo "";
       exit;
-		fi;
-		FQDN="${SUBDOMAIN}.${DOMAIN}";
+    fi;
+    FQDN="${SUBDOMAIN}.${DOMAIN}";
 	fi;
 	
 	if [ -n "${LOGFILE_1}" ] && [ -f "${LOGFILE_1}" ] && [ $(du -sh "${LOGFILE_1}" | awk '{print $1}') != "0" ]; then
-		if [ -n "${LOGFILE_2}" ] && [ -f "${LOGFILE_2}" ] && [ $(du -sh "${LOGFILE_2}" | awk '{print $1}') != "0" ]; then
+    if [ -n "${LOGFILE_2}" ] && [ -f "${LOGFILE_2}" ] && [ $(du -sh "${LOGFILE_2}" | awk '{print $1}') != "0" ]; then
       clear;
       echo -e "\nTailing \"${FQDN}\" ${LOG_TYPE} log(s)\n\nLog-Filepath: ${LOGFILE_1}\n\nLog-Filepath: ${LOGFILE_2}\n";
       multitail "${LOGFILE_1}" "${LOGFILE_2}";
-		else
+    else
       clear;
       echo -e "\nTailing \"${FQDN}\" ${LOG_TYPE} log(s)\n\nLog-Filepath: ${LOGFILE_1}\n";
       tail -n 1000 -f "${LOGFILE_1}";
-		fi;
+    fi;
 	elif [ -n "${LOGFILE_2}" ] && [ -f "${LOGFILE_2}" ] && [ $(du -sh "${LOGFILE_2}" | awk '{print $1}') != "0" ]; then
-		clear;
+    clear;
       echo -e "\nTailing \"${FQDN}\" ${LOG_TYPE} log(s)\n\nLog-Filepath: ${LOGFILE_2}\n";
-		tail -n 1000 -f "${LOGFILE_2}";
+    tail -n 1000 -f "${LOGFILE_2}";
 	else
-		echo "";
-		echo " No Logfiles Found - Exiting...";
-		echo "";
+    echo "";
+    echo " No Logfiles Found - Exiting...";
+    echo "";
 	fi;
 	
 	# DISPLAY LOGFILE

@@ -40,12 +40,12 @@ else
 
 	# If no username given, ask terminal user for username
 	while [ -z "${USER_NAME}" ]; do
-		echo "";
-		read -p " Create a user with what username?   " -t 60 -r;
-		USER_NAME="${REPLY}";
-		if [ -n "${USER_NAME}" ]; then
+    echo "";
+    read -p " Create a user with what username?   " -t 60 -r;
+    USER_NAME="${REPLY}";
+    if [ -n "${USER_NAME}" ]; then
       break;
-		fi;
+    fi;
 	done;
 
 	ROLLBACK_IFS="${IFS}";
@@ -79,52 +79,52 @@ else
 	# ------------------------------------------------------------
 
 	if [ -z "${USER_NAME}" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  \$USER_NAME is empty/unset";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
-		exit 1;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  \$USER_NAME is empty/unset";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+    exit 1;
 
 	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_UID ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ User ID ] & [ System User ]";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate User IDs for System users";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
-		exit 1;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ User ID ] & [ System User ]";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate User IDs for System users";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+    exit 1;
 
 	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_GID ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ Group ID ] & [ System User ]";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate Group IDs for System users";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
-		exit 1;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ Group ID ] & [ System User ]";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate Group IDs for System users";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+    exit 1;
 
 	elif [[ -v USER_NAME ]] \
       && [[ -v USER_UID ]] \
       && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
       && [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
       && [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
-		exit 1;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+    exit 1;
 
 	elif [[ -v USER_GNAME ]] \
       && [[ -v USER_GID ]] \
       && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
       && [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
       && [ "$(getent group ${USER_GID} | cut -d: -f1;)" != "${USER_GNAME}" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
-		exit 1;
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
+    exit 1;
 
 	elif [ "${CREATE_HOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
 
-		echo "Home Directory already exists: \"${DIR_USER_HOME}\".";
-		echo "If you still want to use this directory, set \$CREATE_HOME to \"0\" and re-run this script.";
-		exit 1;
+    echo "Home Directory already exists: \"${DIR_USER_HOME}\".";
+    echo "If you still want to use this directory, set \$CREATE_HOME to \"0\" and re-run this script.";
+    exit 1;
 
 	else
 
-		# ------------------------------------------------------------
-		# GROUP-CREATION
+    # ------------------------------------------------------------
+    # GROUP-CREATION
 
-		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
+    if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
       # Non System Users
       if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
         # Group-Add Command
@@ -140,31 +140,31 @@ else
         ${GROUPADD_ARR[@]};
         USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
       fi;
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# USER-CREATION
-		USERADD_ARR=();
-		USERADD_ARR+=(useradd);
+    # ------------------------------------------------------------
+    # USER-CREATION
+    USERADD_ARR=();
+    USERADD_ARR+=(useradd);
 
-		# User Home-Directory
-		if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
+    # User Home-Directory
+    if [[ -v DIR_USER_HOME ]] && [ -n "${DIR_USER_HOME}" ]; then
       USERADD_ARR+=(--home-dir "${DIR_USER_HOME}");
-		fi;
+    fi;
 
-		# Create Home-Directory (y/n)
-		if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
+    # Create Home-Directory (y/n)
+    if [[ -v CREATE_HOME ]] && [ "${CREATE_HOME}" == "1" ]; then
       USERADD_ARR+=(--create-home);
-		fi;
+    fi;
 
-		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
+    if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -eq 1 ]; then
       # System Users
       USERADD_ARR+=(--system);
 
 
-		else
+    else
       # Non System Users
-		
+    
       # User ID
       if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
         USERADD_ARR+=(--uid ${USER_UID});
@@ -177,28 +177,28 @@ else
         USERADD_ARR+=(--gid "${USER_GNAME}");
       fi;
 
-		fi;
+    fi;
 
-		# User Shell
-		if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
+    # User Shell
+    if [[ -v USER_SHELL ]] && [ -n "${USER_SHELL}" ]; then
       USERADD_ARR+=(--shell "${USER_SHELL}");
-		fi;
+    fi;
 
-		USERADD_ARR+=("${USER_NAME}");
+    USERADD_ARR+=("${USER_NAME}");
 
-		# Create the User
-		echo "Calling [ ${USERADD_ARR[@]}; ] ..."
-		${USERADD_ARR[@]};
+    # Create the User
+    echo "Calling [ ${USERADD_ARR[@]}; ] ..."
+    ${USERADD_ARR[@]};
 
-		# if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
-		# 	# Create user's SSH directory "~/.ssh"
-		# 	mkdir "${DIR_USER_SSH}";
-		# 	chmod 0700 "${DIR_USER_SSH}";
-		# 	chown "${USER_UID}" "${DIR_USER_SSH}";
-		# fi;
+    # if [ "${CREATE_HOME_SSH}" == "1" ] && [ ! -d "${DIR_USER_SSH}" ]; then
+    # 	# Create user's SSH directory "~/.ssh"
+    # 	mkdir "${DIR_USER_SSH}";
+    # 	chmod 0700 "${DIR_USER_SSH}";
+    # 	chown "${USER_UID}" "${DIR_USER_SSH}";
+    # fi;
 
-		# Make user a sudoer (able to run as root using 'sudo' command)
-		if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then
+    # Make user a sudoer (able to run as root using 'sudo' command)
+    if [ "${ADD_USER_TO_SUDOERS}" == "1" ]; then
 
       # Add user to the "sudo" usergroup (if not already in it)
       SUDO_GROUP="sudo";
@@ -220,23 +220,23 @@ else
 
       # Refer to "/etc/ssh/sshd_config" for more-advanced SSH config
 
-		fi;
+    fi;
 
 
-		if [ "${SET_USER_PASSWORD}" != "0" ]; then
+    if [ "${SET_USER_PASSWORD}" != "0" ]; then
       passwd "${USER_NAME}";
       #				[Enter password] > ENTER
       #			[Confirm password] > ENTER
-		fi;
+    fi;
 
-		echo -e "\n ==---  New User Stats  ---===";
-		echo -e "\n > User-Name:        \"${USER_NAME}\" (uid=$(id -u ${USER_NAME};))";
-		echo -e "\n > User-Home:      \"$(getent passwd ${USER_NAME} | cut --delimiter=: --fields=6;)\"";
-		echo -e "\n > Default-Group:    \"$(id -gn ${USER_NAME};)\" (gid=$(id -g ${USER_NAME};))";
-		echo -e "\n > Default-Shell:   \"$(getent passwd ${USER_NAME} | cut --delimiter=: --fields=7;)\"";
-		echo -e "\n";
+    echo -e "\n ==---  New User Stats  ---===";
+    echo -e "\n > User-Name:        \"${USER_NAME}\" (uid=$(id -u ${USER_NAME};))";
+    echo -e "\n > User-Home:      \"$(getent passwd ${USER_NAME} | cut --delimiter=: --fields=6;)\"";
+    echo -e "\n > Default-Group:    \"$(id -gn ${USER_NAME};)\" (gid=$(id -g ${USER_NAME};))";
+    echo -e "\n > Default-Shell:   \"$(getent passwd ${USER_NAME} | cut --delimiter=: --fields=7;)\"";
+    echo -e "\n";
 
-		exit 0;
+    exit 0;
 
 	fi;
 

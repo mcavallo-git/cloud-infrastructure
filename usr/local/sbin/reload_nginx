@@ -25,23 +25,23 @@ else
 	SERVICE_NAME="nginx";
 	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 1 ]; then
-		# Service NOT found to exist locally
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+    # Service NOT found to exist locally
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
 	else
-		if [ ${SERVICE_RET_CODE} -ne 0 ]; then
+    if [ ${SERVICE_RET_CODE} -ne 0 ]; then
       echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
       /usr/sbin/service "${SERVICE_NAME}" restart;
-		fi;
+    fi;
 
-		# Service found to exist locally
+    # Service found to exist locally
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (before reload)...";
-		# /usr/sbin/service "${SERVICE_NAME}" status;
-		if [ -f "/run/nginx.pid" ]; then
+    # echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (before reload)...";
+    # /usr/sbin/service "${SERVICE_NAME}" status;
+    if [ -f "/run/nginx.pid" ]; then
       echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
       nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" reload;
-		else
+    else
       # Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
       MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | wc -l;);
       # PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
@@ -53,10 +53,10 @@ else
       # Start nginx service, again
       echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
        nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" start;
-		fi;
+    fi;
 
-		# echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (after reload)...";
-		# /usr/sbin/service "${SERVICE_NAME}" status;
+    # echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (after reload)...";
+    # /usr/sbin/service "${SERVICE_NAME}" status;
 
 	fi;
 fi;

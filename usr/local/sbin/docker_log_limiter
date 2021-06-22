@@ -39,18 +39,18 @@ else
 
 	echo "";
 	if [ -f "${DOCKER_GLOBAL_CONFIG}" ]; then
-		echo -e "Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n";
-		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"1\",\n    \"compress\": \"false\"\n  }\n}";
-		echo -e "\n\n";
+    echo -e "Please ensure the following json exists in the docker global-config file found @ \"${DOCKER_GLOBAL_CONFIG}\":\n\n";
+    echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"1\",\n    \"compress\": \"false\"\n  }\n}";
+    echo -e "\n\n";
 	else
-		echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"1\",\n    \"compress\": \"false\"\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
-		echo "Applied filesize-restriction to all docker containers --> max-size: \"${MAX_LOG_FILESIZE}\"";
-		echo "";
-		echo "Reloading daemon & restarting docker-service (to apply updated configuration)...";
-		systemctl daemon-reload;
-		systemctl restart docker;
-		echo "";
-		echo "Done";
+    echo -e "{\n  \"log-driver\": \"json-file\",\n  \"log-opts\": {\n    \"max-size\": \"${MAX_LOG_FILESIZE}\",\n    \"max-file\": \"1\",\n    \"compress\": \"false\"\n  }\n}" >> "${DOCKER_GLOBAL_CONFIG}";
+    echo "Applied filesize-restriction to all docker containers --> max-size: \"${MAX_LOG_FILESIZE}\"";
+    echo "";
+    echo "Reloading daemon & restarting docker-service (to apply updated configuration)...";
+    systemctl daemon-reload;
+    systemctl restart docker;
+    echo "";
+    echo "Done";
 	fi;
 	echo "";
 

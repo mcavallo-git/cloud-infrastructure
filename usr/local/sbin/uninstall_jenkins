@@ -43,9 +43,9 @@ else
 	read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 	echo "";
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-		read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-		echo "";
-		if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+    read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+    echo "";
+    if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
       # ------------------------------------------------------------
       #
@@ -67,7 +67,7 @@ else
       echo -e "\n""Info:  Stopping service \"${SERVICE_NAME}\"";
       echo "  |--> Calling [ systemctl stop \"${SERVICE_NAME}\"; ]...";
       systemctl stop "${SERVICE_NAME}";
-		
+    
       # ------------------------------------------------------------
       #
       # Remove service's dependent package(s)
@@ -180,7 +180,7 @@ else
       echo "  |--> Calling [ /bin/systemctl reset-failed; ]...";
       /bin/systemctl reset-failed;
 
-		fi;
+    fi;
 	fi;
 
 	EXIT_CODE=0;

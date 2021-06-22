@@ -23,11 +23,11 @@ else
 	SERVICE_NAME="java";
 
 	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
-		# PACKAGE_NAME_DEVTOOLS="openjdk-8-jdk-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Debian, Ubuntu, etc.
+    PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
+    # PACKAGE_NAME_DEVTOOLS="openjdk-8-jdk-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Debian, Ubuntu, etc.
 	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
-		PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-		# PACKAGE_NAME_DEVTOOLS="java-1.8.0-openjdk-devel"; yum -y check-update; yum -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    # PACKAGE_NAME_DEVTOOLS="java-1.8.0-openjdk-devel"; yum -y check-update; yum -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 	fi;
 
 	# ------------------------------------------------------------
@@ -35,55 +35,55 @@ else
 	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
-		# Show local Java runtime's settings/properties
-		JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
-		
-		# Locate $JAVA_HOME (local Java runtime's home-directory)
-		LOCAL_JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -rne 's/^\s*java.home = (.+)\s*$/\1/p';); echo "LOCAL_JAVA_HOME = [ ${LOCAL_JAVA_HOME} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
+    # Show local Java runtime's settings/properties
+    JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
+    
+    # Locate $JAVA_HOME (local Java runtime's home-directory)
+    LOCAL_JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -rne 's/^\s*java.home = (.+)\s*$/\1/p';); echo "LOCAL_JAVA_HOME = [ ${LOCAL_JAVA_HOME} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
 
-		# ------------------------------------------------------------
-		#	To find the appropriate font configuration file for a host operating system, the following information is used:
-		#
-		#		JavaHome - the JRE's directory, as given by the "java.home" system property.
-		#
-		#		OS - a string identifying an operating system variant:
-		#			For Windows, "98", "2000", "Me", "XP", "2003".
-		#			For Solaris, empty.
-		#			For Linux, "Sun", "RedHat", "Turbo", "SuSE".
-		#
-		#		Version - a string identifying the operating system version.
-		#
-		#
-		#  The runtime uses the first of the following files it finds:
-		#  
-		#          JavaHome/lib/fontconfig.OS.Version.properties
-		#          JavaHome/lib/fontconfig.OS.Version.bfc
-		#          JavaHome/lib/fontconfig.OS.properties
-		#          JavaHome/lib/fontconfig.OS.bfc
-		#          JavaHome/lib/fontconfig.Version.properties
-		#          JavaHome/lib/fontconfig.Version.bfc
-		#          JavaHome/lib/fontconfig.properties
-		#          JavaHome/lib/fontconfig.bfc
-		#  
-		#
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    #	To find the appropriate font configuration file for a host operating system, the following information is used:
+    #
+    #		JavaHome - the JRE's directory, as given by the "java.home" system property.
+    #
+    #		OS - a string identifying an operating system variant:
+    #			For Windows, "98", "2000", "Me", "XP", "2003".
+    #			For Solaris, empty.
+    #			For Linux, "Sun", "RedHat", "Turbo", "SuSE".
+    #
+    #		Version - a string identifying the operating system version.
+    #
+    #
+    #  The runtime uses the first of the following files it finds:
+    #  
+    #          JavaHome/lib/fontconfig.OS.Version.properties
+    #          JavaHome/lib/fontconfig.OS.Version.bfc
+    #          JavaHome/lib/fontconfig.OS.properties
+    #          JavaHome/lib/fontconfig.OS.bfc
+    #          JavaHome/lib/fontconfig.Version.properties
+    #          JavaHome/lib/fontconfig.Version.bfc
+    #          JavaHome/lib/fontconfig.properties
+    #          JavaHome/lib/fontconfig.bfc
+    #  
+    #
+    # ------------------------------------------------------------
 
-		LOCAL_JAVA_FONTS_DIR="${LOCAL_JAVA_HOME}/lib/fonts/"; echo "LOCAL_JAVA_FONTS_DIR = [ ${LOCAL_JAVA_FONTS_DIR} ]";
-		if [ ! -d "${LOCAL_JAVA_FONTS_DIR}" ]; then
+    LOCAL_JAVA_FONTS_DIR="${LOCAL_JAVA_HOME}/lib/fonts/"; echo "LOCAL_JAVA_FONTS_DIR = [ ${LOCAL_JAVA_FONTS_DIR} ]";
+    if [ ! -d "${LOCAL_JAVA_FONTS_DIR}" ]; then
       echo "";
       echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
       mkdir -p "${LOCAL_JAVA_FONTS_DIR}";
-		fi;
+    fi;
 
-		LOCAL_JAVA_FONTCONFIG_PROPS="${LOCAL_JAVA_HOME}/lib/fontconfig.properties"; echo "LOCAL_JAVA_FONTCONFIG_PROPS = [ ${LOCAL_JAVA_FONTCONFIG_PROPS} ]";
-		if [ ! -f "${LOCAL_JAVA_FONTS_DIR}" ]; then
+    LOCAL_JAVA_FONTCONFIG_PROPS="${LOCAL_JAVA_HOME}/lib/fontconfig.properties"; echo "LOCAL_JAVA_FONTCONFIG_PROPS = [ ${LOCAL_JAVA_FONTCONFIG_PROPS} ]";
+    if [ ! -f "${LOCAL_JAVA_FONTS_DIR}" ]; then
       echo "";
       echo "Info:  Calling [ mkdir -p \"${LOCAL_JAVA_FONTS_DIR}\"; ]...";
       touch "${LOCAL_JAVA_FONTCONFIG_PROPS}";
-		fi;
-		echo "";
-		echo "Info:  Calling [ chmod 0644 \"${LOCAL_JAVA_FONTCONFIG_PROPS}\"; ]...";
-		chmod 0644 "${LOCAL_JAVA_FONTCONFIG_PROPS}";
+    fi;
+    echo "";
+    echo "Info:  Calling [ chmod 0644 \"${LOCAL_JAVA_FONTCONFIG_PROPS}\"; ]...";
+    chmod 0644 "${LOCAL_JAVA_FONTCONFIG_PROPS}";
 
 	fi;
 

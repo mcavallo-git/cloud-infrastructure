@@ -27,88 +27,88 @@ else
 	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	echo "------------------------------------------------------------";
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service FOUND locally
-		echo "";
-		echo "Info:  Service \"kdump\" found to exist locally (skipping package-install)";
-		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
+    echo "";
+    echo "Info:  Service \"kdump\" found to exist locally (skipping package-install)";
+    /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 	else # Service NOT found locally
-		echo "";
-		echo "Warning:  Service \"${SERVICE_NAME}\" not found locally";
-		echo "";
-		echo "Info:  Attempting to install the \"kdump\" package (for kernel crash dump logging) ...";
-		if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
+    echo "";
+    echo "Warning:  Service \"${SERVICE_NAME}\" not found locally";
+    echo "";
+    echo "Info:  Attempting to install the \"kdump\" package (for kernel crash dump logging) ...";
+    if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
       if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
         apt-get -y install linux-crashdump;
       elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
         yum -y install kexec-tools;
       fi;
-		fi;
+    fi;
 	fi;
 
 
 	if [ -f "/etc/default/grub" ]; then
-		#
-		# Enabling Grub2's "crashkernel" setting
-		#
-		if [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=auto' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    #
+    # Enabling Grub2's "crashkernel" setting
+    #
+    if [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=auto' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # Let user know config was already setup correctly
       echo "Info:  Skipping update for config file \"/etc/default/grub\" as it already contains 'GRUB_CMDLINE_LINUX=\"... crashkernel=auto ...\"' ";
-		elif [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    elif [ $(cat '/etc/default/grub' | grep '^GRUB_CMDLINE_LINUX' | grep 'crashkernel=' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # crashkernel already configured - replace it with auto
       sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".*)crashkernel=[a-zA-Z0-9:,:@\-]+(.*\")\$/\1crashkernel=auto\2/" "/etc/default/grub";
-		else
+    else
       # Add inline argument "... crashkernel=auto ..." to grub startup options
       sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".+)\"\$/\1 crashkernel=auto\"/" "/etc/default/grub";
-		fi;
+    fi;
 	fi;
 
 
 	if [ -f "/etc/kdump.conf" ]; then
-		#
-		# Enabling KDump's "path" setting
-		#
-		if [ $(cat '/etc/kdump.conf' | grep '^path /var/crash' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    #
+    # Enabling KDump's "path" setting
+    #
+    if [ $(cat '/etc/kdump.conf' | grep '^path /var/crash' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # Let user know config was already setup correctly
       echo "Info:  Skipping update for config file \"/etc/kdump.conf\" as it already contains 'path /var/crash' ";
-		elif [ $(cat '/etc/kdump.conf' | grep '^path' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    elif [ $(cat '/etc/kdump.conf' | grep '^path' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # crashkernel already configured - replace it with /var/crash
       sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re '/^#?path/d' "/etc/kdump.conf";
       echo "path /var/crash" > "/etc/kdump.conf";
-		else
+    else
       # Add inline argument "... crashkernel=auto ..." to grub startup options
       echo "path /var/crash" > "/etc/kdump.conf";
-		fi;
+    fi;
 
-		#
-		# Enabling KDump's "default" setting
-		#
-		if [ $(cat '/etc/kdump.conf' | grep '^default dump_to_rootfs' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    #
+    # Enabling KDump's "default" setting
+    #
+    if [ $(cat '/etc/kdump.conf' | grep '^default dump_to_rootfs' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # Let user know config was already setup correctly
       echo "Info:  Skipping update for config file \"/etc/kdump.conf\" as it already contains 'default dump_to_rootfs' ";
-		elif [ $(cat '/etc/kdump.conf' | grep '^default' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+    elif [ $(cat '/etc/kdump.conf' | grep '^default' 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
       # crashkernel already configured - replace it with dump_to_rootfs
       sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re '/^#?default/d' "/etc/kdump.conf";
       echo "default dump_to_rootfs" > "/etc/kdump.conf";
-		else
+    else
       # Add inline argument "... crashkernel=auto ..." to grub startup options
       echo "default dump_to_rootfs" > "/etc/kdump.conf";
-		fi;
+    fi;
 	fi;
 
 	
 	# Verify that taget service is enabled
 	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
+    echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
 	else
-		echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
-		systemctl enable ${SERVICE_NAME};
+    echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
+    systemctl enable ${SERVICE_NAME};
 	fi;
 
 	# Verify that taget service is active
 	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
-		echo "Info:  Service \"kdump\" is active (skipping start-service)";
+    echo "Info:  Service \"kdump\" is active (skipping start-service)";
 	else
-		echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
-		systemctl start ${SERVICE_NAME};
+    echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
+    systemctl start ${SERVICE_NAME};
 	fi;
 
 

@@ -54,7 +54,7 @@ fi;
 VERBOSE="0";
 if [ -n "$1" ]; then
 	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
-		VERBOSE="1";
+    VERBOSE="1";
 	fi;
 fi;
 
@@ -66,9 +66,9 @@ RETURNED_OS="Unknown";
 #
 if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
 	if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
-		THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
+    THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
 	else
-		THIS_OS_TYPE='Linux';
+    THIS_OS_TYPE='Linux';
 	fi;
 elif [ "$(uname -s)" == "VMkernel" ]; then
 	THIS_OS_TYPE='VMware ESX';
@@ -106,11 +106,11 @@ if [ -n "$(which vmware 2>'/dev/null';)" ]; then
 	DISTRO_CODENAME="";
 	DISTRO_DESCRIPTION="$(vmware -l;)";
 	if [ -n "$(which sed 2>'/dev/null';)" ]; then
-		DISTRO_ID=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\1/p';);
-		DISTRO_RELEASE=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\2/p';);
-		DISTRO_CODENAME=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\3/p';);
-		DISTRO_BUILD=$(vmware -v | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (build.+)$/\3/p';);
-		DISTRO_DESCRIPTION="${DISTRO_ID} ${DISTRO_RELEASE} ${DISTRO_CODENAME} ${DISTRO_BUILD}";
+    DISTRO_ID=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\1/p';);
+    DISTRO_RELEASE=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\2/p';);
+    DISTRO_CODENAME=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\3/p';);
+    DISTRO_BUILD=$(vmware -v | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (build.+)$/\3/p';);
+    DISTRO_DESCRIPTION="${DISTRO_ID} ${DISTRO_RELEASE} ${DISTRO_CODENAME} ${DISTRO_BUILD}";
 	fi;
 
 elif [ -n "$(which lsb_release 2>'/dev/null';)" ]; then
@@ -187,33 +187,33 @@ THIS_DISTRO="Unknown";
 if [[ ${IS_WINDOWS} -gt 0 ]]; then
 	# Windows shell-distro(s)
 	if [[ ${IS_CYGWIN} -gt 0 ]]; then
-		THIS_DISTRO="Cygwin";
+    THIS_DISTRO="Cygwin";
 	elif [[ ${IS_MINGW} -gt 0 ]]; then
-		THIS_DISTRO="MinGW";
+    THIS_DISTRO="MinGW";
 	fi;
 elif [[ ${IS_ESXI} -gt 0 ]]; then
 	THIS_DISTRO="ESXi";
 elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 	# Linux shell-distro(s)
 	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
-		THIS_DISTRO="Raspbian";
+    THIS_DISTRO="Raspbian";
 	elif [[ ${IS_RED_HAT} -gt 0 ]]; then
-		THIS_DISTRO="Red Hat";
+    THIS_DISTRO="Red Hat";
 	elif [[ ${IS_CENTOS} -gt 0 ]]; then
-		THIS_DISTRO="CentOS";
+    THIS_DISTRO="CentOS";
 	elif [[ ${IS_UBUNTU} -gt 0 ]]; then
-		THIS_DISTRO="Ubuntu";
+    THIS_DISTRO="Ubuntu";
 	elif [[ ${IS_ALPINE} -gt 0 ]]; then
-		THIS_DISTRO="Alpine";
+    THIS_DISTRO="Alpine";
 	elif [[ ${IS_DEBIAN} -gt 0 ]]; then
-		THIS_DISTRO="Debian";
+    THIS_DISTRO="Debian";
 	fi;
 fi;
 
 THIS_RELEASE="Unknown";
 if [ -n "$(which lsb_release 2>'/dev/null';)" ]; then
 	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
-		THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
+    THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
 	fi;
 elif [ -n "${DISTRO_RELEASE}" ]; then
 	THIS_RELEASE="${DISTRO_RELEASE}";
@@ -222,7 +222,7 @@ fi;
 if [ "${THIS_DISTRO}" != "Unknown" ]; then
 	COMBINED_DISTRO_RELEASE="${THIS_DISTRO}";
 	if [ "${THIS_RELEASE}" != "Unknown" ]; then
-		COMBINED_DISTRO_RELEASE="${COMBINED_DISTRO_RELEASE} ${THIS_RELEASE}";
+    COMBINED_DISTRO_RELEASE="${COMBINED_DISTRO_RELEASE} ${THIS_RELEASE}";
 	fi;
 	RETURNED_OS="${COMBINED_DISTRO_RELEASE} running on ${RETURNED_OS}";
 fi;

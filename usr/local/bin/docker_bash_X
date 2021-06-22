@@ -2,27 +2,27 @@
 if [ -n "$0" ]; then
 	
 	if [ -z "$(which docker 2>'/dev/null')" ]; then
-		echo "Error: command \"docker\" not found";
+    echo "Error: command \"docker\" not found";
 
 	else
 
-		unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash array
-		unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash array
+    unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash array
+    unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash array
 
-		DOCKER_CONTAINER_IDS=$(docker ps --format "{{.ID}}");
+    DOCKER_CONTAINER_IDS=$(docker ps --format "{{.ID}}");
 
-		CHOICE_KEY=0;
-		for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
+    CHOICE_KEY=0;
+    for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
       CHOICE_KEY=$((CHOICE_KEY+1));
       EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
       ARR_CONTAINER_IDS+=(["${CHOICE_KEY}"]="${EACH_CONTAINER_ID}");
       ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
-		done;
+    done;
 
-		if [ ${CHOICE_KEY} -le 0 ]; then
+    if [ ${CHOICE_KEY} -le 0 ]; then
       echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
       
-		else
+    else
       echo "";
       echo "Found the following dockers, locally:";
       echo "------------------------------------------------------------";
@@ -60,7 +60,7 @@ if [ -n "$0" ]; then
         echo "Error: Malformed user-input (must be an integer selection from the table, above)";
       fi;
 
-		fi;
+    fi;
 
 	fi;
 

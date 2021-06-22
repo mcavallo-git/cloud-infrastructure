@@ -51,20 +51,20 @@ else
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
-		EACH_ARG=${ARGS[${i}]};
-		# BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
+    EACH_ARG=${ARGS[${i}]};
+    # BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
 
-		# Check if this is the last inline-argument or if there are more to follow
-		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+    # Check if this is the last inline-argument or if there are more to follow
+    if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
       NEXT_ARG="";
-		else
+    else
       NEXT_ARG=${ARGS[$((${i}+1))]};
       if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
       fi;
-		fi;
+    fi;
 
-		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+    if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
       # Parse inline hostname
       if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
@@ -125,17 +125,17 @@ else
         fi;
       fi;
 
-		fi;
+    fi;
 	done;
 
 	# ------------------------------------------------------------
 
 	if [ $(which nmcli 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		#
-		# Prioritize DHCP DNS Nameservers from nmcli (NetworkManager), where available
-		#
-		DNSV4_SERVERS=$(nmcli device show | grep 'IP4.DNS' | awk '{print $2}');
-		if [ -n "${DNSV4_SERVERS}" ]; then
+    #
+    # Prioritize DHCP DNS Nameservers from nmcli (NetworkManager), where available
+    #
+    DNSV4_SERVERS=$(nmcli device show | grep 'IP4.DNS' | awk '{print $2}');
+    if [ -n "${DNSV4_SERVERS}" ]; then
       for EACH_DNSV4_SERVER in ${DNSV4_SERVERS}; do
         if [ -z "${DHCP_NAMESRVR_1}" ]; then
           DHCP_NAMESRVR_1="${EACH_DNSV4_SERVER}"; # Set primary DNS Server
@@ -145,7 +145,7 @@ else
           DHCP_NAMESRVR_3="${EACH_DNSV4_SERVER}"; # Set tertiary DNS Server
         fi;
       done;
-		fi;
+    fi;
 	fi;
 
 
@@ -215,11 +215,11 @@ else
 	IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
 	IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
 	if [ "${IS_LINUX}" != "1" ]; then
-		echo -e "\n""Error:  Must run in a Linux-based environment";
-		exit 1;
+    echo -e "\n""Error:  Must run in a Linux-based environment";
+    exit 1;
 
 	elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
-		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 
       #
       # Required package:
@@ -264,10 +264,10 @@ else
         echo ""; exit 1;
       fi;
 
-		else
+    else
       echo "Error:  Linux kernel/distro not supported";
       exit 1;
-		fi;
+    fi;
 	fi;
 
 	# Network config filepaths
@@ -282,14 +282,14 @@ else
 
 	if [ -n "${NMCLI_CONF}" ]; then
 
-		# NetworkManager Device Configuration
+    # NetworkManager Device Configuration
 
-		if [ ! -f "${NMCLI_CONF}" ]; then 
+    if [ ! -f "${NMCLI_CONF}" ]; then 
 
       echo "ERROR: DNS Config-File not found @ path \"${NMCLI_CONF}\" - exiting...";
       exit 1;
 
-		else
+    else
 
       if [ ${USE_STATIC_IPV4} -eq 1 ]; then
 
@@ -459,56 +459,56 @@ else
         exit 1;
       fi;
 
-		fi;
+    fi;
 
 	else # ------------------------------------------------------------
 
-		/usr/bin/networkctl status;
+    /usr/bin/networkctl status;
 
-		# Resolv.conf
+    # Resolv.conf
 
-		FILE_DNS_BUILDER_BASE="/etc/resolvconf/resolv.conf.d/base";
-		FILE_DNS_BUILDER_TAIL="/etc/resolvconf/resolv.conf.d/base";
-		FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_BASE}";
-		FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_TAIL}";
-		if [ "${IS_WINDOWS_WSL}" == "1" ]; then
+    FILE_DNS_BUILDER_BASE="/etc/resolvconf/resolv.conf.d/base";
+    FILE_DNS_BUILDER_TAIL="/etc/resolvconf/resolv.conf.d/base";
+    FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_BASE}";
+    FILE_NETWORK_RESOLVER="${FILE_DNS_BUILDER_TAIL}";
+    if [ "${IS_WINDOWS_WSL}" == "1" ]; then
       FILE_NETWORK_RESOLVER="${ETC_RESOLVCONF}"; # Windows subsystem for linux - wipe all of resolver (for testing-only as it is rebuilt on WSL-close, or 'shut down' from its perspective)
-		fi;
+    fi;
 
-		# Backup-filepaths
-		BACKUP_CONFIGS_DIR="/root/backup/update_dns_config";
-		OLD_BACKUP_CONFIGS_DIR="/root/backup_network_configs";
-		if [ -d "${OLD_BACKUP_CONFIGS_DIR}" ]; then
+    # Backup-filepaths
+    BACKUP_CONFIGS_DIR="/root/backup/update_dns_config";
+    OLD_BACKUP_CONFIGS_DIR="/root/backup_network_configs";
+    if [ -d "${OLD_BACKUP_CONFIGS_DIR}" ]; then
       mkdir -p $(dirname "${BACKUP_CONFIGS_DIR}");
       mv "${OLD_BACKUP_CONFIGS_DIR}" "${BACKUP_CONFIGS_DIR}";
-		else
+    else
       mkdir -p "${BACKUP_CONFIGS_DIR}";
-		fi;
-		chmod 700 "${BACKUP_CONFIGS_DIR}"; chown "root:root" "${BACKUP_CONFIGS_DIR}";
+    fi;
+    chmod 700 "${BACKUP_CONFIGS_DIR}"; chown "root:root" "${BACKUP_CONFIGS_DIR}";
 
-		# Backup necesarry config file(s), if-existent
-		FILE_TO_BACKUP="${ETC_RESOLVCONF}";
-		if [ -f "${FILE_TO_BACKUP}" ]; then
+    # Backup necesarry config file(s), if-existent
+    FILE_TO_BACKUP="${ETC_RESOLVCONF}";
+    if [ -f "${FILE_TO_BACKUP}" ]; then
       BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
       echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
       cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
-		fi;
-		FILE_TO_BACKUP="${DEBIAN_NETWORK_CONF}";
-		if [ -f "${FILE_TO_BACKUP}" ]; then
+    fi;
+    FILE_TO_BACKUP="${DEBIAN_NETWORK_CONF}";
+    if [ -f "${FILE_TO_BACKUP}" ]; then
       BASENAME_TO_BACKUP=$(basename "${FILE_TO_BACKUP}");
       echo -e "\n""Info:  Calling [ cp -f \"${FILE_TO_BACKUP}\" \"${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak\"; ]...";
       cp -f "${FILE_TO_BACKUP}" "${BACKUP_CONFIGS_DIR}/${START_TIMESTAMP}_${BASENAME_TO_BACKUP}.bak";
-		fi;
+    fi;
 
-		# Setup the nameserver info to make it (eventually) into resolv.conf
-		echo "" > "${FILE_NETWORK_RESOLVER}";
-		if [ -n "${DNS_NAMESRVR_1}" ]; then echo "nameserver ${DNS_NAMESRVR_1}" >> "${FILE_NETWORK_RESOLVER}"; fi;
-		if [ -n "${DNS_NAMESRVR_2}" ]; then echo "nameserver ${DNS_NAMESRVR_2}" >> "${FILE_NETWORK_RESOLVER}"; fi;
-		if [ -n "${DNS_NAMESRVR_3}" ]; then echo "nameserver ${DNS_NAMESRVR_3}" >> "${FILE_NETWORK_RESOLVER}"; fi;
-		if [ -n "${DNS_SEARCH_DOMAIN}" ]; then echo "search ${DNS_SEARCH_DOMAIN}" >> "${FILE_NETWORK_RESOLVER}"; fi;
-		echo "" >> "${FILE_NETWORK_RESOLVER}";
+    # Setup the nameserver info to make it (eventually) into resolv.conf
+    echo "" > "${FILE_NETWORK_RESOLVER}";
+    if [ -n "${DNS_NAMESRVR_1}" ]; then echo "nameserver ${DNS_NAMESRVR_1}" >> "${FILE_NETWORK_RESOLVER}"; fi;
+    if [ -n "${DNS_NAMESRVR_2}" ]; then echo "nameserver ${DNS_NAMESRVR_2}" >> "${FILE_NETWORK_RESOLVER}"; fi;
+    if [ -n "${DNS_NAMESRVR_3}" ]; then echo "nameserver ${DNS_NAMESRVR_3}" >> "${FILE_NETWORK_RESOLVER}"; fi;
+    if [ -n "${DNS_SEARCH_DOMAIN}" ]; then echo "search ${DNS_SEARCH_DOMAIN}" >> "${FILE_NETWORK_RESOLVER}"; fi;
+    echo "" >> "${FILE_NETWORK_RESOLVER}";
 
-		if [ "${IS_WINDOWS_WSL}" != "1" ]; then
+    if [ "${IS_WINDOWS_WSL}" != "1" ]; then
 
       # show "${ETC_RESOLVCONF}" file (configuration before-start)
       echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
@@ -714,7 +714,7 @@ else
         fi;
       fi;
 
-		fi;
+    fi;
 	
 	fi;
 
@@ -731,16 +731,16 @@ else
 	sleep 2;
 
 	if [ -f "${DEBIAN_NETWORK_CONF}" ]; then
-		echo -e "\n""Info:  Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
-		echo "${DASHES}"; cat "${DEBIAN_NETWORK_CONF}"; echo "${DASHES}";
+    echo -e "\n""Info:  Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
+    echo "${DASHES}"; cat "${DEBIAN_NETWORK_CONF}"; echo "${DASHES}";
 	elif [ -f "${NMCLI_CONF}" ]; then
-		echo -e "\n""Info:  Calling [cat \"${NMCLI_CONF}\"]";
-		echo "${DASHES}"; cat "${NMCLI_CONF}"; echo "${DASHES}";
+    echo -e "\n""Info:  Calling [cat \"${NMCLI_CONF}\"]";
+    echo "${DASHES}"; cat "${NMCLI_CONF}"; echo "${DASHES}";
 	fi;
 
 	if [ -f "${ETC_RESOLVCONF}" ]; then
-		echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
-		echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
+    echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
+    echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
 	fi;
 
 fi;

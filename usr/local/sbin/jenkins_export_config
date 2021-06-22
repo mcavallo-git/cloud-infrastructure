@@ -40,24 +40,24 @@ else
 
 	# Determine user's home-directory location
 	if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
-		JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
+    JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
 	fi;
 
 	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 
-		# ------------------------------------------------------------
-		# Export all 'config.xml' (jenkins-config) files
+    # ------------------------------------------------------------
+    # Export all 'config.xml' (jenkins-config) files
 
-		GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git');
-		FILEPATH_ARCHIVE_7Z_CONFIG="${GIT_WORK_TREE}/config-exports/${START_TIMESTAMP}/export.7z";
-		FILEPATH_ARCHIVE_7Z_FULL="${GIT_WORK_TREE}/full-exports/${START_TIMESTAMP}/export.7z";
-		FILEPATH_ARCHIVE_7Z_PLUGINS="${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/export.7z";
+    GIT_WORK_TREE=$(git_init "${REPO_CREDS}" | grep -e '^/var/lib/git');
+    FILEPATH_ARCHIVE_7Z_CONFIG="${GIT_WORK_TREE}/config-exports/${START_TIMESTAMP}/export.7z";
+    FILEPATH_ARCHIVE_7Z_FULL="${GIT_WORK_TREE}/full-exports/${START_TIMESTAMP}/export.7z";
+    FILEPATH_ARCHIVE_7Z_PLUGINS="${GIT_WORK_TREE}/plugin-exports/${START_TIMESTAMP}/export.7z";
 
-		POINTER_LATEST_7Z_CONFIG="${JENKINS_HOME}/jenkins_export_config.latest.7z";
-		POINTER_LATEST_7Z_FULL="${JENKINS_HOME}/jenkins_export_full.latest.7z";
-		POINTER_LATEST_7Z_PLUGINS="${JENKINS_HOME}/jenkins_export_plugins.latest.7z";
+    POINTER_LATEST_7Z_CONFIG="${JENKINS_HOME}/jenkins_export_config.latest.7z";
+    POINTER_LATEST_7Z_FULL="${JENKINS_HOME}/jenkins_export_full.latest.7z";
+    POINTER_LATEST_7Z_PLUGINS="${JENKINS_HOME}/jenkins_export_plugins.latest.7z";
 
-		if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
+    if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
 
       echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
 
@@ -84,7 +84,7 @@ else
         git push;
       fi;
 
-		else
+    else
 
       # echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
       # du -sh "${JENKINS_HOME}/**/config.xml";
@@ -163,9 +163,9 @@ else
 
       fi;
 
-		fi;
+    fi;
 
-		if [ 0 -eq 1 ]; then
+    if [ 0 -eq 1 ]; then
       # ------------------------------------------------------------
       #
       # Roll-Back Jenkins plugins to [ latest export ]
@@ -195,10 +195,10 @@ else
       /usr/sbin/service "${SERVICE_NAME}" start && \
       rm -rf $(dirname "${LATEST_ARCHIVE_PLUGINS}")/$(dirname $(dirname "${JENKINS_HOME}")) && \
       df -h ".";
-		fi;
+    fi;
 
 
-		if [ 0 -eq 1 ]; then
+    if [ 0 -eq 1 ]; then
       # ------------------------------------------------------------
       #
       # Backup [ Docker-based Jenkins instance ]
@@ -206,10 +206,10 @@ else
       BASE_DIR="${HOME}/backups/$(date +'%Y-%m-%d_%H-%M-%S')" && \
       mkdir -p "${BASE_DIR}" && \
       7z a "${BASE_DIR}/jenkins-docker.7z" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe "/var/lib/docker/volumes/jenkins-data/_data";
-		fi;
+    fi;
 
 
-		if [ 0 -eq 1 ]; then
+    if [ 0 -eq 1 ]; then
       # ------------------------------------------------------------
       #
       # Update [ Docker-based Jenkins instance ]
@@ -220,7 +220,7 @@ else
       # 7z x "LATEST_ARCHIVE.7z";
       # rsync --archive --inplace --checksum --verbose "./jenkins/" "/var/lib/docker/volumes/jenkins-data/_data";
       # ------------------------------------------------------------
-		fi;
+    fi;
 
 	fi;
 

@@ -28,23 +28,23 @@ else
 	#  |--> Many of these commands are tools which may be found in the Java Developer's Toolkit
 	#
 	if [ -z "$(which jcmd 2>'/dev/null')" ] || [ -z "$(which jps 2>'/dev/null')" ] || [ -z "$(which jmap 2>'/dev/null')" ]; then
-		READ_TIMEOUT=60;
-		echo "";
-		echo "Error:  One or more required commands from the 'Java Development Toolkit' were not found, locally";
-		echo "         (Required commands:  jcmd, jps, jmap)";
-		echo "";
-		read -p "Install the Java Developer Toolkit, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-		echo "";
-		if [ ${RETURN_CODE_READ} -gt 128 ]; then
+    READ_TIMEOUT=60;
+    echo "";
+    echo "Error:  One or more required commands from the 'Java Development Toolkit' were not found, locally";
+    echo "         (Required commands:  jcmd, jps, jmap)";
+    echo "";
+    read -p "Install the Java Developer Toolkit, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+    echo "";
+    if [ ${RETURN_CODE_READ} -gt 128 ]; then
       echo "Error:  Response timed out after ${READ_TIMEOUT}s";
       exit 1;
-		elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+    elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
       # install_java - Instals Java + Java Developer Toolkit
       curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java?t=$(date +'%s.%N')" | bash;
-		else
+    else
       echo "Info:  Required package-install denied  -->  Exiting...";
       exit 1;
-		fi;
+    fi;
 	fi;
 
 	# ------------------------------------------------------------
@@ -54,29 +54,29 @@ else
 
 	#   jcmd  -->  Sends diagnostic command requests to a running Java Virtual Machine (JVM).
 	if [ 1 ]; then
-		# Note: In Cent-OS7, (as-of Apr-2020), YOU MUST CALL jcmd WHILST EITHER LOGGED-IS-AS OR MASQUERADING-AS THE SERVICE USER
-		SERVICE_USER="jenkins";
-		# Note: Command 'VM.system_properties' seems to sum things up nicely without TOO much extra info (athough it's still a lot of info)
-		# DIAG_REQUEST="VM.classloader_stats";
-		# DIAG_REQUEST="VM.classloaders";
-		# DIAG_REQUEST="VM.command_line";
-		# DIAG_REQUEST="VM.dynlibs";
-		# DIAG_REQUEST="VM.flags";
-		# DIAG_REQUEST="VM.info";
-		# DIAG_REQUEST="VM.log";
-		# DIAG_REQUEST="VM.metaspace";
-		# DIAG_REQUEST="VM.native_memory";
-		# DIAG_REQUEST="VM.print_touched_methods";
-		# DIAG_REQUEST="VM.set_flag";
-		# DIAG_REQUEST="VM.start_java_debugging";
-		# DIAG_REQUEST="VM.stringtable";
-		# DIAG_REQUEST="VM.symboltable";
-		DIAG_REQUEST="VM.system_properties";
-		# DIAG_REQUEST="VM.uptime";
-		# DIAG_REQUEST="VM.version";
-		# DIAG_REQUEST="ManagementAgent.status";
-		DIAG_OUTPUT="$(sudo -u ${SERVICE_USER} jcmd $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}') ${DIAG_REQUEST})";
-		echo -e "\n${DIAG_OUTPUT}\n";
+    # Note: In Cent-OS7, (as-of Apr-2020), YOU MUST CALL jcmd WHILST EITHER LOGGED-IS-AS OR MASQUERADING-AS THE SERVICE USER
+    SERVICE_USER="jenkins";
+    # Note: Command 'VM.system_properties' seems to sum things up nicely without TOO much extra info (athough it's still a lot of info)
+    # DIAG_REQUEST="VM.classloader_stats";
+    # DIAG_REQUEST="VM.classloaders";
+    # DIAG_REQUEST="VM.command_line";
+    # DIAG_REQUEST="VM.dynlibs";
+    # DIAG_REQUEST="VM.flags";
+    # DIAG_REQUEST="VM.info";
+    # DIAG_REQUEST="VM.log";
+    # DIAG_REQUEST="VM.metaspace";
+    # DIAG_REQUEST="VM.native_memory";
+    # DIAG_REQUEST="VM.print_touched_methods";
+    # DIAG_REQUEST="VM.set_flag";
+    # DIAG_REQUEST="VM.start_java_debugging";
+    # DIAG_REQUEST="VM.stringtable";
+    # DIAG_REQUEST="VM.symboltable";
+    DIAG_REQUEST="VM.system_properties";
+    # DIAG_REQUEST="VM.uptime";
+    # DIAG_REQUEST="VM.version";
+    # DIAG_REQUEST="ManagementAgent.status";
+    DIAG_OUTPUT="$(sudo -u ${SERVICE_USER} jcmd $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}') ${DIAG_REQUEST})";
+    echo -e "\n${DIAG_OUTPUT}\n";
 	fi;
 
 
@@ -96,18 +96,18 @@ else
 
 	# WARNING:  CLSTATS OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
 	if [ 0 -eq 1 ]; then
-		echo "Info:  Calling  [ jmap -clstats ]  which  [ Prints class loader wise statistics of Java heap. For each class loader, its name, how active it is, address, parent class loader, and the number and size of classes it has loaded are printed. ]";
-		SERVICE_USER="jenkins";
-		JMAP_CLSTATS="$(jmap -clstats -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
-		echo "${JMAP_CLSTATS}";
+    echo "Info:  Calling  [ jmap -clstats ]  which  [ Prints class loader wise statistics of Java heap. For each class loader, its name, how active it is, address, parent class loader, and the number and size of classes it has loaded are printed. ]";
+    SERVICE_USER="jenkins";
+    JMAP_CLSTATS="$(jmap -clstats -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
+    echo "${JMAP_CLSTATS}";
 	fi;
 
 	# WARNING:  HISTO OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
 	if [ 0 -eq 1 ]; then
-		echo "Info:  Calling  [ jmap -histo ]  which  [ Prints a histogram of the heap. For each Java class, the number of objects, memory size in bytes, and the fully qualified class names are printed. The JVM internal class names are printed with an asterisk (*) prefix. ]";
-		SERVICE_USER="jenkins";
-		JMAP_HISTO="$(jmap -histo -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
-		echo "${JMAP_HISTO}";
+    echo "Info:  Calling  [ jmap -histo ]  which  [ Prints a histogram of the heap. For each Java class, the number of objects, memory size in bytes, and the fully qualified class names are printed. The JVM internal class names are printed with an asterisk (*) prefix. ]";
+    SERVICE_USER="jenkins";
+    JMAP_HISTO="$(jmap -histo -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
+    echo "${JMAP_HISTO}";
 	fi;
 	
 

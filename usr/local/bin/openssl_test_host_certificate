@@ -81,8 +81,8 @@ STARTTLS_PORT_PROTOS+=(["5298"]="xmpp-serve");  # 5298 is (xmpp-serve) Extensibl
 
 for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
 	if [ "${HOST_PORT}" == "${EACH_PORT}" ]; then
-		PROTO_STARTTLS="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
-		break;
+    PROTO_STARTTLS="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
+    break;
 	fi;
 done;
 
@@ -102,18 +102,18 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 
 	# Check if this is the last inline-argument or if there are more to follow
 	if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
-		NEXT_ARG="";
+    NEXT_ARG="";
 	else
-		NEXT_ARG=${ARGS[$((${i}+1))]};
-		if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+    NEXT_ARG=${ARGS[$((${i}+1))]};
+    if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
       NEXT_ARG="";
-		fi;
+    fi;
 	fi;
 
 	if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-		# Parse cronjob calls
-		if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
+    # Parse cronjob calls
+    if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
       PROTO_OVERRIDE="";
       for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
         EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
@@ -149,7 +149,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
           PROTO_STARTTLS="";
         fi;
       fi;
-		fi;
+    fi;
 
 	fi;
 

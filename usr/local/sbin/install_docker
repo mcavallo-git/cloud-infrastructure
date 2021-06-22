@@ -33,46 +33,46 @@ else
 
 	# ------------------------------------------------------------
 	if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
-		#
-		# WSL Docker Installation
-		#
+    #
+    # WSL Docker Installation
+    #
 
-		# Redirect Bash calls to Windows docker-host
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
+    # Redirect Bash calls to Windows docker-host
+    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
 
-		# Download Docker Desktop (if not found locally)
-		if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
+    # Download Docker Desktop (if not found locally)
+    if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
       echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
       "/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
       exit 1;
-		fi;
+    fi;
 
-		# if [ -v SUDO_USER ]; then
-		# 	usermod -aG docker "${SUDO_USER}";
-		# fi;
-		# usermod -aG docker "${USER}";
+    # if [ -v SUDO_USER ]; then
+    # 	usermod -aG docker "${SUDO_USER}";
+    # fi;
+    # usermod -aG docker "${USER}";
 
-		# Redirect Bash calls to Windows docker-host
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
-		ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
+    # Redirect Bash calls to Windows docker-host
+    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
 
 	else # ------------------------------------------------------------
-		#
-		# Non-WSL Docker Installation
-		#
+    #
+    # Non-WSL Docker Installation
+    #
 
-		if [ ! -f "${BIN_DOCKER}" ]; then
+    if [ ! -f "${BIN_DOCKER}" ]; then
       curl -ssL "https://get.docker.com/" | sh;
-		fi;
+    fi;
 
-		SERVICE_NAME="docker";
-		if [ -z "$(/usr/sbin/service ${SERVICE_NAME} status | grep 'Active: active (running)')" ]; then
+    SERVICE_NAME="docker";
+    if [ -z "$(/usr/sbin/service ${SERVICE_NAME} status | grep 'Active: active (running)')" ]; then
       echo "Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
       /usr/sbin/service "${SERVICE_NAME}" start;
-		fi;
+    fi;
 
-		if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
+    if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
 
       if [ -n "$(which apk 2>/dev/null)" ]; then
         # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
@@ -104,8 +104,8 @@ else
 
       chmod 0755 "${BIN_DOCKER_COMPOSE}";
 
-		fi;
-		
+    fi;
+    
 	fi;
 
 	systemctl enable docker --now;

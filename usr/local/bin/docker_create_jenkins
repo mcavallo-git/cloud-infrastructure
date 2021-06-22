@@ -25,8 +25,8 @@ else
 	# MIN_KEY=$((EACH_KEY+1));
 	MIN_KEY=${EACH_KEY};
 	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
-		ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
-		EACH_KEY=$((EACH_KEY+1));
+    ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
+    EACH_KEY=$((EACH_KEY+1));
 	done;
 	MAX_KEY=$((${EACH_KEY}-1));
 
@@ -39,24 +39,24 @@ else
 	# echo "${IMAGES_MENU_OPTIONS}";
 
 	if [ ${CHOICE_KEY} -le 0 ]; then
-		echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
+    echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
 	else
-		
-		ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-		for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
+    
+    ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+    for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
       EACH_TAG="${ARR_TAG_OPTIONS_NO_DUPES[${EACH_KEY}]}";
       echo "   ${EACH_KEY}	|  ${DOCKER_IMAGE_NAME}:${EACH_TAG}";
-		done;
+    done;
 
-		ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
-		
-		# Let the user determine which tag (image-revision) to build-from
-		read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
-		if [ ${READ_RET_CODE} -gt 128 ]; then
+    ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
+    
+    # Let the user determine which tag (image-revision) to build-from
+    read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
+    if [ ${READ_RET_CODE} -gt 128 ]; then
       # Error: Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
       echo -e "Error: Response timed out""\n""${ERROR_SUGGEST_HELP}";
 
-		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
+    elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
       USER_SELECTION_KEY=$((0+${REPLY}));
       if [ -z "${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}" ]; then
         # Error: User-input key not found as an index within the Docker-Image-Tags array
@@ -84,11 +84,11 @@ else
 
       fi;
 
-		else
+    else
       # Error: Malformed User-input (didn't meet criteria, above)
       echo -e "Error: Invalid/empty User-input""\n""${ERROR_SUGGEST_HELP}";
 
-		fi;
+    fi;
 	fi;
 
 	# docker_name="jenkins_$(date +'%s')";

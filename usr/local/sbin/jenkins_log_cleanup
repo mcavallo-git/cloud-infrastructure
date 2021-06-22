@@ -38,22 +38,22 @@ else
 	echo -e "\n\n${DASHES}\n";
 
 	if [ -z "${JENKINS_UNAME}" ]; then # jenkins process not found
-		echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No processes found which match text \"${PS_AUX_CONTAINS}\"";
-		exit 1;
-		
+    echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No processes found which match text \"${PS_AUX_CONTAINS}\"";
+    exit 1;
+    
 	elif [ -n "$(id -u ${JENKINS_UNAME} | grep 'no such user')" ]; then # jenkins user not found
-		echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No users found with name \"${JENKINS_UNAME}\"";
-		exit 1;
+    echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No users found with name \"${JENKINS_UNAME}\"";
+    exit 1;
 
 	else
-		
-		JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
+    
+    JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
 
-		if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
+    if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
       echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
       exit 1;
 
-		else # good to go - begin deleting dirs
+    else # good to go - begin deleting dirs
 
       FIND_PARENT="${JENKINS_UHOME}/jobs/";
       FIND_REGEX="^${FIND_PARENT}.+/builds/[0-9]+$";
@@ -70,7 +70,7 @@ else
         -mtime +${MAX_AGE_DAYS} \
         -exec rm -rf -- '{}' \;
 
-		fi;
+    fi;
 
 	fi;
 
@@ -81,10 +81,10 @@ else
 	echo "  Filepath starts with: \"${FIND_PARENT}\"";
 
 	find "${FIND_PARENT}" \
-		-mindepth 1 \
-		-maxdepth 10 \
-		-mtime +${MAX_AGE_DAYS} \
-		-exec rm -rf -- '{}' \;
+    -mindepth 1 \
+    -maxdepth 10 \
+    -mtime +${MAX_AGE_DAYS} \
+    -exec rm -rf -- '{}' \;
 
 
 	# # NGINX - Reload

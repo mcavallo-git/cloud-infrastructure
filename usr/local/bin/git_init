@@ -46,17 +46,17 @@ FAIL_MSG="";
 # If acting as the "root" user and the "git" module is not installed, then attempt to install git
 if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 	if [ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]; then
-		# Ubuntu
-		echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Ubuntu Linux) - Attempting to install via:";
-		echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
-		apt -qq -y update && apt -qq -y install --ignore-missing git;
+    # Ubuntu
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Ubuntu Linux) - Attempting to install via:";
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
+    apt -qq -y update && apt -qq -y install --ignore-missing git;
 	else
-		if [ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]; then
+    if [ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]; then
       # Debian
       echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Debian Linux) - Attempting to install via:";
       echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apt -y update && apt -y install --ignore-missing git;";
       apt -qq -y update && apt -qq -y install --ignore-missing git;
-		else
+    else
       if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
         # CentOS
         echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (CentOS Linux) - Attempting to install via:";
@@ -70,7 +70,7 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
           apk update && apk add git;
         fi;
       fi;
-		fi;
+    fi;
 	fi;
 fi;
 
@@ -89,7 +89,7 @@ if [ -z "${REMOTE_HOST}" ]; then
 	read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 -r;
 	REMOTE_HOST="${REPLY}";
 	if [ -z "${REMOTE_HOST}" ]; then
-		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_HOST is empty.\n";
+    FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_HOST is empty.\n";
 	fi;
 fi;
 
@@ -98,7 +98,7 @@ if [ -z "${REMOTE_OWNER}" ]; then
 	read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 -r;
 	REMOTE_OWNER="${REPLY}";
 	if [ -z "${REMOTE_OWNER}" ]; then
-		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_OWNER is empty.\n";
+    FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_OWNER is empty.\n";
 	fi;
 fi;
 
@@ -107,7 +107,7 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
 	read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 -r;
 	REMOTE_REPOSITORY="${REPLY}";
 	if [ -z "${REMOTE_REPOSITORY}" ]; then
-		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
+    FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
 	fi;
 fi;
 
@@ -117,9 +117,9 @@ if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
 	read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 -r;
 	REMOTE_PRIVATE_KEY="${REPLY}";
 	if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
-		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
+    FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
 	elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
-		FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
+    FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
 	fi;
 fi;
 
@@ -331,7 +331,7 @@ if [ -n "${COMMIT_USER_FULLNAME}" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.name \"${COMMIT_USER_FULLNAME}\"";
 	${GIT_CLI} config user.name "${COMMIT_USER_FULLNAME}";
 	if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
 	fi;
 fi;
 
@@ -341,7 +341,7 @@ if [ -n "${COMMIT_USER_EMAIL}" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git config user.email \"${COMMIT_USER_EMAIL}\"";
 	${GIT_CLI} config user.email "${COMMIT_USER_EMAIL}";
 	if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
 	fi;
 fi;
 
@@ -364,41 +364,41 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> FIRST_CLONE_OF_REPO == 1";
 	# get default branch(es)
 	if [ -n "${CHECKOUT_BRANCH}" ]; then
-		TRY_BRANCH="${CHECKOUT_BRANCH}";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
-		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+    TRY_BRANCH="${CHECKOUT_BRANCH}";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
-		else
+    else
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
-		fi;
+    fi;
 	fi;
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
-		TRY_BRANCH="main";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
-		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+    TRY_BRANCH="main";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
       CHECKOUT_BRANCH="${TRY_BRANCH}";
-		else
+    else
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
-		fi;
+    fi;
 	fi;
 	if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
-		TRY_BRANCH="master";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-		${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
-		if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
+    TRY_BRANCH="master";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
       CHECKOUT_BRANCH="${TRY_BRANCH}";
-		else
+    else
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
-		fi;
+    fi;
 	fi;
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
 	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} pull -v";
@@ -414,23 +414,23 @@ echo "${LOCAL_CURRENT_BRANCH}";
 if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
 	REMOTE_BRANCH_EXISTS=$(${GIT_CLI} branch -a | awk '{print $1}' | grep -w remotes/origin/${CHECKOUT_BRANCH});
 	if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
-		# checkout specific branch if not already on it
-		if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
+    # checkout specific branch if not already on it
+    if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
       # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
       echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git checkout -f ${CHECKOUT_BRANCH}";
       ${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
-		else
+    else
       echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
-		fi;
-		# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} reset --hard \"origin/${CHECKOUT_BRANCH}\"";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
-		${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
+    fi;
+    # echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+    ${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
 	else
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Exiting after 20s...";
-		# ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}"; <-- CREATES BRANCH
-		sleep 20;
-		exit 1;
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Exiting after 20s...";
+    # ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}"; <-- CREATES BRANCH
+    sleep 20;
+    exit 1;
 	fi;
 else
 	# echo "$(date '+%Y-%m-%d %H:%M:%S') | ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
@@ -457,15 +457,15 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 FINAL_PARENT_DIR="${HOME}/Documents/GitHub";
 if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
 	if [ ! -d "${WINDOWS_GITHUB_WORK_TREE}" ]; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Attempting to relocate the git repository's root directory...";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> from \"${GIT_WORK_TREE}\"";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
-		mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
-		GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Attempting to relocate the git repository's root directory...";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> from \"${GIT_WORK_TREE}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') |  |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
+    GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
 	else
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Directory already exists (unable to relocate git work tree to):";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | --> \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Error: Directory already exists (unable to relocate git work tree to):";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | --> \"${WINDOWS_GITHUB_WORK_TREE}\"";
 
 	fi;
 	echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";

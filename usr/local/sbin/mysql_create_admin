@@ -25,11 +25,11 @@ else
 	# Get the new admin's username
 	PATH_ADMIN_NAME="${HOME}/mysql_admin_user";
 	if [ ! -f "${PATH_ADMIN_NAME}" ]; then
-		echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_NAME}\" as one single line of text (no newlines)";
-		exit 1;
+    echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_NAME}\" as one single line of text (no newlines)";
+    exit 1;
 	elif [ $(cat "${PATH_ADMIN_NAME}" | wc -l;) -gt 1 ]; then
-		echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_NAME}\" as ONE SINGLE LINE of text (no newlines)";
-		exit 1;
+    echo "To create a new MySQL admin, place their username in filepath \"${PATH_ADMIN_NAME}\" as ONE SINGLE LINE of text (no newlines)";
+    exit 1;
 	fi;
 	chmod 0400 "${PATH_ADMIN_NAME}";
 	ADMIN_NAME=$(cat "${PATH_ADMIN_NAME}");
@@ -37,11 +37,11 @@ else
 	# Get the new admin's password
 	PATH_ADMIN_PASS="${HOME}/mysql_admin_pass";
 	if [ ! -f "${PATH_ADMIN_PASS}" ]; then
-		echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASS}\" as one single line of text (no newlines)";
-		exit 1;
+    echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASS}\" as one single line of text (no newlines)";
+    exit 1;
 	elif [ $(cat "${PATH_ADMIN_PASS}" | wc -l;) -gt 1 ]; then
-		echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASS}\" as ONE SINGLE LINE of text (no newlines)";
-		exit 1;
+    echo "To create a new MySQL admin, place their password in filepath \"${PATH_ADMIN_PASS}\" as ONE SINGLE LINE of text (no newlines)";
+    exit 1;
 	fi;
 	chmod 0400 "${PATH_ADMIN_PASS}";
 	ADMIN_PASS=$(cat "${PATH_ADMIN_PASS}");
@@ -64,28 +64,28 @@ else
 	read -p "Are you ready to create new MySQL admin-user \"${ADMIN_NAME}\"? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 	echo "";
 	if [ ${RETURN_CODE_READ} -gt 128 ]; then
-		echo -e "Response timed out";
+    echo -e "Response timed out";
 	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-		echo -e "\n""Info: Confirmed - Attempting to create new MySQL admin-user \"${ADMIN_NAME}\"...""\n";
+    echo -e "\n""Info: Confirmed - Attempting to create new MySQL admin-user \"${ADMIN_NAME}\"...""\n";
 
-		exit 0;
+    exit 0;
 
-		service mysqld stop;
-		sleep 1;
+    service mysqld stop;
+    sleep 1;
 
-		PATH_TEMP_PID="/var/run/mysqld/mysqld_temp.pid";
-		mysqld --init-file=${MYSQL_INIT_PATH} --pid-file=${PATH_TEMP_PID} &
-		echo "Waiting 60s for Database to start...";
-		sleep 60;
+    PATH_TEMP_PID="/var/run/mysqld/mysqld_temp.pid";
+    mysqld --init-file=${MYSQL_INIT_PATH} --pid-file=${PATH_TEMP_PID} &
+    echo "Waiting 60s for Database to start...";
+    sleep 60;
 
-		kill $(cat "${PATH_TEMP_PID}");
-		sleep 1;
+    kill $(cat "${PATH_TEMP_PID}");
+    sleep 1;
 
-		service mysqld start;
-		sleep 1;
+    service mysqld start;
+    sleep 1;
 
 	else
-		echo "Denied - Skipping command";
+    echo "Denied - Skipping command";
 	fi;
 
 fi;

@@ -11,13 +11,13 @@ if [ -z "$(which nmap 2>'/dev/null')" ]; then
 	echo "Error: command \"nmap\" not found";
 	read -p " |-->  Install package \"nmap\", now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-		if [ -n "$(which apt-get 2>'/dev/null';)" ]; then
+    if [ -n "$(which apt-get 2>'/dev/null';)" ]; then
       sudo apt-get install -y "nmap";
-		elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+    elif [ -n "$(which yum 2>'/dev/null';)" ]; then
       sudo yum install -y "nmap";
-		elif [ -n "$(which apk 2>'/dev/null';)" ]; then
+    elif [ -n "$(which apk 2>'/dev/null';)" ]; then
       sudo apk install -y "nmap";
-		fi;
+    fi;
 	fi;
 fi;
 

@@ -12,11 +12,11 @@ else
 	docker_ps_count=$(docker ps | grep ${bash_arg1} | awk '{print $1}' | wc -l);
 	printf "[ ${docker_ps_count} ] Instances Similar to '${bash_arg1}' Running Locally - ";
 	if [ $docker_ps_count -gt 0 ]; then
-		printf "STOPPING the following Instances:\n";
-		docker ps | grep ${bash_arg1}
-		sudo docker stop $(docker ps | grep ${bash_arg1} | awk '{print $1}')
+    printf "STOPPING the following Instances:\n";
+    docker ps | grep ${bash_arg1}
+    sudo docker stop $(docker ps | grep ${bash_arg1} | awk '{print $1}')
 	else
-		printf "No Action Necessary\n";
+    printf "No Action Necessary\n";
 	fi
 	
 fi

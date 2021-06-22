@@ -26,35 +26,35 @@ if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 
 	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 	
-		# Namecheap Subdomain
-		REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 -r; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
-		if [ -z "${NAMECHEAP_SUBDOMAIN}" ]; then
+    # Namecheap Subdomain
+    REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 -r; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    if [ -z "${NAMECHEAP_SUBDOMAIN}" ]; then
       echo "Error: Invalid/empty Subdomain entered";
       exit 1;
-		fi;
+    fi;
 
-		# Namecheap Domain
-		REPLY=""; read -p "Enter Namecheap Domain (WITHOUT subdomain):   " -t 120 -r; NAMECHEAP_DOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
-		if [ -z "${NAMECHEAP_DOMAIN}" ]; then
+    # Namecheap Domain
+    REPLY=""; read -p "Enter Namecheap Domain (WITHOUT subdomain):   " -t 120 -r; NAMECHEAP_DOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    if [ -z "${NAMECHEAP_DOMAIN}" ]; then
       echo "Error: Invalid/empty Domain entered";
       exit 1;
-		fi;
+    fi;
 
-		# Namecheap Auth-Token
-		REPLY=""; read -p "Enter Namecheap Authentication Token (Pass):  " -t 120 -r; NAMECHEAP_TOKEN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
-		if [ -z "${NAMECHEAP_TOKEN}" ]; then
+    # Namecheap Auth-Token
+    REPLY=""; read -p "Enter Namecheap Authentication Token (Pass):  " -t 120 -r; NAMECHEAP_TOKEN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    if [ -z "${NAMECHEAP_TOKEN}" ]; then
       echo "Error: Invalid/empty Authentication Token entered";
       exit 1;
-		fi;
+    fi;
 
-		if [ ! -d "$(dirname ${NAMECHEAP_SECRET})" ]; then
+    if [ ! -d "$(dirname ${NAMECHEAP_SECRET})" ]; then
       mkdir -p "$(dirname ${NAMECHEAP_SECRET})";
-		fi;
-		# Output the base64-encoded string to the output file which will be pulled-in by the ddns_updater script (via cronjob)
-		echo -n "https://dynamicdns.park-your-domain.com/update?host=${NAMECHEAP_SUBDOMAIN}&domain=${NAMECHEAP_DOMAIN}&password=${NAMECHEAP_TOKEN}&ip=" | base64 --wrap=0 > "${NAMECHEAP_SECRET}";
+    fi;
+    # Output the base64-encoded string to the output file which will be pulled-in by the ddns_updater script (via cronjob)
+    echo -n "https://dynamicdns.park-your-domain.com/update?host=${NAMECHEAP_SUBDOMAIN}&domain=${NAMECHEAP_DOMAIN}&password=${NAMECHEAP_TOKEN}&ip=" | base64 --wrap=0 > "${NAMECHEAP_SECRET}";
 
 	else
-		echo "Skipping Namecheap DDNS Sync";
+    echo "Skipping Namecheap DDNS Sync";
 
 	fi;
 

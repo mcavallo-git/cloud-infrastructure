@@ -29,15 +29,15 @@ if [ "$(id -un)" != "root" ]; then
 else
 	RET_CODE=1;
 	if [ -n "$(which mc)" ]; then
-		echo "Info: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
+    echo "Info: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
 
 	elif [ -f "/usr/local/bin/mc" ]; then
-		echo "Info: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
+    echo "Info: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
 
 	else
-		# Download MC (as-per reccommend by MinIO Guide ( see Citation(s), below )
-		echo "Info: Adding MinIO management package - Call using command [ mc ]";
-		curl -ssL "https://dl.min.io/client/mc/release/linux-amd64/mc" -o "/usr/local/bin/mc" && chmod 0755 "/usr/local/bin/mc";
+    # Download MC (as-per reccommend by MinIO Guide ( see Citation(s), below )
+    echo "Info: Adding MinIO management package - Call using command [ mc ]";
+    curl -ssL "https://dl.min.io/client/mc/release/linux-amd64/mc" -o "/usr/local/bin/mc" && chmod 0755 "/usr/local/bin/mc";
 
 	fi;
 

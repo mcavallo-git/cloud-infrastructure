@@ -35,17 +35,17 @@ else
 
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
-		EACH_ARG=${ARGS[${i}]};
-		# Check if this is the last inline-argument or if there are more to follow
-		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+    EACH_ARG=${ARGS[${i}]};
+    # Check if this is the last inline-argument or if there are more to follow
+    if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
       NEXT_ARG="";
-		else
+    else
       NEXT_ARG=${ARGS[$((${i}+1))]};
       if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
       fi;
-		fi;
-		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+    fi;
+    if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
       # ------------------------------------------------------------
 
       if [ "${EACH_ARG}" == "--enable" ] || [ "${EACH_ARG}" == "-enable" ] || [ "${EACH_ARG}" == "enable" ]; then
@@ -56,40 +56,40 @@ else
       fi;
 
       # ------------------------------------------------------------
-		fi;
+    fi;
 
 	done;
 
 	if [ -z "$(which sed 2>'/dev/null';)" ]; then
-		# Missing required package
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
-		echo -e "${EXAMPLE_VALID_CALL}";
-		exit 1;
+    # Missing required package
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
+    echo -e "${EXAMPLE_VALID_CALL}";
+    exit 1;
 
 	else
 
-		if [ ${ENABLE_MOTD} -eq 1 ]; then
+    if [ ${ENABLE_MOTD} -eq 1 ]; then
       MOTD_ENABLED_VALUE=1;
-		elif [ ${DISABLE_MOTD} -eq 1 ]; then
+    elif [ ${DISABLE_MOTD} -eq 1 ]; then
       MOTD_ENABLED_VALUE=0;
-		fi;
+    fi;
 
-		if [ ! -v MOTD_ENABLED_VALUE ]; then
+    if [ ! -v MOTD_ENABLED_VALUE ]; then
       # ERROR - Required argument(s) are empty/undefined
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
-		
-		elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
+    
+    elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
       # ERROR - Conflicting arguments
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
 
-		elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ] && [ $(find /etc/default/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
+    elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ] && [ $(find /etc/default/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
         # ERROR - Missing required file(s)
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
         echo -e "${EXAMPLE_VALID_CALL}";
         exit 1;
 
-		else
+    else
 
       # Success - Update each associated config-file
       echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
@@ -102,7 +102,7 @@ else
         sed --in-place -e "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
       done;
 
-		fi;
+    fi;
 
 	fi;
 

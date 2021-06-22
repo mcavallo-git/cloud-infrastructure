@@ -23,21 +23,21 @@ else
 	SERVICE_NAME="sysstat";
 
 	if [ $(which sar 2>'/dev/null' | wc -l;) -eq 0 ]; then
-		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
       PACKAGE_NAME="sysstat"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}";
-		elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
       PACKAGE_NAME="sysstat"; yum -y check-update; yum -y install "${PACKAGE_NAME}";
-		fi;
+    fi;
 	fi;
 
 	# Verify that taget service is enabled
 	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
-		systemctl enable ${SERVICE_NAME};
+    systemctl enable ${SERVICE_NAME};
 	fi;
 
 	# Verify that taget service is active
 	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
-		systemctl start ${SERVICE_NAME};
+    systemctl start ${SERVICE_NAME};
 	fi;
 
 fi;

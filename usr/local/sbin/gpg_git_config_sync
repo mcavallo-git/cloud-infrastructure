@@ -272,22 +272,22 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 	2>"/dev/null" \
 	| while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
-		EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
-		EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
+    EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
+    EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
 
-		SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-		SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
-		SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
-		if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
+    SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
+    SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
+    if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
       echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
-		fi;
+    fi;
 
-		GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-		GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
-		GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
-		if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
+    GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
+    GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
+    if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
       echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";
-		fi;
+    fi;
 
 	done;
 
@@ -335,10 +335,10 @@ echo "Info: GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
 for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
 	EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
 	if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ]; then # 
-		if [ -L "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
+    if [ -L "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
       EACH_FILE_OUTPUT=$(ls -al "${GPG4WIN_EXE_DIR_LINUX}" | awk '{print $9,$10,$11}' | grep "${EACH_FILE}");
       # echo "Pass - ${EACH_FILE_OUTPUT}";
-		else
+    else
       if [ -f "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
         echo "";
         mv --verbose "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" "${GIT_EXE_DIR_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
@@ -346,7 +346,7 @@ for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
       # Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
       echo "";
       echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-		fi;
+    fi;
 	fi;
 done;
 
@@ -443,20 +443,20 @@ else
 	# [ USERPROFILE ] gpg.conf
 	EACH_CONF="gpg.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ USERPROFILE ] gpgconf.conf
 	EACH_CONF="gpgconf.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ USERPROFILE ] gpg-agent.conf
 	EACH_CONF="gpg-agent.conf";
 	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 fi;
 
@@ -471,20 +471,20 @@ else
 	# [ APPDATA ] gpg.conf
 	EACH_CONF="gpg.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ APPDATA ] gpgconf.conf
 	EACH_CONF="gpgconf.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 	# [ APPDATA ] gpg-agent.conf
 	EACH_CONF="gpg-agent.conf";
 	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
-		echo "";
-		echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+    echo "";
+    echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
 	fi;
 fi;
 
@@ -628,19 +628,19 @@ fi;
 
 	# AppData
 	if [ -d "${HOME}/AppData" ]; then
-		EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
+    EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
 	fi;
 	# DropBox
 	if [ -d "${HOME}/Dropbox" ]; then
-		EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
+    EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
 	fi;
 	# Google Drive
 	if [ -d "${HOME}/Google Drive" ]; then
-		EXCLUDED_HOMEDIRS+=(["${HOME}/Google Drive"]="");
+    EXCLUDED_HOMEDIRS+=(["${HOME}/Google Drive"]="");
 	fi;
 	# iCloud (Apple)
 	if [ -d "${HOME}/iCloudDrive" ]; then
-		EXCLUDED_HOMEDIRS+=(["${HOME}/iCloudDrive"]="");
+    EXCLUDED_HOMEDIRS+=(["${HOME}/iCloudDrive"]="");
 	fi;
 
 	#
@@ -655,16 +655,16 @@ fi;
 	DIRS_ONEDRIVE_PERSONAL=$(PowerShell -Command "${PS1_ONEDRIVE_PERSONAL}";);
 	
 	echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
-		# Verify each path exists before excluding it (otherwise it doesn't matter)
-		EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
-		EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
-		if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
+    # Verify each path exists before excluding it (otherwise it doesn't matter)
+    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
+    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
+    if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
       EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
       DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
       if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
         EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
       fi;
-		fi;
+    fi;
 	done;
 
 	EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
@@ -678,14 +678,14 @@ fi;
 	# Get all dirs within current user's home-dir
 	find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
-		DIR_IS_EXCLUDED=0;
-		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
+    DIR_IS_EXCLUDED=0;
+    for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
       if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
         DIR_IS_EXCLUDED=1;
       fi;
-		done;
+    done;
 
-		if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
+    if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
       echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
       # Not an excluded directory - search it for directories with name ".git"
       find "${EACH_HOMEDIR}" \
@@ -697,39 +697,39 @@ fi;
         EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
         REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
       done;
-		fi;
+    fi;
 	done;
 
 	# Loop through array of local repository filepaths, attempting to parse their values & set applicable [ git config ... ] settings for each
 	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 
-		EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
-		EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
-		if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
+    EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
+    EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
+    if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
       # Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
       EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
       EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
       EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^https:\/\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
-		else
+    else
       # Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
       EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);
       EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\2/ip' 2>/dev/null;);
       EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\3/ip' 2>/dev/null;);
-		fi;
-		EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
+    fi;
+    EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 
-		echo "";
-		echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
-		echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
+    echo "";
+    echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
+    echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
 
-		COMMIT_EMAIL="";
-		COMMIT_NAME="";
-		SSH_KEY="";
-		GPG_KEY_ID="";
+    COMMIT_EMAIL="";
+    COMMIT_NAME="";
+    SSH_KEY="";
+    GPG_KEY_ID="";
 
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
 
-		if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+    if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
       # Use Primary ID Array values, first
       TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
@@ -756,9 +756,9 @@ fi;
           fi;
         fi;
       fi;
-		fi;
+    fi;
 
-		if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+    if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
       # Fallback to Secondary ID Array values
       TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
@@ -785,17 +785,17 @@ fi;
           fi;
         fi;
       fi;
-		fi;
+    fi;
 
-		if [ -z "${SSH_KEY}" ]; then
+    if [ -z "${SSH_KEY}" ]; then
       echo "  |--> No sync-array index exists for \$EACH_REPO_URI = [ ${EACH_REPO_URI} ]";
       echo "  |";
       echo "  |--> Sync-array indices must be pre-emptively added to config-file  \$GIT_SYNC_CONFIG_FULLPATH = [ ${GIT_SYNC_CONFIG_FULLPATH} ]";
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
 
-		if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ] && [ -n "${SSH_KEY}" ]; then
+    if [ -n "${COMMIT_EMAIL}" ] && [ -n "${COMMIT_NAME}" ] && [ -n "${SSH_KEY}" ]; then
 
       cd "${EACH_REPO_FULLPATH}";
 
@@ -854,7 +854,7 @@ fi;
       # ${GIT_SYNC_GPG_KEYS}
       # ${GIT_SYNC_FULLNAMES}
 
-		fi;
+    fi;
 
 	done;
 	

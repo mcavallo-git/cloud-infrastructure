@@ -45,44 +45,44 @@ else
 
 	# Only run in SELinux-compatible environments
 	if [ $(which getenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which setenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
-		# ERROR - SELinux not detected
-		echo -e "\n""Error:  SELinux not detected""\n";
-		EXIT_CODE=1;
+    # ERROR - SELinux not detected
+    echo -e "\n""Error:  SELinux not detected""\n";
+    EXIT_CODE=1;
 	
 	else
-		# ------------------------------------------------------------
-		# Instantiate runtime variables
+    # ------------------------------------------------------------
+    # Instantiate runtime variables
 
-		SERVICE_LOGFILE="/var/log/audit/audit.log";
+    SERVICE_LOGFILE="/var/log/audit/audit.log";
 
-		SERVICE_CONF1_PATH="/etc/selinux/config";
-		SERVICE_CONF2_PATH="/etc/sysconfig/selinux";
-		
-		REBOOT_REQUIRED_MSG="";
+    SERVICE_CONF1_PATH="/etc/selinux/config";
+    SERVICE_CONF2_PATH="/etc/sysconfig/selinux";
+    
+    REBOOT_REQUIRED_MSG="";
 
-		START_SECONDS_NANOSECONDS=$(date +'%s.%N');
-		START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
-		# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
-		# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
-		# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
-		START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
-		START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+    START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+    START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+    # START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+    # START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+    # START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+    START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+    START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
-		BENCHMARK_START=${START_SECONDS_NANOSECONDS};
+    BENCHMARK_START=${START_SECONDS_NANOSECONDS};
 
-		# ------------------------------------------------------------
-		# Parse inline arguments (passed to current script)
+    # ------------------------------------------------------------
+    # Parse inline arguments (passed to current script)
 
-		ARGS=("$@");
-		ARGS_COUNT=${#ARGS[@]};
+    ARGS=("$@");
+    ARGS_COUNT=${#ARGS[@]};
 
-		ARGS_FORCE_AGREE=0;
-		ARGS_SELINUX_ENABLE=0;
-		ARGS_SELINUX_DISABLE=0;
-		ARGS_SELINUX_STATUS=0;
-		
-		# Walk through any inline-arguments passed to this function
-		for (( i=0;i<$ARGS_COUNT;i++ )); do
+    ARGS_FORCE_AGREE=0;
+    ARGS_SELINUX_ENABLE=0;
+    ARGS_SELINUX_DISABLE=0;
+    ARGS_SELINUX_STATUS=0;
+    
+    # Walk through any inline-arguments passed to this function
+    for (( i=0;i<$ARGS_COUNT;i++ )); do
 
       EACH_ARG=${ARGS[${i}]};
 
@@ -116,9 +116,9 @@ else
 	
       fi;
 
-		done;
+    done;
 
-		ERROR_INVALID_ACTION="
+    ERROR_INVALID_ACTION="
    Error:  Exactly one option must be selected from the following options:
                --disable
                --enable
@@ -126,12 +126,12 @@ else
 ";
 
 
-		if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
+    if [ $((${ARGS_SELINUX_DISABLE}+${ARGS_SELINUX_ENABLE}+${ARGS_SELINUX_STATUS})) -ne 1 ]; then
       # ERROR - Invalid action selected
       echo "${ERROR_INVALID_ACTION}";
       EXIT_CODE=1;
 
-		else
+    else
 
       # Determine the enabled/disabled status defined in SELinux's config-file(s)
       SERVICE_CONF1_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF1_PATH}";);
@@ -297,24 +297,24 @@ else
 
       fi;
 
-		fi;
+    fi;
 
-		# Output all SELinux settings to a file
-		LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
-		echo "------------------------------------------------------------" > "${LOGFILE_SEBOOL}";
-		echo "SELinux Boolean Directives - https://wiki.centos.org/TipsAndTricks/SelinuxBooleans" >> "${LOGFILE_SEBOOL}";
-		echo "------------------------------------------------------------" >> "${LOGFILE_SEBOOL}";
-		/usr/sbin/getsebool -a 1>>"${LOGFILE_SEBOOL}" 2>&1;
-		chown "root:root" "${LOGFILE_SEBOOL}";
-		chmod 0600 "${LOGFILE_SEBOOL}";
-		echo "";
-		echo "Info:  A copy of current SELinux settings were output to logfile:";
-		echo "${LOGFILE_SEBOOL}";
-		echo "";
+    # Output all SELinux settings to a file
+    LOGFILE_SEBOOL="${LOGDIR}/getsebool_${START_TIMESTAMP}.log";
+    echo "------------------------------------------------------------" > "${LOGFILE_SEBOOL}";
+    echo "SELinux Boolean Directives - https://wiki.centos.org/TipsAndTricks/SelinuxBooleans" >> "${LOGFILE_SEBOOL}";
+    echo "------------------------------------------------------------" >> "${LOGFILE_SEBOOL}";
+    /usr/sbin/getsebool -a 1>>"${LOGFILE_SEBOOL}" 2>&1;
+    chown "root:root" "${LOGFILE_SEBOOL}";
+    chmod 0600 "${LOGFILE_SEBOOL}";
+    echo "";
+    echo "Info:  A copy of current SELinux settings were output to logfile:";
+    echo "${LOGFILE_SEBOOL}";
+    echo "";
 
-		# ------------------------------------------------------------
-		# Reboot Server (if needed) --> Require user confirmation
-		if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
+    # ------------------------------------------------------------
+    # Reboot Server (if needed) --> Require user confirmation
+    if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
       echo "";
       echo "Info:  ${REBOOT_REQUIRED_MSG}";
       read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
@@ -322,7 +322,7 @@ else
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         reboot now;
       fi;
-		fi;
+    fi;
 
 	fi;
 

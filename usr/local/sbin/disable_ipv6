@@ -37,22 +37,22 @@ else
 	APPLY_DISABLE="1";
 	
 	if [ -n "${1}" ]; then
-		if [ "${1}" == "revert" ]; then
+    if [ "${1}" == "revert" ]; then
       APPLY_DISABLE="0";
-		fi;
-		if [ "${1}" == "force" ]; then
+    fi;
+    if [ "${1}" == "force" ]; then
       FORCE_RECREATE_CONFIG="1"; # Force-recreate this runtime's unique config-file
-		fi;
+    fi;
 	fi;
 
 	if [ ! -f "${CONF_DISABLE_IPV6}" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Creating sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo -n "" > "${CONF_DISABLE_IPV6}";
-		RELOAD_SYSCTL="1";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Creating sysctl file \"${CONF_DISABLE_IPV6}\"...";
+    echo -n "" > "${CONF_DISABLE_IPV6}";
+    RELOAD_SYSCTL="1";
 	elif [ "${FORCE_RECREATE_CONFIG}" == "1" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Overwriting sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo -n "" > "${CONF_DISABLE_IPV6}";
-		RELOAD_SYSCTL="1";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Overwriting sysctl file \"${CONF_DISABLE_IPV6}\"...";
+    echo -n "" > "${CONF_DISABLE_IPV6}";
+    RELOAD_SYSCTL="1";
 	fi;
 
 	SYSCTL_ALL="$(/sbin/sysctl --all 2>/dev/null;)";
@@ -61,35 +61,35 @@ else
 	# Rules to ensure get applied to sysctl in current environment & on every boot henceforth
 	DISABLE_IPV6_ALL="net.ipv6.conf.all.disable_ipv6";
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_ALL} | grep ${APPLY_DISABLE})" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo "${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
-		/sbin/sysctl "${DISABLE_IPV6_ALL}" ${APPLY_DISABLE};
-		RELOAD_SYSCTL="1";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
+    echo "${DISABLE_IPV6_ALL} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${DISABLE_IPV6_ALL}" ${APPLY_DISABLE};
+    RELOAD_SYSCTL="1";
 	fi;
 
 	DISABLE_IPV6_DEF="net.ipv6.conf.default.disable_ipv6";
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_DEF} | grep ${APPLY_DISABLE})" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo "${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
-		/sbin/sysctl "${DISABLE_IPV6_DEF}" ${APPLY_DISABLE};
-		RELOAD_SYSCTL="1";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
+    echo "${DISABLE_IPV6_DEF} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${DISABLE_IPV6_DEF}" ${APPLY_DISABLE};
+    RELOAD_SYSCTL="1";
 	fi;
 
 	DISABLE_IPV6_LO="net.ipv6.conf.lo.disable_ipv6";
 	if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_LO} | grep ${APPLY_DISABLE})" ]; then
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_LO} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-		echo "${DISABLE_IPV6_LO} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
-		/sbin/sysctl "${DISABLE_IPV6_LO}" ${APPLY_DISABLE};
-		RELOAD_SYSCTL="1";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_LO} = ${APPLY_DISABLE}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
+    echo "${DISABLE_IPV6_LO} = ${APPLY_DISABLE}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${DISABLE_IPV6_LO}" ${APPLY_DISABLE};
+    RELOAD_SYSCTL="1";
 	fi;
 
 	# If we modified any files, update sysctl's config-values
 	if [ -n "${RELOAD_SYSCTL}" ]; then
-		chmod 0644 "${CONF_DISABLE_IPV6}";
-		chown root:root "${CONF_DISABLE_IPV6}";
-		sysctl --system; # Load settings from all system configuration files.
+    chmod 0644 "${CONF_DISABLE_IPV6}";
+    chown root:root "${CONF_DISABLE_IPV6}";
+    sysctl --system; # Load settings from all system configuration files.
 	else
-		echo "$(date +'%Y-%m-%d %H:%M:%S') No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
 	fi;
 	
 fi;

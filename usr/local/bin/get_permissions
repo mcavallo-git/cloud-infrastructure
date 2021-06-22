@@ -26,34 +26,34 @@ if [ -z "${STAT_PATH}" ]; then
 else
 
 	if [[ -r "${STAT_PATH}" ]]; then # canonicalize symbolic links
-		STAT_SYMLINK="1";
-		STAT_ENDPOINT=$(readlink -f "${STAT_PATH}");
+    STAT_SYMLINK="1";
+    STAT_ENDPOINT=$(readlink -f "${STAT_PATH}");
 	else
-		STAT_ENDPOINT="${STAT_PATH}";
+    STAT_ENDPOINT="${STAT_PATH}";
 	fi;
 
 	if [ ! -e "${STAT_ENDPOINT}" ]; then
 
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: path not found: \"${STAT_ENDPOINT}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: path not found: \"${STAT_ENDPOINT}\"";
 
 	else
 
-		STAT_EXISTS="1";
+    STAT_EXISTS="1";
 
-		if [[ -r "${STAT_ENDPOINT}" ]]; then
+    if [[ -r "${STAT_ENDPOINT}" ]]; then
       STAT_READABLE="1";
       if [[ -w "${STAT_ENDPOINT}" ]]; then
         STAT_WRITABLE="1";
       fi;
-		fi;
+    fi;
 
-		INFO=($(stat --dereference --format="%h %a %u %U %g %G %h" "${STAT_ENDPOINT}"));
+    INFO=($(stat --dereference --format="%h %a %u %U %g %G %h" "${STAT_ENDPOINT}"));
 
-		if [ "$?" != "0" ]; then
+    if [ "$?" != "0" ]; then
 
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error thrown while attempting to stat: \"${STAT_ENDPOINT}\"";
 
-		else
+    else
 
       STAT_TYPES=$(stat --dereference --format="%F" "${STAT_ENDPOINT}");
       STAT_CANONICALIZE=$(readlink -f "${STAT_ENDPOINT}");
@@ -110,7 +110,7 @@ else
 
       echo "";
 
-		fi;
+    fi;
 
 	fi;
 

@@ -34,16 +34,16 @@ else
 	# Use $1 as domain name for wildcard cert
 	#
 	if [ -z "$1" ]; then
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Missing domain name - Please try again using first argument (\$1) as domain name";
-		exit 1;
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Missing domain name - Please try again using first argument (\$1) as domain name";
+    exit 1;
 	else
-		DOMAIN_NAME="$1";
-		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+    DOMAIN_NAME="$1";
+    if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
       echo "";
       echo "Info:  Calling [ which certbot; ]...";
       which certbot;
-		else
+    else
       echo "";
       echo "Info:  Required package(s):  [ python-certbot-nginx ]";
       echo "  |";
@@ -57,9 +57,9 @@ else
           apt-get -y update; apt-get -y install python-certbot-nginx;
         fi;
       fi;
-		fi;
-		# Create the SSL (TLS/HTTPS) certificate
-		if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+    fi;
+    # Create the SSL (TLS/HTTPS) certificate
+    if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
       echo "";
       echo "------------------------------------------------------------";
       echo " !!!";
@@ -79,7 +79,7 @@ else
       echo "";
       # echo "Info:  Calling [ certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d \"${DOMAIN_NAME}\" -d \"*.${DOMAIN_NAME}\"; certbot certificates -d \"${DOMAIN_NAME}\"; test -x \"/usr/local/sbin/reload_nginx\" && /usr/local/sbin/reload_nginx; ]...";
       # certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DOMAIN_NAME}" -d "*.${DOMAIN_NAME}"; certbot certificates -d "${DOMAIN_NAME}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
-		fi;
+    fi;
 	fi;
 fi;
 

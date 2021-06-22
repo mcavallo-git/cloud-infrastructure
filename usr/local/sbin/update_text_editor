@@ -29,27 +29,27 @@ else
 	DESIRED_EDITOR_NAME="vi";
 	
 	if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
-		# Desired editor NOT installed --> Attempt to install it
-		apt-get update -y;
-		apt-get install -y "${DESIRED_EDITOR_NAME}";
+    # Desired editor NOT installed --> Attempt to install it
+    apt-get update -y;
+    apt-get install -y "${DESIRED_EDITOR_NAME}";
 	fi;
 
 	if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
-		# Desired editor STILL not installed (unable to be installed)
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to install \"${DESIRED_EDITOR_NAME}\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Global editor setting \"${SYSTEM_EDITOR_1_PATH}\" will remain set to: \"${SYSTEM_EDITOR_1_RESOLVED}\"";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Global editor setting \"${SYSTEM_EDITOR_2_PATH}\" will remain set to: \"${SYSTEM_EDITOR_2_RESOLVED}\"";
-		exit 1;
+    # Desired editor STILL not installed (unable to be installed)
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to install \"${DESIRED_EDITOR_NAME}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Global editor setting \"${SYSTEM_EDITOR_1_PATH}\" will remain set to: \"${SYSTEM_EDITOR_1_RESOLVED}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Global editor setting \"${SYSTEM_EDITOR_2_PATH}\" will remain set to: \"${SYSTEM_EDITOR_2_RESOLVED}\"";
+    exit 1;
 
 	else
-		# Desired editor IS installed
-		declare -a EDITOR_PATHS_TO_UPDATE=( \
+    # Desired editor IS installed
+    declare -a EDITOR_PATHS_TO_UPDATE=( \
       "${SYSTEM_EDITOR_1_PATH}" \
       "${SYSTEM_EDITOR_2_PATH}" \
-		);
-		# Replace each editor with desired editor (if needed
-		for EACH_EDITOR_PATH in "${EDITOR_PATHS_TO_UPDATE[@]}"; do
+    );
+    # Replace each editor with desired editor (if needed
+    for EACH_EDITOR_PATH in "${EDITOR_PATHS_TO_UPDATE[@]}"; do
       if [ ! -e "${EACH_EDITOR_PATH}" ]; then
         # Editor filepath doesn't exist, yet
         echo "";
@@ -75,13 +75,13 @@ else
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Skipped - \"${EACH_EDITOR_PATH}\" already points to \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
       fi;
-		done;
+    done;
 
-		# Exit Gracefully
-		echo "";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Finished \"$(basename ${0})\"";
-		echo "";
-		exit 0;
+    # Exit Gracefully
+    echo "";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Finished \"$(basename ${0})\"";
+    echo "";
+    exit 0;
 
 	fi;
 fi;

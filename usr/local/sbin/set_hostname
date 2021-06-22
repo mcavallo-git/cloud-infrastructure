@@ -47,20 +47,20 @@ else
 	# Walk through any inline-arguments passed to this function
 	for (( i=0;i<$COUNT_ARGS;i++ )); do
 
-		EACH_ARG=${ARGS[${i}]};
-		# BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
+    EACH_ARG=${ARGS[${i}]};
+    # BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
 
-		# Check if this is the last inline-argument or if there are more to follow
-		if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
+    # Check if this is the last inline-argument or if there are more to follow
+    if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
       NEXT_ARG="";
-		else
+    else
       NEXT_ARG=${ARGS[$((${i}+1))]};
       if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
       fi;
-		fi;
+    fi;
 
-		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+    if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
       # Parse inline hostname
       if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
@@ -94,7 +94,7 @@ else
         DRY_RUN="0";
       fi;
 
-		fi;
+    fi;
 	done;
 
 	# ------------------------------------------------------------
@@ -103,86 +103,86 @@ else
 	CURRENT_HOSTNAME="$(hostname)";
 	CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}')";
 	if [ "$(hostname -d;)" != "(none)" ]; then
-		CURRENT_DOMAIN="$(hostname -d;)";
+    CURRENT_DOMAIN="$(hostname -d;)";
 	fi;
 
 
 	# ------------------------------------------------------------
 	if [ -z "${INPUT_HOSTNAME}" ]; then
-		# Error - Required variable empty: INPUT_HOSTNAME
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with empty hostname";
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname FQDN ]";
-		exit 1;
+    # Error - Required variable empty: INPUT_HOSTNAME
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with empty hostname";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname FQDN ]";
+    exit 1;
 
 	elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
-		# Error - Hostname contains one or more invalid characters
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname VALID-HOSTNAME ]";
-		exit 1;
+    # Error - Hostname contains one or more invalid characters
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname VALID-HOSTNAME ]";
+    exit 1;
 
 	else
 
-		SUBSTRING_ONLY_PERIODS="${INPUT_HOSTNAME//[^.]}";
-		FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
-		if [ "${FQDN_COUNT_PERIODS}" == "0" ]; then
+    SUBSTRING_ONLY_PERIODS="${INPUT_HOSTNAME//[^.]}";
+    FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
+    if [ "${FQDN_COUNT_PERIODS}" == "0" ]; then
       # Hostname includes no periods - use it as-is
       SET_HOSTNAME="${INPUT_HOSTNAME}";
       if [ -v CURRENT_DOMAIN ] && [ -n "${CURRENT_DOMAIN}" ]; then
         SET_DOMAIN="${CURRENT_DOMAIN}";
       fi;
-		else
+    else
       # Hostname has at least one period in it --> parse the domain name out from the hostname
       SET_HOSTNAME=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --only-delimited;);
       SET_DOMAIN=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --complement --only-delimited;);
-		fi;
+    fi;
 
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
 
-		# ------------------------------------------------------------
-		# Determine Linux distro
-		#
+    # ------------------------------------------------------------
+    # Determine Linux distro
+    #
 
-		IS_CENTOS=$(if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-		IS_UBUNTU=$(if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-		IS_ALPINE=$(if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-		IS_DEBIAN=$(if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-		THIS_LINUX_DISTRO="$(if [[ ${IS_CENTOS} -gt 0 ]]; then echo CENTOS; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo UBUNTU; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo ALPINE; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo DEBIAN; else echo UNKNOWN; fi; )";
+    IS_CENTOS=$(if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+    IS_UBUNTU=$(if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+    IS_ALPINE=$(if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+    IS_DEBIAN=$(if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+    THIS_LINUX_DISTRO="$(if [[ ${IS_CENTOS} -gt 0 ]]; then echo CENTOS; elif [[ ${IS_UBUNTU} -gt 0 ]]; then echo UBUNTU; elif [[ ${IS_ALPINE} -gt 0 ]]; then echo ALPINE; elif [[ ${IS_DEBIAN} -gt 0 ]]; then echo DEBIAN; else echo UNKNOWN; fi; )";
 
-		# ------------------------------------------------------------
-		# External server(s) to resolve WAN-IP through
-		#
-		RESOLVER_1="https://icanhazip.com";
-		RESOLVER_2="https://ipecho.net/plain";
-		RESOLVER_3="https://ident.me";
-		RESOLVER_4="https://bot.whatismyipaddress.com";
+    # ------------------------------------------------------------
+    # External server(s) to resolve WAN-IP through
+    #
+    RESOLVER_1="https://icanhazip.com";
+    RESOLVER_2="https://ipecho.net/plain";
+    RESOLVER_3="https://ident.me";
+    RESOLVER_4="https://bot.whatismyipaddress.com";
 
-		### Get WAN-Outgoing IPv4
-		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
-		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
-		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
-		if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
+    ### Get WAN-Outgoing IPv4
+    if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";
+    if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_2}"); fi; RESOLVER_USED="${RESOLVER_2}";
+    if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_3}"); fi; RESOLVER_USED="${RESOLVER_3}";
+    if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_4}"); fi; RESOLVER_USED="${RESOLVER_4}";
 
-		### Get LAN-Local's Gateway IPv4
-		THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
+    ### Get LAN-Local's Gateway IPv4
+    THIS_GATEWAY_IPV4=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\1/p");
 
-		### Get LAN-Local IPv4(s) - One per NIC
-		THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
+    ### Get LAN-Local IPv4(s) - One per NIC
+    THIS_LAN_NIC=$(ip route|grep 'default via '|sed -rne "s/^default\s+via\s+([0-9a-fA-F\:\.]+)\s+[a-zA-Z0-9]+\s+([a-zA-Z0-9]+).+$/\2/p");
 
-		### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
-		THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
-		if [ -z "${THIS_LAN_IPV4}" ]; then
+    ### Get LAN-Local IPv4, as well as LAN-Local IPv6 (if exists)
+    THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' 2>'/dev/null';);
+    if [ -z "${THIS_LAN_IPV4}" ]; then
       THIS_LAN_IPV4=$(hostname -i | awk '{print $1}' 2>'/dev/null';);
-		fi;
-		THIS_LAN_IPV6=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\:' 2>'/dev/null';);
+    fi;
+    THIS_LAN_IPV6=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\:' 2>'/dev/null';);
 
-		if [ ${USE_WAN_IPV4} -ne 0 ]; then
+    if [ ${USE_WAN_IPV4} -ne 0 ]; then
       ### Show Resolved WAN IPv4
       if [ -n "${THIS_WAN_IPV4}" ]; then
         echo "";
@@ -194,44 +194,44 @@ else
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"127.0.0.1\" ${0} ]  (replacing 127.0.0.1 with machine's WAN IPv4)";
         exit 1;
       fi;
-		else
+    else
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Optional) Resolve hostname requests to WAN IPv4 (instead of LAN) using syntax  [ ${0} --wan ]";
-		fi;
+    fi;
 
-		### Show Resolved Gateway IPv4
-		if [ -n "${THIS_GATEWAY_IPV4}" ]; then
+    ### Show Resolved Gateway IPv4
+    if [ -n "${THIS_GATEWAY_IPV4}" ]; then
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
-		else 
+    else 
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Warning:  Unable to resolve LAN's Gateway-IPv4.";
-		fi;
+    fi;
 
-		### Show Resolved LAN IPv4
-		if [ -n "${THIS_LAN_IPV4}" ]; then
+    ### Show Resolved LAN IPv4
+    if [ -n "${THIS_LAN_IPV4}" ]; then
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
-		else 
+    else 
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Error: Unable to resolve LAN Local IPv4 Address  - If you wish to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
       exit 1;
-		fi;
+    fi;
 
-		### Show Resolved LAN IPv6
-		if [ -n "${THIS_LAN_IPV6}" ]; then
+    ### Show Resolved LAN IPv6
+    if [ -n "${THIS_LAN_IPV6}" ]; then
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
-		else 
+    else 
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Warning:  Unable to resolve LAN Local IPv6 Address";
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		#	If Dry-Run mode is off, require user to confirm changes
-		#
+    # ------------------------------------------------------------
+    #	If Dry-Run mode is off, require user to confirm changes
+    #
 
-		if [[ "${DRY_RUN}" == "0" ]]; then
+    if [[ "${DRY_RUN}" == "0" ]]; then
       echo ""; read -p "Update hostname, now? (y/n)  " -n 1 -t 60 -r; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info: - Confirmed by user - Proceeding with changes to hostname & domain-name...";
@@ -239,14 +239,14 @@ else
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info: - Cancelled by user - exiting...";
         exit 1;
       fi;
-		fi;
-		echo "";
+    fi;
+    echo "";
 
-		# ------------------------------------------------------------
-		# /etc/hostname
-		#
-		HOSTNAME_FILE="/etc/hostname";
-		if [[ -f "${HOSTNAME_FILE}" ]]; then
+    # ------------------------------------------------------------
+    # /etc/hostname
+    #
+    HOSTNAME_FILE="/etc/hostname";
+    if [[ -f "${HOSTNAME_FILE}" ]]; then
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
@@ -267,18 +267,18 @@ else
           echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\" (already matches desired hostname)";
         fi;
       fi;
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# /etc/hosts
-		#
-		# ------------------------------------------------------------
-		# To set the DNS domainname edit /etc/hosts file and ensure that:
-		#	 |--> 1. There is a line <machine's primary, non-loopback IP address> <hostname>.<domainname> <hostname> there
-		#	 |--> 2. There are NO other lines with <some IP> <hostname>, and this includes lines with 127.0.0.1 and ::1 (IPv6) addresses.
-		# ------------------------------------------------------------
-		HOSTS_FILE="/etc/hosts";
-		if [[ -f "${HOSTS_FILE}" ]]; then
+    # ------------------------------------------------------------
+    # /etc/hosts
+    #
+    # ------------------------------------------------------------
+    # To set the DNS domainname edit /etc/hosts file and ensure that:
+    #	 |--> 1. There is a line <machine's primary, non-loopback IP address> <hostname>.<domainname> <hostname> there
+    #	 |--> 2. There are NO other lines with <some IP> <hostname>, and this includes lines with 127.0.0.1 and ::1 (IPv6) addresses.
+    # ------------------------------------------------------------
+    HOSTS_FILE="/etc/hosts";
+    if [[ -f "${HOSTS_FILE}" ]]; then
 
       echo "";
       if [ ${USE_WAN_IPV4} -ne 0 ]; then
@@ -342,12 +342,12 @@ else
       fi;
       rm -f "${TEMP_HOSTS}";
       
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# centos 6
-		#
-		if [[ -f "/etc/sysconfig/network" ]]; then
+    # ------------------------------------------------------------
+    # centos 6
+    #
+    if [[ -f "/etc/sysconfig/network" ]]; then
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
 
         if [ -n "${SET_DOMAIN}" ]; then
@@ -364,43 +364,43 @@ else
           echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
         fi;
       fi;
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# debian 7 / slackware / ubuntu 14.04
-		#
-		if [[ -f "/etc/init.d/hostname.sh" ]]; then
+    # ------------------------------------------------------------
+    # debian 7 / slackware / ubuntu 14.04
+    #
+    if [[ -f "/etc/init.d/hostname.sh" ]]; then
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
         /etc/init.d/hostname.sh;
       else # dry-run
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Dry-Run Enabled) Skipping call  [ /etc/init.d/hostname.sh; ]";
       fi;
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# arch / centos 7 / debian 8 / fedora / ubuntu 16.04 and above
-		#
-		if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
+    # ------------------------------------------------------------
+    # arch / centos 7 / debian 8 / fedora / ubuntu 16.04 and above
+    #
+    if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
         hostnamectl set-hostname "${SET_HOSTNAME}";
       else # dry-run
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Dry-Run Enabled) Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\" ]";
       fi;
-		fi;
+    fi;
 
-		if [ ${DRY_RUN} -eq 1 ]; then
+    if [ ${DRY_RUN} -eq 1 ]; then
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Dry-Run mode is ON - No changes will be made to existing network settings or stored configurations";
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --dry-run 0 ]  or  [ ${0} --force ]";
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# Apply Changes
-		#
-		if [[ -f "/etc/init.d/network" ]]; then # CentOS-RHEL distros
+    # ------------------------------------------------------------
+    # Apply Changes
+    #
+    if [[ -f "/etc/init.d/network" ]]; then # CentOS-RHEL distros
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
         echo "";
         echo "Network Manager must be restarted to apply changes ( required command  [ /etc/init.d/network restart ]  )";
@@ -419,7 +419,7 @@ else
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Dry-Run Enabled) Skipping network manager restart";
       fi;
-		else # [other] distros
+    else # [other] distros
       if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
         echo "";
         echo "System restart required to apply changes to hostname";
@@ -438,8 +438,8 @@ else
       # 	echo "";
       # 	echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Dry-Run Enabled) Skipping restart";
       fi;
-		fi;
-		echo "";
+    fi;
+    echo "";
 
 	fi;
 

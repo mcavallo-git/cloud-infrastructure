@@ -41,37 +41,37 @@ else
 	DIR_ARCH="/var/archived_logs";
 
 	if [ ! -d "${DIR_LOGS}/${SERVICE_NAME}" ]; then
-		echo "";
-		echo "ERROR:";
-		echo "  Logs-dir not found for service \"${SERVICE_NAME}\" at path \"${DIR_LOGS}/${SERVICE_NAME}\" ";
-		echo "";
-		exit 1;
+    echo "";
+    echo "ERROR:";
+    echo "  Logs-dir not found for service \"${SERVICE_NAME}\" at path \"${DIR_LOGS}/${SERVICE_NAME}\" ";
+    echo "";
+    exit 1;
 	
 
 	elif [ ! -h "${DIR_ARCH}" ]; then
 
-		echo "";
-		echo "ERROR:";
-		echo "  Symlink not found at path \"${DIR_ARCH}\" ";
-		echo "  Please create a symbolic link from \"${DIR_ARCH}\" to your desired backup directory (ideally on a separate mount point)";
-		echo "";
-		echo "EXAMPLE:";
-		echo "  ln -sf \"/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/\" \"${DIR_ARCH}\"";
-		echo "";
-		exit 1;
+    echo "";
+    echo "ERROR:";
+    echo "  Symlink not found at path \"${DIR_ARCH}\" ";
+    echo "  Please create a symbolic link from \"${DIR_ARCH}\" to your desired backup directory (ideally on a separate mount point)";
+    echo "";
+    echo "EXAMPLE:";
+    echo "  ln -sf \"/REPLACE_WITH_YOUR_BACKUP_DIRECTORY/\" \"${DIR_ARCH}\"";
+    echo "";
+    exit 1;
 
 	else
 
-		# Stop the target service
-		/usr/sbin/service "${SERVICE_NAME}" stop; RET_CODE=$?;
-		if [ "${RET_CODE}" != "0" ]; then
+    # Stop the target service
+    /usr/sbin/service "${SERVICE_NAME}" stop; RET_CODE=$?;
+    if [ "${RET_CODE}" != "0" ]; then
       echo "";
       echo "ERROR:";
       echo "  Unable to stop service \"${SERVICE_NAME}\" - Exiting...";
       echo "";
       exit 1;
-		
-		else
+    
+    else
       # Create the new logs dir
       if [ ! -d "${DIR_ARCH}/${SERVICE_NAME}" ]; then
         mkdir -p "${DIR_ARCH}/${SERVICE_NAME}";
@@ -99,7 +99,7 @@ else
       # 	fi;
       # done;
 
-		fi;
+    fi;
 
 	fi;
 

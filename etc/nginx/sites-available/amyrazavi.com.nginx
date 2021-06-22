@@ -13,7 +13,7 @@ server {
 	access_log "/var/log/nginx/access_$host.excessive.log" excessive;
 
 	if ($scheme != "https") {
-		return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
+    return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
 	}
 
 	ssl_certificate "/etc/letsencrypt/live/amyrazavi.com/fullchain.pem";
@@ -24,26 +24,26 @@ server {
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^cash.$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 	if ($request_uri ~* "^/cash$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 	if ($subdomain ~* "^cashapp.$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 	if ($request_uri ~* "^/cashapp$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 
 
 	# # ------------------------------------------------------------
 	# #                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^pay.$") {
-		return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+    return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
 	}
 	if ($request_uri ~* "^/pay$") {
-		return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
+    return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
 	}
 	# if ($subdomain ~* "^paypal.$") {
 	# 	return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
@@ -56,29 +56,29 @@ server {
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^spotify.$") {
-		return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
+    return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
 	}
 	if ($request_uri ~* "^/spotify$") {
-		return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
+    return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
 	}
 	if ($request_uri ~* "^/spotify/1$") {
-		return 302 "https://open.spotify.com/playlist/6mYwZqVLsbduB5Nta874vb?si=03d594b249664cce";  #  Spotify Playlist [ Shower Hollerin' ]
+    return 302 "https://open.spotify.com/playlist/6mYwZqVLsbduB5Nta874vb?si=03d594b249664cce";  #  Spotify Playlist [ Shower Hollerin' ]
 	}
 	if ($request_uri ~* "^/spotify/2$") {
-		return 302 "https://open.spotify.com/playlist/6Ctl8ygAgkMvsszmfq2BRj?si=561e738fbdf34fa6";  #  Spotify Playlist [ Wanna Dance? ]
+    return 302 "https://open.spotify.com/playlist/6Ctl8ygAgkMvsszmfq2BRj?si=561e738fbdf34fa6";  #  Spotify Playlist [ Wanna Dance? ]
 	}
 	if ($request_uri ~* "^/spotify/3$") {
-		return 302 "https://open.spotify.com/playlist/5v9ceIifWZ04TkmHvV2Gg4?si=ce4bd58b1fb74f7a";  #  Spotify Playlist [ Workout ]
+    return 302 "https://open.spotify.com/playlist/5v9ceIifWZ04TkmHvV2Gg4?si=ce4bd58b1fb74f7a";  #  Spotify Playlist [ Workout ]
 	}
 
 
 	# ------------------------------------------------------------
 	#                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^venmo.$") {
-		return 302 "https://venmo.com/hello_itsamy";
+    return 302 "https://venmo.com/hello_itsamy";
 	}
 	if ($request_uri ~* "^/venmo$") {
-		return 302 "https://venmo.com/hello_itsamy";
+    return 302 "https://venmo.com/hello_itsamy";
 	}
 
 
@@ -88,10 +88,10 @@ server {
 	#
 	#                ~* [regex match, case-insensitive]
 	if ($subdomain ~* "^$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 	if ($request_uri ~* "^/$") {
-		return 302 "https://cash.me/hithereitsamy";
+    return 302 "https://cash.me/hithereitsamy";
 	}
 
 }

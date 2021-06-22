@@ -31,17 +31,17 @@ else
 	# ------------------------------------------------------------
 	# Install package repo & download/install package
 	if [ $(which mongo 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		echo "";
-		echo "Info: Command \"mongo\" already exists at path \"$(which mongo)\"";
-		echo "  |--> Skipping package install";
+    echo "";
+    echo "Info: Command \"mongo\" already exists at path \"$(which mongo)\"";
+    echo "  |--> Skipping package install";
 
 	else
-		echo "";
-		echo "Info: Command \"mongo\" not found";
-		echo "  |--> Installing pre-required packages, then adding \"mongodb-org\" parent-repo & installing service-package...";
+    echo "";
+    echo "Info: Command \"mongo\" not found";
+    echo "  |--> Installing pre-required packages, then adding \"mongodb-org\" parent-repo & installing service-package...";
 
-		# Debian distros
-		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
+    # Debian distros
+    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
       if [ "$(which gnupg 2>'/dev/null'; echo $?;)" != "1" ]; then
         apt-get -y update; apt-get -y install "gnupg";
       fi;
@@ -51,12 +51,12 @@ else
       wget -qO - "https://www.mongodb.org/static/pgp/server-4.2.asc" | apt-key add -;
       echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee "/etc/apt/sources.list.d/mongodb-org-4.2.list";
       apt-get -y update; apt-get -y install "mongodb-org";
-		fi;
+    fi;
 
-		# CentOS / RHEL distros
-		if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+    # CentOS / RHEL distros
+    if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
       echo -e "[mongodb-org-4.2]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.2/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc\n" > "/etc/yum.repos.d/mongodb-org-4.2.repo"; yum check-update; yum install -y mongodb-org;
-		fi;
+    fi;
 
 	fi;
 
@@ -69,33 +69,33 @@ else
 
 	if [ -n "$(id ${MONGO_UNAME} 2>'/dev/null';)" ]; then
 
-		# Setup MongoDB directories
-		mkdir -p "/var/lib/mongo";
-		chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongo";
-		chmod 0755 "/var/lib/mongo";
-		mkdir -p "/var/lib/mongodb";
-		chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongodb";
-		chmod 0755 "/var/lib/mongodb";
-		SERVICE_NAME="mongod";
-		/usr/sbin/service "${SERVICE_NAME}" start;
+    # Setup MongoDB directories
+    mkdir -p "/var/lib/mongo";
+    chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongo";
+    chmod 0755 "/var/lib/mongo";
+    mkdir -p "/var/lib/mongodb";
+    chown -R "${MONGO_UNAME}:${MONGO_GNAME}" "/var/lib/mongodb";
+    chmod 0755 "/var/lib/mongodb";
+    SERVICE_NAME="mongod";
+    /usr/sbin/service "${SERVICE_NAME}" start;
 
-		# ------------------------------------------------------------
-		# Setup Bind-IP as [ Loopback-IPv4,LAN-IPv4 ] instead of just the [ Loopback-IPv4 ]
-		# THIS_BIND_TARGET=$(ip addr show | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
-		THIS_BIND_TARGET="$(hostname)";
-		if [ -n "$(cat '/etc/mongod.conf' | grep '  bindIp: 127.0.0.1';)" ]; then
+    # ------------------------------------------------------------
+    # Setup Bind-IP as [ Loopback-IPv4,LAN-IPv4 ] instead of just the [ Loopback-IPv4 ]
+    # THIS_BIND_TARGET=$(ip addr show | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.');
+    THIS_BIND_TARGET="$(hostname)";
+    if [ -n "$(cat '/etc/mongod.conf' | grep '  bindIp: 127.0.0.1';)" ]; then
       sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  bindIp: 127.0.0.1/c\  bindIp: 127.0.0.1,${THIS_BIND_TARGET}  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting." "/etc/mongod.conf";
       cat "/etc/mongod.conf";
       SERVICE_NAME="mongod";
       /usr/sbin/service "${SERVICE_NAME}" restart;
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# Setup access security
-		echo ""; read -p "Enter Filepath for mongod keyFile:  " -t 60 -r; echo "";
-		if [ -z "${REPLY}" ]; then
+    # ------------------------------------------------------------
+    # Setup access security
+    echo ""; read -p "Enter Filepath for mongod keyFile:  " -t 60 -r; echo "";
+    if [ -z "${REPLY}" ]; then
       echo "Info: Skipping mongod security setup (empty input received for keyFile)";
-		else
+    else
       NEW_KEYFILE="${REPLY}";
       if [ ! -f "${NEW_KEYFILE}" ]; then
         echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo "";
@@ -137,16 +137,16 @@ security:
         echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\"";
         echo "  |--> No action required (already up to date)";
       fi;
-		fi;
+    fi;
 
-		FINAL_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
-		if [ -f "${FINAL_KEYFILE}" ]; then
+    FINAL_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
+    if [ -f "${FINAL_KEYFILE}" ]; then
       chown "${MONGO_UNAME}:${MONGO_GNAME}" "${FINAL_KEYFILE}";
       chmod 0400 "${FINAL_KEYFILE}";
-		fi;
+    fi;
 
-		# ------------------------------------------------------------
-		# Setup replication
+    # ------------------------------------------------------------
+    # Setup replication
 # 		CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')";
 # 		CURRENT_REPL_DISABLED="$(cat /etc/mongod.conf | grep '#replication:')";
 # 		if [ -z "${CURRENT_REPL_SET_NAME}" ] && [ -n "${CURRENT_REPL_DISABLED}" ]; then
@@ -172,11 +172,11 @@ security:
 	# ------------------------------------------------------------
 	# Removing/Downgrading MongoDB
 	if [ 0 -eq 1 ]; then
-		yum -y remove mongodb-org;
-		yum -y remove mongodb-org-shell;
-		yum -y remove mongodb-org-tools;
-		yum -y remove mongodb-org-mongos;
-		yum -y remove mongodb-org-server;
+    yum -y remove mongodb-org;
+    yum -y remove mongodb-org-shell;
+    yum -y remove mongodb-org-tools;
+    yum -y remove mongodb-org-mongos;
+    yum -y remove mongodb-org-server;
 	fi;
 
 	# ------------------------------------------------------------

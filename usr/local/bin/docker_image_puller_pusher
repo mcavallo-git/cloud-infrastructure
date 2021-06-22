@@ -28,12 +28,12 @@ if [[ "${ERRORS_FOUND}" == "0" ]]; then
 	ERRORS_FOUND=$?;
 
 	if [[ "${ERRORS_FOUND}" == "0" ]]; then
-		if [[ "${ACTION_PULL_OR_PUSH}" == "pull" ]]; then #/\/===--    PULL IMAGE FROM [ https://hub.docker.com ]    --===\/\#
+    if [[ "${ACTION_PULL_OR_PUSH}" == "pull" ]]; then #/\/===--    PULL IMAGE FROM [ https://hub.docker.com ]    --===\/\#
       
       echo "Calling [docker pull \"${DOCKERHUB_FULL_PATH}\"]...     ($(date +'%D  %r'))";
       docker pull "${DOCKERHUB_FULL_PATH}";
 
-		elif [[ "${ACTION_PULL_OR_PUSH}" == "push" ]]; then #/\/===--    PUSH IMAGE TO [ https://hub.docker.com ]    --===\/\#
+    elif [[ "${ACTION_PULL_OR_PUSH}" == "push" ]]; then #/\/===--    PUSH IMAGE TO [ https://hub.docker.com ]    --===\/\#
       
       # Local images remove periods from their names, but keep them in everywhere else..? :(
       LOCAL_IMAGE_NOPERIODS=${LOCAL_IMAGE//[.]/};
@@ -44,14 +44,14 @@ if [[ "${ERRORS_FOUND}" == "0" ]]; then
       echo "Calling [docker push \"${DOCKERHUB_FULL_PATH}\"]...     ($(date +'%D  %r'))";
       docker push "${DOCKERHUB_FULL_PATH}";
 
-		else
+    else
       ERRORS_FOUND=1; echo "Error in ${0}: Parameter #1 (ACTION_PULL_OR_PUSH) must be either 'pull' or 'push', received '${ACTION_PULL_OR_PUSH}'";
 
-		fi;
-		# Logout from https://hub.docker.com
-		echo "";
-		echo "Calling [docker logout]...     ($(date +'%D  %r'))";
-		docker logout;
+    fi;
+    # Logout from https://hub.docker.com
+    echo "";
+    echo "Calling [docker logout]...     ($(date +'%D  %r'))";
+    docker logout;
       
 	fi;
 

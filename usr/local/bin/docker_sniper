@@ -32,46 +32,46 @@ else
 	# Dockers Instances - Stop all running-Instances whichmatch the given Search-String
 	printf "[ ${docker_ps_count} ] Instances ${HEAD_TEXT}";
 	if [ $docker_ps_count -gt 0 ]; then
-		printf "STOPPING via \"docker stop ...\":\n";
-		docker ps | grep ${bash_arg1};
-		docker stop $(docker ps | grep ${bash_arg1} | awk '{print $1}')
-		printf "\n";
+    printf "STOPPING via \"docker stop ...\":\n";
+    docker ps | grep ${bash_arg1};
+    docker stop $(docker ps | grep ${bash_arg1} | awk '{print $1}')
+    printf "\n";
 	else
-		printf "No Action Necessary\n";
+    printf "No Action Necessary\n";
 	fi;
 	
 	# Docker Containers - Remove all Containers which match the given Search-String
 	printf "[ ${docker_ps_all_count} ] Containers ${HEAD_TEXT}";
 	if [ $docker_ps_all_count -gt 0 ]; then
-		printf "FORCE-REMOVING via \"docker rm --force ...\":\n";
-		docker ps --all | grep ${bash_arg1};
-		docker rm --force $(docker ps --all | grep ${bash_arg1} | awk '{print $1}');
-		printf "\n";
+    printf "FORCE-REMOVING via \"docker rm --force ...\":\n";
+    docker ps --all | grep ${bash_arg1};
+    docker rm --force $(docker ps --all | grep ${bash_arg1} | awk '{print $1}');
+    printf "\n";
 	else
-		printf "No Action Necessary\n";
+    printf "No Action Necessary\n";
 	fi;
 	
 	# Kill Images
 	printf "[ ${docker_images_all_count} ] Images ${HEAD_TEXT}";
 	if [ $docker_images_all_count -gt 0 ]; then
-		printf "FORCE-REMOVING via \"docker rmi --force ...\":\n";
-		docker images --all | grep ${bash_arg1};
-		# docker rmi --force $(docker images --all | grep ${bash_arg1} | grep -v 'centos' | grep -v 'node' | awk '{print $3}');
-		docker rmi --force $(docker images --all | grep ${bash_arg1} | awk '{print $3}');
-		printf "\n";
+    printf "FORCE-REMOVING via \"docker rmi --force ...\":\n";
+    docker images --all | grep ${bash_arg1};
+    # docker rmi --force $(docker images --all | grep ${bash_arg1} | grep -v 'centos' | grep -v 'node' | awk '{print $3}');
+    docker rmi --force $(docker images --all | grep ${bash_arg1} | awk '{print $3}');
+    printf "\n";
 	else
-		printf "No Action Necessary\n";
+    printf "No Action Necessary\n";
 	fi;
 	
 	# Kill Networks
 	printf "[ ${docker_networks_all_count} ] Networks ${HEAD_TEXT}";
 	if [ $docker_networks_all_count -gt 0 ]; then
-		printf "FORCE-REMOVING via \"docker network rm ...\":\n";
-		docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | grep ${bash_arg1};
-		docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | grep ${bash_arg1} | awk '{print $1}');
-		printf "\n";
+    printf "FORCE-REMOVING via \"docker network rm ...\":\n";
+    docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | grep ${bash_arg1};
+    docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | grep ${bash_arg1} | awk '{print $1}');
+    printf "\n";
 	else
-		printf "No Action Necessary\n";
+    printf "No Action Necessary\n";
 	fi;
 	
 	# Prune System

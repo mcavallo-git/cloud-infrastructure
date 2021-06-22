@@ -27,7 +27,7 @@ else
 
 	# Make sure required runtime(s) are installed
 	if [ -z "$(which dos2unix 2>'/dev/null')" ]; then
-		apt-get-update -y; apt-get install -y dos2unix;
+    apt-get-update -y; apt-get install -y dos2unix;
 	fi;
 	
 	DIR_REPO_BASE="";
@@ -35,113 +35,113 @@ else
 	# Detect & handle WSL instance(s)
 	WSL_CHECK_EXISTS=$(which get_username_windows_wsl 2>'/dev/null');
 	if [ -n "${WSL_CHECK_EXISTS}" ]; then
-		WIN32_USERNAME=$(get_username_windows_wsl);
-		WIN32_USER_ERRORS="$?";
+    WIN32_USERNAME=$(get_username_windows_wsl);
+    WIN32_USER_ERRORS="$?";
 	fi;
 	if [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
-		#  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-		WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
-		WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-		if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+    #  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
+    WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
+    WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+    if [ ! -n "${WIN32_USR_LOCAL}" ]; then
       echo "";
       echo "Unable to locate directory matching 'cloud-infrastructure/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
       exit 1;
-		else
+    else
       DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
       DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-		fi;
+    fi;
 
 	else
 
-		WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
-		WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
-		DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
-		DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-		SOURCE_DIR_ERRS=$?;
+    WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
+    WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
+    DIR_REPO_USR="$(dirname ${WHOAMI_USR_LOCAL})";
+    DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+    SOURCE_DIR_ERRS=$?;
 
-		if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
+    if [ "${SOURCE_DIR_ERRS}" != "0" ] && [ -n "${SUDO_USER}" ]; then
       #  Linux OS - Locate source directory from amongst Non-Sudo User's files
       SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
       SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
       DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
       DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
       SOURCE_DIR_ERRS=$?;
-		fi;
+    fi;
 	
 	fi;
 
 	if [ -z "${DIR_REPO_BASE}" ]; then
-		# Error-out if any required variable(s) are empty/unset
-		EXIT_CODE=1;
+    # Error-out if any required variable(s) are empty/unset
+    EXIT_CODE=1;
 
-		echo "";
-		echo "Error: Required variable found to be empty/unset: \${DIR_REPO_BASE}";
+    echo "";
+    echo "Error: Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
 	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
-		# Error-out if any required source directories are missing
-		EXIT_CODE=1;
+    # Error-out if any required source directories are missing
+    EXIT_CODE=1;
 
-		if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
+    if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
       echo "";
       echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
-		fi;
-		if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
+    fi;
+    if [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
       echo "";
       echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
-		fi;
+    fi;
 
 	else
-		# Required source directories exist - Update local runtimes from them
-		EXIT_CODE=0;
+    # Required source directories exist - Update local runtimes from them
+    EXIT_CODE=0;
 
-		# ------------------------------------------------------------
-		# Sync [ /usr/local/bin ] files (e.g. non-admin commands)
-		# ------------------------------------------------------------
-		echo "";
-		echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
-		cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
-		chown "root:root" /usr/local/bin/*;
-		chmod 0755 /usr/local/bin/*;
-		dos2unix --quiet /usr/local/bin/*;
+    # ------------------------------------------------------------
+    # Sync [ /usr/local/bin ] files (e.g. non-admin commands)
+    # ------------------------------------------------------------
+    echo "";
+    echo "Copying files from '${DIR_REPO_BASE}/usr/local/bin/*' to '/usr/local/bin/.' ...";
+    cp --verbose --force ${DIR_REPO_BASE}/usr/local/bin/* /usr/local/bin/.;
+    chown "root:root" /usr/local/bin/*;
+    chmod 0755 /usr/local/bin/*;
+    dos2unix --quiet /usr/local/bin/*;
 
-		# ------------------------------------------------------------
-		# Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
-		# ------------------------------------------------------------
-		echo "";
-		echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
-		cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
-		chown "root:root" /usr/local/sbin/*;
-		chmod 0755 /usr/local/sbin/*;
-		dos2unix --quiet /usr/local/sbin/*;
+    # ------------------------------------------------------------
+    # Sync [ /usr/local/sbin ] files (e.g. admin-only commands)
+    # ------------------------------------------------------------
+    echo "";
+    echo "Copying files from '${DIR_REPO_BASE}/usr/local/sbin/*' to '/usr/local/sbin/.' ...";
+    cp --verbose --force ${DIR_REPO_BASE}/usr/local/sbin/* /usr/local/sbin/.;
+    chown "root:root" /usr/local/sbin/*;
+    chmod 0755 /usr/local/sbin/*;
+    dos2unix --quiet /usr/local/sbin/*;
 
-		echo "";
-		echo "Local bin & sbin are now synced with 'origin/master'";
-		echo "";
+    echo "";
+    echo "Local bin & sbin are now synced with 'origin/master'";
+    echo "";
 
-		# ------------------------------------------------------------
-		# Sync [ /home/USER/* ] files (e.g. bash-config & terminal-formatting files)
-		# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # Sync [ /home/USER/* ] files (e.g. bash-config & terminal-formatting files)
+    # ------------------------------------------------------------
 
-		# Get list of files to Copy into Home-Dirs
-		COPY_FROM_SOURCE="${DIR_REPO_BASE}/root";
-		FILES_TO_COPY=$(ls -hAl "${COPY_FROM_SOURCE}/" | awk '{print $9}');
+    # Get list of files to Copy into Home-Dirs
+    COPY_FROM_SOURCE="${DIR_REPO_BASE}/root";
+    FILES_TO_COPY=$(ls -hAl "${COPY_FROM_SOURCE}/" | awk '{print $9}');
 
-		# User-List whose Home-Dirs will be updated
-		LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
+    # User-List whose Home-Dirs will be updated
+    LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
 
-		# Determine longest Username to enhance log-readability by left-padding (right-aligning) output text, below
-		#   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
-		USERNAMES_MOSTCHARS=0;
-		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+    # Determine longest Username to enhance log-readability by left-padding (right-aligning) output text, below
+    #   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
+    USERNAMES_MOSTCHARS=0;
+    for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
       EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
       if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
         USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
       fi;
-		done;
-		echo "";
-		echo "❖ Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
-		# Begin copying files to SSH-Enabled User-Home Directories
-		for EACH_FILE in ${FILES_TO_COPY}; do
+    done;
+    echo "";
+    echo "❖ Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+    # Begin copying files to SSH-Enabled User-Home Directories
+    for EACH_FILE in ${FILES_TO_COPY}; do
       if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
         echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
         SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
@@ -170,13 +170,13 @@ else
           fi;
         done;
       fi;
-		done;
-		echo "";
+    done;
+    echo "";
 
-		# ------------------------------------------------------------
-		# Remove old/renamed scripts (if found to exist)
-		# ------------------------------------------------------------
-		TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
+    # ------------------------------------------------------------
+    # Remove old/renamed scripts (if found to exist)
+    # ------------------------------------------------------------
+    TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
 
 	fi;

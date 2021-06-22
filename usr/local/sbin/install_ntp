@@ -26,28 +26,28 @@ else
 	read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
 	echo "";
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		# ------------------------------------------------------------
-		#
-		# Sync the system clock to NTP Server(s)
-		#
-		PACKAGE_NAME="chrony";
-		PACKAGE_CONF="/etc/chrony.conf";
-		SERVICE_NAME="chronyd";
-		if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+    # ------------------------------------------------------------
+    #
+    # Sync the system clock to NTP Server(s)
+    #
+    PACKAGE_NAME="chrony";
+    PACKAGE_CONF="/etc/chrony.conf";
+    SERVICE_NAME="chronyd";
+    if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
       apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
-		elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+    elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
       yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-		fi;
-		timedatectl set-ntp yes;
-		systemctl restart "${SERVICE_NAME}";
-		# ------------------------------------------------------------
-		#
-		# Optionally, add a suggested NTP server as primary NTP server
-		#
-		PRIMARY_NTP_SUGGESTION="time.nist.gov";
-		# PRIMARY_NTP_SUGGESTION="pool.ntp.org";
-		# PRIMARY_NTP_SUGGESTION="time.google.com";
-		if [ -f "${PACKAGE_CONF}" ]; then
+    fi;
+    timedatectl set-ntp yes;
+    systemctl restart "${SERVICE_NAME}";
+    # ------------------------------------------------------------
+    #
+    # Optionally, add a suggested NTP server as primary NTP server
+    #
+    PRIMARY_NTP_SUGGESTION="time.nist.gov";
+    # PRIMARY_NTP_SUGGESTION="pool.ntp.org";
+    # PRIMARY_NTP_SUGGESTION="time.google.com";
+    if [ -f "${PACKAGE_CONF}" ]; then
       CURRENT_NTP_SERVER_LINES="$(cat ${PACKAGE_CONF} | grep '^server ' | awk '{print $2}' 2>'/dev/null';)";
       if [ -n "${CURRENT_NTP_SERVER_LINES}" ] && [ $(echo "${CURRENT_NTP_SERVER_LINES}" | grep "^${PRIMARY_NTP_SUGGESTION}$" | wc -l 2>'/dev/null';) -eq 0 ]; then
         CURRENT_NTP_PRIMARY_SERVER=$(echo "${CURRENT_NTP_SERVER_LINES}" | head -n 1;);
@@ -63,31 +63,31 @@ else
           echo "------------------------------------------------------------";
         fi;
       fi;
-		fi;
-		# ------------------------------------------------------------
-		#
-		# Optionally, sync the hardware clock to NTP Server(s)
-		#
-		echo "";
-		read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
-		echo "";
-		if [[ $REPLY =~ ^[Yy]$ ]]; then
+    fi;
+    # ------------------------------------------------------------
+    #
+    # Optionally, sync the hardware clock to NTP Server(s)
+    #
+    echo "";
+    read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+    echo "";
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
       hwclock --systohc;
       timedatectl set-ntp yes;
-		fi;
-		# ------------------------------------------------------------
-		#
-		# Show the final status of the system date & time
-		#
-		echo "Calling  [ chronyc tracking; ]  ...";
-		echo "------------------------------------------------------------";
-		chronyc tracking;
-		echo "------------------------------------------------------------";
-		echo "Calling  [ timedatectl status; ]  ...";
-		echo "------------------------------------------------------------";
-		timedatectl status;
-		echo "------------------------------------------------------------";
-		# ------------------------------------------------------------
+    fi;
+    # ------------------------------------------------------------
+    #
+    # Show the final status of the system date & time
+    #
+    echo "Calling  [ chronyc tracking; ]  ...";
+    echo "------------------------------------------------------------";
+    chronyc tracking;
+    echo "------------------------------------------------------------";
+    echo "Calling  [ timedatectl status; ]  ...";
+    echo "------------------------------------------------------------";
+    timedatectl status;
+    echo "------------------------------------------------------------";
+    # ------------------------------------------------------------
 	fi;
 fi;
 

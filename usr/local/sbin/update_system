@@ -23,19 +23,19 @@ if [ "$(id -un)" != "root" ]; then
 else
 	# ------------------------------------------------------------
 	if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
-		#
-		# Disabled for Fedora distros (RHEL/CentOS)
-		#
-		echo "System-Update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
-		exit 1;
+    #
+    # Disabled for Fedora distros (RHEL/CentOS)
+    #
+    echo "System-Update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
+    exit 1;
 
 	else
-		#
-		#  Linux - Fetch, Pull, & Install updates (system & package)
-		#
-		THIS_SCRIPT=$(basename "${0}");
-		THIS_DIRNAME=$(dirname "${0}");
-		if [ "$(date +%A)" == "Sunday" ] || [ "${1}" == "now" ] || [ "${1}" == "-now" ] || [ "${1}" == "--now" ]; then
+    #
+    #  Linux - Fetch, Pull, & Install updates (system & package)
+    #
+    THIS_SCRIPT=$(basename "${0}");
+    THIS_DIRNAME=$(dirname "${0}");
+    if [ "$(date +%A)" == "Sunday" ] || [ "${1}" == "now" ] || [ "${1}" == "-now" ] || [ "${1}" == "--now" ]; then
       echo "------------------------------------------------------------";
       echo "";
       echo "$(date '+%Y-%m-%d %H:%M:%S') | Starting \"${THIS_SCRIPT}\"";
@@ -174,21 +174,21 @@ else
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo shutdown -r \"${SCHEDULED_RESTART_TIME}\"";
         shutdown -r "${SCHEDULED_RESTART_TIME}";
       fi;
-		else
+    else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Use argument '--now' to run system update";
-		fi;
-		if [ -f "/usr/local/bin/get_os" ]&& [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
+    fi;
+    if [ -f "/usr/local/bin/get_os" ]&& [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
       #
       # WSL (Windows Subsystem for Linux)
       #  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
       #       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
       touch "/var/run/reboot-required";
-		fi;
-		# Exit Gracefully
-		echo "";
-		echo "$(date '+%Y-%m-%d %H:%M:%S') | Finished \"${THIS_SCRIPT}\"";
-		echo "------------------------------------------------------------";
-		exit 0;
+    fi;
+    # Exit Gracefully
+    echo "";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Finished \"${THIS_SCRIPT}\"";
+    echo "------------------------------------------------------------";
+    exit 0;
 	fi;
 fi;

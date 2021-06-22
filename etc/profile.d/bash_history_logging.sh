@@ -29,58 +29,58 @@ if [ -n "${USER_HOMEDIR}" ]; then
 
 	# Ensure the log-directory exists (create it if it doesn't)
 	if [ ! -d "${BASH_LOGDIR}" ] && [ -w "${USER_HOMEDIR}/" ]; then
-		mkdir -p "${BASH_LOGDIR}";
+    mkdir -p "${BASH_LOGDIR}";
 	fi;
 
 	if [ -d "${BASH_LOGDIR}" ] && [ -w "${BASH_LOGDIR}" ]; then
 
-		# Set user:group ownership for the log-directory to be the current-user && their default-group
-		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat -c '%u:%g' ${BASH_LOGDIR})" != "$(id --user):$(id --group)" ]; then
+    # Set user:group ownership for the log-directory to be the current-user && their default-group
+    if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat -c '%u:%g' ${BASH_LOGDIR})" != "$(id --user):$(id --group)" ]; then
       chown -R "$(id -u):$(id -g)" "${BASH_LOGDIR}";
-		fi;
+    fi;
 
-		# Limit access to bash-log-dirs (block read-access from users who aren't the owner)
-		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGDIR})" != "700" ]; then
+    # Limit access to bash-log-dirs (block read-access from users who aren't the owner)
+    if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGDIR})" != "700" ]; then
       chmod -R 700 "${BASH_LOGDIR}";
-		fi;
+    fi;
 
-		# Create the logfile for this session (skip this step if it exists, already)
-		if [ ! -f "${BASH_LOGFILE}" ]; then
+    # Create the logfile for this session (skip this step if it exists, already)
+    if [ ! -f "${BASH_LOGFILE}" ]; then
       echo -n "" > "${BASH_LOGFILE}";
-		fi;
+    fi;
 
-		# Limit access to bash-log-files (block read-access from users who aren't the owner)
-		if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
+    # Limit access to bash-log-files (block read-access from users who aren't the owner)
+    if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${BASH_LOGFILE})" != "600" ]; then
       chmod 600 "${BASH_LOGFILE}";
-		fi;
+    fi;
 
-		# Log the current bash-command to the user's logs-directory as-intended
-		# GET_LAST_COMMAND="HISTTIMEFORMAT=\"%d/%m/%y %T \" history 1";
-		GET_LAST_COMMAND="history 1";
-		if [ -n "$(which sed 2>'/dev/null')" ]; then
+    # Log the current bash-command to the user's logs-directory as-intended
+    # GET_LAST_COMMAND="HISTTIMEFORMAT=\"%d/%m/%y %T \" history 1";
+    GET_LAST_COMMAND="history 1";
+    if [ -n "$(which sed 2>'/dev/null')" ]; then
       GET_LAST_COMMAND="${GET_LAST_COMMAND} | sed 's/^ *[0-9]* *//'";
-		elif [ -n "$(which cut 2>'/dev/null')" ]; then
+    elif [ -n "$(which cut 2>'/dev/null')" ]; then
       GET_LAST_COMMAND="${GET_LAST_COMMAND} | cut -c 8-";
-		fi;
+    fi;
 
-		# Log any sudoers acting as root
-		DAT_USER="$(id -un)";
-		if [ -n "${SUDO_USER}" ]; then
+    # Log any sudoers acting as root
+    DAT_USER="$(id -un)";
+    if [ -n "${SUDO_USER}" ]; then
       DAT_USER="${DAT_USER}(${SUDO_USER})";
-		fi;
+    fi;
 
-		#	PROMPT_COMMAND (environment-variable)
-		#	 |--> Holds one or more commands which run prior-to every command-line command
-		#	 |--> Check if it already contains a value before attempting to set it
-		APPEND_CMD="echo \"\$(date \"+%Y-%m-%d @ %H:%M:%S\") ${DAT_USER}@$(hostname) [\$(pwd)]► \$(${GET_LAST_COMMAND})\" >> \"${BASH_LOGFILE}\";";
-		if [ -n "${PROMPT_COMMAND}" ]; then
+    #	PROMPT_COMMAND (environment-variable)
+    #	 |--> Holds one or more commands which run prior-to every command-line command
+    #	 |--> Check if it already contains a value before attempting to set it
+    APPEND_CMD="echo \"\$(date \"+%Y-%m-%d @ %H:%M:%S\") ${DAT_USER}@$(hostname) [\$(pwd)]► \$(${GET_LAST_COMMAND})\" >> \"${BASH_LOGFILE}\";";
+    if [ -n "${PROMPT_COMMAND}" ]; then
       # PROMPT_COMMAND is set, already
       PERSISTENT_CMD="${PROMPT_COMMAND}; "; # Add a command-delimiter (;) to end the previous command
       PERSISTENT_CMD="${PERSISTENT_CMD//;;/;}"; # Remove and double command-delimiters (;;)
-		else
+    else
       PERSISTENT_CMD=""; # PROMPT_COMMAND not set, already
-		fi;
-		export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
+    fi;
+    export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
 
 	fi;
 

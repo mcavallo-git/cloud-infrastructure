@@ -44,11 +44,11 @@ fi
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
 	case " $(groups) " in *\ admin\ *|*\ sudo\ *)
 	if [ -x /usr/bin/sudo ]; then
-		cat <<-EOF
-		To run a command as administrator (user "root"), use "sudo <command>".
-		See "man sudo_root" for details.
+    cat <<-EOF
+    To run a command as administrator (user "root"), use "sudo <command>".
+    See "man sudo_root" for details.
 
-		EOF
+    EOF
 	fi
 	esac
 fi
@@ -56,16 +56,16 @@ fi
 # if the command-not-found package is installed, use it
 if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-not-found ]; then
 	function command_not_found_handle {
-		# check because c-n-f could've been removed in the meantime
-		if [ -x /usr/lib/command-not-found ]; then
+    # check because c-n-f could've been removed in the meantime
+    if [ -x /usr/lib/command-not-found ]; then
       /usr/lib/command-not-found -- "$1"
       return $?
-		elif [ -x /usr/share/command-not-found/command-not-found ]; then
+    elif [ -x /usr/share/command-not-found/command-not-found ]; then
       /usr/share/command-not-found/command-not-found -- "$1"
       return $?
-		else
+    else
       printf "%s: command not found\n" "$1" >&2
       return 127
-		fi
+    fi
 	}
 fi

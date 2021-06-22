@@ -27,12 +27,12 @@ else
 	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
 	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
 
-		# Show service status
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
-		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
+    # Show service status
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
+    /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
-		if [ 1 -eq 1 ]; then
+    if [ 1 -eq 1 ]; then
 
       # Update Unifi Controller (via Bash convenience script)
       SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";
@@ -43,7 +43,7 @@ else
       echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
       mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
 
-		else
+    else
 
       # Update UniFi
       echo "";
@@ -58,16 +58,16 @@ else
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
       DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
 
-		fi;
+    fi;
 
-		# Show service status
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
-		/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
+    # Show service status
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
+    /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
 	else # Service NOT found to exist as a local service
-		echo "";
-		echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
 	fi;
 
 fi;

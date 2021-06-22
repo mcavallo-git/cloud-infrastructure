@@ -693,32 +693,32 @@ fi;
 #
 #### Setting up this file can be done via:
 #
-#		vi "/usr/local/sbin/ddns_ufw_update";
+#   vi "/usr/local/sbin/ddns_ufw_update";
 #
-#		chmod 0755 "/usr/local/sbin/ddns_ufw_update";
+#   chmod 0755 "/usr/local/sbin/ddns_ufw_update";
 #
 #
 #### The content of "/etc/ddns_ufw_update.whitelist" should match the format:
 #	
-#		vi "/etc/ddns_ufw_update.whitelist";
+#   vi "/etc/ddns_ufw_update.whitelist";
 #
-#		tcp:22:yourpc.no-ip.org
+#   tcp:22:yourpc.no-ip.org
 #
 #
 #### Shortcuts to this script, whitelist, and logfile-directory can be set via:
 #	
-#		mkdir -p "/root/ddns_ufw_update";
-#		chmod 0700 "/root/ddns_ufw_update";
-#		ln -sf "/etc/ddns_ufw_update.whitelist" "/root/ddns_ufw_update/whitelist";
-#		ln -sf "/usr/local/sbin/ddns_ufw_update" "/root/ddns_ufw_update/runtime";
-#		ln -sf "/var/log/ddns_ufw_update" "/root/ddns_ufw_update/logs";
+#   mkdir -p "/root/ddns_ufw_update";
+#   chmod 0700 "/root/ddns_ufw_update";
+#   ln -sf "/etc/ddns_ufw_update.whitelist" "/root/ddns_ufw_update/whitelist";
+#   ln -sf "/usr/local/sbin/ddns_ufw_update" "/root/ddns_ufw_update/runtime";
+#   ln -sf "/var/log/ddns_ufw_update" "/root/ddns_ufw_update/logs";
 #
 #
 #### A crontab entry for executing the script every 3 minutes could look like this:
 #
-#		crontab -e
+#   crontab -e
 #
-#		*/3 * * * * sudo "ddns_ufw_update"
+#   */3 * * * * sudo "ddns_ufw_update"
 #
 #
 # ------------------------------------------------------------

@@ -98,10 +98,10 @@ fi;
 #
 #	Citation(s)
 #
-#		atomicobject.com  |  "How (and Why) to Log Your Entire Bash History"  |  https://spin.atomicobject.com/2016/05/28/log-bash-history/
+#   atomicobject.com  |  "How (and Why) to Log Your Entire Bash History"  |  https://spin.atomicobject.com/2016/05/28/log-bash-history/
 #
-#		serverfault.com  |  "Is there a global .bash_profile for all users on a system?"  |  https://serverfault.com/a/627682
+#   serverfault.com  |  "Is there a global .bash_profile for all users on a system?"  |  https://serverfault.com/a/627682
 #
-#		stackoverflow.com  |  "Bash history without line numbers"  |  https://stackoverflow.com/a/7110197
+#   stackoverflow.com  |  "Bash history without line numbers"  |  https://stackoverflow.com/a/7110197
 #
 # ------------------------------------------------------------

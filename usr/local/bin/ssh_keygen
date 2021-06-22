@@ -243,20 +243,20 @@ exit;
 
 
 #### /\/===--    SSH CONFIG    --===\/\#
-#		SSH_CONF_FILEPATH="/etc/ssh/sshd_config";
-#		echo "";
-#		echo "Updating SSH Config-File \"${SSH_CONF_FILEPATH}\" ...";
-#		sed_SSH_001="/^Subsystem sftp /c\Subsystem sftp internal\-sftp";
-#		sed_SSH_002="/^AuthorizedKeysFile /c\AuthorizedKeysFile \%h\/\.ssh\/authorized_keys \/etc\/ssh\/authorized_keys\/\%u";
-#		sed --in-place \
-#		--expression="${sed_SSH_002}" \
-#		--expression="${sed_SSH_002}" \
-#		"${SSH_CONF_FILEPATH}";
-#		echo "";
-#		echo "Updated SSH Config-File \"${SSH_CONF_FILEPATH}\"";
+#   SSH_CONF_FILEPATH="/etc/ssh/sshd_config";
+#   echo "";
+#   echo "Updating SSH Config-File \"${SSH_CONF_FILEPATH}\" ...";
+#   sed_SSH_001="/^Subsystem sftp /c\Subsystem sftp internal\-sftp";
+#   sed_SSH_002="/^AuthorizedKeysFile /c\AuthorizedKeysFile \%h\/\.ssh\/authorized_keys \/etc\/ssh\/authorized_keys\/\%u";
+#   sed --in-place \
+#   --expression="${sed_SSH_002}" \
+#   --expression="${sed_SSH_002}" \
+#   "${SSH_CONF_FILEPATH}";
+#   echo "";
+#   echo "Updated SSH Config-File \"${SSH_CONF_FILEPATH}\"";
 
 #### Apply changes to the SSH service
-#		SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;
+#   SERVICE_NAME="sshd"; /usr/sbin/service "${SERVICE_NAME}" restart;
 
 
 # ------------------------------------------------------------

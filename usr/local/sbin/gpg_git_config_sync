@@ -332,10 +332,14 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
   2>"/dev/null" \
   | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
+    echo "------------------------------";
     echo "EACH_GIT_EXE=\"${EACH_GIT_EXE}\"";
 
     EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
     EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
+
+    echo "EACH_GIT_LINUX=\"${EACH_GIT_LINUX}\"";
+    echo "EACH_GIT_WIN32=\"${EACH_GIT_WIN32}\"";
 
     SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
     SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";

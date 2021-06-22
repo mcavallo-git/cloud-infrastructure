@@ -332,6 +332,8 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
   2>"/dev/null" \
   | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
+    echo "EACH_GIT_EXE=\"${EACH_GIT_EXE}\"";
+
     EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
     EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
 

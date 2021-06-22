@@ -42,7 +42,7 @@ else
     LOCAL_JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -rne 's/^\s*java.home = (.+)\s*$/\1/p';); echo "LOCAL_JAVA_HOME = [ ${LOCAL_JAVA_HOME} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
 
     # ------------------------------------------------------------
-    #	To find the appropriate font configuration file for a host operating system, the following information is used:
+    # To find the appropriate font configuration file for a host operating system, the following information is used:
     #
     #   JavaHome - the JRE's directory, as given by the "java.home" system property.
     #

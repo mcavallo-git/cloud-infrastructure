@@ -20,14 +20,14 @@ fi;
 #
 # ------------------------------------------------------------
 #
-#	INSTALL "Gpg4win" FOR WINDOWS, FIRST
+# INSTALL "Gpg4win" FOR WINDOWS, FIRST
 # 	|--> Updated Installer for Gpg4win @ https://www.gpg4win.org/thanks-for-download.html
 #
 # ------------------------------------------------------------
 #
-#	USE "KLEOPATRA" (search for program name via Start Menu) ONCE [ Gpg4win ] HAS BEEN INSTALLED 
-#	 |--> CREATE & MANAGE GnuPG KEYS LOCALLY, THEN SYNC THEM TO DESIRED GPG KEYSERVER
-#	 |--> KLEOPATRA IS NEEDED FOR WINDOWS SINCE GnuPG IS NEARLY, IF NOTE ENTIRELY A CLI ONLY TOOL
+# USE "KLEOPATRA" (search for program name via Start Menu) ONCE [ Gpg4win ] HAS BEEN INSTALLED 
+#  |--> CREATE & MANAGE GnuPG KEYS LOCALLY, THEN SYNC THEM TO DESIRED GPG KEYSERVER
+#  |--> KLEOPATRA IS NEEDED FOR WINDOWS SINCE GnuPG IS NEARLY, IF NOTE ENTIRELY A CLI ONLY TOOL
 #
 # ------------------------------------------------------------
 
@@ -218,7 +218,7 @@ if [ "${IS_ADMIN}" == "0" ]; then
 
 elif [ ! -e "${GPG4WIN_GPG_EXE_LINUX}" ]; then
   #
-  #	Gpg4win --> GnuPG Key Hander
+  # Gpg4win --> GnuPG Key Hander
   #   Make sure that "Gpg4win" is installed, as it both upgrades Git's default "gpg.exe" runtime, and
   #   also brings along "Kleopatra", a Windows handler for gpg-keys w/ a front-end GUI & server-sync built-in
   #
@@ -355,7 +355,7 @@ done;
 # The next step is to locate GnuPG's configuration filepath(s)
 #  |--> To accomplish this, this script will locate the primary gpg-agent.conf script location, then redirect (sym-link) other possible gpg-agent.conf locations to centralize on it
 #
-#	Gpg4win's GnuPG configuration (on Windows workstations) is stored in one of two locations   -->   %APPDATA%\gnupg  ||  %USERPROFILE%\.gnupg
+# Gpg4win's GnuPG configuration (on Windows workstations) is stored in one of two locations   -->   %APPDATA%\gnupg  ||  %USERPROFILE%\.gnupg
 #
 
 mkdir --parents --verbose "$(realpath ${HOME})/.gnupg";
@@ -614,7 +614,7 @@ fi;
 # fi;
 
 
-#	------------------------------------------------------------
+# ------------------------------------------------------------
 #   GIT REPOS
 #    |--> FIND ALL IN HOME-DIR
 
@@ -1064,7 +1064,7 @@ exit 0;
 
 # ------------------------------------------------------------
 #
-#	Citation(s)
+# Citation(s)
 #
 #   docs.microsoft.com  |  "OpenSSH Server Configuration for Windows | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration#:~:text=In%20Windows%2C%20sshd%20reads%20configuration,exe%20with%20the%20%2Df%20parameter.
 #

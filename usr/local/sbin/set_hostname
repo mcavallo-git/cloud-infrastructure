@@ -25,14 +25,14 @@ else
   #
   # This script modifies a Linux instance's host & domain name(s)
   #
-  #	Instantiate this command-line utility:
-  #	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
+  # Instantiate this command-line utility:
+  # >		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
   #
   ### Run using "DRY-RUN" mode:
-  #	>		set_hostname "localhost.localdomain" --dry-run "1";
+  # >		set_hostname "localhost.localdomain" --dry-run "1";
   #
   ### Run using "LIVE" mode:
-  #	>		set_hostname "localhost.localdomain" --dry-run "0";
+  # >		set_hostname "localhost.localdomain" --dry-run "0";
   #
   #
   # ------------------------------------------------------------
@@ -228,7 +228,7 @@ else
     fi;
 
     # ------------------------------------------------------------
-    #	If Dry-Run mode is off, require user to confirm changes
+    # If Dry-Run mode is off, require user to confirm changes
     #
 
     if [[ "${DRY_RUN}" == "0" ]]; then
@@ -274,8 +274,8 @@ else
     #
     # ------------------------------------------------------------
     # To set the DNS domainname edit /etc/hosts file and ensure that:
-    #	 |--> 1. There is a line <machine's primary, non-loopback IP address> <hostname>.<domainname> <hostname> there
-    #	 |--> 2. There are NO other lines with <some IP> <hostname>, and this includes lines with 127.0.0.1 and ::1 (IPv6) addresses.
+    #  |--> 1. There is a line <machine's primary, non-loopback IP address> <hostname>.<domainname> <hostname> there
+    #  |--> 2. There are NO other lines with <some IP> <hostname>, and this includes lines with 127.0.0.1 and ::1 (IPv6) addresses.
     # ------------------------------------------------------------
     HOSTS_FILE="/etc/hosts";
     if [[ -f "${HOSTS_FILE}" ]]; then
@@ -447,7 +447,7 @@ fi;
 
 # ------------------------------------------------------------
 #
-#	Citation(s)
+# Citation(s)
 #
 #   computerhope.com  |  "Linux test command"  |  https://www.computerhope.com/unix/test.htm
 #

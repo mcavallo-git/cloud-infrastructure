@@ -34,7 +34,7 @@ fi;
 
 # ------------------------------------------------------------
 #
-#	Citation(s)
+# Citation(s)
 #
 #   serverfault.com  |  "What are the Default $PATH Values?"  |  https://askubuntu.com/a/386636
 #

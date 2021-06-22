@@ -177,7 +177,7 @@ else
         gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
 
       else
-        #	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
+        # Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 

@@ -74,8 +74,8 @@ else
 					MY_GROUPS=( $(groups ${USER}) );
 					for EACH_GNAME in "${MY_GROUPS[@]}"; do
 						if [[ ${STAT_GNAME} == ${EACH_GNAME} ]]; then # User is a member of the group which has write-access
-							STAT_WRITABLE="1";
-							break;
+              STAT_WRITABLE="1";
+              break;
 						fi;
 					done;
 

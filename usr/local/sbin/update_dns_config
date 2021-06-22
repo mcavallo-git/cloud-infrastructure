@@ -665,10 +665,10 @@ else
 					echo -e "\n""Info:  Searching \"${SystemNetworkConfDir}\" for DNS config-files...";
 					for EachNetworkFile in ${SystemNetworkConfDir}/*; do
 						if [ -f "${EachNetworkFile}" ]; then
-							echo "Applying DNS Configuration to Network File: \"${EachNetworkFile}\"";
-							sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${EachNetworkFile}";
+              echo "Applying DNS Configuration to Network File: \"${EachNetworkFile}\"";
+              sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${EachNetworkFile}";
 						else
-							echo "Skipping item with invalid filetype: \"${EachNetworkFile}\"";
+              echo "Skipping item with invalid filetype: \"${EachNetworkFile}\"";
 						fi;
 					done;
 				fi;

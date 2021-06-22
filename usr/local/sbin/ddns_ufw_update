@@ -305,28 +305,28 @@ else
 					while read EACH_WHITELIST_LINE;	do
 
 						if [ ${DEBUG_MODE} -eq 1 ]; then
-							echo "";
-							echo "Debug:  EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
+              echo "";
+              echo "Debug:  EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
 						fi;
 
 						if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
-							HAYSTACK_TO_SEARCH="${EACH_WHITELIST_LINE}";
-							CHAR_DELIMITER="|";
-							ALL_NEEDLES_FOUND="${HAYSTACK_TO_SEARCH//[^${CHAR_DELIMITER}]}"; # Required middleman var
-							NEEDLE_TOTAL_COUNT=${#ALL_NEEDLES_FOUND};
+              HAYSTACK_TO_SEARCH="${EACH_WHITELIST_LINE}";
+              CHAR_DELIMITER="|";
+              ALL_NEEDLES_FOUND="${HAYSTACK_TO_SEARCH//[^${CHAR_DELIMITER}]}"; # Required middleman var
+              NEEDLE_TOTAL_COUNT=${#ALL_NEEDLES_FOUND};
 
-							WHITELIST_PROTOCOL="";
-							WHITELIST_PORT="";
-							WHITELIST_HOSTS_COMMA_DELIMITED="";
-							WHITELIST_DESCRIPTION="";
-							WHITELIST_FQDN="";
+              WHITELIST_PROTOCOL="";
+              WHITELIST_PORT="";
+              WHITELIST_HOSTS_COMMA_DELIMITED="";
+              WHITELIST_DESCRIPTION="";
+              WHITELIST_FQDN="";
 
-							# Use protocol (first index in whitelist) to allow for additional functionalities & documentation - e.g. current use being documentation/notes/citations
-							if [ ${NEEDLE_TOTAL_COUNT} -ge 0 ]; then MM="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; WHITELIST_PROTOCOL="${MM,,}"; fi;
+              # Use protocol (first index in whitelist) to allow for additional functionalities & documentation - e.g. current use being documentation/notes/citations
+              if [ ${NEEDLE_TOTAL_COUNT} -ge 0 ]; then MM="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"; WHITELIST_PROTOCOL="${MM,,}"; fi;
 
-							# IP Protocol must be a lowercase string matching 'tcp' or 'udp'
-							if [ "${WHITELIST_PROTOCOL}" == "tcp" ] || [ "${WHITELIST_PROTOCOL}" == "udp" ]; then
+              # IP Protocol must be a lowercase string matching 'tcp' or 'udp'
+              if [ "${WHITELIST_PROTOCOL}" == "tcp" ] || [ "${WHITELIST_PROTOCOL}" == "udp" ]; then
 
                 if [ ${NEEDLE_TOTAL_COUNT} -ge 1 ]; then
                   WHITELIST_PORT="$(echo "${EACH_WHITELIST_LINE}" | cut -d${CHAR_DELIMITER} -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
@@ -474,7 +474,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
                 done;
 
-							fi;
+              fi;
 
 						fi;
 

@@ -877,7 +877,7 @@ fi;
       # Strings
       KEY="user.name";       VAL="${COMMIT_NAME}";                        git config --local --replace-all "${KEY}" "${VAL}";
       KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
-      KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
+      KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY/\/mnt\/c/\/c}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
       # Strings - Formatting (Line-Endings/Syntax-Highlighting)
       KEY="core.autocrlf";   VAL=$(test "${REPO}" == *"infrastructure" && echo "false" || echo "input";);   git config --local --replace-all  "${KEY}" "${VAL}";
       KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";

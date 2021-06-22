@@ -167,6 +167,11 @@ fi;
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
 
+if [ ! -v APPDATA ]; then
+  WIN32_USERNAME=$(get_username_windows_wsl);
+  export APPDATA="/mnt/c/Users/${WIN32_USERNAME}/AppData/Roaming";
+fi
+
 APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
 APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; APPDATA_WIN32="${MM}";
 
@@ -189,6 +194,24 @@ PROG_DATA_WIN32=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/${DISK_RO
 
 TEMPDIR_LINUX="${LOCALAPPDATA_LINUX}/Temp";
 TEMPDIR_WIN32="${LOCALAPPDATA_WIN32}\\Temp";
+
+Write-Host "APPDATA_LINUX=\"${APPDATA_LINUX}\"";
+Write-Host "APPDATA_WIN32=\"${APPDATA_WIN32}\"";
+Write-Host "LOCALAPPDATA_LINUX=\"${LOCALAPPDATA_LINUX}\"";
+Write-Host "LOCALAPPDATA_WIN32=\"${LOCALAPPDATA_WIN32}\"";
+Write-Host "TEMP_FILES_LINUX=\"${TEMP_FILES_LINUX}\"";
+Write-Host "TEMP_FILES_WIN32=\"${TEMP_FILES_WIN32}\"";
+Write-Host "PROG_FILES_X64_W_FALLBACK=\"${PROG_FILES_X64_W_FALLBACK}\"";
+Write-Host "PROG_FILES_X64_LINUX=\"${PROG_FILES_X64_LINUX}\"";
+Write-Host "PROG_FILES_X64_WIN32=\"${PROG_FILES_X64_WIN32}\"";
+Write-Host "PROG_FILES_X86_LINUX=\"${PROG_FILES_X86_LINUX}\"";
+Write-Host "PROG_FILES_X86_WIN32=\"${PROG_FILES_X86_WIN32}\"";
+Write-Host "PROG_DATA_W_FALLBACK=\"${PROG_DATA_W_FALLBACK}\"";
+Write-Host "PROG_DATA_LINUX=\"${PROG_DATA_LINUX}\"";
+Write-Host "PROG_DATA_WIN32=\"${PROG_DATA_WIN32}\"";
+Write-Host "TEMPDIR_LINUX=\"${TEMPDIR_LINUX}\"";
+Write-Host "TEMPDIR_WIN32=\"${TEMPDIR_WIN32}\"";
+
 
 # ------------------------------------------------------------
 # Git Default Path(s)

@@ -74,11 +74,11 @@ else
 			#
 			echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
 			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-				echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
-				apt-get remove -y "${SERVICE_NAME}";
+        echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
+        apt-get remove -y "${SERVICE_NAME}";
 			elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-				echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
-				yum remove -y "${SERVICE_NAME}";
+        echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
+        yum remove -y "${SERVICE_NAME}";
 			fi;
 			
 			# ------------------------------------------------------------
@@ -86,9 +86,9 @@ else
 			# Remove Service's Runtime-User
 			#
 			if [ -n "$(getent passwd 'jenkins';)" ]; then
-				echo -e "\n""Info:  Removing runtime user for ${SERVICE_NAME} service";
-				echo "  |--> Calling [ userdel \"${SERVICE_NAME}\" --force --remove; ]...";
-				userdel "${SERVICE_NAME}" --force --remove;
+        echo -e "\n""Info:  Removing runtime user for ${SERVICE_NAME} service";
+        echo "  |--> Calling [ userdel \"${SERVICE_NAME}\" --force --remove; ]...";
+        userdel "${SERVICE_NAME}" --force --remove;
 			fi;
 
 			# ------------------------------------------------------------
@@ -96,9 +96,9 @@ else
 			# Remove Service's Runtime-Group
 			#
 			if [ -n "$(getent group 'jenkins';)" ]; then
-				echo -e "\n""Info:  Removing runtime usergroup for ${SERVICE_NAME} service";
-				echo "  |--> Calling [ groupdel \"${SERVICE_NAME}\"; ]...";
-				groupdel "${SERVICE_NAME}";
+        echo -e "\n""Info:  Removing runtime usergroup for ${SERVICE_NAME} service";
+        echo "  |--> Calling [ groupdel \"${SERVICE_NAME}\"; ]...";
+        groupdel "${SERVICE_NAME}";
 			fi;
 
 			# ------------------------------------------------------------
@@ -106,73 +106,73 @@ else
 			# Remove Service
 			#
 			if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-				echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
-				apt-get -y purge "${SERVICE_NAME}";
+        echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
+        apt-get -y purge "${SERVICE_NAME}";
 			fi;
 			if [ $(which update-rc.d 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-				echo "  |--> Calling [ update-rc.d \"${SERVICE_NAME}\" remove -f; ]...";
-				update-rc.d "${SERVICE_NAME}" remove -f;
+        echo "  |--> Calling [ update-rc.d \"${SERVICE_NAME}\" remove -f; ]...";
+        update-rc.d "${SERVICE_NAME}" remove -f;
 			fi;
 
 			# Remove "/etc/cron.d/CRON_jenkins_export_config"
 			REMOVE_PATHS="/etc/cron.d/CRON_jenkins_export_config";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 			# Remove "/etc/cron.d/CRON_jenkins_log_cleanup"
 			REMOVE_PATHS="/etc/cron.d/CRON_jenkins_log_cleanup";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 			# Remove "/etc/cron.d/CRON_jenkins_warfile_update"
 			REMOVE_PATHS="/etc/cron.d/CRON_jenkins_warfile_update";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/etc/default/jenkins"
 			REMOVE_PATHS="/etc/default/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/etc/systemd/system/jenkins"
 			REMOVE_PATHS="/etc/systemd/system/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/usr/lib/jenkins"
 			REMOVE_PATHS="/usr/lib/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/cache/jenkins"
 			REMOVE_PATHS="/var/cache/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/lib/jenkins"
 			REMOVE_PATHS="/var/lib/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			# Remove "/var/log/jenkins"
 			REMOVE_PATHS="/var/log/${SERVICE_NAME}";
 			if [ -e "${REMOVE_PATHS}" ]; then
-				echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
-				rm -rf "${REMOVE_PATHS}";
+        echo "  |--> Calling [ rm -rf \"${REMOVE_PATHS}\"; ]...";
+        rm -rf "${REMOVE_PATHS}";
 			fi;
 
 			echo "  |--> Calling [ /bin/systemctl daemon-reload; ]...";

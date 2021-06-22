@@ -69,8 +69,8 @@ elif [ -n "$(which ifconfig 2>'/dev/null')" ]; then # --------------------------
 			EACH_NETMASK=$(echo "${EACH_LINE}" | sed -rne "${SED_NETMASK}";);
 			EACH_BROADCAST=$(echo "${EACH_LINE}" | sed -rne "${SED_BROADCAST}";);
 			if [ -n "${EACH_NETMASK}" ] && [ -n "${EACH_BROADCAST}" ]; then
-				THIS_LAN_NETMASK="${EACH_NETMASK}";
-				THIS_LAN_BROADCAST="${EACH_BROADCAST}";
+        THIS_LAN_NETMASK="${EACH_NETMASK}";
+        THIS_LAN_BROADCAST="${EACH_BROADCAST}";
 			fi;
 
 		fi;

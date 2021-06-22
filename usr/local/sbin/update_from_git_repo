@@ -135,7 +135,7 @@ else
 		for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
 			EACH_USERNAME_LENGTH=${#EACH_SSH_USER};
 			if (( ${EACH_USERNAME_LENGTH} > ${USERNAMES_MOSTCHARS} )); then
-				USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
+        USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
 			fi;
 		done;
 		echo "";
@@ -143,9 +143,9 @@ else
 		# Begin copying files to SSH-Enabled User-Home Directories
 		for EACH_FILE in ${FILES_TO_COPY}; do
 			if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-				echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
-				SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
-				for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
+        echo "    ↪ \"${EACH_FILE}\" (Home-Directory File)";
+        SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
+        for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
           EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
           DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
           USERNAME_RPAD="        "$(printf '%-'${USERNAMES_MOSTCHARS}'s' ↪ ${EACH_SSH_USER});
@@ -168,7 +168,7 @@ else
             fi;
             echo "${USERNAME_RPAD} ✅  [ ${DEST_FULLPATH} ]";
           fi;
-				done;
+        done;
 			fi;
 		done;
 		echo "";

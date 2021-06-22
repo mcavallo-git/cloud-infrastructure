@@ -27,22 +27,22 @@ if [ -n "$0" ]; then
 			echo "Found the following dockers, locally:";
 			echo "------------------------------------------------------------";
 			for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
-				EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
-				EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
-				echo "   ${EACH_KEY}	|  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
+        EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";
+        EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
+        echo "   ${EACH_KEY}	|  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
 			done;
 			echo "------------------------------------------------------------";
 			echo "";
 
 			MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
 			if [ -z "${REPLY}" ]; then
-				echo "";
-				echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+        echo "";
+        echo "Error: Response timed out after ${MAX_READ_WAIT}s";
 			elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
-				USER_SELECTION_KEY=$((0+${REPLY}));
-				if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
+        USER_SELECTION_KEY=$((0+${REPLY}));
+        if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
           echo "Error: Invalid selection of \"${REPLY}\"";
-				else
+        else
           E1="LINES=$(tput lines)";
           E2="COLUMNS=$(tput cols)";
           CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
@@ -54,10 +54,10 @@ if [ -n "$0" ]; then
           # docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
           docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>"/dev/null" || \
           docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
-				fi;
+        fi;
 			else
-				echo "";
-				echo "Error: Malformed user-input (must be an integer selection from the table, above)";
+        echo "";
+        echo "Error: Malformed user-input (must be an integer selection from the table, above)";
 			fi;
 
 		fi;

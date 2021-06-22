@@ -43,7 +43,7 @@ else
 		if [[ -r "${STAT_ENDPOINT}" ]]; then
 			STAT_READABLE="1";
 			if [[ -w "${STAT_ENDPOINT}" ]]; then
-				STAT_WRITABLE="1";
+        STAT_WRITABLE="1";
 			fi;
 		fi;
 
@@ -67,7 +67,7 @@ else
 			# if [ $(echo "${STAT_CHMOD} <= 0007" | bc) -eq 1 ] && (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
 			if (( (${STAT_CHMOD} & 0002) != 0 )); then # Everyone has write access
 
-				STAT_WRITABLE="1";
+        STAT_WRITABLE="1";
 
 			elif (( (${STAT_CHMOD} & 0020) != 0 )); then # A Group has write access
 
@@ -81,9 +81,9 @@ else
 
 			elif (( (${STAT_CHMOD} & 0200) != 0 )); then # The owner has write access
 
-				if [[ ${USER} == ${OWNER} ]]; then # The user IS the file-owner
+        if [[ ${USER} == ${OWNER} ]]; then # The user IS the file-owner
           STAT_WRITABLE="1";
-				fi;
+        fi;
 
 			fi;
 

@@ -75,31 +75,31 @@ else
 		if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
 
 			if [ -n "$(which apk 2>/dev/null)" ]; then
-				# Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
-				apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
+        # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
+        apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
 			fi;
 			if [ "$(uname -m)" == "x86_64" ]; then
-				#
-				# Docker-Compose Installer --> x86_64 CPUs
-				#  |--> Reference: [ https://docs.docker.com/compose/install ]
-				#
-				curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
-				# curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
+        #
+        # Docker-Compose Installer --> x86_64 CPUs
+        #  |--> Reference: [ https://docs.docker.com/compose/install ]
+        #
+        curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+        # curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
 			else
-				#
-				# Docker-Compose Installer --> Non-x86_64 CPUs (namely Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs)
-				#  |--> Reference: [ https://github.com/docker/compose/issues/6831#issuecomment-558865087 ]
-				#
-				echo "Calling [ apt-get -y update ]...";
-				apt-get -y update;
-				echo "Calling [ apt-get -y install python3; ]...";
-				apt-get -y install python3;
-				echo "Calling [ apt-get -y install python3-pip; ]...";
-				apt-get -y install python3-pip;
-				echo "Calling [ pip3 install --upgrade pip; ]...";
-				pip3 install --upgrade pip;
-				echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
-				python3 -m pip install -IU docker-compose;
+        #
+        # Docker-Compose Installer --> Non-x86_64 CPUs (namely Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs)
+        #  |--> Reference: [ https://github.com/docker/compose/issues/6831#issuecomment-558865087 ]
+        #
+        echo "Calling [ apt-get -y update ]...";
+        apt-get -y update;
+        echo "Calling [ apt-get -y install python3; ]...";
+        apt-get -y install python3;
+        echo "Calling [ apt-get -y install python3-pip; ]...";
+        apt-get -y install python3-pip;
+        echo "Calling [ pip3 install --upgrade pip; ]...";
+        pip3 install --upgrade pip;
+        echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
+        python3 -m pip install -IU docker-compose;
 			fi;
 
 			chmod 0755 "${BIN_DOCKER_COMPOSE}";

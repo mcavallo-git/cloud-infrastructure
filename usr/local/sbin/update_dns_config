@@ -60,7 +60,7 @@ else
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
 			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-				NEXT_ARG="";
+        NEXT_ARG="";
 			fi;
 		fi;
 
@@ -68,61 +68,61 @@ else
 
 			# Parse inline hostname
 			if [ ${i} -eq 0 ] && [ -n "${EACH_ARG}" ] && [[ "${EACH_ARG}" != "-"* ]]; then # Allow the first argument to be the hostname (without needing --hostname before it)
-				NEXT_ARG="${EACH_ARG}";
-				EACH_ARG="--hostname";
+        NEXT_ARG="${EACH_ARG}";
+        EACH_ARG="--hostname";
 			fi;
 
 			if [ "${EACH_ARG}" == "--wan" ]; then # --force
-				USE_WAN_IPV4=1;
+        USE_WAN_IPV4=1;
 			fi;
 
 			# Static-IP
 			if [ "${EACH_ARG}" == "--static-ip" ]; then
-				USE_STATIC_IPV4=1;
-				if [ -n "${NEXT_ARG}" ]; then
+        USE_STATIC_IPV4=1;
+        if [ -n "${NEXT_ARG}" ]; then
           SET_STATIC_IPV4="${NEXT_ARG}";
-				fi;
+        fi;
 			fi;
 
 			# Domain Name
 			if [ "${EACH_ARG}" == "--domain" ]; then
-				USE_SEARCH_DOMAIN=1;
-				if [ -n "${NEXT_ARG}" ]; then
+        USE_SEARCH_DOMAIN=1;
+        if [ -n "${NEXT_ARG}" ]; then
           DNS_SEARCH_DOMAIN="${NEXT_ARG}";
-				else
+        else
           echo "Error:  Must specify domain-name to set after argument --domain, e.g. use syntax [ --domain DOMAIN.TLD ]";
           exit 1;
-				fi;
+        fi;
 			fi;
 
 			# Primary DNS Server (#1)
 			if [ "${EACH_ARG}" == "--dns1" ]; then
-				if [ -n "${NEXT_ARG}" ]; then
+        if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_1="${NEXT_ARG}";
-				else
+        else
           echo "Error:  Must specify dns hostname / IPv4 --dns1, e.g. use syntax [ --dns1 I.P.V.4 ]";
           exit 1;
-				fi;
+        fi;
 			fi;
 
 			# Secondary DNS Server (#2)
 			if [ "${EACH_ARG}" == "--dns2" ]; then
-				if [ -n "${NEXT_ARG}" ]; then
+        if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_2="${NEXT_ARG}";
-				else
+        else
           echo "Error:  Must specify dns hostname / IPv4 --dns2, e.g. use syntax [ --dns2 I.P.V.4 ]";
           exit 1;
-				fi;
+        fi;
 			fi;
 
 			# Tertiary DNS Server (#3)
 			if [ "${EACH_ARG}" == "--dns3" ]; then
-				if [ -n "${NEXT_ARG}" ]; then
+        if [ -n "${NEXT_ARG}" ]; then
           USER_DNS_3="${NEXT_ARG}";
-				else
+        else
           echo "Error:  Must specify dns hostname / IPv4 --dns3, e.g. use syntax [ --dns3 I.P.V.4 ]";
           exit 1;
-				fi;
+        fi;
 			fi;
 
 		fi;
@@ -137,13 +137,13 @@ else
 		DNSV4_SERVERS=$(nmcli device show | grep 'IP4.DNS' | awk '{print $2}');
 		if [ -n "${DNSV4_SERVERS}" ]; then
 			for EACH_DNSV4_SERVER in ${DNSV4_SERVERS}; do
-				if [ -z "${DHCP_NAMESRVR_1}" ]; then
+        if [ -z "${DHCP_NAMESRVR_1}" ]; then
           DHCP_NAMESRVR_1="${EACH_DNSV4_SERVER}"; # Set primary DNS Server
-				elif [ -z "${DHCP_NAMESRVR_2}" ]; then
+        elif [ -z "${DHCP_NAMESRVR_2}" ]; then
           DHCP_NAMESRVR_2="${EACH_DNSV4_SERVER}"; # Set secondary DNS Server
-				elif [ -z "${DHCP_NAMESRVR_3}" ]; then
+        elif [ -z "${DHCP_NAMESRVR_3}" ]; then
           DHCP_NAMESRVR_3="${EACH_DNSV4_SERVER}"; # Set tertiary DNS Server
-				fi;
+        fi;
 			done;
 		fi;
 	fi;
@@ -231,12 +231,12 @@ else
 			REQUIRED_PACKAGE_NAME="resolvconf";
 			REQUIRED_METHOD_NAME="resolvconf";
 			if [ -n "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
+        echo -e "\n""Info:  Resolved package \"${REQUIRED_METHOD_NAME}\" to path \"$(which ${REQUIRED_METHOD_NAME})\"";
 			else
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
+        echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+        echo -e "\n""Info:  Please install required package via:";
+        echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+        echo ""; exit 1;
 			fi;
 
 			#
@@ -250,18 +250,18 @@ else
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifup";
 			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
+        echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+        echo -e "\n""Info:  Please install required package via:";
+        echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+        echo ""; exit 1;
 			fi;
 			REQUIRED_PACKAGE_NAME="ifupdown";
 			REQUIRED_METHOD_NAME="ifdown";
 			if [ -z "$(which ${REQUIRED_METHOD_NAME} 2>'/dev/null')" ]; then
-				echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
-				echo -e "\n""Info:  Please install required package via:";
-				echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
-				echo ""; exit 1;
+        echo -e "\n""Error:  Package \"${REQUIRED_METHOD_NAME}\" not found locally";
+        echo -e "\n""Info:  Please install required package via:";
+        echo "  |--> apt-get -y update; apt-get -y install \"${REQUIRED_PACKAGE_NAME}\"; reboot;";
+        echo ""; exit 1;
 			fi;
 
 		else
@@ -293,16 +293,16 @@ else
 
 			if [ ${USE_STATIC_IPV4} -eq 1 ]; then
 
-				if [ -z "${SET_STATIC_IPV4}" ]; then
+        if [ -z "${SET_STATIC_IPV4}" ]; then
           SET_STATIC_IPV4="${THIS_LAN_IPV4}";
-				fi;
+        fi;
 
-				echo -e "\n";
-				echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
-				echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
-				read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-				echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "\n";
+        echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
+        echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
+        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        echo "";
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------
 
           # Set Local LAN IPv4 Address
@@ -394,17 +394,17 @@ else
           fi;
 
           # ------------------------------------------------------------
-				fi;
+        fi;
 			fi;
 
 
 			# Set DNS Nameserver(s)
 			if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
-				echo -e "\n";
-				echo "Info: Request to set DNS NameServers to \"${DNS_NAMESRVR_1}\" (Primary) & \"${DNS_NAMESRVR_2}\" (Secondary)";
-				read -p "  |--> Set DNS Nameservers, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-				echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "\n";
+        echo "Info: Request to set DNS NameServers to \"${DNS_NAMESRVR_1}\" (Primary) & \"${DNS_NAMESRVR_2}\" (Secondary)";
+        read -p "  |--> Set DNS Nameservers, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        echo "";
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------
 
           # DNS Nameserver #1 -> Device Config
@@ -444,19 +444,19 @@ else
           fi;
 
           # ------------------------------------------------------------
-				fi;
+        fi;
 			fi;
 
 			echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; /etc/init.d/network restart; ] )";
 			read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				echo -e "\n""Info:  Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
-				nmcli connection reload;
-				/etc/init.d/network restart;
-				# service NetworkManager restart;
+        echo -e "\n""Info:  Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
+        nmcli connection reload;
+        /etc/init.d/network restart;
+        # service NetworkManager restart;
 			else
-				echo -e "\n""Info:  Postponing NetworkManager restart";
-				exit 1;
+        echo -e "\n""Info:  Postponing NetworkManager restart";
+        exit 1;
 			fi;
 
 		fi;
@@ -525,16 +525,16 @@ else
 
 			# Create the eth0 config file (if it is a valid filepath yet doesnt exist)
 			if [ -n "${DEBIAN_NETWORK_CONF}" ] && [ ! -f "${DEBIAN_NETWORK_CONF}" ]; then
-				echo -e "\n""Info:  Calling [echo \"\" > \"${DEBIAN_NETWORK_CONF}\";]...";
-				echo "" > "${DEBIAN_NETWORK_CONF}";
+        echo -e "\n""Info:  Calling [echo \"\" > \"${DEBIAN_NETWORK_CONF}\";]...";
+        echo "" > "${DEBIAN_NETWORK_CONF}";
 			fi;
 
 			THIS_HYPERVISOR="/sys/hypervisor/uuid";
 			AWS_HV_STARTS_WITH="ec2";
 			if [ ! -v DNS_SEARCH_DOMAIN ] && [ -f "${THIS_HYPERVISOR}" ]; then
-				if [[ "$(cat ${THIS_HYPERVISOR})" == "${AWS_HV_STARTS_WITH}"* ]] && [ -n "${DOMAIN}" ]; then
+        if [[ "$(cat ${THIS_HYPERVISOR})" == "${AWS_HV_STARTS_WITH}"* ]] && [ -n "${DOMAIN}" ]; then
           DNS_SEARCH_DOMAIN="${DOMAIN}";
-				fi;
+        fi;
 			fi;
 
 			DNS_LOOKUP_1=$(cat ${DEBIAN_NETWORK_CONF} | grep ${DNS_NAMESRVR_1});
@@ -546,22 +546,22 @@ else
 			ACTION_DOMAIN_RESOLUTION="";
 			DOMAIN_RESOLUTION_CONFIGURED="$(cat ${DEBIAN_NETWORK_CONF} | grep 'search ')";
 			if [ -n "${DNS_SEARCH_DOMAIN}" ]; then
-				DOMAIN_RESOLUTION_CONFIGURED="$(echo ${DOMAIN_RESOLUTION_CONFIGURED} | grep ${DNS_SEARCH_DOMAIN};)";
-				if [ ! -n "${DOMAIN_RESOLUTION_CONFIGURED}" ]; then
+        DOMAIN_RESOLUTION_CONFIGURED="$(echo ${DOMAIN_RESOLUTION_CONFIGURED} | grep ${DNS_SEARCH_DOMAIN};)";
+        if [ ! -n "${DOMAIN_RESOLUTION_CONFIGURED}" ]; then
           ACTION_DOMAIN_RESOLUTION="SET"; # Need to configure local domain-name resolution
-				fi;
+        fi;
 			fi;
 
 			if [ ${USE_STATIC_IPV4} -eq 1 ]; then
-				if [ -z "${SET_STATIC_IPV4}" ]; then
+        if [ -z "${SET_STATIC_IPV4}" ]; then
           SET_STATIC_IPV4="${THIS_LAN_IPV4}";
-				fi;
-				echo -e "\n";
-				echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
-				echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
-				read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-				echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then
+        fi;
+        echo -e "\n";
+        echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
+        echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
+        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        echo "";
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------
           echo "" > "${DEBIAN_NETWORK_CONF}";
           # Loopback Address
@@ -592,19 +592,19 @@ else
             echo "static routers=${THIS_GATEWAY_IPV4}" >> "${ETC_DHCPCD_CONF}";
             echo "static domain_name_servers=${DNS_NAMESRVR_1}" >> "${ETC_DHCPCD_CONF}";
           fi;
-				fi;
+        fi;
 			fi;
 
 			if [ -n "${DNS_LOOKUP_1}" ] && [ -n "${DNS_LOOKUP_2}" ] && [ -n "${DNS_LOOKUP_3}" ] && [ -n "${ACTION_DOMAIN_RESOLUTION}" ]; then # all variables are not null
 
-				echo -e "\n""Info:  \"${DEBIAN_NETWORK_CONF}\"'s DNS settings are up-to-date";
-				
+        echo -e "\n""Info:  \"${DEBIAN_NETWORK_CONF}\"'s DNS settings are up-to-date";
+        
 			else # at least one DNS-IP/Hostname is missing
 
-				echo -e "\n""Info:  Updating DNS Servers which build out of file \"${DEBIAN_NETWORK_CONF}\"";
-				
-				# "dns-search"
-				if [ -n "${DNS_SEARCH_DOMAIN}" ] && [ "${ACTION_DOMAIN_RESOLUTION}" == "SET" ]; then
+        echo -e "\n""Info:  Updating DNS Servers which build out of file \"${DEBIAN_NETWORK_CONF}\"";
+        
+        # "dns-search"
+        if [ -n "${DNS_SEARCH_DOMAIN}" ] && [ "${ACTION_DOMAIN_RESOLUTION}" == "SET" ]; then
           #    verify if any line already contains the "dns-search" directive
           DNS_SEARCH_LINES_FOUND=$(cat "${DEBIAN_NETWORK_CONF}" | grep 'dns-search ' | wc -l);
           DOMAIN_BIND_TO_ETH0="${DNS_SEARCH_DOMAIN}";
@@ -617,24 +617,24 @@ else
             sed --in-place --expression="${SED_DNS_SEARCH}" "${DEBIAN_NETWORK_CONF}";
           fi;
 
-				else
+        else
           echo -e "\n""Info:  Skipping update for resolvconf's local domain-name resolution (\$DNS_SEARCH_DOMAIN is undefined/empty)";
 
-				fi;
-				
-				
-				# "dns-nameservers"
-				#    verify if any line already contains the "dns-nameservers" directive
-				if [ $(cat "${DEBIAN_NETWORK_CONF}" | grep 'dns-nameservers' | wc -l;) -gt 0 ]; then
+        fi;
+        
+        
+        # "dns-nameservers"
+        #    verify if any line already contains the "dns-nameservers" directive
+        if [ $(cat "${DEBIAN_NETWORK_CONF}" | grep 'dns-nameservers' | wc -l;) -gt 0 ]; then
           # modify the "dns-nameservers" line
           SED_DNS_NAMESERVERS="/^dns-nameservers/c\dns-nameservers ${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}";
           sed --in-place --expression="${SED_DNS_NAMESERVERS}" "${DEBIAN_NETWORK_CONF}";
-				else
+        else
           # add the "dns-nameservers" line
           echo "dns-nameservers ${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}" >> "${DEBIAN_NETWORK_CONF}";
-				fi;
-				
-				REFRESH_DNS_FILE="1";
+        fi;
+        
+        REFRESH_DNS_FILE="1";
 
 			fi;
 
@@ -643,25 +643,25 @@ else
 
 			if [ -f "${SystemResolveConf}" ]; then
 
-				echo "Updating Hostname-Resolving Service \"systemd-resolve\" via associated config-file \"${SystemResolveConf}\" ...";
-				CAN_USE_SYSRESOLVE_STATUS="$(systemd-resolve --help | grep status)";
-				
-				echo -e "\n""Info:  Calling [cat \"${SystemResolveConf}\";] (BEFORE EDITS)";
-				echo "${DASHES}"; cat "${SystemResolveConf}"; echo "${DASHES}";
+        echo "Updating Hostname-Resolving Service \"systemd-resolve\" via associated config-file \"${SystemResolveConf}\" ...";
+        CAN_USE_SYSRESOLVE_STATUS="$(systemd-resolve --help | grep status)";
+        
+        echo -e "\n""Info:  Calling [cat \"${SystemResolveConf}\";] (BEFORE EDITS)";
+        echo "${DASHES}"; cat "${SystemResolveConf}"; echo "${DASHES}";
 
-				if [ -n "${CAN_USE_SYSRESOLVE_STATUS}" ]; then
+        if [ -n "${CAN_USE_SYSRESOLVE_STATUS}" ]; then
           # Show "systemd-resolve --status" command's output BEFORE-EDITS (shows live DNS setup)
           echo -e "\n""Info:  Calling [systemd-resolve --status] (BEFORE EDITS)";
           echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
-				fi;
+        fi;
 
-				sed_001="/^DNS=/c\DNS=${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}";
-				sed_002="/^#DNS=/c\DNS=${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}";
-				sed_003="/^FallbackDNS=/c\FallbackDNS=${DNS_FALLBACK_1} ${DNS_FALLBACK_2} ${DNS_FALLBACK_3}";
-				sed_004="/^#FallbackDNS=/c\FallbackDNS=${DNS_FALLBACK_1} ${DNS_FALLBACK_2} ${DNS_FALLBACK_3}";
+        sed_001="/^DNS=/c\DNS=${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}";
+        sed_002="/^#DNS=/c\DNS=${DNS_NAMESRVR_1} ${DNS_NAMESRVR_2} ${DNS_NAMESRVR_3}";
+        sed_003="/^FallbackDNS=/c\FallbackDNS=${DNS_FALLBACK_1} ${DNS_FALLBACK_2} ${DNS_FALLBACK_3}";
+        sed_004="/^#FallbackDNS=/c\FallbackDNS=${DNS_FALLBACK_1} ${DNS_FALLBACK_2} ${DNS_FALLBACK_3}";
 
-				sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${SystemResolveConf}";
-				if [ -d "${SystemNetworkConfDir}" ]; then
+        sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${SystemResolveConf}";
+        if [ -d "${SystemNetworkConfDir}" ]; then
           echo -e "\n""Info:  Searching \"${SystemNetworkConfDir}\" for DNS config-files...";
           for EachNetworkFile in ${SystemNetworkConfDir}/*; do
             if [ -f "${EachNetworkFile}" ]; then
@@ -671,34 +671,34 @@ else
               echo "Skipping item with invalid filetype: \"${EachNetworkFile}\"";
             fi;
           done;
-				fi;
-				REFRESH_DNS_FILE="1";
+        fi;
+        REFRESH_DNS_FILE="1";
 			fi;
 
 
 			if [ "${REFRESH_DNS_FILE}" == "1" ]; then
-				# Take down the main network interface & bring it back up (in one statement)
-				echo -e "\n""Info:  Calling [ ifdown -a && ifup -a; ] (takes down the main network interface & bring it back up, in one statement)...";
-				echo "${DASHES}"; ifdown -a && ifup -a; echo "${DASHES}";
+        # Take down the main network interface & bring it back up (in one statement)
+        echo -e "\n""Info:  Calling [ ifdown -a && ifup -a; ] (takes down the main network interface & bring it back up, in one statement)...";
+        echo "${DASHES}"; ifdown -a && ifup -a; echo "${DASHES}";
 
-				# Allow the networking service ample time to refresh
-				sleep 2;
+        # Allow the networking service ample time to refresh
+        sleep 2;
 
-				# Restart the networking service
-				echo -e "\n""Info:  Calling [ /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); ]...";
-				echo "${DASHES}";
-				/bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;);
-				echo "${DASHES}"; 
+        # Restart the networking service
+        echo -e "\n""Info:  Calling [ /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;); ]...";
+        echo "${DASHES}";
+        /bin/systemctl restart $(/bin/systemctl list-unit-files | grep -i '^network' | grep -v '\-' | grep '.service' | awk '{print $1}' | sed -e 's/.service//' | head -n 1;);
+        echo "${DASHES}"; 
 
-				# Allow the networking service ample time to refresh
-				sleep 2;
+        # Allow the networking service ample time to refresh
+        sleep 2;
 
-				# Reload the configuration into resolvconf's DNS file
-				echo -e "\n""Info:  Calling [ resolvconf -u ]...";
-				echo "${DASHES}"; resolvconf -u; echo "${DASHES}";
-				echo "";
+        # Reload the configuration into resolvconf's DNS file
+        echo -e "\n""Info:  Calling [ resolvconf -u ]...";
+        echo "${DASHES}"; resolvconf -u; echo "${DASHES}";
+        echo "";
 
-				if [ -f "${SystemResolveConf}" ]; then
+        if [ -f "${SystemResolveConf}" ]; then
           # Show "systemd-resolve --status" command's output AFTER-EDITS (shows live DNS setup)
           echo -e "\n""Info:  Restarting local DNS resolution-service via [service systemd-resolved restart;]";
           echo "${DASHES}"; service systemd-resolved restart; echo "${DASHES}";
@@ -711,7 +711,7 @@ else
             echo -e "\n""Info:  Calling [systemd-resolve --status]";
             echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
           fi;
-				fi;
+        fi;
 			fi;
 
 		fi;

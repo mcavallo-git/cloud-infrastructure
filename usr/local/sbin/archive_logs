@@ -74,8 +74,8 @@ else
 		else
 			# Create the new logs dir
 			if [ ! -d "${DIR_ARCH}/${SERVICE_NAME}" ]; then
-				mkdir -p "${DIR_ARCH}/${SERVICE_NAME}";
-				chmod 0700 "${DIR_ARCH}/${SERVICE_NAME}";
+        mkdir -p "${DIR_ARCH}/${SERVICE_NAME}";
+        chmod 0700 "${DIR_ARCH}/${SERVICE_NAME}";
 			fi;
 			# Migrate all logs to new logs dir
 			mv ${DIR_LOGS}/${SERVICE_NAME}/* ${DIR_ARCH}/${SERVICE_NAME}/.;

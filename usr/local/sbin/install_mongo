@@ -43,10 +43,10 @@ else
 		# Debian distros
 		if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
 			if [ "$(which gnupg 2>'/dev/null'; echo $?;)" != "1" ]; then
-				apt-get -y update; apt-get -y install "gnupg";
+        apt-get -y update; apt-get -y install "gnupg";
 			fi;
 			if [ "$(which tee 2>'/dev/null'; echo $?;)" != "1" ]; then
-				apt-get -y update; apt-get -y install "tee";
+        apt-get -y update; apt-get -y install "tee";
 			fi;
 			wget -qO - "https://www.mongodb.org/static/pgp/server-4.2.asc" | apt-key add -;
 			echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee "/etc/apt/sources.list.d/mongodb-org-4.2.list";
@@ -98,14 +98,14 @@ else
 		else
 			NEW_KEYFILE="${REPLY}";
 			if [ ! -f "${NEW_KEYFILE}" ]; then
-				echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo "";
-				if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now? (y/n)  " -n 1 -t 60 -r; echo "";
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
           openssl rand -base64 741 > "${NEW_KEYFILE}";
-				fi;
+        fi;
 			fi;
 			CURRENT_KEYFILE="$(cat /etc/mongod.conf | grep keyFile | awk '{print $2}')";
 			if [ -z "${CURRENT_KEYFILE}" ]; then
-				sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
+        sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
 /^#security:/ {
 a\
   keyFile: '${NEW_KEYFILE}'
@@ -114,16 +114,16 @@ a\
 c\
 security:
 }' "/etc/mongod.conf";
-				cat "/etc/mongod.conf";
-				SERVICE_NAME="mongod";
-				/usr/sbin/service "${SERVICE_NAME}" restart;
+        cat "/etc/mongod.conf";
+        SERVICE_NAME="mongod";
+        /usr/sbin/service "${SERVICE_NAME}" restart;
 			elif [ "${CURRENT_KEYFILE}" != "${NEW_KEYFILE}" ]; then
-				if [ ! -f "${NEW_KEYFILE}" ]; then
+        if [ ! -f "${NEW_KEYFILE}" ]; then
           echo "Error:  keyFile not found at path \"${CURRENT_KEYFILE}\"";
           echo "  |--> Please setup keyfile then re-run this script";
           echo "";
           echo "Info:  keyFile will remain unchanged at path \"${CURRENT_KEYFILE}\"";
-				else
+        else
           echo "Warning:  keyFile currently set to path \"${CURRENT_KEYFILE}\"";
           read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead? (y/n)  " -n 1 -t 60 -r; echo "";
           if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -132,10 +132,10 @@ security:
             SERVICE_NAME="mongod";
             /usr/sbin/service "${SERVICE_NAME}" restart;
           fi;
-				fi;
+        fi;
 			else
-				echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\"";
-				echo "  |--> No action required (already up to date)";
+        echo "Info:  keyFile already set to path \"${CURRENT_KEYFILE}\" in \"/etc/mongod.conf\"";
+        echo "  |--> No action required (already up to date)";
 			fi;
 		fi;
 

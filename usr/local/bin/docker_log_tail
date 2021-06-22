@@ -7,10 +7,10 @@ if [ -n "${1}" ]; then
 		if [ "$(echo ${DOCKER_TARGET} | wc -l)" == "1" ]; then
 			DOCKER_LOGFILE="$(docker inspect --format='{{.LogPath}}' ${DOCKER_TARGET})";
 			if [ -n "${DOCKER_LOGFILE}" ]; then
-				echo -e "found [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
-				docker logs -f "${DOCKER_TARGET}";
+        echo -e "found [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
+        docker logs -f "${DOCKER_TARGET}";
 			else
-				echo -e "file not found: [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
+        echo -e "file not found: [docker logs] for \"${1}\" (container-id \"${DOCKER_TARGET}\"): \n\n${DOCKER_LOGFILE}\n";
 			fi;
 		else
 			echo -e "found more than 1 docker, please narrow search criteria";

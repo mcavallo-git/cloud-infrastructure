@@ -83,14 +83,14 @@ else
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
 			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-				NEXT_ARG="";
+        NEXT_ARG="";
 			fi;
 		fi;
 
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
 			if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
-				ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
+        ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
 			fi;
 
 		fi;
@@ -228,11 +228,11 @@ else
 		if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
 			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
-				# Open necessary firewall port(s)
+        # Open necessary firewall port(s)
 			
-				NGINX_SVC_RET_CODE=$(/usr/sbin/service "nginx" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
-				HTTPD_SVC_RET_CODE=$(/usr/sbin/service "httpd" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
-				if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
+        NGINX_SVC_RET_CODE=$(/usr/sbin/service "nginx" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+        HTTPD_SVC_RET_CODE=$(/usr/sbin/service "httpd" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
+        if [ ${HTTPD_SVC_RET_CODE} -eq 0 ] || [ ${NGINX_SVC_RET_CODE} -eq 0 ]; then
           echo "";
           echo "------------------------------------------------------------";
           firewall-cmd --info-service=http;
@@ -242,7 +242,7 @@ else
           firewall-cmd --set-default-zone=public;
           firewall-cmd --permanent --zone=public --add-service={http,https};
           firewall-cmd --permanent --zone=public --remove-service=jenkins;
-				else
+        else
           echo "";
           echo "------------------------------------------------------------";
           firewall-cmd --info-service=jenkins;
@@ -250,13 +250,13 @@ else
           echo -e "\n""Info:  Opening ports for \"jenkins\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
           firewall-cmd --set-default-zone=public;
           firewall-cmd --permanent --zone=public --add-service=jenkins;
-				fi;
-				firewall-cmd --permanent --new-service=jenkins_jnlp;
-				firewall-cmd --permanent --service=jenkins_jnlp --set-short="jenkins_jnlp" --add-port=8443/tcp;
-				firewall-cmd --permanent --zone=public --add-service=jenkins_jnlp;
-				firewall-cmd --set-default-zone=public;
-				firewall-cmd --reload;
-				firewall-cmd --list-all;
+        fi;
+        firewall-cmd --permanent --new-service=jenkins_jnlp;
+        firewall-cmd --permanent --service=jenkins_jnlp --set-short="jenkins_jnlp" --add-port=8443/tcp;
+        firewall-cmd --permanent --zone=public --add-service=jenkins_jnlp;
+        firewall-cmd --set-default-zone=public;
+        firewall-cmd --reload;
+        firewall-cmd --list-all;
 			fi;
 		fi;
 

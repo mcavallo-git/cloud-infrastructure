@@ -41,10 +41,10 @@ else
 			echo NO \($error\);
 		else
 			if [[ "$result" =~ "Cipher is ${cipher}" || "$result" =~ "Cipher    :" ]] ; then
-				echo "YES";
+        echo "YES";
 			else
-				echo "UNKNOWN RESPONSE";
-				echo $result;
+        echo "UNKNOWN RESPONSE";
+        echo $result;
 			fi;
 		fi;
 		sleep $DELAY;

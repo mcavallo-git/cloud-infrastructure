@@ -42,17 +42,17 @@ else
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
 			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-				NEXT_ARG="";
+        NEXT_ARG="";
 			fi;
 		fi;
 		if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 			# ------------------------------------------------------------
 
 			if [ "${EACH_ARG}" == "--enable" ] || [ "${EACH_ARG}" == "-enable" ] || [ "${EACH_ARG}" == "enable" ]; then
-				ENABLE_MOTD=1;
+        ENABLE_MOTD=1;
 			fi;
 			if [ "${EACH_ARG}" == "--disable" ] || [ "${EACH_ARG}" == "-disable" ] || [ "${EACH_ARG}" == "disable" ]; then
-				DISABLE_MOTD=1;
+        DISABLE_MOTD=1;
 			fi;
 
 			# ------------------------------------------------------------
@@ -84,22 +84,22 @@ else
 			echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
 
 		elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ] && [ $(find /etc/default/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
-				# ERROR - Missing required file(s)
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
-				echo -e "${EXAMPLE_VALID_CALL}";
-				exit 1;
+        # ERROR - Missing required file(s)
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
+        echo -e "${EXAMPLE_VALID_CALL}";
+        exit 1;
 
 		else
 
 			# Success - Update each associated config-file
 			echo "Replacing lines starting with \"ENABLED=\" to, instead, be \"ENABLED=${MOTD_ENABLED_VALUE}\"";
 			for EACH_FILE in /etc/update-motd.d/*motd-news*; do
-				echo "Updating \"${EACH_FILE}\"";
-				sed --in-place -e "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+        echo "Updating \"${EACH_FILE}\"";
+        sed --in-place -e "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;
 			for EACH_FILE in /etc/default/motd-news; do
-				echo "Updating \"${EACH_FILE}\"";
-				sed --in-place -e "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
+        echo "Updating \"${EACH_FILE}\"";
+        sed --in-place -e "/^ENABLED=/c\ENABLED=${MOTD_ENABLED_VALUE}" "${EACH_FILE}";
 			done;
 
 		fi;

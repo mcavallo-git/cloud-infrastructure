@@ -340,8 +340,8 @@ for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
 			# echo "Pass - ${EACH_FILE_OUTPUT}";
 		else
 			if [ -f "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
-				echo "";
-				mv --verbose "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" "${GIT_EXE_DIR_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
+        echo "";
+        mv --verbose "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" "${GIT_EXE_DIR_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
 			fi;
 			# Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
 			echo "";
@@ -662,7 +662,7 @@ fi;
 			EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
 			DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
 			if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
-				EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
+        EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
 			fi;
 		fi;
 	done;
@@ -681,7 +681,7 @@ fi;
 		DIR_IS_EXCLUDED=0;
 		for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
 			if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
-				DIR_IS_EXCLUDED=1;
+        DIR_IS_EXCLUDED=1;
 			fi;
 		done;
 
@@ -694,8 +694,8 @@ fi;
 			-name ".git" \
 			-print0 2>"/dev/null" \
 			| while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
-				EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
-				REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
+        EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
+        REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
 			done;
 		fi;
 	done;
@@ -734,11 +734,11 @@ fi;
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
 			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
-				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
-				if [ -z "${TEST_SSH_KEY}" ]; then
+        SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
+        TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
-				else
+        else
           echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
           EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
           EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
@@ -754,7 +754,7 @@ fi;
           else
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
           fi;
-				fi;
+        fi;
 			fi;
 		fi;
 
@@ -763,11 +763,11 @@ fi;
 			TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
 			TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
 			if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
-				SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-				TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
-				if [ -z "${TEST_SSH_KEY}" ]; then
+        SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
+        TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
-				else
+        else
           echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
           EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
           EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
@@ -783,7 +783,7 @@ fi;
           else
             echo "  |--> NO local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\"";
           fi;
-				fi;
+        fi;
 			fi;
 		fi;
 
@@ -817,20 +817,20 @@ fi;
 			KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 			KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 			if [ -z "${GPG_KEY_ID}" ]; then
-				echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
+        echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${REPO}\"";
 			else
-				# Strings (GPG)
-				KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
-				KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
-				# Booleans
-				KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
-				# Unsets
-				KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
+        # Strings (GPG)
+        KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";
+        KEY="user.signingkey";  VAL="${GPG_KEY_ID}";                      git config --local --replace-all "${KEY}" "${VAL}";
+        # Booleans
+        KEY="commit.gpgsign";   VAL="true";                               git config --local --replace-all --bool "${KEY}" "${VAL}";
+        # Unsets
+        KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
 			fi;
 			if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-				echo "------------------------------------------------------------";
-				echo "$(git config --local --list --show-origin)";
-				echo "------------------------------------------------------------";
+        echo "------------------------------------------------------------";
+        echo "$(git config --local --list --show-origin)";
+        echo "------------------------------------------------------------";
 			fi;
 
 			echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";

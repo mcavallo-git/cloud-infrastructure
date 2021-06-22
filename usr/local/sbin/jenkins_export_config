@@ -68,10 +68,10 @@ else
 			;
 
 			if [ "$?" == "0" ]; then
-				shopt -s "globstar" && \
-				source "${REPO_CREDS}" && \
-				cd "${GIT_WORK_TREE}" && \
-				env \
+        shopt -s "globstar" && \
+        source "${REPO_CREDS}" && \
+        cd "${GIT_WORK_TREE}" && \
+        env \
           GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
           GIT_CURL_VERBOSE="1" \
           GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
@@ -79,9 +79,9 @@ else
           GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
-				git add "${GIT_WORK_TREE}/"**/* && \
-				git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
-				git push;
+        git add "${GIT_WORK_TREE}/"**/* && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git push;
 			fi;
 
 		else
@@ -93,30 +93,30 @@ else
 
 			cd "$(dirname ${JENKINS_HOME})" && \
 			find "$(basename ${JENKINS_HOME})/" \
-				-mindepth 1 \
-				-maxdepth 1 \
-				-name '*.xml' \
-				-type f \
-				-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
+        -mindepth 1 \
+        -maxdepth 1 \
+        -name '*.xml' \
+        -type f \
+        -exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; ;
 
 			mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" && \
 			ln -sf "${FILEPATH_ARCHIVE_7Z_CONFIG}"* "${POINTER_LATEST_7Z_CONFIG}" && \
 			cd "$(dirname ${JENKINS_HOME})" && \
 			find "$(basename ${JENKINS_HOME})/" \
-				-mindepth 2 \
-				-maxdepth 3 \
-				-name 'config.xml' \
-				-not -path "./config-history/*" \
-				-type f \
-				-exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; && \
+        -mindepth 2 \
+        -maxdepth 3 \
+        -name 'config.xml' \
+        -not -path "./config-history/*" \
+        -type f \
+        -exec 7z u "${FILEPATH_ARCHIVE_7Z_CONFIG}" -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -spf -spe '{}' \; && \
 			chmod 0600 "$(dirname ${FILEPATH_ARCHIVE_7Z_CONFIG})" \
 			;
-				
+        
 			if [ "$?" == "0" ]; then
-				shopt -s "globstar" && \
-				source "${REPO_CREDS}" && \
-				cd "${GIT_WORK_TREE}" && \
-				env \
+        shopt -s "globstar" && \
+        source "${REPO_CREDS}" && \
+        cd "${GIT_WORK_TREE}" && \
+        env \
           GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
           GIT_CURL_VERBOSE="1" \
           GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
@@ -124,9 +124,9 @@ else
           GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
-				git add "${GIT_WORK_TREE}/"**/* && \
-				git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
-				git push;
+        git add "${GIT_WORK_TREE}/"**/* && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git push;
 
 
 			fi;
@@ -146,10 +146,10 @@ else
 
 			if [ "$?" == "0" ]; then
 
-				shopt -s "globstar" && \
-				source "${REPO_CREDS}" && \
-				cd "${GIT_WORK_TREE}" && \
-				env \
+        shopt -s "globstar" && \
+        source "${REPO_CREDS}" && \
+        cd "${GIT_WORK_TREE}" && \
+        env \
           GIT_SSH_COMMAND="ssh -i \"${REMOTE_PRIVATE_KEY}\" -o StrictHostKeyChecking=no -F /dev/null" \
           GIT_CURL_VERBOSE="1" \
           GIT_AUTHOR_NAME="${REMOTE_USERNAME}" \
@@ -157,9 +157,9 @@ else
           GIT_AUTHOR_EMAIL="${REMOTE_EMAIL}" \
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
-				git add "${GIT_WORK_TREE}/"**/* && \
-				git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
-				git push;
+        git add "${GIT_WORK_TREE}/"**/* && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git push;
 
 			fi;
 

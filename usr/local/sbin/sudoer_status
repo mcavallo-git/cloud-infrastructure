@@ -56,7 +56,7 @@ else
 		else
 			NEXT_ARG=${ARGS[$((${i}+1))]};
 			if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
-				NEXT_ARG="";
+        NEXT_ARG="";
 			fi;
 		fi;
 
@@ -64,41 +64,41 @@ else
 
 			# ------------------------------------------------------------
 			if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
-				if [ -n "${EDIT_ACTION}" ]; then
+        if [ -n "${EDIT_ACTION}" ]; then
           # Error: Multiple add/remove actions defined
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
-				elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]  || [ "${EACH_ARG}" == "--add" ]; then
+        elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]  || [ "${EACH_ARG}" == "--add" ]; then
           # Add user as a sudoer
           EDIT_ACTION="ALLOW";
-				elif [ "${EACH_ARG}" == "--deny" ]  || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
+        elif [ "${EACH_ARG}" == "--deny" ]  || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
           # Remove user from sudoers
           EDIT_ACTION="REVOKE";
-				else
+        else
           # Show user's sudoer-status
           EDIT_ACTION="";
-				fi;
+        fi;
 			fi;
 
 			# ------------------------------------------------------------
 			if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
-				if [ -n "${TARGET_USER}" ]; then
+        if [ -n "${TARGET_USER}" ]; then
           # Error: Multiple users defined
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
 
-				elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
+        elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
           # Error: Non-existent target-user
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found as a local user: \"${NEXT_ARG}\"";
           echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
-				else
+        else
           TARGET_USER="${NEXT_ARG}";
-				fi;
+        fi;
 			fi;
 
 			# ------------------------------------------------------------
 			# Skip requiring user-pass when they call the 'sudo' command
 			if [ "${EACH_ARG}" == "--nopass" ]; then
-				SUDO_REQUIRES_USERPASS="0";
+        SUDO_REQUIRES_USERPASS="0";
 			fi;
 
 			# ------------------------------------------------------------
@@ -138,48 +138,48 @@ else
 			
 			# ------------------------------------------------------------
 			if [ "${EDIT_ACTION}" == "ALLOW" ]; then 
-				# Allow user to masquerade as the root user (via the 'sudo' command)
+        # Allow user to masquerade as the root user (via the 'sudo' command)
 
-				SUDOER_FILE_CONTENTS="";
-				if [[ "${SUDO_REQUIRES_USERPASS}" == "1" ]]; then
+        SUDOER_FILE_CONTENTS="";
+        if [[ "${SUDO_REQUIRES_USERPASS}" == "1" ]]; then
           SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) ALL";
-				else
+        else
           SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) NOPASSWD:ALL";
-				fi;
+        fi;
 
-				# Add the user-specific 'sudo' config-file
-				SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
-				echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
-				chmod 400 "${SUDOER_FILE_FULLPATH}" && \
-				chown "root:root" "${SUDOER_FILE_FULLPATH}";
+        # Add the user-specific 'sudo' config-file
+        SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
+        echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
+        chmod 400 "${SUDOER_FILE_FULLPATH}" && \
+        chown "root:root" "${SUDOER_FILE_FULLPATH}";
 
-				GROUP_SUDOERS="sudo";
-				# Create the group 'sudo' (if it doesn't already exist)
-				if [ -z "$(getent group sudo)" ]; then
+        GROUP_SUDOERS="sudo";
+        # Create the group 'sudo' (if it doesn't already exist)
+        if [ -z "$(getent group sudo)" ]; then
           groupadd "${GROUP_SUDOERS}";
-				fi;
+        fi;
 
-				# Add the user to the group 'sudo'
-				usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
+        # Add the user to the group 'sudo'
+        usermod -aG "${GROUP_SUDOERS}" "${TARGET_USER}";
 
 			# ------------------------------------------------------------
 			elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
-				# Deny user from masquerading as the root user (via the 'sudo' command)
+        # Deny user from masquerading as the root user (via the 'sudo' command)
 
-				# Remove the user-specific 'sudo' config-file
-				SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
-				if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
+        # Remove the user-specific 'sudo' config-file
+        SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
+        if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
           rm -f "${SUDOER_FILE_FULLPATH}";
-				fi;
+        fi;
 
-				# Remove the user from the group 'sudo'
-				GROUP_SUDOERS="sudo";
-				gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
+        # Remove the user from the group 'sudo'
+        GROUP_SUDOERS="sudo";
+        gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
 
 			else
-				#	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
+        #	Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 
 			fi;
 

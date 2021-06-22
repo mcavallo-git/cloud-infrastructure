@@ -79,11 +79,11 @@ else
 			echo "$(date +'%D  %r')   JENKINS_VERSION_DOWNLOADED = \"${JENKINS_VERSION_DOWNLOADED}\"";
 
 			if [ "${JENKINS_VERSION_DOWNLOADED}" == "2.185" ]; then
-				# Skip buggy Jenkins runtime(s)
-				echo "";
-				echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
-				echo "$(date +'%D  %r')     |-->  Version: ${JENKINS_VERSION_DOWNLOADED}";
-				echo "$(date +'%D  %r')     |-->  Reason: Has a bug (error) in its Java's SSH runtime which breaks ability to SSH into nodes as-intended (all nodes go offline)";
+        # Skip buggy Jenkins runtime(s)
+        echo "";
+        echo "$(date +'%D  %r')   NOTICE: Blocking downloaded Jenkins runtime";
+        echo "$(date +'%D  %r')     |-->  Version: ${JENKINS_VERSION_DOWNLOADED}";
+        echo "$(date +'%D  %r')     |-->  Reason: Has a bug (error) in its Java's SSH runtime which breaks ability to SSH into nodes as-intended (all nodes go offline)";
 
 			# elif [ "${JENKINS_VERSION_DOWNLOADED}" == "OTHER-BUGGY-VERSION" ]; then
 			# 	# Skip buggy Jenkins runtime(s)
@@ -93,44 +93,44 @@ else
 			# 	echo "$(date +'%D  %r')     |-->  Reason: Explanation of why this version is buggy and shouldn't be used in production";
 
 			elif [ "${JENKINS_VERSION_SYSTEM}" == "${JENKINS_VERSION_DOWNLOADED}" ]; then
-				# No update to version #
-				echo "";
-				echo "$(date +'%D  %r')   No update to jenkins version number detected (remained constant @ v${JENKINS_VERSION_SYSTEM})";
+        # No update to version #
+        echo "";
+        echo "$(date +'%D  %r')   No update to jenkins version number detected (remained constant @ v${JENKINS_VERSION_SYSTEM})";
 
 			else
-				# Install the downloaded runtime
+        # Install the downloaded runtime
 
-				# Backup [ a Version-stamped copy ] of [ the current jenkins runtime ]
-				if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}" ]; then
+        # Backup [ a Version-stamped copy ] of [ the current jenkins runtime ]
+        if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}" ]; then
           cp --verbose --force "${JENKINS_RUNTIME_SYSTEM}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_SYSTEM}";
-				fi;
+        fi;
 
-				# Backup [ a Version-stamped copy ] of [ the downloaded runtime ]
-				if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}" ]; then
+        # Backup [ a Version-stamped copy ] of [ the downloaded runtime ]
+        if [ ! -f "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}" ]; then
           cp --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}.v${JENKINS_VERSION_DOWNLOADED}";
-				fi;
+        fi;
 
-				# Stop the Jenkins service (before updating its runtime warfile)
-				SERVICE_NAME="jenkins";
-				echo "";
-				echo "$(date +'%D  %r')   Calling [ /usr/sbin/service \"${SERVICE_NAME}\" stop; ]...";
-				/usr/sbin/service "${SERVICE_NAME}" stop;
+        # Stop the Jenkins service (before updating its runtime warfile)
+        SERVICE_NAME="jenkins";
+        echo "";
+        echo "$(date +'%D  %r')   Calling [ /usr/sbin/service \"${SERVICE_NAME}\" stop; ]...";
+        /usr/sbin/service "${SERVICE_NAME}" stop;
 
-				# Replace Jenkins' runtime warfile with the newly downloaded runtime warfile
-				mv --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
+        # Replace Jenkins' runtime warfile with the newly downloaded runtime warfile
+        mv --verbose --force "${JENKINS_RUNTIME_DOWNLOADED}" "${JENKINS_RUNTIME_SYSTEM}";
 
-				# Re-Sync to repo/cloud-sync settings
-				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+        # Re-Sync to repo/cloud-sync settings
+        if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
           sync_cloud_infrastructure --jenkins;
-				fi;
+        fi;
 
-				# Start the Jenkins service (after updating its runtime warfile)
-				echo "";
-				echo "$(date +'%D  %r')   Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
-				/usr/sbin/service "${SERVICE_NAME}" start;
+        # Start the Jenkins service (after updating its runtime warfile)
+        echo "";
+        echo "$(date +'%D  %r')   Calling [ /usr/sbin/service \"${SERVICE_NAME}\" start; ]...";
+        /usr/sbin/service "${SERVICE_NAME}" start;
 
-				# Reload NGINX (if found locally)
-				if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+        # Reload NGINX (if found locally)
+        if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
           if [ $(which reload_nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
             echo "";
             echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
@@ -140,16 +140,16 @@ else
             echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
             nginx -t && sleep 1 && /usr/sbin/service nginx stop;
           fi;
-				else
+        else
           echo "";
           echo "$(date +'%D  %r')   Skipping NGINX service-restart (NGINX not found locally, e.g. calling [ which nginx ] returned nothing)";
-				fi;
+        fi;
 
-				# Re-Sync to repo/cloud-sync settings
-				if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
+        # Re-Sync to repo/cloud-sync settings
+        if [ $(which sync_cloud_infrastructure 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
           sleep 30;
           sync_cloud_infrastructure --jenkins;
-				fi;
+        fi;
 
 			fi;
 

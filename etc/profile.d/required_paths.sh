@@ -17,7 +17,7 @@ if [ -v PATH ] && [ -n "${PATH}" ]; then
 		PATH_EXISTS=0;
 		for EACH_PATH in $(echo $PATH | tr ":" "\n"); do
 			if [ "${EACH_PATH}" == "${EACH_REQD_PATH}" ]; then
-				PATH_EXISTS=1;
+        PATH_EXISTS=1;
 			fi;
 		done;
 

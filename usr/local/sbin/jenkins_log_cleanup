@@ -64,11 +64,11 @@ else
 			echo "  Filepath matches regex: \"${FIND_REGEX}\"...";
 
 			find "${FIND_PARENT}" \
-				-maxdepth 3 \
-				-type d \
-				-regex "${FIND_REGEX}" \
-				-mtime +${MAX_AGE_DAYS} \
-				-exec rm -rf -- '{}' \;
+        -maxdepth 3 \
+        -type d \
+        -regex "${FIND_REGEX}" \
+        -mtime +${MAX_AGE_DAYS} \
+        -exec rm -rf -- '{}' \;
 
 		fi;
 

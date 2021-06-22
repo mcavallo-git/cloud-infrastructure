@@ -52,62 +52,62 @@ else
 			echo "Info:  Testing URL for validity:  [ ${SOURCE_URL} ]";
 			# check whether URL returns an HTTP code of 200 (e.g. if the website exists and responds 'normally')
 			if [ "$(curl -Is ${SOURCE_URL} | head -n 1 | awk '{print $2}')" == "200" ]; then
-				# VALID URL
-				# Install [ specific-revision'ed ] Unifi Controller via Bash convenience script
-				TMP_FILE="/tmp/unifi-install.sh";
-				echo "";
-				echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; chmod 0700 \"${TMP_FILE}\"; bash \"${TMP_FILE}\"; ]...";
-				mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; chmod 0700 "${TMP_FILE}"; bash "${TMP_FILE}";
+        # VALID URL
+        # Install [ specific-revision'ed ] Unifi Controller via Bash convenience script
+        TMP_FILE="/tmp/unifi-install.sh";
+        echo "";
+        echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; chmod 0700 \"${TMP_FILE}\"; bash \"${TMP_FILE}\"; ]...";
+        mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; chmod 0700 "${TMP_FILE}"; bash "${TMP_FILE}";
 
 			else
-				# INVALID URL
-				echo "";
-				echo "Error:  Invalid URL - Failed to return an HTTP code of 200";
-				echo "";
-				echo "Info:  Browse to the following URL to view available bash convenience scripts for installing specific versions of the UniFi Controller";
-				echo "  |";
-				echo "  |-->   https://glennr.nl/s/unifi-network-controller";
-				echo "";
-				echo "Info:  Once you have your desired version of the UniFi controller to install, call this script again with the version as the first inline argument (\$1)";
-				echo "  |";
-				echo "  |-->  Ex) install_unifi 5.10.23";
-				echo "";
-				exit 1;
+        # INVALID URL
+        echo "";
+        echo "Error:  Invalid URL - Failed to return an HTTP code of 200";
+        echo "";
+        echo "Info:  Browse to the following URL to view available bash convenience scripts for installing specific versions of the UniFi Controller";
+        echo "  |";
+        echo "  |-->   https://glennr.nl/s/unifi-network-controller";
+        echo "";
+        echo "Info:  Once you have your desired version of the UniFi controller to install, call this script again with the version as the first inline argument (\$1)";
+        echo "  |";
+        echo "  |-->  Ex) install_unifi 5.10.23";
+        echo "";
+        exit 1;
 			fi;
 
 		else
 		
 			USE_DOCKER_CONTAINER=0;
 			if [ $(which docker 2>'/dev/null' | wc -l;) -gt 0 ]; then
-				if [ $(which docker-compose 2>'/dev/null' | wc -l;) -gt 0 ]; then
+        if [ $(which docker-compose 2>'/dev/null' | wc -l;) -gt 0 ]; then
           # If docker & docker-compose are both already installed, offer to install the service as a docker container
           echo "";
           READ_TIMEOUT=60; read -p "Install/run UniFi from a Docker container? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
           if [ ${RETURN_CODE_READ} -le 128 ] && [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
             USE_DOCKER_CONTAINER=1;
           fi;
-				fi;
+        fi;
 			fi;
 			
 			if [ "${USE_DOCKER_CONTAINER}" == "1" ]; then
-				# Install/run service as a Docker container
+        # Install/run service as a Docker container
 
-				echo "";
-				echo "Info:  Calling  [ mkdir -p \"/var/lib/docker-compose/unifi\"; ]...";
-				mkdir -p "/var/lib/docker-compose/unifi";
+        echo "";
+        echo "Info:  Calling  [ mkdir -p \"/var/lib/docker-compose/unifi\"; ]...";
+        mkdir -p "/var/lib/docker-compose/unifi";
 
-				echo "";
-				echo "Info:  Calling  [ curl -ssL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
-				curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
+        echo "";
+        echo "Info:  Calling  [ curl -ssL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
+        curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
 
-				echo "";
-				echo "Info:  Calling  [ docker-compose -f \"/var/lib/docker-compose/unifi/docker-compose.yml\" up -d; ]...";
-				docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
+        echo "";
+        echo "Info:  Calling  [ docker-compose -f \"/var/lib/docker-compose/unifi/docker-compose.yml\" up -d; ]...";
+        docker-compose -f "/var/lib/docker-compose/unifi/docker-compose.yml" up -d;
 
 			else
-				# Install/run service from Host OS (non-containerized)
+        # Install/run service from Host OS (non-containerized)
 
-				if [ 1 -eq 1 ]; then
+        if [ 1 -eq 1 ]; then
 
           # Install [ latest-version'ed ] Unifi Controller via Bash convenience script
           SOURCE_URL="https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh";
@@ -118,7 +118,7 @@ else
           echo "Info:  Calling  [ mkdir -p \"/tmp\"; if [ -f \"${TMP_FILE}\" ]; then rm -f \"${TMP_FILE}\"; fi; wget -O \"${TMP_FILE}\" \"${SOURCE_URL}\"; bash \"${TMP_FILE}\"; ]...";
           mkdir -p "/tmp"; if [ -f "${TMP_FILE}" ]; then rm -f "${TMP_FILE}"; fi; wget -O "${TMP_FILE}" "${SOURCE_URL}"; bash "${TMP_FILE}";
 
-				else
+        else
 
           # Install pre-requisite package(s)
           echo "";
@@ -154,8 +154,8 @@ else
           echo "";
           echo "Info:  Calling  [ apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install unifi; ]...";
           apt-get -y update; apt-mark hold openjdk-11-*; apt-get -y install unifi;
-				
-				fi;
+        
+        fi;
 
 			fi;
 

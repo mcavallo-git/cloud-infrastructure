@@ -73,15 +73,15 @@ else
 			# Open necessary firewall port(s)
 			SERVICE_ENABLED_GREP=$(/usr/sbin/service "${FIREWALL_SERVICE}" status --no-pager --full | grep '; enabled');
 			if [ -n "${SERVICE_ENABLED_GREP}" ]; then
-				echo "";
-				echo "------------------------------------------------------------";
-				firewall-cmd --info-service={http,https};
-				echo "------------------------------------------------------------";
-				echo -e "\n""Info:  Opening ports for \"{http,https}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
-				firewall-cmd --set-default-zone=public && \
-				firewall-cmd --permanent --zone=public --add-service={http,https} && \
-				firewall-cmd --reload && \
-				firewall-cmd --list-all;
+        echo "";
+        echo "------------------------------------------------------------";
+        firewall-cmd --info-service={http,https};
+        echo "------------------------------------------------------------";
+        echo -e "\n""Info:  Opening ports for \"{http,https}\" service(s) in \"${FIREWALL_SERVICE}\" service...\n";
+        firewall-cmd --set-default-zone=public && \
+        firewall-cmd --permanent --zone=public --add-service={http,https} && \
+        firewall-cmd --reload && \
+        firewall-cmd --list-all;
 			fi;
 		fi;
 
@@ -89,16 +89,16 @@ else
 		# Configure SELinux as-needed
 		if [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(which getsebool 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(which setsebool 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
 			if [ $(selinuxenabled; echo $?;) -eq 0 ]; then
-				# SELinux is currently enabled
-				SELINUX_BOOL_WEBSERVER="httpd_can_network_connect";
-				if [ $(getsebool ${SELINUX_BOOL_WEBSERVER} | grep 'on$' | wc -l;) -eq 0 ]; then 
+        # SELinux is currently enabled
+        SELINUX_BOOL_WEBSERVER="httpd_can_network_connect";
+        if [ $(getsebool ${SELINUX_BOOL_WEBSERVER} | grep 'on$' | wc -l;) -eq 0 ]; then 
           # SELinux Web-Server boolean is currently disabled --> enable it
           echo -e "\n""Info:  Setting SELinux boolean parameter \"${SELINUX_BOOL_WEBSERVER}\" to \"on\"\n";
           setsebool -P ${SELINUX_BOOL_WEBSERVER} "on";
-				fi;
+        fi;
 			else
-				# SELinux already enabled
-				echo -e "\n""Info: Skipped SELinux web-server configuration (SELinux is currently disabled)";
+        # SELinux already enabled
+        echo -e "\n""Info: Skipped SELinux web-server configuration (SELinux is currently disabled)";
 			fi;
 		fi;
 
@@ -107,12 +107,12 @@ else
 		# (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
 		if [ 0 -eq 1 ]; then
 			if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
-				add-apt-repository "ppa:maxmind/ppa";
-				apt -y update;
-				apt -y install geoip-database geoip-database-extra php-geoip;
-				apt -y install geoipupdate;
-				# Locate the geoip database(s)
-				dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
+        add-apt-repository "ppa:maxmind/ppa";
+        apt -y update;
+        apt -y install geoip-database geoip-database-extra php-geoip;
+        apt -y install geoipupdate;
+        # Locate the geoip database(s)
+        dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
 			fi;
 		fi;
 

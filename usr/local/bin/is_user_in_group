@@ -59,7 +59,7 @@ for GROUP_ROW in $(cat "/etc/group"); do
 		if [ "${THIS_GNAME}" == "${TARGET_GROUP_GNAME}" ]; then
 			GROUP_LIST_UNAMES+=("${EACH_MEMBER}");
 			if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
-				IS_USER_IN_GROUP="YES";
+        IS_USER_IN_GROUP="YES";
 			fi;
 		fi;
 	} done;

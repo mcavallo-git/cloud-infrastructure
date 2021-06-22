@@ -116,17 +116,17 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 		if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
 			PROTO_OVERRIDE="";
 			for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
-				EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
-				if [ "${NEXT_ARG}" == "${EACH_PROTO}" ]; then
+        EACH_PROTO="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
+        if [ "${NEXT_ARG}" == "${EACH_PROTO}" ]; then
           PROTO_OVERRIDE="${EACH_PROTO}";
           break;
-				fi;
+        fi;
 			done;
 			if [ -n "${PROTO_OVERRIDE}" ]; then
-				PROTO_STARTTLS="${PROTO_OVERRIDE}";
-				echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
+        PROTO_STARTTLS="${PROTO_OVERRIDE}";
+        echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
 			else
-				if [ -n "${PROTO_STARTTLS}" ]; then
+        if [ -n "${PROTO_STARTTLS}" ]; then
           echo "";
           echo "Info:  User passed a blank/undefined value for the \"${EACH_ARG}\" argument";
           echo "";
@@ -139,7 +139,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
             echo "Protocol-specific (STARTTLS) messaging will NOT be used (REMOVED: openssl s_client -starttls \"${PROTO_STARTTLS}\")";
             PROTO_STARTTLS="";
           fi;
-				else
+        else
           echo "";
           echo "Invalid STARTTLS argument passed:  \"${EACH_ARG}\" ${NEXT_ARG}"
           echo "  |--> For an exhaustive list of available starttls protocols, run 'man openssl-sclient' and search for '-starttls' (which will list said protocols)";
@@ -147,7 +147,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
           echo "Protocol-specific (STARTTLS) messaging will NOT be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
           echo "";
           PROTO_STARTTLS="";
-				fi;
+        fi;
 			fi;
 		fi;
 

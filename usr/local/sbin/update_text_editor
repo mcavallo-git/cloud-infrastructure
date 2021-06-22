@@ -51,29 +51,29 @@ else
 		# Replace each editor with desired editor (if needed
 		for EACH_EDITOR_PATH in "${EDITOR_PATHS_TO_UPDATE[@]}"; do
 			if [ ! -e "${EACH_EDITOR_PATH}" ]; then
-				# Editor filepath doesn't exist, yet
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
-				ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
+        # Editor filepath doesn't exist, yet
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
+        ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
 			elif [ -L "${EACH_EDITOR_PATH}" ] && [ "$(realpath ${EACH_EDITOR_PATH})" != "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" ]; then
-				# Editor filepath already exists and is a symbolic link to a DIFFERENT editor
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Removing symbolic link from \"${EACH_EDITOR_PATH}\" to \"$(realpath ${EACH_EDITOR_PATH})\"";
-				unlink "${EACH_EDITOR_PATH}";
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
-				ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
+        # Editor filepath already exists and is a symbolic link to a DIFFERENT editor
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Removing symbolic link from \"${EACH_EDITOR_PATH}\" to \"$(realpath ${EACH_EDITOR_PATH})\"";
+        unlink "${EACH_EDITOR_PATH}";
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
+        ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
 			elif [ -f "${EACH_EDITOR_PATH}" ] && [ ! -L "${EACH_EDITOR_PATH}" ] && [ "$(realpath ${EACH_EDITOR_PATH})" != "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" ]; then
-				# Editor filepath already exists and is a NON-symbolic link  to a DIFFERENT editor
-				echo "";
-				mv --verbose "${EACH_EDITOR_PATH}" "${EACH_EDITOR_PATH}.replaced_with_${DESIRED_EDITOR_NAME}_on_$(date +'%Y%m%d_%H%M%S')";
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
-				ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
+        # Editor filepath already exists and is a NON-symbolic link  to a DIFFERENT editor
+        echo "";
+        mv --verbose "${EACH_EDITOR_PATH}" "${EACH_EDITOR_PATH}.replaced_with_${DESIRED_EDITOR_NAME}_on_$(date +'%Y%m%d_%H%M%S')";
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Task: Creating new symbolic link from \"${EACH_EDITOR_PATH}\" to: \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
+        ln --verbose --symbolic --force "$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))" "${EACH_EDITOR_PATH}";
 			else 
-				# Editor already exists as-intended - no update(s) necessary
-				echo "";
-				echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Skipped - \"${EACH_EDITOR_PATH}\" already points to \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
+        # Editor already exists as-intended - no update(s) necessary
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Skipped - \"${EACH_EDITOR_PATH}\" already points to \"$(realpath $(which ${DESIRED_EDITOR_NAME} 2>'/dev/null'))\"";
 			fi;
 		done;
 

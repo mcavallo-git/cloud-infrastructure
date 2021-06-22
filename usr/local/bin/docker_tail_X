@@ -11,17 +11,17 @@ if [ -n "$0" ]; then
 		if [[ "$0" == *"rfq"* ]]; then
 			SUBDOMAIN="www";
 			if [[ "$1" == *"access"* ]]; then # RFQ Access-Log
-				LOG_TYPE="access";
-				LOGFILE_1="${DIR_LOGS}/access_log_www";
-				LOGFILE_2="${DIR_LOGS}/ssl_access_log_www";
+        LOG_TYPE="access";
+        LOGFILE_1="${DIR_LOGS}/access_log_www";
+        LOGFILE_2="${DIR_LOGS}/ssl_access_log_www";
 			elif [[ "$1" == *"mail"* ]]; then # RFQ Mail-Log
-				LOG_TYPE="mail";
-				LOGFILE_1="${DIR_LOGS}/mail_log_www";
-				LOGFILE_2="";
+        LOG_TYPE="mail";
+        LOGFILE_1="${DIR_LOGS}/mail_log_www";
+        LOGFILE_2="";
 			else 															# RFQ Error-Log
-				LOG_TYPE="error";
-				LOGFILE_1="${DIR_LOGS}/error_log_www";
-				LOGFILE_2="${DIR_LOGS}/ssl_error_log_www";
+        LOG_TYPE="error";
+        LOGFILE_1="${DIR_LOGS}/error_log_www";
+        LOGFILE_2="${DIR_LOGS}/ssl_error_log_www";
 			fi;
 
 		elif [[ "$0" == *"dev.bonedge"* ]]; then # dev.bonedge.boneal.net
@@ -47,48 +47,48 @@ if [ -n "$0" ]; then
 		elif [[ "$0" == *"mdev"* ]]; then
 			SUBDOMAIN="mdev";
 			if [[ "$1" == *"access"* ]]; then # MDEV Access-Log
-				LOG_TYPE="access";
-				LOGFILE_1="${DIR_LOGS}/access_log_mdev";
-				LOGFILE_2="${DIR_LOGS}/ssl_access_log_mdev";
+        LOG_TYPE="access";
+        LOGFILE_1="${DIR_LOGS}/access_log_mdev";
+        LOGFILE_2="${DIR_LOGS}/ssl_access_log_mdev";
 			elif [[ "$1" == *"mail"* ]]; then # MDEV Mail-Log
-				LOG_TYPE="mail";
-				LOGFILE_1="${DIR_LOGS}/mail_log_mdev";
-				LOGFILE_2="";
+        LOG_TYPE="mail";
+        LOGFILE_1="${DIR_LOGS}/mail_log_mdev";
+        LOGFILE_2="";
 			else 															# MDEV Error-Log
-				LOG_TYPE="error";
-				LOGFILE_1="${DIR_LOGS}/error_log_mdev";
-				LOGFILE_2="${DIR_LOGS}/ssl_error_log_mdev";
-				# tail -f file1 & tail -f file2
+        LOG_TYPE="error";
+        LOGFILE_1="${DIR_LOGS}/error_log_mdev";
+        LOGFILE_2="${DIR_LOGS}/ssl_error_log_mdev";
+        # tail -f file1 & tail -f file2
 			fi;
 		elif [[ "$0" == *"rdev"* ]]; then
 			SUBDOMAIN="rdev";
 			if [[ "$1" == *"access"* ]]; then # RDEV Access-Log
-				LOG_TYPE="access";
-				LOGFILE_1="${DIR_LOGS}/access_log_rdev";
-				LOGFILE_2="${DIR_LOGS}/ssl_access_log_rdev";
+        LOG_TYPE="access";
+        LOGFILE_1="${DIR_LOGS}/access_log_rdev";
+        LOGFILE_2="${DIR_LOGS}/ssl_access_log_rdev";
 			elif [[ "$1" == *"mail"* ]]; then # RDEV Mail-Log
-				LOG_TYPE="mail";
-				LOGFILE_1="${DIR_LOGS}/mail_log_rdev";
-				LOGFILE_2="";
+        LOG_TYPE="mail";
+        LOGFILE_1="${DIR_LOGS}/mail_log_rdev";
+        LOGFILE_2="";
 			else 															# RDEV Error-Log
-				LOG_TYPE="error";
-				LOGFILE_1="${DIR_LOGS}/error_log_rdev";
-				LOGFILE_2="${DIR_LOGS}/ssl_error_log_rdev";
+        LOG_TYPE="error";
+        LOGFILE_1="${DIR_LOGS}/error_log_rdev";
+        LOGFILE_2="${DIR_LOGS}/ssl_error_log_rdev";
 			fi;
 		elif [[ "$0" == *"dev"* ]]; then
 			SUBDOMAIN="dev";
 			if [[ "$1" == *"access"* ]]; then # DEV Access-Log
-				LOG_TYPE="access";
-				LOGFILE_1="${DIR_LOGS}/access_log_dev";
-				LOGFILE_2="${DIR_LOGS}/ssl_access_log_dev";
+        LOG_TYPE="access";
+        LOGFILE_1="${DIR_LOGS}/access_log_dev";
+        LOGFILE_2="${DIR_LOGS}/ssl_access_log_dev";
 			elif [[ "$1" == *"mail"* ]]; then # DEV Mail-Log
-				LOG_TYPE="mail";
-				LOGFILE_1="${DIR_LOGS}/mail_log_dev";
-				LOGFILE_2="";
+        LOG_TYPE="mail";
+        LOGFILE_1="${DIR_LOGS}/mail_log_dev";
+        LOGFILE_2="";
 			else 															# DEV Error-Log
-				LOG_TYPE="error";
-				LOGFILE_1="${DIR_LOGS}/error_log_dev";
-				LOGFILE_2="${DIR_LOGS}/ssl_error_log_dev";
+        LOG_TYPE="error";
+        LOGFILE_1="${DIR_LOGS}/error_log_dev";
+        LOGFILE_2="${DIR_LOGS}/ssl_error_log_dev";
 			fi;
 		else
 			echo "";

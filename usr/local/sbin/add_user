@@ -127,18 +127,18 @@ else
 		if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
 			# Non System Users
 			if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
-				# Group-Add Command
-				GROUPADD_ARR=(groupadd);
-				# Group-ID
-				if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
+        # Group-Add Command
+        GROUPADD_ARR=(groupadd);
+        # Group-ID
+        if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
           GROUPADD_ARR+=(--gid ${USER_GID});
-				fi;
-				# Group Name
-				GROUPADD_ARR+=("${USER_GNAME}");
-				# Create the Group
-				echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
-				${GROUPADD_ARR[@]};
-				USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
+        fi;
+        # Group Name
+        GROUPADD_ARR+=("${USER_GNAME}");
+        # Create the Group
+        echo "Calling [ ${GROUPADD_ARR[@]}; ] ..."
+        ${GROUPADD_ARR[@]};
+        USER_GID=$(getent group "${USER_GNAME}" | cut -d: -f3;);
 			fi;
 		fi;
 
@@ -167,14 +167,14 @@ else
 		
 			# User ID
 			if [[ -v USER_UID ]] && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]]; then
-				USERADD_ARR+=(--uid ${USER_UID});
+        USERADD_ARR+=(--uid ${USER_UID});
 			fi;
 
 			# User Default Group (Group-ID/Group-Name)
 			if [[ -v USER_GID ]] && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]]; then
-				USERADD_ARR+=(--gid ${USER_GID});
+        USERADD_ARR+=(--gid ${USER_GID});
 			elif [[ -v USER_GNAME ]] && [[ -n "${USER_GNAME}" ]]; then
-				USERADD_ARR+=(--gid "${USER_GNAME}");
+        USERADD_ARR+=(--gid "${USER_GNAME}");
 			fi;
 
 		fi;
@@ -203,19 +203,19 @@ else
 			# Add user to the "sudo" usergroup (if not already in it)
 			SUDO_GROUP="sudo";
 			if [ -f "/usr/local/sbin/is_user_in_group" ] && [ $(/usr/local/sbin/is_user_in_group "${USER_NAME}" "${SUDO_GROUP}"; ERROR_LEVEL=$?; echo ${ERROR_LEVEL};) -ne 0 ]; then
-				usermod --append --groups "${SUDO_GROUP}" "${USER_NAME}";
+        usermod --append --groups "${SUDO_GROUP}" "${USER_NAME}";
 			fi;
 
 			# Add user-named-file into the sudoer.d directory to strengthen logins (and get away from typed passwords)
 			SUDOER_FILEPATH="/etc/sudoers.d/${USER_NAME}";
 			if [ "${SUDO_REQUIRES_PASS}" == "0" ]; then
-				# Choice 1/2: No password required for user to run 'sudo' commands
-				echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "${SUDOER_FILEPATH}";
-				chmod 440 "${SUDOER_FILEPATH}";
+        # Choice 1/2: No password required for user to run 'sudo' commands
+        echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "${SUDOER_FILEPATH}";
+        chmod 440 "${SUDOER_FILEPATH}";
 			else
-				# Choice 2/2: Require a password when user runs 'sudo' commands
-				echo "${USER_NAME} ALL=(ALL) ALL" > "${SUDOER_FILEPATH}";
-				chmod 440 "${SUDOER_FILEPATH}";
+        # Choice 2/2: Require a password when user runs 'sudo' commands
+        echo "${USER_NAME} ALL=(ALL) ALL" > "${SUDOER_FILEPATH}";
+        chmod 440 "${SUDOER_FILEPATH}";
 			fi;
 
 			# Refer to "/etc/ssh/sshd_config" for more-advanced SSH config

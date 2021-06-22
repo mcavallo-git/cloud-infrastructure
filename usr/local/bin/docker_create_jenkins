@@ -59,28 +59,28 @@ else
 		elif [ -n "${REPLY}" ] && [[ ${REPLY} =~ ^-?[0-9]+$ ]] && [ ${REPLY} -ge ${MIN_KEY} ] && [ ${REPLY} -le ${MAX_KEY} ]; then
 			USER_SELECTION_KEY=$((0+${REPLY}));
 			if [ -z "${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}" ]; then
-				# Error: User-input key not found as an index within the Docker-Image-Tags array
-				echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
+        # Error: User-input key not found as an index within the Docker-Image-Tags array
+        echo -e "Error: Invalid selection of \"${REPLY}\"""\n""${ERROR_SUGGEST_HELP}";
 
 			else
-				# Success - User selected a valid tag
-				E1="LINES=$(tput lines)";
-				E2="COLUMNS=$(tput cols)";
-				DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
+        # Success - User selected a valid tag
+        E1="LINES=$(tput lines)";
+        E2="COLUMNS=$(tput cols)";
+        DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE_NAME}:${ARR_TAG_OPTIONS_NO_DUPES[${USER_SELECTION_KEY}]}";
 
-				unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
-				# DOCKER_RUN_ARR+=("-u root");
-				DOCKER_RUN_ARR+=("--rm");
-				DOCKER_RUN_ARR+=("-d");
-				DOCKER_RUN_ARR+=("-p 8080:8080");
-				# DOCKER_RUN_ARR+=("-p 50000:50000");
-				# DOCKER_RUN_ARR+=("-v 'jenkins-data:/var/jenkins_home'");
-				# DOCKER_RUN_ARR+=("-v '/var/run/docker.sock:/var/run/docker.sock'");
-				DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
+        unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
+        # DOCKER_RUN_ARR+=("-u root");
+        DOCKER_RUN_ARR+=("--rm");
+        DOCKER_RUN_ARR+=("-d");
+        DOCKER_RUN_ARR+=("-p 8080:8080");
+        # DOCKER_RUN_ARR+=("-p 50000:50000");
+        # DOCKER_RUN_ARR+=("-v 'jenkins-data:/var/jenkins_home'");
+        # DOCKER_RUN_ARR+=("-v '/var/run/docker.sock:/var/run/docker.sock'");
+        DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
 
-				echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
-				# docker run ${DOCKER_RUN_PARAMS};
-				docker run ${DOCKER_RUN_ARR[@]};
+        echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";
+        # docker run ${DOCKER_RUN_PARAMS};
+        docker run ${DOCKER_RUN_ARR[@]};
 
 			fi;
 

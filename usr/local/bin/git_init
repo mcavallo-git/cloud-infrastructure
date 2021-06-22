@@ -58,17 +58,17 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
 			apt -qq -y update && apt -qq -y install --ignore-missing git;
 		else
 			if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
-				# CentOS
-				echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (CentOS Linux) - Attempting to install via:";
-				echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> yum -y update && yum -y install --skip-broken git;";
-				yum -y update && yum -y install --skip-broken git;
+        # CentOS
+        echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (CentOS Linux) - Attempting to install via:";
+        echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> yum -y update && yum -y install --skip-broken git;";
+        yum -y update && yum -y install --skip-broken git;
 			else
-				if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
+        if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
           # Alpine
           echo -e "$(date '+%Y-%m-%d %H:%M:%S') | Git not installed (Alpine Linux) - Attempting to install via:";
           echo -e "$(date '+%Y-%m-%d %H:%M:%S') | ---> apk update && apk add git;";
           apk update && apk add git;
-				fi;
+        fi;
 			fi;
 		fi;
 	fi;

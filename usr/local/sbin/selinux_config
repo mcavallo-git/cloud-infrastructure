@@ -88,31 +88,31 @@ else
 
 			# Check if this is the last inline-argument or if there are more to follow
 			if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
-				NEXT_ARG="";
+        NEXT_ARG="";
 			else
-				NEXT_ARG=${ARGS[$((${i}+1))]};
-				if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+        NEXT_ARG=${ARGS[$((${i}+1))]};
+        if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
           NEXT_ARG="";
-				fi;
+        fi;
 			fi;
 
 			if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-				if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
+        if [ "${EACH_ARG}" == "-y" ] || [ "${EACH_ARG}" == "--yes" ] || [ "${EACH_ARG}" == "-force" ] || [ "${EACH_ARG}" == "--force" ]; then
           ARGS_FORCE_AGREE=1; # Do not require user-confirmation for things like opening firewall ports required by the install service(s)
-				fi;
+        fi;
 
-				if [ "${EACH_ARG}" == "-d" ] || [ "${EACH_ARG}" == "--disable" ]; then
+        if [ "${EACH_ARG}" == "-d" ] || [ "${EACH_ARG}" == "--disable" ]; then
           ARGS_SELINUX_DISABLE=1; # Disable SELinux
-				fi;
+        fi;
 
-				if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
+        if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
           ARGS_SELINUX_ENABLE=1; # Enable SELinux
-				fi;
+        fi;
 	
-				if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
+        if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
           ARGS_SELINUX_STATUS=1; # Get SELinux status
-				fi;
+        fi;
 	
 			fi;
 
@@ -138,19 +138,19 @@ else
 			SERVICE_CONF2_STATUS=$(sed -rne 's/^\s*SELINUX=(.+)\s*$/\1/p' "${SERVICE_CONF2_PATH}";);
 
 			if [ ${ARGS_SELINUX_DISABLE} -eq 1 ]; then
-				# ------------------------------------------------------------
-				# SELinux - Disable
-				if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
+        # ------------------------------------------------------------
+        # SELinux - Disable
+        if [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
           # SELinux already disabled in every location
           echo "Info:  SELinux is already disabled";
           EXIT_CODE=0;
 
-				elif [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
+        elif [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "disabled" ] && [ "${SERVICE_CONF2_STATUS,,}" == "disabled" ]; then
           # SELinux already disabled in every config-file, but still awaiting reboot
           REBOOT_REQUIRED_MSG="SELinux is already configured as disabled, but requires machine to be rebooted";
           EXIT_CODE=0;
 
-				else
+        else
           # SELinux NOT already disabled in every location
           if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
@@ -190,23 +190,23 @@ else
             fi;
           fi;
 
-				fi;
+        fi;
 
 
 			elif [ ${ARGS_SELINUX_ENABLE} -eq 1 ]; then
-				# ------------------------------------------------------------
-				# SELinux - Enable
-				if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
+        # ------------------------------------------------------------
+        # SELinux - Enable
+        if [ $(selinuxenabled; echo $?;) -eq 0 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
           # SELinux already enabled in every location
           echo "Info:  SELinux is already enabled";
           EXIT_CODE=0;
 
-				elif [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
+        elif [ $(selinuxenabled; echo $?;) -eq 1 ] && [ "${SERVICE_CONF1_STATUS,,}" == "enforcing" ] && [ "${SERVICE_CONF2_STATUS,,}" == "enforcing" ]; then
           # SELinux already enabled in every location, but still awaiting reboot
           REBOOT_REQUIRED_MSG="SELinux is already configured as enabled, but requires machine to be rebooted";
           EXIT_CODE=0;
 
-				else
+        else
           # SELinux NOT already enabled in every location
           if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
@@ -245,55 +245,55 @@ else
               REBOOT_REQUIRED_MSG="Reboot required to finish enabling SELinux";
             fi;
           fi;
-				fi;
+        fi;
 
 
 			else
-				# ------------------------------------------------------------
-				# if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
-				# SELinux - Get status
+        # ------------------------------------------------------------
+        # if [ ${ARGS_SELINUX_STATUS} -eq 1 ]; then
+        # SELinux - Get status
 
-				echo "------------------------------------------------------------";
-				echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
-				if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
+        echo "------------------------------------------------------------";
+        echo "Command [ selinuxenabled; echo \"\$? (+interpretation)\"; ] returned:";
+        if [ $(selinuxenabled; echo $?;) -eq 1 ]; then
           echo "1 (SELinux is DISABLED - updating this requires a reboot)";
-				elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
+        elif [ $(selinuxenabled; echo $?;) -eq 0 ]; then
           echo "0 (SELinux is ENABLED - updating this requires a reboot)";
-				else
+        else
           selinuxenabled; echo $?;
-				fi;
+        fi;
 
-				echo "------------------------------------------------------------";
-				echo "Command [ sestatus ] returned:";
-				sestatus;
+        echo "------------------------------------------------------------";
+        echo "Command [ sestatus ] returned:";
+        sestatus;
 
-				echo "------------------------------------------------------------";
-				echo "Command [ getenforce ] returned:";
-				getenforce;
+        echo "------------------------------------------------------------";
+        echo "Command [ getenforce ] returned:";
+        getenforce;
 
-				echo "------------------------------------------------------------";
-				echo "Filepath [ ${SERVICE_CONF1_PATH} ] contains the following setting:";
-				echo "${SERVICE_CONF1_STATUS}";
+        echo "------------------------------------------------------------";
+        echo "Filepath [ ${SERVICE_CONF1_PATH} ] contains the following setting:";
+        echo "${SERVICE_CONF1_STATUS}";
 
-				echo "------------------------------------------------------------";
-				echo "Filepath [ ${SERVICE_CONF2_PATH} ] contains the following setting:";
-				echo "${SERVICE_CONF2_STATUS}";
+        echo "------------------------------------------------------------";
+        echo "Filepath [ ${SERVICE_CONF2_PATH} ] contains the following setting:";
+        echo "${SERVICE_CONF2_STATUS}";
 
-				echo "------------------------------------------------------------";
+        echo "------------------------------------------------------------";
 
-				EXIT_CODE=0;
+        EXIT_CODE=0;
 
-				# ------------------------------------------------------------
-				# Inspection / Troubleshooting
+        # ------------------------------------------------------------
+        # Inspection / Troubleshooting
 
-				# View a list of mappings between SELinux and Linux user accounts 
-				# semanage login -l;
+        # View a list of mappings between SELinux and Linux user accounts 
+        # semanage login -l;
 
-				# Backup & Restart the audit logfile
-				# cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_${START_TIMESTAMP}.log"; echo "" > "/var/log/audit/audit.log";
+        # Backup & Restart the audit logfile
+        # cp "/var/log/audit/audit.log" "/var/log/audit/audit_upto_${START_TIMESTAMP}.log"; echo "" > "/var/log/audit/audit.log";
 
-				# Check SELinux error logs specifically for lines mentioning 'nginx' and 'denied'
-				# cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
+        # Check SELinux error logs specifically for lines mentioning 'nginx' and 'denied'
+        # cat /var/log/audit/audit.log | grep -i nginx | grep -i denied;
 
 			fi;
 
@@ -320,7 +320,7 @@ else
 			read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
 			echo "";
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				reboot now;
+        reboot now;
 			fi;
 		fi;
 

@@ -170,7 +170,11 @@ fi;
 if [ ! -v APPDATA ]; then
   WIN32_USERNAME=$(get_username_windows_wsl);
   export APPDATA="/mnt/c/Users/${WIN32_USERNAME}/AppData/Roaming";
-fi
+fi;
+
+if [ ! -v PROGRAMFILES ]; then
+  export PROGRAMFILES="/mnt/c/Program Files";
+fi;
 
 APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
 APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; APPDATA_WIN32="${MM}";

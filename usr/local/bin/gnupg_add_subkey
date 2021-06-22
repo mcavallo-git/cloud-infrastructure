@@ -1,0 +1,71 @@
+#!/bin/bash
+# ------------------------------------------------------------
+# RUN IN WSL - GIT BASH DOESN'T WORK FOR GPG
+# ------------------------------------------------------------
+
+exit 0; # Run the below steps manually
+
+# ------------------------------------------------------------
+# Adding a new GPG subkey (for signing) onto a primary key
+#   |--> Requires GPG v2.??.?? or later installed
+
+
+# Check GPG Version
+gpg --version | grep gpg;
+
+
+gpg.exe --edit-key "YOUR_PRIMARY_KEY_ID";
+
+
+gpg> addkey
+
+
+# Please select what kind of key you want:
+#    (3) DSA (sign only)
+#    (4) RSA (sign only)
+#    (5) Elgamal (encrypt only)
+#    (6) RSA (encrypt only)
+#   (14) Existing key from card
+Your selection?                         4
+
+
+# RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (3072)     4096
+
+
+# Requested keysize is 4096 bits
+# Please specify how long the key should be valid.
+#          0 = key does not expire
+#       <n>  = key expires in n days
+#       <n>w = key expires in n weeks
+#       <n>m = key expires in n months
+#       <n>y = key expires in n years
+Key is valid for? (0)                  1y
+
+
+# Key expires at ...DATETIME... ...TIMEZONE...
+
+
+Is this correct? (y/N)                  y
+
+
+Really create? (y/N)                    y
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   help.github.com  |  "Generating a new GPG key - GitHub Docs"  |  https://help.github.com/en/articles/generating-a-new-gpg-key
+#
+#   git.gnupg.org  |  "GnuPG Details"  |  https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=blob_plain;f=doc/DETAILS
+#
+#   wiki.archlinux.org  |  "GnuPG - ArchWiki"  |  https://wiki.archlinux.org/title/GnuPG
+#
+#   wiki.debian.org  |  "Subkeys - Debian Wiki"  |  https://wiki.debian.org/Subkeys
+#
+#   www.gnupg.org  |  "gnupg.pdf"  |  https://www.gnupg.org/documentation/manuals/gnupg.pdf
+#
+#   www.gnupg.org  |  "Making and verifying signatures"  |  https://www.gnupg.org/gph/en/manual/x135.html
+#
+# ------------------------------------------------------------

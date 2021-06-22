@@ -145,7 +145,7 @@ fi;
 
 # Ensure that the git repo parent dir exists
 if [ ! -d "${ALL_REPOS_DIR}" ]; then
- 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Creating default Git directory \"${ALL_REPOS_DIR}\"";
+  echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Creating default Git directory \"${ALL_REPOS_DIR}\"";
   mkdir -p "${ALL_REPOS_DIR}";
 fi;
 
@@ -165,9 +165,9 @@ CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH}}}}
 
 # Verify that the git repos-dir has correct ownership & access-privileges set
 if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
- 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Setting Git parent directory's file permissions to \"0700\"";
+  echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Setting Git parent directory's file permissions to \"0700\"";
   chmod 0700 "${ALL_REPOS_DIR}";
- 	echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
+  echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
   chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 fi;
 

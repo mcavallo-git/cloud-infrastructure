@@ -307,90 +307,90 @@ else
 
 					# Set Local LAN IPv4 Address
 					if [ $(cat "${NMCLI_CONF}" | grep 'IPADDR=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^IPADDR=/c\IPADDR=\"${SET_STATIC_IPV4}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^IPADDR=/c\IPADDR=\"${SET_STATIC_IPV4}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "IPADDR=\"${SET_STATIC_IPV4}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "IPADDR=\"${SET_STATIC_IPV4}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set Gateway LAN IPv4 Address
 					if [ $(cat "${NMCLI_CONF}" | grep 'GATEWAY=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^GATEWAY=/c\GATEWAY=\"${THIS_GATEWAY_IPV4}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^GATEWAY=/c\GATEWAY=\"${THIS_GATEWAY_IPV4}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "GATEWAY=\"${THIS_GATEWAY_IPV4}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "GATEWAY=\"${THIS_GATEWAY_IPV4}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set LAN Prefix (2-digit representation of Netmask)
 					if [ $(cat "${NMCLI_CONF}" | grep 'PREFIX=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_PREFIX}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^PREFIX=/c\PREFIX=\"${THIS_LAN_PREFIX}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "PREFIX=\"${THIS_LAN_PREFIX}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "PREFIX=\"${THIS_LAN_PREFIX}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set Boot Protocol
 					if [ $(cat "${NMCLI_CONF}" | grep 'BOOTPROTO=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^BOOTPROTO=/c\BOOTPROTO=\"none\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^BOOTPROTO=/c\BOOTPROTO=\"none\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "BOOTPROTO=\"none\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "BOOTPROTO=\"none\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set PEERDNS
 					if [ $(cat "${NMCLI_CONF}" | grep 'PEERDNS=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^PEERDNS=/c\PEERDNS=\"no\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^PEERDNS=/c\PEERDNS=\"no\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "PEERDNS=\"no\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "PEERDNS=\"no\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Prep Hostname
 					if [ -n "${DNS_SEARCH_DOMAIN}" ]; then
-						SET_HOSTNAME="$(hostname).${DNS_SEARCH_DOMAIN}";
+            SET_HOSTNAME="$(hostname).${DNS_SEARCH_DOMAIN}";
 					else
-						SET_HOSTNAME="$(hostname)";
+            SET_HOSTNAME="$(hostname)";
 					fi;
 
 					# Set Hostname in NIC config
 					if [ $(cat "${NMCLI_CONF}" | grep 'HOSTNAME=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^HOSTNAME=/c\HOSTNAME=\"${SET_HOSTNAME}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^HOSTNAME=/c\HOSTNAME=\"${SET_HOSTNAME}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "HOSTNAME=\"${SET_HOSTNAME}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "HOSTNAME=\"${SET_HOSTNAME}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set Hostname in SYSTEM config
 					if [ $(cat "${NETWORK_SYSCONF}" | grep 'HOSTNAME=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^HOSTNAME=/c\HOSTNAME=\"${SET_HOSTNAME}\"" "${NETWORK_SYSCONF}";
+            echo "";
+            sed -i -e "/^HOSTNAME=/c\HOSTNAME=\"${SET_HOSTNAME}\"" "${NETWORK_SYSCONF}";
 					else
-						echo "";
-						echo "HOSTNAME=\"${SET_HOSTNAME}\"" >> "${NETWORK_SYSCONF}";
+            echo "";
+            echo "HOSTNAME=\"${SET_HOSTNAME}\"" >> "${NETWORK_SYSCONF}";
 					fi;
 
 					# Set Domainname in NIC config
 					if [ $(cat "${NMCLI_CONF}" | grep 'DOMAIN=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^DOMAIN=/c\DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^DOMAIN=/c\DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# Set Domainname in SYSTEM config
 					if [ $(cat "${NETWORK_SYSCONF}" | grep 'DOMAIN=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^DOMAIN=/c\DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" "${NETWORK_SYSCONF}";
+            echo "";
+            sed -i -e "/^DOMAIN=/c\DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" "${NETWORK_SYSCONF}";
 					else
-						echo "";
-						echo "DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" >> "${NETWORK_SYSCONF}";
+            echo "";
+            echo "DOMAIN=\"${DNS_SEARCH_DOMAIN}\"" >> "${NETWORK_SYSCONF}";
 					fi;
 
 					# ------------------------------------------------------------
@@ -409,38 +409,38 @@ else
 
 					# DNS Nameserver #1 -> Device Config
 					if [ $(cat "${NMCLI_CONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^DNS1=/c\DNS1=\"${DNS_NAMESRVR_1}\"" "${NMCLI_CONF}";
+            echo "";
+            sed -i -e "/^DNS1=/c\DNS1=\"${DNS_NAMESRVR_1}\"" "${NMCLI_CONF}";
 					else
-						echo "";
-						echo "DNS1=\"${DNS_NAMESRVR_1}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "DNS1=\"${DNS_NAMESRVR_1}\"" >> "${NMCLI_CONF}";
 					fi;
 					# DNS Nameserver #2 -> Device Config
 					if [ $(cat "${NMCLI_CONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
-						sed -i -e "/^DNS2=/c\DNS2=\"${DNS_NAMESRVR_2}\"" "${NMCLI_CONF}";
-						echo "";
+            sed -i -e "/^DNS2=/c\DNS2=\"${DNS_NAMESRVR_2}\"" "${NMCLI_CONF}";
+            echo "";
 					else
-						echo "";
-						echo "DNS2=\"${DNS_NAMESRVR_2}\"" >> "${NMCLI_CONF}";
+            echo "";
+            echo "DNS2=\"${DNS_NAMESRVR_2}\"" >> "${NMCLI_CONF}";
 					fi;
 
 					# ------------------------------------------------------------
 
 					# DNS Nameserver #1 -> System Config
 					if [ $(cat "${NETWORK_SYSCONF}" | grep 'DNS1=' | wc -l;) -gt 0 ]; then
-						echo "";
-						sed -i -e "/^DNS1=/c\DNS1=\"${DNS_NAMESRVR_1}\"" "${NETWORK_SYSCONF}";
+            echo "";
+            sed -i -e "/^DNS1=/c\DNS1=\"${DNS_NAMESRVR_1}\"" "${NETWORK_SYSCONF}";
 					else
-						echo "";
-						echo "DNS1=\"${DNS_NAMESRVR_1}\"" >> "${NETWORK_SYSCONF}";
+            echo "";
+            echo "DNS1=\"${DNS_NAMESRVR_1}\"" >> "${NETWORK_SYSCONF}";
 					fi;
 					# DNS Nameserver #2 -> System Config
 					if [ $(cat "${NETWORK_SYSCONF}" | grep 'DNS2=' | wc -l;) -gt 0 ]; then
-						sed -i -e "/^DNS2=/c\DNS2=\"${DNS_NAMESRVR_2}\"" "${NETWORK_SYSCONF}";
-						echo "";
+            sed -i -e "/^DNS2=/c\DNS2=\"${DNS_NAMESRVR_2}\"" "${NETWORK_SYSCONF}";
+            echo "";
 					else
-						echo "";
-						echo "DNS2=\"${DNS_NAMESRVR_2}\"" >> "${NETWORK_SYSCONF}";
+            echo "";
+            echo "DNS2=\"${DNS_NAMESRVR_2}\"" >> "${NETWORK_SYSCONF}";
 					fi;
 
 					# ------------------------------------------------------------
@@ -580,17 +580,17 @@ else
 					# ------------------------------------------------------------
 					# Set /etc/dhcpcd.conf
 					if [ -f "${ETC_DHCPCD_CONF}" ]; then
-						sed_remove_whitespace_lines='/^\s*$/d';
-						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^# static IP configuration/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^interface ${THIS_LAN_NIC}/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static ip_address=/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static routers=/d" "${ETC_DHCPCD_CONF}";
-						sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static domain_name_servers=/d" "${ETC_DHCPCD_CONF}";
-						echo "# static IP configuration" >> "${ETC_DHCPCD_CONF}";
-						echo "interface ${THIS_LAN_NIC}" >> "${ETC_DHCPCD_CONF}";
-						echo "static ip_address=${SET_STATIC_IPV4}" >> "${ETC_DHCPCD_CONF}";
-						echo "static routers=${THIS_GATEWAY_IPV4}" >> "${ETC_DHCPCD_CONF}";
-						echo "static domain_name_servers=${DNS_NAMESRVR_1}" >> "${ETC_DHCPCD_CONF}";
+            sed_remove_whitespace_lines='/^\s*$/d';
+            sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^# static IP configuration/d" "${ETC_DHCPCD_CONF}";
+            sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^interface ${THIS_LAN_NIC}/d" "${ETC_DHCPCD_CONF}";
+            sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static ip_address=/d" "${ETC_DHCPCD_CONF}";
+            sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static routers=/d" "${ETC_DHCPCD_CONF}";
+            sed -i".$(date +'%Y%m%d_%H%M%S').bak" -e "/^static domain_name_servers=/d" "${ETC_DHCPCD_CONF}";
+            echo "# static IP configuration" >> "${ETC_DHCPCD_CONF}";
+            echo "interface ${THIS_LAN_NIC}" >> "${ETC_DHCPCD_CONF}";
+            echo "static ip_address=${SET_STATIC_IPV4}" >> "${ETC_DHCPCD_CONF}";
+            echo "static routers=${THIS_GATEWAY_IPV4}" >> "${ETC_DHCPCD_CONF}";
+            echo "static domain_name_servers=${DNS_NAMESRVR_1}" >> "${ETC_DHCPCD_CONF}";
 					fi;
 				fi;
 			fi;
@@ -609,12 +609,12 @@ else
 					DNS_SEARCH_LINES_FOUND=$(cat "${DEBIAN_NETWORK_CONF}" | grep 'dns-search ' | wc -l);
 					DOMAIN_BIND_TO_ETH0="${DNS_SEARCH_DOMAIN}";
 					if [ "${DNS_SEARCH_LINES_FOUND}" == "0" ]; then
-						# add the "dns-search" line
-						echo "dns-search ${DOMAIN_BIND_TO_ETH0}" >>  "${DEBIAN_NETWORK_CONF}";
+            # add the "dns-search" line
+            echo "dns-search ${DOMAIN_BIND_TO_ETH0}" >>  "${DEBIAN_NETWORK_CONF}";
 					else
-						# modify the "dns-search" line
-						SED_DNS_SEARCH="/^dns-search/c\dns-search ${DOMAIN_BIND_TO_ETH0}";
-						sed --in-place --expression="${SED_DNS_SEARCH}" "${DEBIAN_NETWORK_CONF}";
+            # modify the "dns-search" line
+            SED_DNS_SEARCH="/^dns-search/c\dns-search ${DOMAIN_BIND_TO_ETH0}";
+            sed --in-place --expression="${SED_DNS_SEARCH}" "${DEBIAN_NETWORK_CONF}";
 					fi;
 
 				else
@@ -664,12 +664,12 @@ else
 				if [ -d "${SystemNetworkConfDir}" ]; then
 					echo -e "\n""Info:  Searching \"${SystemNetworkConfDir}\" for DNS config-files...";
 					for EachNetworkFile in ${SystemNetworkConfDir}/*; do
-						if [ -f "${EachNetworkFile}" ]; then
+            if [ -f "${EachNetworkFile}" ]; then
               echo "Applying DNS Configuration to Network File: \"${EachNetworkFile}\"";
               sed --in-place --expression="${sed_001}" --expression="${sed_002}" --expression="${sed_003}" --expression="${sed_004}" "${EachNetworkFile}";
-						else
+            else
               echo "Skipping item with invalid filetype: \"${EachNetworkFile}\"";
-						fi;
+            fi;
 					done;
 				fi;
 				REFRESH_DNS_FILE="1";
@@ -707,9 +707,9 @@ else
 					echo "${DASHES}"; cat "${SystemResolveConf}"; echo "${DASHES}";
 
 					if [ -n "${CAN_USE_SYSRESOLVE_STATUS}" ]; then
-						# Show "systemd-resolve --status" command's output AFTER-EDITS (shows live DNS setup)
-						echo -e "\n""Info:  Calling [systemd-resolve --status]";
-						echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
+            # Show "systemd-resolve --status" command's output AFTER-EDITS (shows live DNS setup)
+            echo -e "\n""Info:  Calling [systemd-resolve --status]";
+            echo "${DASHES}"; echo "$(systemd-resolve --status)"; echo "${DASHES}"; ## Must use echo "$(systemd-resolve --status)" to avoid scroll-lock (which holds up entire program)
 					fi;
 				fi;
 			fi;

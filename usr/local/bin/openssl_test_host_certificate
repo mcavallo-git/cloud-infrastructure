@@ -132,12 +132,12 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
 					echo "";
 					read -p "  Do you want to use protocol-specific (STARTTLS) messaging (openssl s_client -starttls \"${PROTO_STARTTLS}\")? (y/n)  " -n 1 -t 60 -r; # Await single keypress
 					if [[ $REPLY =~ ^[Yy]$ ]]; then
-						echo "Confirmed";
-						echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
+            echo "Confirmed";
+            echo "Protocol-specific (STARTTLS) messaging WILL be used (openssl s_client -starttls \"${PROTO_STARTTLS}\")";
 					else
-						echo "Denied";
-						echo "Protocol-specific (STARTTLS) messaging will NOT be used (REMOVED: openssl s_client -starttls \"${PROTO_STARTTLS}\")";
-						PROTO_STARTTLS="";
+            echo "Denied";
+            echo "Protocol-specific (STARTTLS) messaging will NOT be used (REMOVED: openssl s_client -starttls \"${PROTO_STARTTLS}\")";
+            PROTO_STARTTLS="";
 					fi;
 				else
 					echo "";

@@ -132,13 +132,13 @@ else
 				# Reload NGINX (if found locally)
 				if [ $(which nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
 					if [ $(which reload_nginx 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Command exists
-						echo "";
-						echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
-						reload_nginx;
+            echo "";
+            echo "$(date +'%D  %r')   Calling [ reload_nginx ]...";
+            reload_nginx;
 					else
-						echo "";
-						echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
-						nginx -t && sleep 1 && /usr/sbin/service nginx stop;
+            echo "";
+            echo "$(date +'%D  %r')   Calling [ nginx -t && sleep 1 && /usr/sbin/service nginx stop; ]...";
+            nginx -t && sleep 1 && /usr/sbin/service nginx stop;
 					fi;
 				else
 					echo "";

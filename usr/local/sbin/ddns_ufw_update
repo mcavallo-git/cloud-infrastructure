@@ -304,12 +304,12 @@ else
 					sed '/^[[:space:]]*#/d' | \
 					while read EACH_WHITELIST_LINE;	do
 
-						if [ ${DEBUG_MODE} -eq 1 ]; then
+            if [ ${DEBUG_MODE} -eq 1 ]; then
               echo "";
               echo "Debug:  EACH_WHITELIST_LINE = [ ${EACH_WHITELIST_LINE} ]";
-						fi;
+            fi;
 
-						if [ -n "${EACH_WHITELIST_LINE}" ]; then
+            if [ -n "${EACH_WHITELIST_LINE}" ]; then
 
               HAYSTACK_TO_SEARCH="${EACH_WHITELIST_LINE}";
               CHAR_DELIMITER="|";
@@ -476,7 +476,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
               fi;
 
-						fi;
+            fi;
 
 					done;
 
@@ -570,9 +570,9 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 			if [ "${EACH_UFW_CIDRv4}" == "${EACH_RESOLVED_CIDRv4}" ]; then # Matched on valid Port
 				if [ "${EACH_UFW_PORT}" == "${EACH_RESOLVED_PORT}" ]; then # Matched on valid Port
 					if [ "${EACH_UFW_PROTO}" == "${EACH_RESOLVED_PROTO}" ]; then # Matched on valid Protocol
-						# All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
-						DELETE_RULE=0;
-						break;
+            # All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
+            DELETE_RULE=0;
+            break;
 					fi;
 				fi;
 			fi;

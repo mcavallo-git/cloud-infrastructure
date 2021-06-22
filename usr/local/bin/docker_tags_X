@@ -85,18 +85,18 @@ else
 
 					unset DOCKER_RUN_ARR; declare DOCKER_RUN_ARR; # [Re-]instantiate bash array
 					if [ -v DOCKER_RUN_ARGS ] && [ -n "${DOCKER_RUN_ARGS}" ]; then
-						# Apply predefined docker-run arguments
-						DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
+            # Apply predefined docker-run arguments
+            DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
 					else
-						read -p "Bash into the docker, now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
-						if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+            read -p "Bash into the docker, now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
+            if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               # Create & Bash into the Docker
               DOCKER_RUN_ARR+=("-i -t --rm ${DOCKER_IMAGE_WITH_TAG} /bin/bash");
-						else
+            else
               # Create the Docker as a Background process
               DOCKER_RUN_ARR+=("-d");
               DOCKER_RUN_ARR+=("${DOCKER_IMAGE_WITH_TAG}");
-						fi;
+            fi;
 					fi;
 
 					echo -e "\n""Info: Calling [ docker run ${DOCKER_RUN_ARR[@]} ]...""\n";

@@ -84,7 +84,7 @@ else
 					echo "";
 					READ_TIMEOUT=60; read -p "Install/run UniFi from a Docker container? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
 					if [ ${RETURN_CODE_READ} -le 128 ] && [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-						USE_DOCKER_CONTAINER=1;
+            USE_DOCKER_CONTAINER=1;
 					fi;
 				fi;
 			fi;

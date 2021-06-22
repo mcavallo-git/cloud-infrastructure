@@ -73,10 +73,10 @@ else
 
 					MY_GROUPS=( $(groups ${USER}) );
 					for EACH_GNAME in "${MY_GROUPS[@]}"; do
-						if [[ ${STAT_GNAME} == ${EACH_GNAME} ]]; then # User is a member of the group which has write-access
+            if [[ ${STAT_GNAME} == ${EACH_GNAME} ]]; then # User is a member of the group which has write-access
               STAT_WRITABLE="1";
               break;
-						fi;
+            fi;
 					done;
 
 			elif (( (${STAT_CHMOD} & 0200) != 0 )); then # The owner has write access

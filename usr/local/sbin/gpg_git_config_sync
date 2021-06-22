@@ -157,28 +157,28 @@ fi;
 
 START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
 
-# USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
-# USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
+# USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
+# USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
 
-APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
-APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; APPDATA_WIN32="${MM}";
+APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
+APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; APPDATA_WIN32="${MM}";
 
-LOCALAPPDATA_LINUX=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; LOCALAPPDATA_LINUX="${MM}";
-LOCALAPPDATA_WIN32=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; LOCALAPPDATA_WIN32="${MM}";
+LOCALAPPDATA_LINUX=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; LOCALAPPDATA_LINUX="${MM}";
+LOCALAPPDATA_WIN32=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; LOCALAPPDATA_WIN32="${MM}";
 
 TEMP_FILES_LINUX=""; MM="${LOCALAPPDATA_LINUX}/Temp";
 TEMP_FILES_WIN32=""; MM="${LOCALAPPDATA_WIN32}\\Temp\\${START_TIMESTAMP}";
 
 PROG_FILES_X64_W_FALLBACK=${PROGRAMFILES:-C:\\Program Files};
-PROG_FILES_X64_LINUX=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; PROG_FILES_X64_LINUX="${MM}";
-PROG_FILES_X64_WIN32=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; PROG_FILES_X64_WIN32="${MM}";
+PROG_FILES_X64_LINUX=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; PROG_FILES_X64_LINUX="${MM}";
+PROG_FILES_X64_WIN32=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; PROG_FILES_X64_WIN32="${MM}";
 
 PROG_FILES_X86_LINUX="${PROG_FILES_X64_LINUX} (x86)";
 PROG_FILES_X86_WIN32="${PROG_FILES_X64_WIN32} (x86)";
 
 PROG_DATA_W_FALLBACK=${ProgramData:-C:\\ProgramData};
-PROG_DATA_LINUX=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; PROG_DATA_LINUX="${MM}";
-PROG_DATA_WIN32=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; PROG_DATA_WIN32="${MM}";
+PROG_DATA_LINUX=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; PROG_DATA_LINUX="${MM}";
+PROG_DATA_WIN32=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; PROG_DATA_WIN32="${MM}";
 
 TEMPDIR_LINUX="${LOCALAPPDATA_LINUX}/Temp";
 TEMPDIR_WIN32="${LOCALAPPDATA_WIN32}\\Temp";
@@ -187,8 +187,8 @@ TEMPDIR_WIN32="${LOCALAPPDATA_WIN32}\\Temp";
 # Git Default Path(s)
 
 GIT_EXE_DEFAULT_DIR="${EXEPATH:-${PROGRAMFILES:-C:\\Program Files}\\Git}\usr\bin";
-GIT_EXE_DIR_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GIT_EXE_DIR_LINUX="${MM}";
-GIT_EXE_DIR_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DIR_WIN32="${MM}";
+GIT_EXE_DIR_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GIT_EXE_DIR_LINUX="${MM}";
+GIT_EXE_DIR_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DIR_WIN32="${MM}";
 
 GIT_CONF_SYSTEM_PATHS_LINUX="${TEMP_FILES_LINUX}/git.config.system.${START_TIMESTAMP}.txt";
 GIT_CONF_SYSTEM_PATHS_WIN32="${TEMP_FILES_LINUX}\\git.config.system.${START_TIMESTAMP}.txt";
@@ -208,15 +208,16 @@ GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 # ------------------------------------------------------------
 
 # Check if running as w/ administrative privileges (or not)
-IS_ADMIN=$(net session > /dev/null 2>&1; if [ "$?" -ne "0" ]; then echo 0; else echo 1; fi;);
-if [ "${IS_ADMIN}" == "0" ]; then
-  echo "";
-  echo "Error: Must \"Run as Administrator\" on the Git Bash terminal";
-  echo "";
-  sleep 60;
-  exit 1;
+# IS_ADMIN=$(net session > /dev/null 2>&1; if [ "$?" -ne "0" ]; then echo 0; else echo 1; fi;);
+# if [ "${IS_ADMIN}" == "0" ]; then
+#   echo "";
+#   echo "Error: Must \"Run as Administrator\" on the Git Bash terminal";
+#   echo "";
+#   sleep 60;
+#   exit 1;
 
-elif [ ! -e "${GPG4WIN_GPG_EXE_LINUX}" ]; then
+# el
+if [ ! -e "${GPG4WIN_GPG_EXE_LINUX}" ]; then
   #
   # Gpg4win --> GnuPG Key Hander
   #   Make sure that "Gpg4win" is installed, as it both upgrades Git's default "gpg.exe" runtime, and
@@ -237,8 +238,15 @@ fi;
 ROLLBACK_IFS="${IFS}";
 IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 
-GIT_CONF_SYSTEM_FILE_1=$(realpath "/c/ProgramData/Git/config" 2>/dev/null);
-GIT_CONF_SYSTEM_FILE_2=$(realpath "/c/Program Files/Git/mingw64/etc/gitconfig" 2>/dev/null);
+DISK_ROOT="";
+if [ -d "${DISK_ROOT}" ]; then
+DISK_ROOT="${DISK_ROOT}";
+elif [ -d "/mnt/c" ]; then
+DISK_ROOT="/mnt/c";
+fi;
+
+GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>/dev/null);
+GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/mingw64/etc/gitconfig" 2>/dev/null);
 
 GIT_CONF_GLOBAL_FILE_1=$(realpath "${HOME}/.gitconfig" 2>/dev/null);
 GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${HOME}}/git/config" 2>/dev/null);
@@ -272,18 +280,18 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
   2>"/dev/null" \
   | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
-    EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
-    EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
+    EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
+    EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
 
     SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-    SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
+    SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
     SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
     if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
       echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
     fi;
 
     GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-    GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/\/c}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
+    GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
     GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
     if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
       echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";
@@ -320,12 +328,12 @@ fi;
 #
 
 GPG_PINENTRY_EXE="";
-if [ -f "/c/Program Files (x86)/GnuPG/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/bin/pinentry.exe");
-elif [ -f "/c/Program Files (x86)/GnuPG/../Gpg4win/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/../Gpg4win/bin/pinentry.exe");
-elif [ -f "/c/Program Files (x86)/GnuPG/../Gpg4win/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/../Gpg4win/pinentry.exe");
-elif [ -f "/c/Program Files (x86)/GnuPG/../GNU/GnuPG/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/../GNU/GnuPG/pinentry.exe");
-elif [ -f "/c/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe");
-elif [ -f "/c/Program Files (x86)/GnuPG/bin/pinentry-basic.exe" ]; then GPG_PINENTRY_EXE=$(realpath "/c/Program Files (x86)/GnuPG/bin/pinentry-basic.exe");
+if [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry.exe");
+elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/../Gpg4win/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/../Gpg4win/bin/pinentry.exe");
+elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/../Gpg4win/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/../Gpg4win/pinentry.exe");
+elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/../GNU/GnuPG/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/../GNU/GnuPG/pinentry.exe");
+elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe");
+elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry-basic.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry-basic.exe");
 fi;
 
 echo "Info: GnuPG exe - Git  (gpg.exe) :  \"${GIT_EXE_DIR_LINUX}/gpg.exe\"";
@@ -362,20 +370,20 @@ mkdir --parents --verbose "$(realpath ${HOME})/.gnupg";
 mkdir --parents --verbose "$(realpath ${APPDATA_LINUX})/gnupg";
 
 USERPROFILE_GNUPG_LINUX="$(realpath ${HOME}/.gnupg)";
-USERPROFILE_GNUPG_WIN32=""; MM="${USERPROFILE_GNUPG_LINUX/\/c\//C:\\}"; USERPROFILE_GNUPG_WIN32="${MM//\//\\}";
+USERPROFILE_GNUPG_WIN32=""; MM="${USERPROFILE_GNUPG_LINUX/${DISK_ROOT}\//C:\\}"; USERPROFILE_GNUPG_WIN32="${MM//\//\\}";
 
 GCONF_USERPROFILE_LINUX="${USERPROFILE_GNUPG_LINUX}/gpg-agent.conf";
 GCONF_USERPROFILE_WIN32="${USERPROFILE_GNUPG_WIN32}\gpg-agent.conf";
 
 GCONF_APPDATA_DIR_LINUX="$(realpath ${APPDATA_LINUX}/gnupg)";
-GCONF_APPDATA_DIR_WIN32=""; MM="${GCONF_APPDATA_DIR_LINUX/\/c\//C:\\}"; GCONF_APPDATA_DIR_WIN32="${MM//\//\\}";
+GCONF_APPDATA_DIR_WIN32=""; MM="${GCONF_APPDATA_DIR_LINUX/${DISK_ROOT}\//C:\\}"; GCONF_APPDATA_DIR_WIN32="${MM//\//\\}";
 
 GCONF_APPDATA_LINUX="${GCONF_APPDATA_DIR_LINUX}/gpg-agent.conf";
 GCONF_APPDATA_WIN32="${GCONF_APPDATA_DIR_WIN32}\gpg-agent.conf";
 
 # Find the primary config-file, then compare it to the possible config-locations, above
-GCONF_PRIMARY_DIR_LINUX=""; MM="${GPG_CONFIG_DIR/C://c}"; MM="${MM//\\//}"; GCONF_PRIMARY_DIR_LINUX="$(realpath ${MM})";
-GCONF_PRIMARY_DIR_WIN32=""; MM="${GPG_CONFIG_DIR/\/c\//C:\\}"; GCONF_PRIMARY_DIR_WIN32="${MM//\//\\}";
+GCONF_PRIMARY_DIR_LINUX=""; MM="${GPG_CONFIG_DIR/C:/${DISK_ROOT}}"; MM="${MM//\\//}"; GCONF_PRIMARY_DIR_LINUX="$(realpath ${MM})";
+GCONF_PRIMARY_DIR_WIN32=""; MM="${GPG_CONFIG_DIR/${DISK_ROOT}\//C:\\}"; GCONF_PRIMARY_DIR_WIN32="${MM//\//\\}";
 
 GCONF_PRIMARY_LINUX="${GCONF_PRIMARY_DIR_LINUX}/gpg-agent.conf";
 GCONF_PRIMARY_WIN32="${GCONF_PRIMARY_DIR_WIN32}\gpg-agent.conf";
@@ -656,8 +664,8 @@ fi;
   
   echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
     # Verify each path exists before excluding it (otherwise it doesn't matter)
-    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
-    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
+    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
+    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
     if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
       EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
       DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
@@ -740,8 +748,8 @@ fi;
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
           echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
-          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
-          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
           # SSH_KEY="${EACH_SSH_KEY_WIN32}";
           SSH_KEY="${EACH_SSH_KEY_LINUX}";
           COMMIT_EMAIL="${TEST_EMAIL}";
@@ -769,8 +777,8 @@ fi;
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
           echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
-          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
-          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
+          EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
+          EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
           # SSH_KEY="${EACH_SSH_KEY_WIN32}";
           SSH_KEY="${EACH_SSH_KEY_LINUX}";
           COMMIT_EMAIL="${TEST_EMAIL}";
@@ -800,8 +808,8 @@ fi;
       cd "${EACH_REPO_FULLPATH}";
 
       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-      GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
-      GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
+      GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
+      GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 
       # SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
@@ -874,7 +882,7 @@ exit 0;
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-#     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+#     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 #     # Strings
@@ -915,7 +923,7 @@ exit 0;
 #     if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #       cd "${REPOS_DIR}/${REPO}";
 #       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-#       GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+#       GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #       echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 #       # Strings
@@ -976,7 +984,7 @@ exit 0;
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-#     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+#     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 #     # Strings
@@ -1016,7 +1024,7 @@ exit 0;
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
 #     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-#     GET_PATH="${GET_PATH/C:/\/c}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
+#     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
 #     # Strings

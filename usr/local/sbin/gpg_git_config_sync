@@ -167,9 +167,18 @@ fi;
 # USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
 
+WIN32_USERNAME=$(get_username_windows_wsl);
+
 if [ ! -v APPDATA ]; then
-  WIN32_USERNAME=$(get_username_windows_wsl);
   export APPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Roaming";
+fi;
+
+if [ ! -v LOCALAPPDATA ]; then
+  export LOCALAPPDATA="${DISK_ROOT}/Users/${WIN32_USERNAME}/AppData/Local";
+fi;
+
+if [ ! -v ProgramData ]; then
+  export ProgramData="${DISK_ROOT}/ProgramData";
 fi;
 
 if [ ! -v PROGRAMFILES ]; then

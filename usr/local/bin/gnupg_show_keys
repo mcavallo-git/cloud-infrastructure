@@ -3,12 +3,14 @@
 # Check GPG Key(s) saved locally
 #
 
-GnuPG_PrimaryKeyID=$(gpg --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^sec\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
-GnuPG_SecondaryKeyID=$(gpg --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^ssb\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
-GnuPG_PrimaryPrivateKey=$(gpg --armor --export-secret-keys "${GnuPG_PrimaryKeyID}");
-GnuPG_PrimaryPublicKey=$(gpg --armor --export "${GnuPG_PrimaryKeyID}");
-GnuPG_SecondaryPrivateKey=$(gpg --armor --export-secret-keys "${GnuPG_SecondaryKeyID}");
-GnuPG_SecondaryPublicKey=$(gpg --armor --export "${GnuPG_SecondaryKeyID}");
+GPG_CLI="$(which gpg)";
+
+GnuPG_PrimaryKeyID=$(${GPG_CLI} --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^sec\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
+GnuPG_SecondaryKeyID=$(${GPG_CLI} --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^ssb\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
+GnuPG_PrimaryPrivateKey=$(${GPG_CLI} --armor --export-secret-keys "${GnuPG_PrimaryKeyID}");
+GnuPG_PrimaryPublicKey=$(${GPG_CLI} --armor --export "${GnuPG_PrimaryKeyID}");
+GnuPG_SecondaryPrivateKey=$(${GPG_CLI} --armor --export-secret-keys "${GnuPG_SecondaryKeyID}");
+GnuPG_SecondaryPublicKey=$(${GPG_CLI} --armor --export "${GnuPG_SecondaryKeyID}");
 
 OutputDirname="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d%H%M%S')";
 

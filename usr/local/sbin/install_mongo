@@ -147,9 +147,9 @@ security:
 
     # ------------------------------------------------------------
     # Setup replication
-# 		CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')";
-# 		CURRENT_REPL_DISABLED="$(cat /etc/mongod.conf | grep '#replication:')";
-# 		if [ -z "${CURRENT_REPL_SET_NAME}" ] && [ -n "${CURRENT_REPL_DISABLED}" ]; then
+#     CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')";
+#     CURRENT_REPL_DISABLED="$(cat /etc/mongod.conf | grep '#replication:')";
+#     if [ -z "${CURRENT_REPL_SET_NAME}" ] && [ -n "${CURRENT_REPL_DISABLED}" ]; then
 #       echo ""; read -p "Enable replication for mongod? (y/n)  " -n 1 -t 60 -r; echo "";
 #       if [[ $REPLY =~ ^[Yy]$ ]]; then
 #         echo ""; read -p "Enter the name of the replication set to join:  " -t 60 -r; echo "";
@@ -166,7 +166,7 @@ security:
 #           service mongod restart;
 #         fi;
 #       fi;
-# 		fi;
+#     fi;
 
 
   # ------------------------------------------------------------

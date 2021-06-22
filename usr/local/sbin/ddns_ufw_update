@@ -422,11 +422,11 @@ else
                     # 	# Existing array-index (CIDRv4) & value (port(s))
                     # 	#   |--> Another host already resolved to this CIDRv4 --> Use check for match on whitelisted-port (within current array-index's value)
                     # 	if [[ ",${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]}," = *",${RESOLVED_PORT_PROTO},"* ]]; then
-                    # 		# Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
-                    # 		echo "" 1>'/dev/null' 2>&1;  # Do nothing
+                    #     # Another host AND port combo already matches this iteration exactly --> skip adding it to the array as it is merely a duplicate
+                    #     echo "" 1>'/dev/null' 2>&1;  # Do nothing
                     # 	else
-                    # 		# CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
-                    # 		RESOLVED_CIDRv4_ARR["${RESOLVED_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]},${RESOLVED_PORT_PROTO}";
+                    #     # CIDRv4 index exists, but new port to-whitelist --> add it to array-index's value using comma delimitation
+                    #     RESOLVED_CIDRv4_ARR["${RESOLVED_CIDRv4}"]="${RESOLVED_CIDRv4_ARR[${RESOLVED_CIDRv4}]},${RESOLVED_PORT_PROTO}";
                     # 	fi;
                     # else
                     # 	# New array-index (CIDRv4) & value (port)
@@ -515,31 +515,31 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   # 	RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${EACH_PORT_PROTO_W_COMMAS}" | tr ',' ' '));
   # 	RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
   # 	if [ ${DEBUG_MODE} -eq 1 ]; then
-  # 		echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
-  # 		echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
-  # 		echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
-  # 		echo "Debug:  EACH_PORT_PROTO_W_COMMAS = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
-  # 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
-  # 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
+  #     echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+  #     echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
+  #     echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
+  #     echo "Debug:  EACH_PORT_PROTO_W_COMMAS = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+  #     echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
+  #     echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
   # 	fi;
   # 	for EACH_RESOLVED_PORT_PROTO in "${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]}"; do
-  # 		EACH_RESOLVED_PORT="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1)";
-  # 		EACH_RESOLVED_PROTO="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f2)";
-  # 		if [ ${DEBUG_MODE} -eq 1 ]; then
+  #     EACH_RESOLVED_PORT="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1)";
+  #     EACH_RESOLVED_PROTO="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f2)";
+  #     if [ ${DEBUG_MODE} -eq 1 ]; then
   #       echo "-- Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
   #       echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
   #       echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
-  # 		fi;
-  # 		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-  # 		if [ ${DEBUG_MODE} -eq 1 ]; then
+  #     fi;
+  #     # !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+  #     if [ ${DEBUG_MODE} -eq 1 ]; then
   #       echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
-  # 		fi;
-  # 		ADD_RULE_SKIPPED=0;
-  # 		add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
-  # 		if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
+  #     fi;
+  #     ADD_RULE_SKIPPED=0;
+  #     add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
+  #     if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
   #       # Add the inverse of new rule to the undo-changes array
   #       UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
-  # 		fi;
+  #     fi;
   # 	done;
   # done;
 
@@ -584,31 +584,31 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
     # if [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]+X} ]; then # Matched on valid CIDRv4
     # 	VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
     # 	if [ ${DEBUG_MODE} -eq 1 ]; then
-    # 		echo "Debug:  Matched on CIDRv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
-    # 		echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
+    #     echo "Debug:  Matched on CIDRv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_CIDRv4}]}";
+    #     echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
     # 	fi;
     # elif [ ${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]+X} ]; then # Matched on valid CIDRv4
     # 	VALID_CIDRv4_PORT_PROTO="${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
     # 	if [ ${DEBUG_MODE} -eq 1 ]; then
-    # 		echo "Debug:  Matched on IPv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
-    # 		echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
+    #     echo "Debug:  Matched on IPv4 index of \${RESOLVED_CIDRv4_ARR[${EACH_UFW_IPv4}]}";
+    #     echo "Debug:  VALID_CIDRv4_PORT_PROTO = [ ${VALID_CIDRv4_PORT_PROTO} ]";
     # 	fi;
     # fi;
     #
     # if [ -n "${VALID_CIDRv4_PORT_PROTO}" ]; then
     # 	RESOLVED_PORT_PROTOS="${VALID_CIDRv4_PORT_PROTO}";
     # 	if [ ${DEBUG_MODE} -eq 1 ]; then
-    # 		echo "Debug:  Matched on valid CIDRv4";
-    # 		echo "Debug:  RESOLVED_PORT_PROTOS = [ ${RESOLVED_PORT_PROTOS} ]";
+    #     echo "Debug:  Matched on valid CIDRv4";
+    #     echo "Debug:  RESOLVED_PORT_PROTOS = [ ${RESOLVED_PORT_PROTOS} ]";
     # 	fi;
     # 	for EACH_PORT_PROTO in $(echo ${RESOLVED_PORT_PROTOS} | sed "s/,/\n/g"); do # For each substring in a comma delimited string
-    # 		RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
-    # 		RESOLVED_PROTOCOL="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
-    # 		if [ ${DEBUG_MODE} -eq 1 ]; then
+    #     RESOLVED_PORT="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+    #     RESOLVED_PROTOCOL="$(echo "${EACH_PORT_PROTO}" | cut -d'/' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')";
+    #     if [ ${DEBUG_MODE} -eq 1 ]; then
     #       echo "Debug:  RESOLVED_PORT = [ ${RESOLVED_PORT} ]";
     #       echo "Debug:  RESOLVED_PROTOCOL = [ ${RESOLVED_PROTOCOL} ]";
-    # 		fi;
-    # 		if [ "${EACH_UFW_PORT}" == "${RESOLVED_PORT}" ]; then # Matched on valid Port
+    #     fi;
+    #     if [ "${EACH_UFW_PORT}" == "${RESOLVED_PORT}" ]; then # Matched on valid Port
     #       if [ "${EACH_UFW_PROTO}" == "${RESOLVED_PROTOCOL}" ]; then # Matched on valid Protocol
     #         # All 3 of the CIDRv4, Port, and Protocol match (do not delete this rule as it is being used as-intended)
     #         DELETE_RULE=0;
@@ -621,15 +621,15 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
     #           echo "Debug:  Match failed (protocol) - [ \"${EACH_UFW_PROTO}\" == \"${RESOLVED_PROTOCOL}\" ] returned false";
     #         fi;
     #       fi;
-    # 		else
+    #     else
     #       if [ ${DEBUG_MODE} -eq 1 ]; then
     #         echo "Debug:  Match failed (port) - [ \"${EACH_UFW_PORT}\" == \"${RESOLVED_PORT}\" ] returned false";
     #       fi;
-    # 		fi;
+    #     fi;
     # 	done;
     # else
     # 	if [ ${DEBUG_MODE} -eq 1 ]; then
-    # 		echo "Debug:  Existing rule [ \"${EACH_UFW_LINE}\" ] does not match any live resolved [ CIDRv4 + Port + Proto ] combinations";
+    #     echo "Debug:  Existing rule [ \"${EACH_UFW_LINE}\" ] does not match any live resolved [ CIDRv4 + Port + Proto ] combinations";
     # 	fi;
     # fi;
 

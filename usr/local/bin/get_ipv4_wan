@@ -37,38 +37,38 @@ LENGTH_WAN_IP=0;
 
 # Get current WAN IPv4
 for EACH_RESOLVER in "${IP_RESOLVERS[@]}"; do
-	if [ -z "${THIS_WAN_IPv4}" ] || [[ ${LENGTH_WAN_IP} -gt 15 ]]; then
+  if [ -z "${THIS_WAN_IPv4}" ] || [[ ${LENGTH_WAN_IP} -gt 15 ]]; then
     THIS_WAN_IPv4=$(curl -L -s "${EACH_RESOLVER}");
     LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IPv4}" | wc -c);
-	fi;
+  fi;
 done;
 
 # Output Status: PASS or FAIL
 if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
-	# Error: Clear Variables
-	RESPONSE_SRVR="";
-	THIS_WAN_IPv4="";
-	LENGTH_WAN_IP="";
-	# Error: Show Message
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to resolve WAN-IP";
-	# Error: Throw 'bad' return-code
-	exit 1;
+  # Error: Clear Variables
+  RESPONSE_SRVR="";
+  THIS_WAN_IPv4="";
+  LENGTH_WAN_IP="";
+  # Error: Show Message
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to resolve WAN-IP";
+  # Error: Throw 'bad' return-code
+  exit 1;
 else
-	# Success
-	if [ "${1}" == "verbose" ]; then
-	# "Verbose" output
+  # Success
+  if [ "${1}" == "verbose" ]; then
+  # "Verbose" output
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
     echo "";
-	elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
+  elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
     # "Quiet" output (NO trailing newline)
     echo -n "${THIS_WAN_IPv4}";
-	else
+  else
     # "Normal" output (output w/ newline)
     echo "${THIS_WAN_IPv4}";
-	fi;
-	# Exit w/ 'good' return-code
-	exit 0;
+  fi;
+  # Exit w/ 'good' return-code
+  exit 0;
 fi;
 
 #------------------------------------------------------------

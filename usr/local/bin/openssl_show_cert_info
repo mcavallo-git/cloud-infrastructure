@@ -10,13 +10,13 @@ echo -e "\n\n";
 
 if [ -z "$1" ] || [ ! -f "$1" ]; then
 
-	echo "  Error:  First argument (\$1) must contain the filepath of the certificate to show information-of";
+  echo "  Error:  First argument (\$1) must contain the filepath of the certificate to show information-of";
 
 else
 
-	openssl x509 -in "${1}" -text -noout;
+  openssl x509 -in "${1}" -text -noout;
 
-	EXIT_CODE=$?;
+  EXIT_CODE=$?;
 
 fi;
 

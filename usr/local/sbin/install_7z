@@ -23,14 +23,14 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 # ------------------------------------------------------------
 # Install 7-Zip Package
 
-	if [ $(which 7z 2>'/dev/null' | wc -l;) -eq 0 ]; then
+  if [ $(which 7z 2>'/dev/null' | wc -l;) -eq 0 ]; then
     if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
       apt-get -y update;
       apt-get -y install p7zip-full;
@@ -42,7 +42,7 @@ else
       rm -f "p7zip-16.02-10.el7.x86_64.rpm";
       rm -f "p7zip-plugins-16.02-10.el7.x86_64.rpm";
     fi;
-	fi;
+  fi;
 
 fi;
 

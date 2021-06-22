@@ -24,18 +24,18 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Install package repo & download/install package
-	if [ $(which mongo 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  # ------------------------------------------------------------
+  # Install package repo & download/install package
+  if [ $(which mongo 2>'/dev/null' | wc -l;) -gt 0 ]; then
     echo "";
     echo "Info: Command \"mongo\" already exists at path \"$(which mongo)\"";
     echo "  |--> Skipping package install";
 
-	else
+  else
     echo "";
     echo "Info: Command \"mongo\" not found";
     echo "  |--> Installing pre-required packages, then adding \"mongodb-org\" parent-repo & installing service-package...";
@@ -58,16 +58,16 @@ else
       echo -e "[mongodb-org-4.2]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.2/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc\n" > "/etc/yum.repos.d/mongodb-org-4.2.repo"; yum check-update; yum install -y mongodb-org;
     fi;
 
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	MONGO_USER_ROW=$(echo "$(id mongod 2>'/dev/null' || id mongodb 2>'/dev/null';)" | awk '{print $1}');
-	MONGO_UID=$(echo "${MONGO_USER_ROW}" | sed -rne 's/^uid=([0-9]+)\(.+\)$/\1/p';);
-	MONGO_UNAME=$(id -un "${MONGO_UID}");
-	MONGO_GNAME=$(id -gn "${MONGO_UNAME}");
+  # ------------------------------------------------------------
+  MONGO_USER_ROW=$(echo "$(id mongod 2>'/dev/null' || id mongodb 2>'/dev/null';)" | awk '{print $1}');
+  MONGO_UID=$(echo "${MONGO_USER_ROW}" | sed -rne 's/^uid=([0-9]+)\(.+\)$/\1/p';);
+  MONGO_UNAME=$(id -un "${MONGO_UID}");
+  MONGO_GNAME=$(id -gn "${MONGO_UNAME}");
 
-	if [ -n "$(id ${MONGO_UNAME} 2>'/dev/null';)" ]; then
+  if [ -n "$(id ${MONGO_UNAME} 2>'/dev/null';)" ]; then
 
     # Setup MongoDB directories
     mkdir -p "/var/lib/mongo";
@@ -169,20 +169,20 @@ security:
 # 		fi;
 
 
-	# ------------------------------------------------------------
-	# Removing/Downgrading MongoDB
-	if [ 0 -eq 1 ]; then
+  # ------------------------------------------------------------
+  # Removing/Downgrading MongoDB
+  if [ 0 -eq 1 ]; then
     yum -y remove mongodb-org;
     yum -y remove mongodb-org-shell;
     yum -y remove mongodb-org-tools;
     yum -y remove mongodb-org-mongos;
     yum -y remove mongodb-org-server;
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
 
-	fi;
+  fi;
 fi;
 
 

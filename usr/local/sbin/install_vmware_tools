@@ -24,16 +24,16 @@ exec 2>&1;
 #
 EXIT_CODE=0;
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	EXIT_CODE=1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  EXIT_CODE=1;
 else
-	# ------------------------------------------------------------
-	# Install VMware Tools
-	if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
+  # ------------------------------------------------------------
+  # Install VMware Tools
+  if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
     # Command IS found locally
     echo "Info:  Package already installed - VMware Tools v$(vmware-toolbox-cmd -v)";
-	else
+  else
     # Command NOT found locally
     echo "";
     echo "Info:  Installing VMware Tools package \"open-vm-tools\"";
@@ -55,7 +55,7 @@ else
       echo "Error during installation of VMware tools, exiting...";
       EXIT_CODE=1;
     fi;
-	fi;
+  fi;
 
 fi;
 

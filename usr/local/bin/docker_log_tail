@@ -2,8 +2,8 @@
 
 # Tail a Docker's Logfile
 if [ -n "${1}" ]; then
-	DOCKER_TARGET="$(docker ps | grep ${1} | awk '{print $1}')";
-	if [ -n "${DOCKER_TARGET}" ]; then
+  DOCKER_TARGET="$(docker ps | grep ${1} | awk '{print $1}')";
+  if [ -n "${DOCKER_TARGET}" ]; then
     if [ "$(echo ${DOCKER_TARGET} | wc -l)" == "1" ]; then
       DOCKER_LOGFILE="$(docker inspect --format='{{.LogPath}}' ${DOCKER_TARGET})";
       if [ -n "${DOCKER_LOGFILE}" ]; then
@@ -15,9 +15,9 @@ if [ -n "${1}" ]; then
     else
       echo -e "found more than 1 docker, please narrow search criteria";
     fi;
-	else
+  else
       echo -e "no containers found which match \"${1}\"\n";
-	fi;
+  fi;
 else
-	echo "please pass [a container name] or [a unique substring to target a container name]";
+  echo "please pass [a container name] or [a unique substring to target a container name]";
 fi;

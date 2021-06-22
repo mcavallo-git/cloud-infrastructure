@@ -6,33 +6,33 @@
 
 # Resolve current user's home-directory
 if [ -n "${HOME}" ]; then
-	USER_HOMEDIR="${HOME}";
+  USER_HOMEDIR="${HOME}";
 
 elif [ -n "${USERNAME}" ] && [ -n "$(which getent 2>'/dev/null';)" ] && [ -n "$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)" ]; then
-	USER_HOMEDIR="$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)";
+  USER_HOMEDIR="$(getent passwd ${USERNAME} | cut --delimiter=: --fields=6;)";
 
 elif [ -n "$(which realpath 2>'/dev/null';)" ] && [ -n "$(realpath ~;)" ]; then
-	USER_HOMEDIR="$(realpath ~)";
+  USER_HOMEDIR="$(realpath ~)";
 
 elif [ -n "$(which readlink 2>'/dev/null';)" ] && [ -n "$(readlink -f ~;)" ]; then
-	USER_HOMEDIR="$(readlink -f ~)";
+  USER_HOMEDIR="$(readlink -f ~)";
 
 fi;
 
 if [ -n "${USER_HOMEDIR}" ]; then
-	
-	# Define the fullpath for the log-directory
-	BASH_LOGDIR="${USER_HOMEDIR}/.bash-logs";
+  
+  # Define the fullpath for the log-directory
+  BASH_LOGDIR="${USER_HOMEDIR}/.bash-logs";
 
-	# Define the fullpath for the log-file
-	BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date +'%Y-%m-%d').log";
+  # Define the fullpath for the log-file
+  BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date +'%Y-%m-%d').log";
 
-	# Ensure the log-directory exists (create it if it doesn't)
-	if [ ! -d "${BASH_LOGDIR}" ] && [ -w "${USER_HOMEDIR}/" ]; then
+  # Ensure the log-directory exists (create it if it doesn't)
+  if [ ! -d "${BASH_LOGDIR}" ] && [ -w "${USER_HOMEDIR}/" ]; then
     mkdir -p "${BASH_LOGDIR}";
-	fi;
+  fi;
 
-	if [ -d "${BASH_LOGDIR}" ] && [ -w "${BASH_LOGDIR}" ]; then
+  if [ -d "${BASH_LOGDIR}" ] && [ -w "${BASH_LOGDIR}" ]; then
 
     # Set user:group ownership for the log-directory to be the current-user && their default-group
     if [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat -c '%u:%g' ${BASH_LOGDIR})" != "$(id --user):$(id --group)" ]; then
@@ -82,15 +82,15 @@ if [ -n "${USER_HOMEDIR}" ]; then
     fi;
     export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";
 
-	fi;
+  fi;
 
-	test -n "${PERSISTENT_CMD}" && unset -v PERSISTENT_CMD;
-	test -n "${APPEND_CMD}" && unset -v APPEND_CMD;
-	test -n "${DAT_USER}" && unset -v DAT_USER;
-	test -n "${GET_LAST_COMMAND}" && unset -v GET_LAST_COMMAND;
-	test -n "${BASH_LOGDIR}" && unset -v BASH_LOGDIR;
-	test -n "${BASH_LOGFILE}" && unset -v BASH_LOGFILE;
-	test -n "${USER_HOMEDIR}" && unset -v USER_HOMEDIR;
+  test -n "${PERSISTENT_CMD}" && unset -v PERSISTENT_CMD;
+  test -n "${APPEND_CMD}" && unset -v APPEND_CMD;
+  test -n "${DAT_USER}" && unset -v DAT_USER;
+  test -n "${GET_LAST_COMMAND}" && unset -v GET_LAST_COMMAND;
+  test -n "${BASH_LOGDIR}" && unset -v BASH_LOGDIR;
+  test -n "${BASH_LOGFILE}" && unset -v BASH_LOGFILE;
+  test -n "${USER_HOMEDIR}" && unset -v USER_HOMEDIR;
 
 fi;
 

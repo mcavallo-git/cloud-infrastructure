@@ -23,43 +23,43 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z?t=$(date +'%s.%N')" | bash;
+  curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z?t=$(date +'%s.%N')" | bash;
 
-	curl "https://rclone.org/install.sh" | bash;
-	
-	echo "";
-	echo "View rclone s3 storage server (minio) setup/usage guide:";
-	echo "  >  https://docs.minio.io/docs/rclone-with-minio-server";
-	echo "";
-	echo "Edit rclone config via GUI tool (add/edit server connections, etc.):";
-	echo "  >  rclone config";
-	echo "";
-	echo "Edit rclone config directly:";
-	echo "  >  vi ~/.config/rclone/rclone.conf";
-	echo "";
-	echo "List s3 buckets:";
-	echo "  >  rclone lsd SERVER_ALIAS:";
-	echo "";
-	echo "List s3 bucket-files:";
-	echo "  >  rclone ls SERVER_ALIAS:BUCKET_NAME";
-	echo "";
-	echo "Print the total size and number of objects in s3 bucket:";
-	echo "  >  rclone size SERVER_ALIAS:BUCKET_NAME";
-	echo "";
-	echo "Sync one bucket to another:";
-	echo "  >  rclone sync SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME";
-	echo "";
-	echo "Sync recent items (<=2 days old) from one s3 bucket to another:";
-	echo "  >  rclone sync -v --max-age 2d SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME";
-	echo "";
-	echo "Run a background job to sync one bucket to another (limiting to 40 MBps, which is 320 Mbps):";
-	echo "  >  nohup rclone sync -v --bwlimit 40M SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.$(date +'%Y%m%d_%H%M%S').log 2>&1 &";
-	echo "";
+  curl "https://rclone.org/install.sh" | bash;
+  
+  echo "";
+  echo "View rclone s3 storage server (minio) setup/usage guide:";
+  echo "  >  https://docs.minio.io/docs/rclone-with-minio-server";
+  echo "";
+  echo "Edit rclone config via GUI tool (add/edit server connections, etc.):";
+  echo "  >  rclone config";
+  echo "";
+  echo "Edit rclone config directly:";
+  echo "  >  vi ~/.config/rclone/rclone.conf";
+  echo "";
+  echo "List s3 buckets:";
+  echo "  >  rclone lsd SERVER_ALIAS:";
+  echo "";
+  echo "List s3 bucket-files:";
+  echo "  >  rclone ls SERVER_ALIAS:BUCKET_NAME";
+  echo "";
+  echo "Print the total size and number of objects in s3 bucket:";
+  echo "  >  rclone size SERVER_ALIAS:BUCKET_NAME";
+  echo "";
+  echo "Sync one bucket to another:";
+  echo "  >  rclone sync SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME";
+  echo "";
+  echo "Sync recent items (<=2 days old) from one s3 bucket to another:";
+  echo "  >  rclone sync -v --max-age 2d SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME";
+  echo "";
+  echo "Run a background job to sync one bucket to another (limiting to 40 MBps, which is 320 Mbps):";
+  echo "  >  nohup rclone sync -v --bwlimit 40M SOURCE_ALIAS:BUCKET_NAME DESTINATION_ALIAS:BUCKET_NAME > ~/rclone.$(date +'%Y%m%d_%H%M%S').log 2>&1 &";
+  echo "";
 
 fi;
 

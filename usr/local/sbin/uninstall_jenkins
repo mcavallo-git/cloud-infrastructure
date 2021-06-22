@@ -25,24 +25,24 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Uninstall Jenkins CI/CD Server
-	#
-	SERVICE_NAME="jenkins";
+  # ------------------------------------------------------------
+  #
+  # Uninstall Jenkins CI/CD Server
+  #
+  SERVICE_NAME="jenkins";
 
-	# ------------------------------------------------------------
-	#
-	# Require user-confirmation to perform this action
-	#
-	echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
-	read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
-	echo "";
-	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+  # ------------------------------------------------------------
+  #
+  # Require user-confirmation to perform this action
+  #
+  echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
+  read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  echo "";
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
     read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
     echo "";
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -181,11 +181,11 @@ else
       /bin/systemctl reset-failed;
 
     fi;
-	fi;
+  fi;
 
-	EXIT_CODE=0;
+  EXIT_CODE=0;
 
-	exit ${EXIT_CODE};
+  exit ${EXIT_CODE};
 
 fi;
 

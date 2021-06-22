@@ -17,13 +17,13 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	
-	if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
+  # ------------------------------------------------------------
+  
+  if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
     #
     # UBUNTU Environment
     #
@@ -62,10 +62,10 @@ else
 
     fi;
 
-	fi;
+  fi;
 
 
-	if [ "$(which pwsh 2>'/dev/null')" == "" ]; then
+  if [ "$(which pwsh 2>'/dev/null')" == "" ]; then
     # UNKNOWN/UNHANDLED OPERATING SYSTEM
     echo "";
     echo "Unhandled version of Linux:";
@@ -76,16 +76,16 @@ else
     echo "Please see Microsoft's tutorial page for installing PowerShell Core @:";
     echo " |    ";
     echo " |--> https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux";
-	else
+  else
     echo "";
     echo "Testing PowerShell Core by calling [ pwsh -Command \"get-childitem env:\" ]...";
     echo "------------------------------------------------------------";
     pwsh -Command "get-childitem env:"
     echo "------------------------------------------------------------";
     echo "";
-	fi;
+  fi;
 
-	# pwsh; # Start PowerShell
+  # pwsh; # Start PowerShell
 
 fi;
 

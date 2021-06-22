@@ -17,13 +17,13 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	
-	if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
+  # ------------------------------------------------------------
+  
+  if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
     #
     # UBUNTU Environment
     #
@@ -57,9 +57,9 @@ else
 
     fi;
 
-	fi;
+  fi;
 
-	if [ "$(which dotnet 2>'/dev/null')" == "" ]; then
+  if [ "$(which dotnet 2>'/dev/null')" == "" ]; then
     # UNKNOWN/UNHANDLED OPERATING SYSTEM
     echo "";
     echo "Unhandled version of Linux:";
@@ -70,7 +70,7 @@ else
     echo "Please see Microsoft's tutorial page for installing DotNet Core @:";
     echo " |    ";
     echo " |--> https://dotnet.microsoft.com/download/linux-package-manager/ubuntu19-04/sdk-current";
-	fi;
+  fi;
 
 fi;
 

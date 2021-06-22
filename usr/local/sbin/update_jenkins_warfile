@@ -17,23 +17,23 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	
-	# Base-directory for Jenkins ".war" file
-	JENKINS_DIRNAME_A="/usr/share/jenkins";
-	JENKINS_DIRNAME_B="/usr/lib/jenkins";
+  # ------------------------------------------------------------
+  
+  # Base-directory for Jenkins ".war" file
+  JENKINS_DIRNAME_A="/usr/share/jenkins";
+  JENKINS_DIRNAME_B="/usr/lib/jenkins";
 
-	if [ -f "${JENKINS_DIRNAME_A}/jenkins.war" ]; then
+  if [ -f "${JENKINS_DIRNAME_A}/jenkins.war" ]; then
     JENKINS_RUNTIME_SYSTEM="${JENKINS_DIRNAME_A}/jenkins.war";
-	elif [ -f "${JENKINS_DIRNAME_B}/jenkins.war" ]; then
+  elif [ -f "${JENKINS_DIRNAME_B}/jenkins.war" ]; then
     JENKINS_RUNTIME_SYSTEM="${JENKINS_DIRNAME_B}/jenkins.war";
-	fi;
+  fi;
 
-	if [ -v JENKINS_RUNTIME_SYSTEM ] && [ -n "${JENKINS_RUNTIME_SYSTEM}" ] && [ -f "${JENKINS_RUNTIME_SYSTEM}" ]; then
+  if [ -v JENKINS_RUNTIME_SYSTEM ] && [ -n "${JENKINS_RUNTIME_SYSTEM}" ] && [ -f "${JENKINS_RUNTIME_SYSTEM}" ]; then
 
     # Backup the current Jenkins main-executable (jenkins.war)
     JENKINS_RUNTIME_BACKUP="${JENKINS_RUNTIME_SYSTEM}.$(date +'%Y%m%d_%H%M%S').bak";
@@ -160,10 +160,10 @@ else
     echo "$(date +'%D  %r')   Finished ${0}";
     exit 0;
 
-	else
+  else
     # Error:  File Not Found: Jenkins Warfile (System Runtime File)
     echo "Error:  File Not Found: Jenkins Warfile (System Runtime File)";
     exit 1;
 
-	fi;
+  fi;
 fi;

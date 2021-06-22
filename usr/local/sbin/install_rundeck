@@ -27,33 +27,33 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Install Docker for Linux
-	#
-	curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
+  # ------------------------------------------------------------
+  #
+  # Install Docker for Linux
+  #
+  curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
 
 
-	# ------------------------------------------------------------
-	#
-	# Install RunDeck CI/CD Server (as a docker)
-	#
+  # ------------------------------------------------------------
+  #
+  # Install RunDeck CI/CD Server (as a docker)
+  #
 
-	if [ ! -d "/rundeck/data" ]; then
+  if [ ! -d "/rundeck/data" ]; then
     mkdir -p "/rundeck/data";
-	fi;
+  fi;
 
-	if [ ! -f "/rundeck/docker-compose.yml" ]; then
+  if [ ! -f "/rundeck/docker-compose.yml" ]; then
     curl -o "/rundeck/docker-compose.yml" "https://raw.githubusercontent.com/rundeck/docker-zoo/master/basic/docker-compose.yml";
-	fi;
+  fi;
 
-	docker-compose -f "/rundeck/docker-compose.yml" up -d;
+  docker-compose -f "/rundeck/docker-compose.yml" up -d;
 
-	exit ${EXIT_CODE};
+  exit ${EXIT_CODE};
 
 fi;
 

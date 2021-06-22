@@ -17,20 +17,20 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	RESTART_SERVICE_UFW=0;
-	# ------------------------------------------------------------
-	#
-	# UFW | Service Check
-	#  |--> Fail-out if UFW does NOT exist as local service
-	#
-	SERVICE_NAME="ufw";
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+  # ------------------------------------------------------------
+  RESTART_SERVICE_UFW=0;
+  # ------------------------------------------------------------
+  #
+  # UFW | Service Check
+  #  |--> Fail-out if UFW does NOT exist as local service
+  #
+  SERVICE_NAME="ufw";
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then
     # ------------------------------------------------------------
     #
     # UFW | IPv6 Pinging
@@ -102,10 +102,10 @@ else
       /usr/sbin/service "${SERVICE_NAME}" restart;
       # /usr/sbin/service "${SERVICE_NAME}" status;
     fi;
-	else
+  else
     echo "Error: Service \"${SERVICE_NAME}\" NOT found as a local service";
     exit 1;
-	fi;
+  fi;
 fi;
 
 # ------------------------------------------------------------

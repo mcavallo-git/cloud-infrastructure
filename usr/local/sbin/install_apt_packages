@@ -17,38 +17,38 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	APT_PACKAGES=();
+  APT_PACKAGES=();
 
-	APT_PACKAGES+=("apt-rdepends");
-	APT_PACKAGES+=("bc");
-	APT_PACKAGES+=("certbot");
-	APT_PACKAGES+=("default-jdk-headless");
-	APT_PACKAGES+=("default-jre-headless");
-	APT_PACKAGES+=("dos2unix");
-	APT_PACKAGES+=("git");
-	APT_PACKAGES+=("ifupdown");
-	APT_PACKAGES+=("multitail");
-	APT_PACKAGES+=("nginx-full");
-	APT_PACKAGES+=("nmap");
-	APT_PACKAGES+=("python-certbot-nginx");
-	APT_PACKAGES+=("p7zip-full");
-	APT_PACKAGES+=("p7zip-rar");
-	APT_PACKAGES+=("resolvconf");
-	APT_PACKAGES+=("software-properties-common");
-	# APT_PACKAGES+=("sslscan");
-	APT_PACKAGES+=("ufw");
-	APT_PACKAGES+=("vim-common");
-	APT_PACKAGES+=("wget");
-	APT_PACKAGES+=("yui-compressor");
+  APT_PACKAGES+=("apt-rdepends");
+  APT_PACKAGES+=("bc");
+  APT_PACKAGES+=("certbot");
+  APT_PACKAGES+=("default-jdk-headless");
+  APT_PACKAGES+=("default-jre-headless");
+  APT_PACKAGES+=("dos2unix");
+  APT_PACKAGES+=("git");
+  APT_PACKAGES+=("ifupdown");
+  APT_PACKAGES+=("multitail");
+  APT_PACKAGES+=("nginx-full");
+  APT_PACKAGES+=("nmap");
+  APT_PACKAGES+=("python-certbot-nginx");
+  APT_PACKAGES+=("p7zip-full");
+  APT_PACKAGES+=("p7zip-rar");
+  APT_PACKAGES+=("resolvconf");
+  APT_PACKAGES+=("software-properties-common");
+  # APT_PACKAGES+=("sslscan");
+  APT_PACKAGES+=("ufw");
+  APT_PACKAGES+=("vim-common");
+  APT_PACKAGES+=("wget");
+  APT_PACKAGES+=("yui-compressor");
 
-	UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-	for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
+  UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
     ALREADY_INSTALLED=$(echo "$(apt list --installed 2>/dev/null;)" | grep -h "^${EACH_PKG}\/" | wc -l);
     if [ "${ALREADY_INSTALLED}" != "0" ]; then
       echo "✓ Package \"${EACH_PKG}\" is already installed";
@@ -71,30 +71,30 @@ else
       fi;
       apt-get install --yes "${EACH_PKG}";
     fi;
-	done;
+  done;
 
-	OPTIONAL_PACKAGES=();
+  OPTIONAL_PACKAGES=();
 
-	# Containers
-	OPTIONAL_PACKAGES+=("python-pip");
-	OPTIONAL_PACKAGES+=("docker");
-	OPTIONAL_PACKAGES+=("docker-compose");
+  # Containers
+  OPTIONAL_PACKAGES+=("python-pip");
+  OPTIONAL_PACKAGES+=("docker");
+  OPTIONAL_PACKAGES+=("docker-compose");
 
-	# CD-CD
-	OPTIONAL_PACKAGES+=("jenkins");
+  # CD-CD
+  OPTIONAL_PACKAGES+=("jenkins");
 
-	# Database
-	OPTIONAL_PACKAGES+=("mysql-client");
-	OPTIONAL_PACKAGES+=("mysql-server");
-	OPTIONAL_PACKAGES+=("mysqldump");
+  # Database
+  OPTIONAL_PACKAGES+=("mysql-client");
+  OPTIONAL_PACKAGES+=("mysql-server");
+  OPTIONAL_PACKAGES+=("mysqldump");
 
-	# SMTP
-	OPTIONAL_PACKAGES+=("sendmail");
+  # SMTP
+  OPTIONAL_PACKAGES+=("sendmail");
 
-	# Node
-	OPTIONAL_PACKAGES+=("nodejs");
-	OPTIONAL_PACKAGES+=("ws"); # Websockets (for NodeJS)
-	OPTIONAL_PACKAGES+=("socket.io"); # Websockets Assist (for Node.JS)
-	OPTIONAL_PACKAGES+=("npm");
+  # Node
+  OPTIONAL_PACKAGES+=("nodejs");
+  OPTIONAL_PACKAGES+=("ws"); # Websockets (for NodeJS)
+  OPTIONAL_PACKAGES+=("socket.io"); # Websockets Assist (for Node.JS)
+  OPTIONAL_PACKAGES+=("npm");
 
 fi;

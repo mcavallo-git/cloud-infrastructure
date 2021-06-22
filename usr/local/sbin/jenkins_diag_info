@@ -17,17 +17,17 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Required:  Java Development Toolkit
-	#  |
-	#  |--> Many of these commands are tools which may be found in the Java Developer's Toolkit
-	#
-	if [ -z "$(which jcmd 2>'/dev/null')" ] || [ -z "$(which jps 2>'/dev/null')" ] || [ -z "$(which jmap 2>'/dev/null')" ]; then
+  # ------------------------------------------------------------
+  #
+  # Required:  Java Development Toolkit
+  #  |
+  #  |--> Many of these commands are tools which may be found in the Java Developer's Toolkit
+  #
+  if [ -z "$(which jcmd 2>'/dev/null')" ] || [ -z "$(which jps 2>'/dev/null')" ] || [ -z "$(which jmap 2>'/dev/null')" ]; then
     READ_TIMEOUT=60;
     echo "";
     echo "Error:  One or more required commands from the 'Java Development Toolkit' were not found, locally";
@@ -45,15 +45,15 @@ else
       echo "Info:  Required package-install denied  -->  Exiting...";
       exit 1;
     fi;
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
-	#
-	# Get diagnostic info about the Jenkins service
-	#
+  # ------------------------------------------------------------
+  #
+  # Get diagnostic info about the Jenkins service
+  #
 
-	#   jcmd  -->  Sends diagnostic command requests to a running Java Virtual Machine (JVM).
-	if [ 1 ]; then
+  #   jcmd  -->  Sends diagnostic command requests to a running Java Virtual Machine (JVM).
+  if [ 1 ]; then
     # Note: In Cent-OS7, (as-of Apr-2020), YOU MUST CALL jcmd WHILST EITHER LOGGED-IS-AS OR MASQUERADING-AS THE SERVICE USER
     SERVICE_USER="jenkins";
     # Note: Command 'VM.system_properties' seems to sum things up nicely without TOO much extra info (athough it's still a lot of info)
@@ -77,13 +77,13 @@ else
     # DIAG_REQUEST="ManagementAgent.status";
     DIAG_OUTPUT="$(sudo -u ${SERVICE_USER} jcmd $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}') ${DIAG_REQUEST})";
     echo -e "\n${DIAG_OUTPUT}\n";
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	#
-	#   jmap  -->  Prints shared object memory maps or heap memory details for a process, core file, or remote debug server. This command is experimental and unsupported.
-	#
+  # ------------------------------------------------------------
+  #
+  #   jmap  -->  Prints shared object memory maps or heap memory details for a process, core file, or remote debug server. This command is experimental and unsupported.
+  #
   #      -heap           Prints a heap summary of the garbage collection used, the head configuration, and generation-wise heap usage. In addition, the number and size of interned Strings are printed.
   #
   #      -histo[:live]   Prints a histogram of the heap. For each Java class, the number of objects, memory size in bytes, and the fully qualified class names are printed. The JVM internal class names are printed with an asterisk (*) prefix. If the live suboption is specified, then only active objects are counted.
@@ -94,38 +94,38 @@ else
   #
 
 
-	# WARNING:  CLSTATS OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
-	if [ 0 -eq 1 ]; then
+  # WARNING:  CLSTATS OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
+  if [ 0 -eq 1 ]; then
     echo "Info:  Calling  [ jmap -clstats ]  which  [ Prints class loader wise statistics of Java heap. For each class loader, its name, how active it is, address, parent class loader, and the number and size of classes it has loaded are printed. ]";
     SERVICE_USER="jenkins";
     JMAP_CLSTATS="$(jmap -clstats -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
     echo "${JMAP_CLSTATS}";
-	fi;
+  fi;
 
-	# WARNING:  HISTO OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
-	if [ 0 -eq 1 ]; then
+  # WARNING:  HISTO OFTEN LOCKS UP THE MACHINE & ITS SERVICE(S)
+  if [ 0 -eq 1 ]; then
     echo "Info:  Calling  [ jmap -histo ]  which  [ Prints a histogram of the heap. For each Java class, the number of objects, memory size in bytes, and the fully qualified class names are printed. The JVM internal class names are printed with an asterisk (*) prefix. ]";
     SERVICE_USER="jenkins";
     JMAP_HISTO="$(jmap -histo -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
     echo "${JMAP_HISTO}";
-	fi;
-	
+  fi;
+  
 
-	echo "Info:  Calling  [ jmap -heap ]  which  [ Prints a heap summary of the garbage collection used, the head configuration, and generation-wise heap usage. In addition, the number and size of interned Strings are printed. ]";
-	SERVICE_USER="jenkins";
-	JMAP_HEAP="$(jmap -heap -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
-	echo "${JMAP_HEAP}";
-
-
-	# ------------------------------------------------------------
+  echo "Info:  Calling  [ jmap -heap ]  which  [ Prints a heap summary of the garbage collection used, the head configuration, and generation-wise heap usage. In addition, the number and size of interned Strings are printed. ]";
+  SERVICE_USER="jenkins";
+  JMAP_HEAP="$(jmap -heap -F $(ps u -C 'java' | grep -vEi ^USER | grep -Ei ^${SERVICE_USER} | awk '{print $2}');)";
+  echo "${JMAP_HEAP}";
 
 
-	echo "";
-	echo "Logfile:  \"${LOGFILE}\"";
-	echo "";
+  # ------------------------------------------------------------
 
 
-	# ------------------------------------------------------------
+  echo "";
+  echo "Logfile:  \"${LOGFILE}\"";
+  echo "";
+
+
+  # ------------------------------------------------------------
 
 fi;
 

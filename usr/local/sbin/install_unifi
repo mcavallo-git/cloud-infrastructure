@@ -25,19 +25,19 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Instantiate runtime variables
+  # ------------------------------------------------------------
+  # Instantiate runtime variables
 
-	echo "";
-	READ_TIMEOUT=60; read -p "Install Unifi service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
-	echo "";
-	if [ ${RETURN_CODE_READ} -gt 128 ]; then
+  echo "";
+  READ_TIMEOUT=60; read -p "Install Unifi service, now? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+  echo "";
+  if [ ${RETURN_CODE_READ} -gt 128 ]; then
     echo "Response timed out after ${READ_TIMEOUT}s";
-	elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
+  elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
 
     if [ -n "${1}" ]; then
       #
@@ -187,10 +187,10 @@ else
     echo "";
     echo "------------------------------------------------------------";
 
-	else
+  else
     echo "";
     echo "Denied - Skipping command";
-	fi;
+  fi;
 
 fi;
 

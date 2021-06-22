@@ -19,9 +19,9 @@ MaxTemp_LogFile="${LOGDIR}/max_temp";
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 
 if [ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]; then
-	CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
+  CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
 else
-	CurrentTemp_Celsuis=$(echo "scale=2 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);
+  CurrentTemp_Celsuis=$(echo "scale=2 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);
 fi;
 
 # See if a minimum temp logfile exists (yet), and compare the current temp against it to see if we have a new low
@@ -43,7 +43,7 @@ fi;
 echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogPath}";
 
 if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
-	if [ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]; then
+  if [ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]; then
 
     # while [ 1 -eq 1 ]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
 
@@ -153,11 +153,11 @@ if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
 
     fi;
 
-	else
+  else
 
     echo "scale=2 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;
 
-	fi;
+  fi;
 fi;
 
 

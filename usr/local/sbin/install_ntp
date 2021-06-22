@@ -14,18 +14,18 @@ fi;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Install NTP (Time Sync) package "chrony"
-	#
-	echo "";
-	read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
-	echo "";
-	if [[ $REPLY =~ ^[Yy]$ ]]; then
+  # ------------------------------------------------------------
+  #
+  # Install NTP (Time Sync) package "chrony"
+  #
+  echo "";
+  read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+  echo "";
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
     # ------------------------------------------------------------
     #
     # Sync the system clock to NTP Server(s)
@@ -88,7 +88,7 @@ else
     timedatectl status;
     echo "------------------------------------------------------------";
     # ------------------------------------------------------------
-	fi;
+  fi;
 fi;
 
 

@@ -29,26 +29,26 @@ fi;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	SERVICE_NAME="httpd";
-	GLOB_PATTERN="*_log-*";
-	DIR_LOGS="/var/log";
-	DIR_ARCH="/var/archived_logs";
+  SERVICE_NAME="httpd";
+  GLOB_PATTERN="*_log-*";
+  DIR_LOGS="/var/log";
+  DIR_ARCH="/var/archived_logs";
 
-	if [ ! -d "${DIR_LOGS}/${SERVICE_NAME}" ]; then
+  if [ ! -d "${DIR_LOGS}/${SERVICE_NAME}" ]; then
     echo "";
     echo "ERROR:";
     echo "  Logs-dir not found for service \"${SERVICE_NAME}\" at path \"${DIR_LOGS}/${SERVICE_NAME}\" ";
     echo "";
     exit 1;
-	
+  
 
-	elif [ ! -h "${DIR_ARCH}" ]; then
+  elif [ ! -h "${DIR_ARCH}" ]; then
 
     echo "";
     echo "ERROR:";
@@ -60,7 +60,7 @@ else
     echo "";
     exit 1;
 
-	else
+  else
 
     # Stop the target service
     /usr/sbin/service "${SERVICE_NAME}" stop; RET_CODE=$?;
@@ -101,6 +101,6 @@ else
 
     fi;
 
-	fi;
+  fi;
 
 fi;

@@ -2,15 +2,15 @@
 
 EXIT_CODE=1;
 if [ -z "${1}" ]; then
-	echo "Error: Please specify a hostname or ip-address to detect open ports-on, such as [  ${0} example.com  ]"
-	exit 1;
+  echo "Error: Please specify a hostname or ip-address to detect open ports-on, such as [  ${0} example.com  ]"
+  exit 1;
 fi;
 
 if [ -z "$(which nmap 2>'/dev/null')" ]; then
-	echo "";
-	echo "Error: command \"nmap\" not found";
-	read -p " |-->  Install package \"nmap\", now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
-	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+  echo "";
+  echo "Error: command \"nmap\" not found";
+  read -p " |-->  Install package \"nmap\", now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
     if [ -n "$(which apt-get 2>'/dev/null';)" ]; then
       sudo apt-get install -y "nmap";
     elif [ -n "$(which yum 2>'/dev/null';)" ]; then
@@ -18,10 +18,10 @@ if [ -z "$(which nmap 2>'/dev/null')" ]; then
     elif [ -n "$(which apk 2>'/dev/null';)" ]; then
       sudo apk install -y "nmap";
     fi;
-	fi;
+  fi;
 fi;
 
 
 if [ -n "$(which nmap 2>'/dev/null';)" ]; then
-	nmap -T Aggressive -A -v "${1}" -p 1-65535;
+  nmap -T Aggressive -A -v "${1}" -p 1-65535;
 fi;

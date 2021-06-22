@@ -17,33 +17,33 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	exit 1;
+  exit 1;
 
-	# DISABLED AS-OF 2019-10-24_05-12-02 (unused)
+  # DISABLED AS-OF 2019-10-24_05-12-02 (unused)
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	START_TIMESTAMP="$(date +'%Y-%m-%d_%H-%M-%S')";
+  START_TIMESTAMP="$(date +'%Y-%m-%d_%H-%M-%S')";
 
-	USERNAME_JENKINS="jenkins";
+  USERNAME_JENKINS="jenkins";
 
-	REPO_CREDS="${HOME}/.ssh/jenkins-config.push";
+  REPO_CREDS="${HOME}/.ssh/jenkins-config.push";
 
-	shopt -s "globstar";
+  shopt -s "globstar";
 
-	# Determine user's home-directory location
-	if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
+  # Determine user's home-directory location
+  if [ -z "${JENKINS_HOME}" ] || [  ! -d "${JENKINS_HOME}" ]; then
     JENKINS_HOME=$(getent passwd "${USERNAME_JENKINS}" | cut --delimiter=: --fields=6);
-	fi;
+  fi;
 
-	if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
+  if [ -n "${JENKINS_HOME}" ] && [ -d "${JENKINS_HOME}" ]; then
 
     # ------------------------------------------------------------
     # Export all 'config.xml' (jenkins-config) files
@@ -222,7 +222,7 @@ else
       # ------------------------------------------------------------
     fi;
 
-	fi;
+  fi;
 
 fi;
 

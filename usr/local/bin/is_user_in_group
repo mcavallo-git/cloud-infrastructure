@@ -27,32 +27,32 @@ IS_USER_IN_GROUP="NO";
 for GROUP_ROW in $(cat "/etc/group"); do
 {
 
-	# Specifies a group name that is unique on the system. # See the mkgroup command for information on the restrictions for naming groups.
-	THIS_GNAME=$( echo "${GROUP_ROW}" | awk -F":" "{print \$1}" );
+  # Specifies a group name that is unique on the system. # See the mkgroup command for information on the restrictions for naming groups.
+  THIS_GNAME=$( echo "${GROUP_ROW}" | awk -F":" "{print \$1}" );
       # echo "${THIS_GNAME}";
 
-	# Not used. # Group administrators are provided instead of group passwords. # See the /etc/security/group file for more information.
-	THIS_GADMINS=$( echo "${GROUP_ROW}" | awk -F":" "{print \$2}" );
+  # Not used. # Group administrators are provided instead of group passwords. # See the /etc/security/group file for more information.
+  THIS_GADMINS=$( echo "${GROUP_ROW}" | awk -F":" "{print \$2}" );
       # echo "${THIS_GADMINS}";
-	
-	# Specifies the group ID. # The value is a unique decimal integer string. # The maximum value is 4,294,967,295 (4 GB).
-	THIS_GID=$( echo "${GROUP_ROW}" | awk -F":" "{print \$3}" );
+  
+  # Specifies the group ID. # The value is a unique decimal integer string. # The maximum value is 4,294,967,295 (4 GB).
+  THIS_GID=$( echo "${GROUP_ROW}" | awk -F":" "{print \$3}" );
       # echo "${THIS_GID}";
 
-	# Identifies a list of one or more users. # Separate group member names with commas. # Each user must already be defined in the local database configuration files.
-	THIS_USERLIST=$( echo "${GROUP_ROW}" | awk -F":" "{print \$4}" | tr "," " " );
+  # Identifies a list of one or more users. # Separate group member names with commas. # Each user must already be defined in the local database configuration files.
+  THIS_USERLIST=$( echo "${GROUP_ROW}" | awk -F":" "{print \$4}" | tr "," " " );
       # echo "${THIS_USERLIST}";
-	
-	# Save the converted group-id fresh from "/etc/group"
-	if [ "${THIS_GNAME}" == "${TARGET_GROUP_GNAME}" ]; then
+  
+  # Save the converted group-id fresh from "/etc/group"
+  if [ "${THIS_GNAME}" == "${TARGET_GROUP_GNAME}" ]; then
     TARGET_GROUP_GID="${THIS_GID}";
-	fi;
+  fi;
 
-	# Walk through each group's list of usernames
+  # Walk through each group's list of usernames
 
-	THIS_USERLIST_NO_DUPES=($(echo "${THIS_USERLIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-	for EACH_MEMBER in "${THIS_USERLIST_NO_DUPES[@]}"; do
-	{
+  THIS_USERLIST_NO_DUPES=($(echo "${THIS_USERLIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  for EACH_MEMBER in "${THIS_USERLIST_NO_DUPES[@]}"; do
+  {
     if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
       USER_LIST_GNAMES+=("${THIS_GNAME}");
     fi;
@@ -62,7 +62,7 @@ for GROUP_ROW in $(cat "/etc/group"); do
         IS_USER_IN_GROUP="YES";
       fi;
     fi;
-	} done;
+  } done;
 
 }; done;
 
@@ -71,22 +71,22 @@ for GROUP_ROW in $(cat "/etc/group"); do
 for USER_ROW in $(cat "/etc/passwd"); do
 {
 
-	THIS_UNAME=$( echo "${USER_ROW}" | awk -F":" "{print \$1}" );  # echo "${THIS_UNAME}"; # THIS name
-	THIS_PASS=$( echo "${USER_ROW}" | awk -F":" "{print \$2}" );   # echo "${THIS_PASS}"; # Encrypted password
-	THIS_UID=$( echo "${USER_ROW}" | awk -F":" "{print \$3}" );    # echo "${THIS_UID}"; # THIS ID number (UID)
-	THIS_GID=$( echo "${USER_ROW}" | awk -F":" "{print \$4}" );    # echo "${THIS_GID}"; # THIS's group ID number (GID)
-	THIS_GECOS=$( echo "${USER_ROW}" | awk -F":" "{print \$5}" );  # echo "${THIS_GECOS}"; # Full Name of he THIS
-	THIS_HOME=$( echo "${USER_ROW}" | awk -F":" "{print \$6}" );   # echo "${THIS_HOME}"; # THIS home directory
-	THIS_SHELL=$( echo "${USER_ROW}" | awk -F":" "{print \$7}" );  # echo "${THIS_SHELL}"; # Login shell
+  THIS_UNAME=$( echo "${USER_ROW}" | awk -F":" "{print \$1}" );  # echo "${THIS_UNAME}"; # THIS name
+  THIS_PASS=$( echo "${USER_ROW}" | awk -F":" "{print \$2}" );   # echo "${THIS_PASS}"; # Encrypted password
+  THIS_UID=$( echo "${USER_ROW}" | awk -F":" "{print \$3}" );    # echo "${THIS_UID}"; # THIS ID number (UID)
+  THIS_GID=$( echo "${USER_ROW}" | awk -F":" "{print \$4}" );    # echo "${THIS_GID}"; # THIS's group ID number (GID)
+  THIS_GECOS=$( echo "${USER_ROW}" | awk -F":" "{print \$5}" );  # echo "${THIS_GECOS}"; # Full Name of he THIS
+  THIS_HOME=$( echo "${USER_ROW}" | awk -F":" "{print \$6}" );   # echo "${THIS_HOME}"; # THIS home directory
+  THIS_SHELL=$( echo "${USER_ROW}" | awk -F":" "{print \$7}" );  # echo "${THIS_SHELL}"; # Login shell
 
-	USER_FOUND_IN_GROUPS+=("Item-One");
+  USER_FOUND_IN_GROUPS+=("Item-One");
 
-	if [ -n "${TARGET_GROUP_GID}" ] && [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
+  if [ -n "${TARGET_GROUP_GID}" ] && [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
     # Target-Group has current-iteration's user as a member
     GROUP_LIST_UNAMES+=("${THIS_UNAME}");
-	fi;
+  fi;
 
-	if [ "${THIS_UNAME}" == "${TARGET_USER_UNAME}" ]; then
+  if [ "${THIS_UNAME}" == "${TARGET_USER_UNAME}" ]; then
     TARGET_USER_UID="${THIS_UID}";
     TARGET_USER_GID="${THIS_GID}";
     if [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
@@ -95,7 +95,7 @@ for USER_ROW in $(cat "/etc/passwd"); do
       USER_LIST_GNAMES+=("${TARGET_GROUP_GNAME}");
       IS_USER_IN_GROUP="YES";
     fi;
-	fi;
+  fi;
 
 }; done;
 
@@ -104,14 +104,14 @@ for USER_ROW in $(cat "/etc/passwd"); do
 # Double-back to get the target-user's primary group back out of /etc/groups
 for GROUP_ROW in $(cat "/etc/group"); do
 {
-	THIS_GNAME=$( echo "${GROUP_ROW}" | awk -F":" "{print \$1}" );
-	THIS_GID=$( echo "${GROUP_ROW}" | awk -F":" "{print \$3}" );
-	if [ -n "${TARGET_USER_GID}" ] && [ "${THIS_GID}" == "${TARGET_USER_GID}" ]; then
+  THIS_GNAME=$( echo "${GROUP_ROW}" | awk -F":" "{print \$1}" );
+  THIS_GID=$( echo "${GROUP_ROW}" | awk -F":" "{print \$3}" );
+  if [ -n "${TARGET_USER_GID}" ] && [ "${THIS_GID}" == "${TARGET_USER_GID}" ]; then
     USER_LIST_GNAMES+=("${THIS_GNAME}");
     if [ -n "${TARGET_GROUP_GID}" ] && [ "${THIS_GID}" == "${TARGET_GROUP_GID}" ]; then
       IS_USER_IN_GROUP="YES";
     fi;
-	fi;
+  fi;
 }; done;
 
 # ------------------------------------------------------------
@@ -129,53 +129,53 @@ echo -e "\n";
 echo "Is User \"${TARGET_USER_UNAME}\" in Group \"${TARGET_GROUP_GNAME}\"?";
 echo "";
 if [ -z "${TARGET_USER_UID}" ] && [ -z "${TARGET_GROUP_GID}" ]; then
-	# Found NEITHER the Target-User NOR the Target-Group
-	echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
-	echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
-	EXIT_VAL=5;
+  # Found NEITHER the Target-User NOR the Target-Group
+  echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
+  echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
+  EXIT_VAL=5;
 
 elif [ -z "${TARGET_USER_UID}" ]; then
-	# Target-User was NOT found, but Target-Group WAS found
-	echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
-	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
+  # Target-User was NOT found, but Target-Group WAS found
+  echo "  User \"${TARGET_USER_UNAME}\" not found (\$1)";
+  if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
     echo "  Group \"${TARGET_GROUP_GNAME}\" exists, but has no members";
-	else
+  else
     echo "  Group \"${TARGET_GROUP_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s):   ${GROUP_LIST_UNAMES[@]}";
-	fi;
-	EXIT_VAL=4;
+  fi;
+  EXIT_VAL=4;
 
 elif [ -z "${TARGET_GROUP_GID}" ]; then
-	# Target-User WAS found, but Target-Group was NOT
-	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
+  # Target-User WAS found, but Target-Group was NOT
+  if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
     echo "  User \"${TARGET_USER_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
-	else
+  else
     echo "  User \"${TARGET_USER_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
-	fi;
-	echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
-	EXIT_VAL=3;
+  fi;
+  echo "  Group \"${TARGET_GROUP_GNAME}\" not found (\$2)";
+  EXIT_VAL=3;
 
 else
-	# Show info pertaining to Target-User
-	if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
+  # Show info pertaining to Target-User
+  if [ "${#USER_LIST_GNAMES[@]}" == "0" ]; then
     echo "  User \"${TARGET_USER_UNAME}\" exists, but has no groups (seems wrong, since they should have, in the LEAST, their primary group)";
-	else
+  else
     echo "  User \"${TARGET_USER_UNAME}\" found in ${#USER_LIST_GNAMES[@]} group(s):   ${USER_LIST_GNAMES[@]}";
-	fi;
-	# Show info pertaining to Target-Group
-	if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
+  fi;
+  # Show info pertaining to Target-Group
+  if [ "${#GROUP_LIST_UNAMES[@]}" == "0" ]; then
     echo "  Group \"${TARGET_GROUP_GNAME}\" exists, but has no members";
-	else
+  else
     echo "  Group \"${TARGET_GROUP_GNAME}\" found with ${#GROUP_LIST_UNAMES[@]} member(s):   ${GROUP_LIST_UNAMES[@]}";
-	fi;
-	
-	# ANWER THE FINAL QUESTION --> Is user in group?
-	if [ "${IS_USER_IN_GROUP}" == "YES" ]; then
+  fi;
+  
+  # ANWER THE FINAL QUESTION --> Is user in group?
+  if [ "${IS_USER_IN_GROUP}" == "YES" ]; then
     echo -e "\n${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is in group \"${TARGET_GROUP_GNAME}\"";
     EXIT_VAL=0;
-	else
+  else
     echo -e "\n${IS_USER_IN_GROUP} - User \"${TARGET_USER_UNAME}\" is NOT in group \"${TARGET_GROUP_GNAME}\"";
     EXIT_VAL=1;
-	fi;
+  fi;
 
 fi;
 echo -e "\n";

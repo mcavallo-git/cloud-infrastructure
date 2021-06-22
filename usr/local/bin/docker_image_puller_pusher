@@ -12,22 +12,22 @@ if [ ! -n "${6}" ]; then echo "Warning in ${0}: Parameter #6 empty/unset (LATEST
 
 if [[ "${ERRORS_FOUND}" == "0" ]]; then
 
-	NEW_TAG_PUSHED="";
-	
-	DOCKERHUB_FULL_PATH="${DOCKERHUB_USER}/${DOCKERHUB_IMAGE}";
+  NEW_TAG_PUSHED="";
+  
+  DOCKERHUB_FULL_PATH="${DOCKERHUB_USER}/${DOCKERHUB_IMAGE}";
 
-	# Kill any pre-existing connections to https://hub.docker.com by forcing a logout
-	echo "";
-	echo "Calling [docker logout]...     ($(date +'%D  %r'))";
-	docker logout;
-	
-	# Login to https://hub.docker.com
-	echo "";
-	echo "Calling [docker login -u=\"${DOCKERHUB_USER}\" -p=\"...hidden...\"]...     ($(date +'%D  %r'))";
-	docker login -u="${DOCKERHUB_USER}" -p="${DOCKERHUB_PASS}";
-	ERRORS_FOUND=$?;
+  # Kill any pre-existing connections to https://hub.docker.com by forcing a logout
+  echo "";
+  echo "Calling [docker logout]...     ($(date +'%D  %r'))";
+  docker logout;
+  
+  # Login to https://hub.docker.com
+  echo "";
+  echo "Calling [docker login -u=\"${DOCKERHUB_USER}\" -p=\"...hidden...\"]...     ($(date +'%D  %r'))";
+  docker login -u="${DOCKERHUB_USER}" -p="${DOCKERHUB_PASS}";
+  ERRORS_FOUND=$?;
 
-	if [[ "${ERRORS_FOUND}" == "0" ]]; then
+  if [[ "${ERRORS_FOUND}" == "0" ]]; then
     if [[ "${ACTION_PULL_OR_PUSH}" == "pull" ]]; then #/\/===--    PULL IMAGE FROM [ https://hub.docker.com ]    --===\/\#
       
       echo "Calling [docker pull \"${DOCKERHUB_FULL_PATH}\"]...     ($(date +'%D  %r'))";
@@ -53,7 +53,7 @@ if [[ "${ERRORS_FOUND}" == "0" ]]; then
     echo "Calling [docker logout]...     ($(date +'%D  %r'))";
     docker logout;
       
-	fi;
+  fi;
 
 fi;
 

@@ -8,39 +8,39 @@ REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-
 DOCKER_IMAGE_NAME="jenkinsci/blueocean";
 DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${DOCKER_IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
 if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
-	echo "Error: No docker images found to match \"${DOCKER_IMAGE_NAME}\"";
-	exit 1;
+  echo "Error: No docker images found to match \"${DOCKER_IMAGE_NAME}\"";
+  exit 1;
 else
 
-	echo "";
-	echo "\${#DOCKER_IMAGE_TAGS} = [ ${#DOCKER_IMAGE_TAGS} ]";
-	echo "";
+  echo "";
+  echo "\${#DOCKER_IMAGE_TAGS} = [ ${#DOCKER_IMAGE_TAGS} ]";
+  echo "";
 
-	DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
-	DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
+  DOCKER_IMAGE_TAGS_SORTED=$(echo "${DOCKER_IMAGE_TAGS}" | sort -r);
+  DOCKER_IMAGE_TAGS_SORTED_REV=$(echo "${DOCKER_IMAGE_TAGS}" | sort);
 
-	unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # [Re-]Instantiate bash array
+  unset ARR_TAG_OPTIONS; declare -A ARR_TAG_OPTIONS; # [Re-]Instantiate bash array
 
-	EACH_KEY=0;
-	# MIN_KEY=$((EACH_KEY+1));
-	MIN_KEY=${EACH_KEY};
-	for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
+  EACH_KEY=0;
+  # MIN_KEY=$((EACH_KEY+1));
+  MIN_KEY=${EACH_KEY};
+  for EACH_TAG in ${DOCKER_IMAGE_TAGS_SORTED[@]}; do
     ARR_TAG_OPTIONS+=(["${EACH_KEY}"]="${EACH_TAG}");
     EACH_KEY=$((EACH_KEY+1));
-	done;
-	MAX_KEY=$((${EACH_KEY}-1));
+  done;
+  MAX_KEY=$((${EACH_KEY}-1));
 
-	# MENU_LENGTH=10;
-	# if [ -n "$(which bc 2>'/dev/null')" ] && [ -n "$(which tput 2>'/dev/null')" ]; then
-	# 	MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
-	# fi;
-	# IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
-	# echo "IMAGES_MENU_OPTIONS:";
-	# echo "${IMAGES_MENU_OPTIONS}";
+  # MENU_LENGTH=10;
+  # if [ -n "$(which bc 2>'/dev/null')" ] && [ -n "$(which tput 2>'/dev/null')" ]; then
+  # 	MENU_LENGTH=$(echo "$(tput lines) / 2" | bc);
+  # fi;
+  # IMAGES_MENU_OPTIONS=$(echo "${DOCKER_IMAGE_TAGS_SORTED}" | tail -n ${MENU_LENGTH});
+  # echo "IMAGES_MENU_OPTIONS:";
+  # echo "${IMAGES_MENU_OPTIONS}";
 
-	if [ ${CHOICE_KEY} -le 0 ]; then
+  if [ ${CHOICE_KEY} -le 0 ]; then
     echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
-	else
+  else
     
     ARR_TAG_OPTIONS_NO_DUPES=($(echo "${ARR_TAG_OPTIONS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
     for EACH_KEY in "${!ARR_TAG_OPTIONS_NO_DUPES[@]}"; do
@@ -89,14 +89,14 @@ else
       echo -e "Error: Invalid/empty User-input""\n""${ERROR_SUGGEST_HELP}";
 
     fi;
-	fi;
+  fi;
 
-	# docker_name="jenkins_$(date +'%s')";
-	# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
-	# docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
-	# printf "    ===--  Started Docker:  ${docker_name}...\n"
-	# printf "    ===--    Bashing Into:  ${docker_name}...\n"
-	# docker exec -i -t ${docker_name} /bin/bash;
+  # docker_name="jenkins_$(date +'%s')";
+  # docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+  # docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v "jenkins-data:/var/jenkins_home" -v "/var/run/docker.sock:/var/run/docker.sock" --name "${docker_name}" "jenkinsci/blueocean";
+  # printf "    ===--  Started Docker:  ${docker_name}...\n"
+  # printf "    ===--    Bashing Into:  ${docker_name}...\n"
+  # docker exec -i -t ${docker_name} /bin/bash;
 
 fi;
 

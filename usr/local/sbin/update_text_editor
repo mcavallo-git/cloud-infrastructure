@@ -17,24 +17,24 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	SYSTEM_EDITOR_1_PATH="/usr/bin/editor";
-	SYSTEM_EDITOR_2_PATH="/etc/alternatives/editor";
+  SYSTEM_EDITOR_1_PATH="/usr/bin/editor";
+  SYSTEM_EDITOR_2_PATH="/etc/alternatives/editor";
 
-	DESIRED_EDITOR_NAME="vi";
-	
-	if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
+  DESIRED_EDITOR_NAME="vi";
+  
+  if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
     # Desired editor NOT installed --> Attempt to install it
     apt-get update -y;
     apt-get install -y "${DESIRED_EDITOR_NAME}";
-	fi;
+  fi;
 
-	if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
+  if [ -z "$(which ${DESIRED_EDITOR_NAME} 2>'/dev/null' 2>'/dev/null')" ]; then
     # Desired editor STILL not installed (unable to be installed)
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to install \"${DESIRED_EDITOR_NAME}\"";
@@ -42,7 +42,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Global editor setting \"${SYSTEM_EDITOR_2_PATH}\" will remain set to: \"${SYSTEM_EDITOR_2_RESOLVED}\"";
     exit 1;
 
-	else
+  else
     # Desired editor IS installed
     declare -a EDITOR_PATHS_TO_UPDATE=( \
       "${SYSTEM_EDITOR_1_PATH}" \
@@ -83,5 +83,5 @@ else
     echo "";
     exit 0;
 
-	fi;
+  fi;
 fi;

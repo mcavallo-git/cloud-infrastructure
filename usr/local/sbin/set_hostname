@@ -17,35 +17,35 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# This script modifies a Linux instance's host & domain name(s)
-	#
-	#	Instantiate this command-line utility:
-	#	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
-	#
-	### Run using "DRY-RUN" mode:
-	#	>		set_hostname "localhost.localdomain" --dry-run "1";
-	#
-	### Run using "LIVE" mode:
-	#	>		set_hostname "localhost.localdomain" --dry-run "0";
-	#
-	#
-	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
-	#
+  # ------------------------------------------------------------
+  #
+  # This script modifies a Linux instance's host & domain name(s)
+  #
+  #	Instantiate this command-line utility:
+  #	>		vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
+  #
+  ### Run using "DRY-RUN" mode:
+  #	>		set_hostname "localhost.localdomain" --dry-run "1";
+  #
+  ### Run using "LIVE" mode:
+  #	>		set_hostname "localhost.localdomain" --dry-run "0";
+  #
+  #
+  # ------------------------------------------------------------
+  # Parse inline arguments (passed to current script)
+  #
 
-	ARGS=("$@");
-	COUNT_ARGS=${#ARGS[@]};
-	ARGS_HOSTNAME_DEFINED=0;
-	USE_WAN_IPV4=0;
-	DRY_RUN=1;
-	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$COUNT_ARGS;i++ )); do
+  ARGS=("$@");
+  COUNT_ARGS=${#ARGS[@]};
+  ARGS_HOSTNAME_DEFINED=0;
+  USE_WAN_IPV4=0;
+  DRY_RUN=1;
+  # Walk through any inline-arguments passed to this function
+  for (( i=0;i<$COUNT_ARGS;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
     # BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
@@ -95,20 +95,20 @@ else
       fi;
 
     fi;
-	done;
+  done;
 
-	# ------------------------------------------------------------
-	# Get status of hostname/domainname before edits
-	#
-	CURRENT_HOSTNAME="$(hostname)";
-	CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}')";
-	if [ "$(hostname -d;)" != "(none)" ]; then
+  # ------------------------------------------------------------
+  # Get status of hostname/domainname before edits
+  #
+  CURRENT_HOSTNAME="$(hostname)";
+  CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}')";
+  if [ "$(hostname -d;)" != "(none)" ]; then
     CURRENT_DOMAIN="$(hostname -d;)";
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	if [ -z "${INPUT_HOSTNAME}" ]; then
+  # ------------------------------------------------------------
+  if [ -z "${INPUT_HOSTNAME}" ]; then
     # Error - Required variable empty: INPUT_HOSTNAME
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with empty hostname";
@@ -116,7 +116,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname FQDN ]";
     exit 1;
 
-	elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
+  elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
     # Error - Hostname contains one or more invalid characters
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
@@ -124,7 +124,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname VALID-HOSTNAME ]";
     exit 1;
 
-	else
+  else
 
     SUBSTRING_ONLY_PERIODS="${INPUT_HOSTNAME//[^.]}";
     FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
@@ -441,7 +441,7 @@ else
     fi;
     echo "";
 
-	fi;
+  fi;
 
 fi;
 

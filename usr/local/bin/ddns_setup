@@ -22,10 +22,10 @@ fi;
 NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
 if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 
-	echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -n 1 -t 20 -r; # Await single keypress
+  echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -n 1 -t 20 -r; # Await single keypress
 
-	if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-	
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+  
     # Namecheap Subdomain
     REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 -r; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
     if [ -z "${NAMECHEAP_SUBDOMAIN}" ]; then
@@ -53,17 +53,17 @@ if [ ! -f "${NAMECHEAP_SECRET}" ]; then
     # Output the base64-encoded string to the output file which will be pulled-in by the ddns_updater script (via cronjob)
     echo -n "https://dynamicdns.park-your-domain.com/update?host=${NAMECHEAP_SUBDOMAIN}&domain=${NAMECHEAP_DOMAIN}&password=${NAMECHEAP_TOKEN}&ip=" | base64 --wrap=0 > "${NAMECHEAP_SECRET}";
 
-	else
+  else
     echo "Skipping Namecheap DDNS Sync";
 
-	fi;
+  fi;
 
 fi;
 
 # Set permissions as-intended for the secrets file, then read it in and update the DDNS Hostname
 if [ -f "${NAMECHEAP_SECRET}" ]; then
-	chmod 0400 "${NAMECHEAP_SECRET}";
-	curl --max-time 10 --connect-timeout 10 "$(cat ${NAMECHEAP_SECRET} | base64 --decode)" && echo "";
+  chmod 0400 "${NAMECHEAP_SECRET}";
+  curl --max-time 10 --connect-timeout 10 "$(cat ${NAMECHEAP_SECRET} | base64 --decode)" && echo "";
 fi;
 
 

@@ -6,13 +6,13 @@
 
 if [ -v PATH ] && [ -n "${PATH}" ]; then
 
-	unset REQUIRED_PATHS; declare -a REQUIRED_PATHS; # [Re-]Instantiate bash array
-	REQUIRED_PATHS=();
-	REQUIRED_PATHS+=("/usr/local/bin");
-	REQUIRED_PATHS+=("/usr/local/sbin");
+  unset REQUIRED_PATHS; declare -a REQUIRED_PATHS; # [Re-]Instantiate bash array
+  REQUIRED_PATHS=();
+  REQUIRED_PATHS+=("/usr/local/bin");
+  REQUIRED_PATHS+=("/usr/local/sbin");
 
-	# Ensure each required path is found within the $PATH variable
-	for EACH_REQD_PATH in "${REQUIRED_PATHS[@]}"; do
+  # Ensure each required path is found within the $PATH variable
+  for EACH_REQD_PATH in "${REQUIRED_PATHS[@]}"; do
 
     PATH_EXISTS=0;
     for EACH_PATH in $(echo $PATH | tr ":" "\n"); do
@@ -26,9 +26,9 @@ if [ -v PATH ] && [ -n "${PATH}" ]; then
       PATH="${PATH}:${EACH_REQD_PATH}";
     fi;
 
-	done;
+  done;
 
-	export PATH;
+  export PATH;
 
 fi;
 

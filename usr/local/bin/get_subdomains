@@ -20,27 +20,27 @@ fi;
 
 if [ -z "${1}" ]; then
 
-	echo -e "\nError in call to \"get_subdomains\"\n  --> Expected syntax:     >  get_subdomains HOSTNAME;\n";
-	exit 1;
+  echo -e "\nError in call to \"get_subdomains\"\n  --> Expected syntax:     >  get_subdomains HOSTNAME;\n";
+  exit 1;
 
 else
 
-	shopt -s lastpipe; # If set, and job control is not active, the shell runs the last command of a pipeline not executed in the background in the current shell environment.
-	          # |
-	          # |--> e.g. extends scope of variables which get set/updated during "while ...; do" loop to be referenced AFTER said loop is "done;"
-	          #           (normally, variables set during background tasks are scoped separately, and not able to be referenced afterwards)
+  shopt -s lastpipe; # If set, and job control is not active, the shell runs the last command of a pipeline not executed in the background in the current shell environment.
+            # |
+            # |--> e.g. extends scope of variables which get set/updated during "while ...; do" loop to be referenced AFTER said loop is "done;"
+            #           (normally, variables set during background tasks are scoped separately, and not able to be referenced afterwards)
 
-	REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
-	SED_LINE='s/^(.+),'${REGEX_IPV4}'$/\0/p';
-	SED_FQDN='s/^(.+),'${REGEX_IPV4}'$/\1/p';
-	SED_IPV4='s/^(.+),'${REGEX_IPV4}'$/\2/p';
+  REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+  SED_LINE='s/^(.+),'${REGEX_IPV4}'$/\0/p';
+  SED_FQDN='s/^(.+),'${REGEX_IPV4}'$/\1/p';
+  SED_IPV4='s/^(.+),'${REGEX_IPV4}'$/\2/p';
 
-	SMOKE_TEST=$(curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | head -n 1;);
-	if [ "${SMOKE_TEST}" == "error check your search parameter" ]; then
+  SMOKE_TEST=$(curl -L -s "https://api.hackertarget.com/hostsearch/?q=${1}" | head -n 1;);
+  if [ "${SMOKE_TEST}" == "error check your search parameter" ]; then
     echo -e "\nError in call to \"get_subdomains\"\n  -->  Hostname not found:  \"${1}\"\n";
     exit 1;
 
-	else
+  else
 
     INDEX_RESULTS_BY="IPV4";
     if [ -n "${2}" ]; then
@@ -94,7 +94,7 @@ else
 
     exit 0;
 
-	fi;
+  fi;
 
 fi;
 

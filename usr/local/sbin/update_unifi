@@ -17,15 +17,15 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	SERVICE_NAME="unifi";
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
+  SERVICE_NAME="unifi";
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service exists locally
 
     # Show service status
     echo "";
@@ -65,10 +65,10 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
     /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
-	else # Service NOT found to exist as a local service
+  else # Service NOT found to exist as a local service
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
-	fi;
+  fi;
 
 fi;
 

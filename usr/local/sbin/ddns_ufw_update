@@ -26,86 +26,86 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	# LAN OVERRIDE
-	# add_rule "tcp" "22" "10.0.0.0/8";
-	# add_rule "tcp" "22" "172.16.0.0/12";
-	# add_rule "tcp" "22" "192.168.0.0/16";
-	# /usr/sbin/ufw allow proto tcp from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
-	# /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
-	# /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
-	# exit 0;
+  # LAN OVERRIDE
+  # add_rule "tcp" "22" "10.0.0.0/8";
+  # add_rule "tcp" "22" "172.16.0.0/12";
+  # add_rule "tcp" "22" "192.168.0.0/16";
+  # /usr/sbin/ufw allow proto tcp from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
+  # /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
+  # /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
+  # exit 0;
 
-	# ------------------------------------------------------------
-	# Declare runtime variable(s)
-	
-	shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
+  # ------------------------------------------------------------
+  # Declare runtime variable(s)
+  
+  shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
 
-	# Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
-	if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
+  # Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
+  if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
     DEBUG_MODE=1;
-	elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
+  elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
     DEBUG_MODE=1;
-	elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
+  elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
     DEBUG_MODE=1;
-	else
+  else
     DEBUG_MODE=0;
-	fi;
+  fi;
 
-	# Script's working-directory
-	DIRNAME_LOCAL_CONFIG="/etc/whitelist.d"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
+  # Script's working-directory
+  DIRNAME_LOCAL_CONFIG="/etc/whitelist.d"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
 
-	# Config pulled-in by UFW (sets default values to block/allow/etc. and more)
-	UFW_CONFIG_FILEPATH="/etc/default/ufw";
+  # Config pulled-in by UFW (sets default values to block/allow/etc. and more)
+  UFW_CONFIG_FILEPATH="/etc/default/ufw";
 
-	# File containing hosts to allow through UFW
-	#  |
-	#  |--> All lines in given whitelist file must be in a specific format/syntax
-	#  |
-	#  |--> Syntax:
-	#  |        [tcp/udp]:[PORT]:[FQDN]
-	#  |
-	#  |
-	#  |--> Example:
-	#           tcp:22:demo.example.com
-	#           tcp:22:localhost.localdomain
-	#
-	unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
-	RUNTIME_SERVICE_USERS+=(["sshd"]="root");       # SSH/OpenSSH listener
-	RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");  # NGINX Web Server
-	RUNTIME_SERVICE_USERS+=(["unifi"]="unifi");  # Unifi Controller
-	# RUNTIME_SERVICE_USERS+=(["jenkins"]="jenkins");    # Jenkins Master
+  # File containing hosts to allow through UFW
+  #  |
+  #  |--> All lines in given whitelist file must be in a specific format/syntax
+  #  |
+  #  |--> Syntax:
+  #  |        [tcp/udp]:[PORT]:[FQDN]
+  #  |
+  #  |
+  #  |--> Example:
+  #           tcp:22:demo.example.com
+  #           tcp:22:localhost.localdomain
+  #
+  unset RUNTIME_SERVICE_USERS; declare -A RUNTIME_SERVICE_USERS; # [Re-]Instantiate bash array
+  RUNTIME_SERVICE_USERS+=(["sshd"]="root");       # SSH/OpenSSH listener
+  RUNTIME_SERVICE_USERS+=(["nginx"]="www-data");  # NGINX Web Server
+  RUNTIME_SERVICE_USERS+=(["unifi"]="unifi");  # Unifi Controller
+  # RUNTIME_SERVICE_USERS+=(["jenkins"]="jenkins");    # Jenkins Master
 
-	# Defaults for UFW (out-of-the-box)
-	ETC_NGINX="/etc/nginx";
-	NGINX_CONF_DDNS="${ETC_NGINX}/conf.ddns";
+  # Defaults for UFW (out-of-the-box)
+  ETC_NGINX="/etc/nginx";
+  NGINX_CONF_DDNS="${ETC_NGINX}/conf.ddns";
 
-	# Create the DDNS NGINX directory only if the NGINX parent directory already exists
-	if [ -d "${ETC_NGINX}" ] && [ ! -d "${NGINX_CONF_DDNS}" ]; then
+  # Create the DDNS NGINX directory only if the NGINX parent directory already exists
+  if [ -d "${ETC_NGINX}" ] && [ ! -d "${NGINX_CONF_DDNS}" ]; then
     mkdir -p "${NGINX_CONF_DDNS}";
-	fi;
+  fi;
 
-	# Defaults for UFW (out-of-the-box)
-	UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
-
-
-	# ------------------------------------------------------------
-	#
-	# Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
-	#
-	function implode { local IFS="$1"; shift; echo "$*"; }
+  # Defaults for UFW (out-of-the-box)
+  UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
 
 
-	# ------------------------------------------------------------
-	#
-	# Sub-Function: Adds a rule to UFW
-	#
-	ADD_RULE_SKIPPED=0;
-	add_rule() {
+  # ------------------------------------------------------------
+  #
+  # Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
+  #
+  function implode { local IFS="$1"; shift; echo "$*"; }
+
+
+  # ------------------------------------------------------------
+  #
+  # Sub-Function: Adds a rule to UFW
+  #
+  ADD_RULE_SKIPPED=0;
+  add_rule() {
     if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
       local proto=$1;
       local port=$2;
@@ -142,15 +142,15 @@ else
         echo "            |-->  ADD_RULE_SKIPPED = [ ${ADD_RULE_SKIPPED} ]";
       fi;
     fi;
-	}
+  }
 
 
-	# ------------------------------------------------------------
-	#
-	# Sub-Function: Deletes a rule from UFW
-	#
-	DELETE_RULE_SKIPPED=0;
-	delete_rule() {
+  # ------------------------------------------------------------
+  #
+  # Sub-Function: Deletes a rule from UFW
+  #
+  DELETE_RULE_SKIPPED=0;
+  delete_rule() {
     if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
       local proto=$1;
       local port=$2;
@@ -188,14 +188,14 @@ else
         echo "            |-->  DELETE_RULE_SKIPPED = [ ${DELETE_RULE_SKIPPED} ]";
       fi;
     fi;
-	}
+  }
 
 
-	# ------------------------------------------------------------
-	#
-	# Main Runtime
-	#
-	if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  # ------------------------------------------------------------
+  #
+  # Main Runtime
+  #
+  if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
     if [ -f "${UFW_CONFIG_FILEPATH}" ]; then
       
       # Set UFW Defaults --> Incoming Requests
@@ -229,27 +229,27 @@ else
       fi;
 
     fi;
-	fi;
+  fi;
 
-	# Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
-	unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
-	
-	unset RESOLVED_CIDRv4_1D; declare -a RESOLVED_CIDRv4_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_HOSTS_1D; declare -a RESOLVED_HOSTS_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_IPv4_1D; declare -a RESOLVED_IPv4_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_PORTS_1D; declare -a RESOLVED_PORTS_1D; # [Re-]Instantiate bash array
-	unset RESOLVED_PROTOS_1D; declare -a RESOLVED_PROTOS_1D; # [Re-]Instantiate bash array
+  # Array to store store CIDRv4 addresses which are newly-resolved as-of this script's runtime
+  unset RESOLVED_CIDRv4_ARR; declare -A RESOLVED_CIDRv4_ARR; # [Re-]Instantiate bash array
+  
+  unset RESOLVED_CIDRv4_1D; declare -a RESOLVED_CIDRv4_1D; # [Re-]Instantiate bash array
+  unset RESOLVED_HOSTS_1D; declare -a RESOLVED_HOSTS_1D; # [Re-]Instantiate bash array
+  unset RESOLVED_IPv4_1D; declare -a RESOLVED_IPv4_1D; # [Re-]Instantiate bash array
+  unset RESOLVED_PORTS_1D; declare -a RESOLVED_PORTS_1D; # [Re-]Instantiate bash array
+  unset RESOLVED_PROTOS_1D; declare -a RESOLVED_PROTOS_1D; # [Re-]Instantiate bash array
 
-	# HOTFIX (TO-REMOVE-AFTER-2020-05-01) - Cleanup ddns double-deep (duplicated) depth directory
-	if [ -d "/etc/nginx/conf.ddns/conf.ddns" ]; then
+  # HOTFIX (TO-REMOVE-AFTER-2020-05-01) - Cleanup ddns double-deep (duplicated) depth directory
+  if [ -d "/etc/nginx/conf.ddns/conf.ddns" ]; then
     rm -rf "/etc/nginx/conf.ddns/conf.ddns";
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
-	#
-	# Apply Whitelist on a per-service basis
-	#
-	for EACH_SERVICE_NAME in "${!RUNTIME_SERVICE_USERS[@]}"; do
+  # ------------------------------------------------------------
+  #
+  # Apply Whitelist on a per-service basis
+  #
+  for EACH_SERVICE_NAME in "${!RUNTIME_SERVICE_USERS[@]}"; do
 
     # File containing hosts to allow through UFW
     #  |--> All lines in given whitelist file must be in a specific format/syntax
@@ -496,57 +496,57 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
       echo -e "Info:  Calling  [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
       echo -e "${NGINX_DDNS_RESULTS}" > "${NGINX_DDNS_CONF}";
     fi;
-	
-	done;
+  
+  done;
 
-	# Array containing rules deleted from UFW
-	unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
+  # Array containing rules deleted from UFW
+  unset UFW_CHANGES_UNDO_ARR; declare -A UFW_CHANGES_UNDO_ARR; # [Re-]Instantiate bash array
 
-	# Foreach on resolved (valid) CIDRv4 addresses
-	if [ ${DEBUG_MODE} -eq 1 ]; then
+  # Foreach on resolved (valid) CIDRv4 addresses
+  if [ ${DEBUG_MODE} -eq 1 ]; then
     echo "************************************************************";
     echo "Debug:  !RESOLVED_CIDRv4_ARR[@] = [ ${!RESOLVED_CIDRv4_ARR[@]} ]";
     echo "Debug:  RESOLVED_CIDRv4_ARR[@] = [ ${RESOLVED_CIDRv4_ARR[@]} ]";
-	fi;
+  fi;
 
-	# for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
-	# 	EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
-	# 	EACH_PORT_PROTO_W_COMMAS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
-	# 	RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${EACH_PORT_PROTO_W_COMMAS}" | tr ',' ' '));
-	# 	RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-	# 	if [ ${DEBUG_MODE} -eq 1 ]; then
-	# 		echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
-	# 		echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
-	# 		echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
-	# 		echo "Debug:  EACH_PORT_PROTO_W_COMMAS = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
-	# 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
-	# 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
-	# 	fi;
-	# 	for EACH_RESOLVED_PORT_PROTO in "${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]}"; do
-	# 		EACH_RESOLVED_PORT="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1)";
-	# 		EACH_RESOLVED_PROTO="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f2)";
-	# 		if [ ${DEBUG_MODE} -eq 1 ]; then
-	# 			echo "-- Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
-	# 			echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
-	# 			echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
-	# 		fi;
-	# 		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
-	# 		if [ ${DEBUG_MODE} -eq 1 ]; then
-	# 			echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
-	# 		fi;
-	# 		ADD_RULE_SKIPPED=0;
-	# 		add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
-	# 		if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
-	# 			# Add the inverse of new rule to the undo-changes array
-	# 			UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
-	# 		fi;
-	# 	done;
-	# done;
+  # for EACH_RESOLVED_CIDRv4 in "${!RESOLVED_CIDRv4_ARR[@]}"; do
+  # 	EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
+  # 	EACH_PORT_PROTO_W_COMMAS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
+  # 	RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${EACH_PORT_PROTO_W_COMMAS}" | tr ',' ' '));
+  # 	RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  # 	if [ ${DEBUG_MODE} -eq 1 ]; then
+  # 		echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+  # 		echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";
+  # 		echo "Debug:  EACH_RESOLVED_IPv4 = [ ${EACH_RESOLVED_IPv4} ]";
+  # 		echo "Debug:  EACH_PORT_PROTO_W_COMMAS = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
+  # 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]} ]";
+  # 		echo "Debug:  RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@] = [ ${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]} ]";
+  # 	fi;
+  # 	for EACH_RESOLVED_PORT_PROTO in "${RESOLVED_PORT_PROTO_KEYS_NO_DUPES[@]}"; do
+  # 		EACH_RESOLVED_PORT="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f1)";
+  # 		EACH_RESOLVED_PROTO="$(echo "${EACH_RESOLVED_PORT_PROTO}" | cut -d'/' -f2)";
+  # 		if [ ${DEBUG_MODE} -eq 1 ]; then
+  # 			echo "-- Debug:  EACH_RESOLVED_PORT_PROTO = [ ${EACH_RESOLVED_PORT_PROTO} ]";
+  # 			echo "Debug:  EACH_RESOLVED_PORT = [ ${EACH_RESOLVED_PORT} ]";
+  # 			echo "Debug:  EACH_RESOLVED_PROTO = [ ${EACH_RESOLVED_PROTO} ]";
+  # 		fi;
+  # 		# !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
+  # 		if [ ${DEBUG_MODE} -eq 1 ]; then
+  # 			echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
+  # 		fi;
+  # 		ADD_RULE_SKIPPED=0;
+  # 		add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
+  # 		if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
+  # 			# Add the inverse of new rule to the undo-changes array
+  # 			UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw delete allow proto ${EACH_RESOLVED_PROTO} from ${EACH_RESOLVED_CIDRv4} to any port ${EACH_RESOLVED_PORT};"]="");
+  # 		fi;
+  # 	done;
+  # done;
 
-	# Determine which rules to keep and which to remove from existing ruleset
-	RULESET_UFW="$(ufw status | sed /^To*/d | sed /^Status*/d | sed /^--*/d | grep '\S';)";
-	ROLLBACK_IFS="${IFS}"; IFS=$'\n';
-	for EACH_UFW_LINE in ${RULESET_UFW}; do
+  # Determine which rules to keep and which to remove from existing ruleset
+  RULESET_UFW="$(ufw status | sed /^To*/d | sed /^Status*/d | sed /^--*/d | grep '\S';)";
+  ROLLBACK_IFS="${IFS}"; IFS=$'\n';
+  for EACH_UFW_LINE in ${RULESET_UFW}; do
     EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
     EACH_UFW_IPv4=$(echo ${EACH_UFW_CIDRv4} | cut -d"/" -f1);
     EACH_UFW_PORT="$(echo "${EACH_UFW_LINE}" | awk '{print $1}' | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
@@ -650,41 +650,41 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
         echo "Debug:  Keeping existing rule [ ${EACH_UFW_LINE} ] - matched by [ CIDRv4 + Port + Proto ] combination to resolved values";
       fi;
     fi;
-	done;
-	IFS="${ROLLBACK_IFS}";
+  done;
+  IFS="${ROLLBACK_IFS}";
 
-	# Show all undo-commands for this runtime
-	echo "------------------------------------------------------------";
-	echo "----------------------  UNDO COMMANDS  ---------------------";
-	echo " !!  To undo any of the changes-made, please see below  !!  ";
-	echo " !!    list of undo-commands created for this session   !!  ";
-	echo "";
-	for EACH_UNDO_COMMAND in "${!UFW_CHANGES_UNDO_ARR[@]}"; do
+  # Show all undo-commands for this runtime
+  echo "------------------------------------------------------------";
+  echo "----------------------  UNDO COMMANDS  ---------------------";
+  echo " !!  To undo any of the changes-made, please see below  !!  ";
+  echo " !!    list of undo-commands created for this session   !!  ";
+  echo "";
+  for EACH_UNDO_COMMAND in "${!UFW_CHANGES_UNDO_ARR[@]}"; do
     echo "${EACH_UNDO_COMMAND}";
-	done;
-	echo "------------------------------------------------------------";
-	echo "------------------------  UFW STATUS  ----------------------";
-	/bin/systemctl status ufw;
-	echo "------------------------------------------------------------";
+  done;
+  echo "------------------------------------------------------------";
+  echo "------------------------  UFW STATUS  ----------------------";
+  /bin/systemctl status ufw;
+  echo "------------------------------------------------------------";
 
-	# Cleanup log files outside of the retention-policy's max-age
-	if [ -z "${LOGDIR}" ]; then
+  # Cleanup log files outside of the retention-policy's max-age
+  if [ -z "${LOGDIR}" ]; then
     LOGDIR="/var/log/ddns_ufw_update";
-	fi;
-	if [ -d "${LOGDIR}" ]; then
+  fi;
+  if [ -d "${LOGDIR}" ]; then
     # MAX_RETENTION_DAYS=14;
     # find "${LOGDIR}" -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
     echo -e "\n""Info:  Cleaning logs older than 14 days old from directory \"${LOGDIR}\"";
     find "${LOGDIR}" -type f -mtime +14 -exec rm -- '{}' \;;
-	fi;
+  fi;
 
 
-	# Set ownership & privileges for the logging directory & its sub contents
-	if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+  # Set ownership & privileges for the logging directory & its sub contents
+  if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
     chown -R "syslog:adm" "${LOGDIR}";
-	fi;
-	find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
-	find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
+  fi;
+  find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
+  find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
 
 fi;
 

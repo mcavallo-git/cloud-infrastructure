@@ -34,22 +34,22 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# SELinux - Disable, Enable, Get-Status, Troubleshoot
-	
-	EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
+  # ------------------------------------------------------------
+  # SELinux - Disable, Enable, Get-Status, Troubleshoot
+  
+  EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
 
-	# Only run in SELinux-compatible environments
-	if [ $(which getenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which setenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+  # Only run in SELinux-compatible environments
+  if [ $(which getenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which setenforce 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || [ $(which selinuxenabled 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
     # ERROR - SELinux not detected
     echo -e "\n""Error:  SELinux not detected""\n";
     EXIT_CODE=1;
-	
-	else
+  
+  else
     # ------------------------------------------------------------
     # Instantiate runtime variables
 
@@ -109,11 +109,11 @@ else
         if [ "${EACH_ARG}" == "-e" ] || [ "${EACH_ARG}" == "--enable" ]; then
           ARGS_SELINUX_ENABLE=1; # Enable SELinux
         fi;
-	
+  
         if [ "${EACH_ARG}" == "-s" ] || [ "${EACH_ARG}" == "--status" ]; then
           ARGS_SELINUX_STATUS=1; # Get SELinux status
         fi;
-	
+  
       fi;
 
     done;
@@ -324,9 +324,9 @@ else
       fi;
     fi;
 
-	fi;
+  fi;
 
-	exit ${EXIT_CODE};
+  exit ${EXIT_CODE};
 
 fi;
 

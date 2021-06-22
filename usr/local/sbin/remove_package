@@ -17,16 +17,16 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	#	Remove package(s)
-	#
+  # ------------------------------------------------------------
+  #
+  #	Remove package(s)
+  #
 
-	if [ -z "${1}" ]; then
+  if [ -z "${1}" ]; then
 
     # Required variable empty
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No value given for first parameter (\$1)";
@@ -35,7 +35,7 @@ else
     echo "";
     exit 1;
 
-	else
+  else
 
     PACKAGE_NAME="$1";
 
@@ -67,8 +67,8 @@ else
     echo "";
     exit;
     
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
 fi;

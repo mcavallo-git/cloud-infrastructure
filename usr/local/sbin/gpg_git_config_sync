@@ -32,13 +32,13 @@ fi;
 # ------------------------------------------------------------
 
 if [[ "${OSTYPE}" != "linux-gnu"* ]] && [[ "$(uname -s)" != "Linux" ]] && [[ "${OSTYPE}" != "darwin"* ]]; then
-	OS_IS_WINDOWS=1;
+  OS_IS_WINDOWS=1;
 else
-	OS_IS_WINDOWS=0;
-	echo "";
-	echo "Error: Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
-	echo "";
-	exit 1;
+  OS_IS_WINDOWS=0;
+  echo "";
+  echo "Error: Script must run in a Windows Git-Bash terminal ( w/ admin-privileges ) to function as-intended";
+  echo "";
+  exit 1;
 fi;
 
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
@@ -101,20 +101,20 @@ GIT_SYNC_CONFIG_FULLPATH="";
 
 # Create parent directory to the main config (if not found to exist)
 if [ ! -d "${DEFAULT_CONFIG_DIRNAME}" ]; then
-	mkdir "${DEFAULT_CONFIG_DIRNAME}";
+  mkdir "${DEFAULT_CONFIG_DIRNAME}";
 fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
-	GIT_SYNC_CONFIG_FULLPATH="${1}";
-	source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
+  GIT_SYNC_CONFIG_FULLPATH="${1}";
+  source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
 elif [ -f "${DEFAULT_CONFIG_FULLPATH}" ]; then
-	GIT_SYNC_CONFIG_FULLPATH="${DEFAULT_CONFIG_FULLPATH}";
-	source "${DEFAULT_CONFIG_FULLPATH}"; # Default shell script which sets/instantiates all required config variables
+  GIT_SYNC_CONFIG_FULLPATH="${DEFAULT_CONFIG_FULLPATH}";
+  source "${DEFAULT_CONFIG_FULLPATH}"; # Default shell script which sets/instantiates all required config variables
 else
-	echo "";
-	echo "Error: FIRST inline parameter ( \$1 ) must point to the filepath of a separate shell script which sets/instantiates all required git + gnupg config variables (see var-names above)";
-	echo "";
-	exit 1;
+  echo "";
+  echo "Error: FIRST inline parameter ( \$1 ) must point to the filepath of a separate shell script which sets/instantiates all required git + gnupg config variables (see var-names above)";
+  echo "";
+  exit 1;
 fi;
 
 
@@ -129,7 +129,7 @@ shopt -s lastpipe; # extends the current shell into sub-shells (within piped-com
 # SHOW_GIT_CONFIG_OUTPUTS=1;
 # SHOW_GIT_CONFIG_OUTPUTS=2;
 if [ ! -v SHOW_GIT_CONFIG_OUTPUTS ]; then
-	SHOW_GIT_CONFIG_OUTPUTS=1;
+  SHOW_GIT_CONFIG_OUTPUTS=1;
 fi;
 
 
@@ -138,7 +138,7 @@ fi;
 # STRICT_HOSTKEY_CHECKING=0;
 # STRICT_HOSTKEY_CHECKING=1;
 if [ ! -v STRICT_HOSTKEY_CHECKING ]; then
-	STRICT_HOSTKEY_CHECKING=1; # 0 to use " -o StrictHostKeyChecking=no"
+  STRICT_HOSTKEY_CHECKING=1; # 0 to use " -o StrictHostKeyChecking=no"
 fi;
 
 
@@ -147,7 +147,7 @@ fi;
 # Additional options to which affect each and every Git call (push, pull, fetch, etc.)
 GIT_SSH_OPTS="";
 if [ ${STRICT_HOSTKEY_CHECKING} -eq 0 ]; then
-	GIT_SSH_OPTS=" -o StrictHostKeyChecking=no";
+  GIT_SSH_OPTS=" -o StrictHostKeyChecking=no";
 fi;
 
 
@@ -210,23 +210,23 @@ GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 # Check if running as w/ administrative privileges (or not)
 IS_ADMIN=$(net session > /dev/null 2>&1; if [ "$?" -ne "0" ]; then echo 0; else echo 1; fi;);
 if [ "${IS_ADMIN}" == "0" ]; then
-	echo "";
-	echo "Error: Must \"Run as Administrator\" on the Git Bash terminal";
-	echo "";
-	sleep 60;
-	exit 1;
+  echo "";
+  echo "Error: Must \"Run as Administrator\" on the Git Bash terminal";
+  echo "";
+  sleep 60;
+  exit 1;
 
 elif [ ! -e "${GPG4WIN_GPG_EXE_LINUX}" ]; then
-	#
-	#	Gpg4win --> GnuPG Key Hander
-	#		Make sure that "Gpg4win" is installed, as it both upgrades Git's default "gpg.exe" runtime, and
-	#		also brings along "Kleopatra", a Windows handler for gpg-keys w/ a front-end GUI & server-sync built-in
-	#
-	echo "Error: Unable to locate \"Gpg4win\" directory";
-	echo " |--> Please download & install \"Gpg4win\" via : https://www.gpg4win.org/thanks-for-download.html ";
-	echo " |--> Once Gpg4win is installed, import/create your GnuPG keys using its \"Kleopatra\" included module ";
-	sleep 60;
-	exit 1;
+  #
+  #	Gpg4win --> GnuPG Key Hander
+  #		Make sure that "Gpg4win" is installed, as it both upgrades Git's default "gpg.exe" runtime, and
+  #		also brings along "Kleopatra", a Windows handler for gpg-keys w/ a front-end GUI & server-sync built-in
+  #
+  echo "Error: Unable to locate \"Gpg4win\" directory";
+  echo " |--> Please download & install \"Gpg4win\" via : https://www.gpg4win.org/thanks-for-download.html ";
+  echo " |--> Once Gpg4win is installed, import/create your GnuPG keys using its \"Kleopatra\" included module ";
+  sleep 60;
+  exit 1;
 
 fi;
 
@@ -262,15 +262,15 @@ SEARCH_DIRECTORIES+=("${PROG_FILES_X86_LINUX}/");
 
 for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 
-	HAYSTACK=$(realpath "${EACH_DIRECTORY}");
-	NEEDLE="git.exe";
-	echo "Info: Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
-	find "${HAYSTACK}" \
-	-type f \
-	-name "${NEEDLE}" \
-	-print0 \
-	2>"/dev/null" \
-	| while IFS= read -r -d $'\0' EACH_GIT_EXE; do
+  HAYSTACK=$(realpath "${EACH_DIRECTORY}");
+  NEEDLE="git.exe";
+  echo "Info: Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
+  find "${HAYSTACK}" \
+  -type f \
+  -name "${NEEDLE}" \
+  -print0 \
+  2>"/dev/null" \
+  | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
     EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
     EACH_GIT_WIN32=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_GIT_WIN32="${MM}";
@@ -289,7 +289,7 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
       echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";
     fi;
 
-	done;
+  done;
 
 done;
 
@@ -300,7 +300,7 @@ IFS="${ROLLBACK_IFS}";
 # ------------------------------------------------------------
 
 if [ "list gnupg" == "key ids" ]; then
-	gpg --list-keys;
+  gpg --list-keys;
 fi;
 
 #
@@ -333,8 +333,8 @@ echo "Info: GnuPG exe - Gpg4win  (gpg.exe) :  \"${GPG4WIN_GPG_EXE_LINUX}\"";
 echo "Info: GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
 
 for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
-	EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
-	if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ]; then # 
+  EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
+  if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ]; then # 
     if [ -L "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
       EACH_FILE_OUTPUT=$(ls -al "${GPG4WIN_EXE_DIR_LINUX}" | awk '{print $9,$10,$11}' | grep "${EACH_FILE}");
       # echo "Pass - ${EACH_FILE_OUTPUT}";
@@ -347,7 +347,7 @@ for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
       echo "";
       echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
     fi;
-	fi;
+  fi;
 done;
 
 #
@@ -395,7 +395,7 @@ echo "Info: GnuPG Default Config-File (Linux): \"${GCONF_PRIMARY_LINUX}\"";
 EACH_CONF="gpg.conf";
 EACH_FULLCONF="${GCONF_PRIMARY_DIR_LINUX}/${EACH_CONF}";
 if [ ! -f "${EACH_FULLCONF}" ]; then
-	echo -n "" > "${EACH_FULLCONF}";
+  echo -n "" > "${EACH_FULLCONF}";
 fi;
 
 # if [ "$(cat ${EACH_FULLCONF} | grep 'pinentry-mode')" == "" ]; then echo "pinentry-mode loopback" >> "${EACH_FULLCONF}"; fi;
@@ -413,7 +413,7 @@ if [ "$(cat ${EACH_FULLCONF} | grep 'no-tty')" == "" ]; then echo "no-tty" >> "$
 EACH_CONF="gpg-agent.conf";
 EACH_FULLCONF="${GCONF_PRIMARY_DIR_LINUX}/${EACH_CONF}";
 if [ ! -f "${EACH_FULLCONF}" ]; then
-	echo -n "" > "${EACH_FULLCONF}";
+  echo -n "" > "${EACH_FULLCONF}";
 fi;
 
 # if [ "$(cat ${EACH_FULLCONF} | grep 'pinentry-timeout')" == "" ]; then echo "pinentry-timeout 0" >> "${EACH_FULLCONF}"; fi;
@@ -429,63 +429,63 @@ if [ "$(cat ${EACH_FULLCONF} | grep 'max-cache-ttl')" == "" ]; then echo "max-ca
 EACH_CONF="gpgconf.conf";
 EACH_FULLCONF="${GCONF_PRIMARY_DIR_LINUX}/${EACH_CONF}";
 if [ ! -f "${EACH_FULLCONF}" ]; then
-	echo -n "" > "${EACH_FULLCONF}";
+  echo -n "" > "${EACH_FULLCONF}";
 fi;
 
 # ------------------------------------------------------------
 
 # [ USERPROFILE ] *.conf - Creation / Symlinking
 if [ "${GCONF_USERPROFILE_LINUX}" == "${GCONF_PRIMARY_LINUX}" ]; then
-	# echo "";
-	# echo "Pass - \"${GCONF_USERPROFILE_LINUX}\" IS the primary GnuPG config-file";
-	MM="";
+  # echo "";
+  # echo "Pass - \"${GCONF_USERPROFILE_LINUX}\" IS the primary GnuPG config-file";
+  MM="";
 else
-	# [ USERPROFILE ] gpg.conf
-	EACH_CONF="gpg.conf";
-	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
+  # [ USERPROFILE ] gpg.conf
+  EACH_CONF="gpg.conf";
+  if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
-	# [ USERPROFILE ] gpgconf.conf
-	EACH_CONF="gpgconf.conf";
-	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
+  fi;
+  # [ USERPROFILE ] gpgconf.conf
+  EACH_CONF="gpgconf.conf";
+  if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
-	# [ USERPROFILE ] gpg-agent.conf
-	EACH_CONF="gpg-agent.conf";
-	if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
+  fi;
+  # [ USERPROFILE ] gpg-agent.conf
+  EACH_CONF="gpg-agent.conf";
+  if [ ! -f "${USERPROFILE_GNUPG_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${USERPROFILE_GNUPG_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
+  fi;
 fi;
 
 # ------------------------------------------------------------
 
 # [ APPDATA ] *.conf - Config File Creation / Symlinking
 if [ "${GCONF_APPDATA_LINUX}" == "${GCONF_PRIMARY_LINUX}" ]; then
-	# echo "";
-	# echo "Pass - \"${GCONF_APPDATA_LINUX}\" IS the primary GnuPG config-file";
-	MM="";
+  # echo "";
+  # echo "Pass - \"${GCONF_APPDATA_LINUX}\" IS the primary GnuPG config-file";
+  MM="";
 else
-	# [ APPDATA ] gpg.conf
-	EACH_CONF="gpg.conf";
-	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
+  # [ APPDATA ] gpg.conf
+  EACH_CONF="gpg.conf";
+  if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
-	# [ APPDATA ] gpgconf.conf
-	EACH_CONF="gpgconf.conf";
-	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
+  fi;
+  # [ APPDATA ] gpgconf.conf
+  EACH_CONF="gpgconf.conf";
+  if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
-	# [ APPDATA ] gpg-agent.conf
-	EACH_CONF="gpg-agent.conf";
-	if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
+  fi;
+  # [ APPDATA ] gpg-agent.conf
+  EACH_CONF="gpg-agent.conf";
+  if [ ! -f "${GCONF_APPDATA_DIR_LINUX}/${EACH_CONF}" ]; then
     echo "";
     echo "MKLINK \"${GCONF_APPDATA_DIR_WIN32}\\${EACH_CONF}\" \"${GCONF_PRIMARY_DIR_WIN32}\\${EACH_CONF}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
-	fi;
+  fi;
 fi;
 
 # ------------------------------------------------------------
@@ -620,41 +620,41 @@ fi;
 
 # if [ 0 -eq 1 ]; then
 
-	echo "------------------------------------------------------------"
-	echo ""
-	echo "Beginning Exclusions search..."
+  echo "------------------------------------------------------------"
+  echo ""
+  echo "Beginning Exclusions search..."
 
-	unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
+  unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
-	# AppData
-	if [ -d "${HOME}/AppData" ]; then
+  # AppData
+  if [ -d "${HOME}/AppData" ]; then
     EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
-	fi;
-	# DropBox
-	if [ -d "${HOME}/Dropbox" ]; then
+  fi;
+  # DropBox
+  if [ -d "${HOME}/Dropbox" ]; then
     EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
-	fi;
-	# Google Drive
-	if [ -d "${HOME}/Google Drive" ]; then
+  fi;
+  # Google Drive
+  if [ -d "${HOME}/Google Drive" ]; then
     EXCLUDED_HOMEDIRS+=(["${HOME}/Google Drive"]="");
-	fi;
-	# iCloud (Apple)
-	if [ -d "${HOME}/iCloudDrive" ]; then
+  fi;
+  # iCloud (Apple)
+  if [ -d "${HOME}/iCloudDrive" ]; then
     EXCLUDED_HOMEDIRS+=(["${HOME}/iCloudDrive"]="");
-	fi;
+  fi;
 
-	#
-	# Exclude OneDrive Dirs
-	#   |--> Note: Running 'find' against OneDrive files causes them to be downloaded (if cloud synced), effectively ruining the functionality of OneDrive's "Files On-Demand" feature
-	#
-	REGKEY_ONEDRIVE_BUSINESS="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Business1\ScopeIdToMountPointPathCache";  # OneDrive for Business
-	REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
-	PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
-	PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
-	DIRS_ONEDRIVE_BUSINESS=$(PowerShell -Command "${PS1_ONEDRIVE_BUSINESS}";);
-	DIRS_ONEDRIVE_PERSONAL=$(PowerShell -Command "${PS1_ONEDRIVE_PERSONAL}";);
-	
-	echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
+  #
+  # Exclude OneDrive Dirs
+  #   |--> Note: Running 'find' against OneDrive files causes them to be downloaded (if cloud synced), effectively ruining the functionality of OneDrive's "Files On-Demand" feature
+  #
+  REGKEY_ONEDRIVE_BUSINESS="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Business1\ScopeIdToMountPointPathCache";  # OneDrive for Business
+  REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
+  PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
+  PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
+  DIRS_ONEDRIVE_BUSINESS=$(PowerShell -Command "${PS1_ONEDRIVE_BUSINESS}";);
+  DIRS_ONEDRIVE_PERSONAL=$(PowerShell -Command "${PS1_ONEDRIVE_PERSONAL}";);
+  
+  echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
     # Verify each path exists before excluding it (otherwise it doesn't matter)
     EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/\/c\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
     EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/\/c}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
@@ -665,18 +665,18 @@ fi;
         EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
       fi;
     fi;
-	done;
+  done;
 
-	EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 
-	unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
+  unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
-	echo "------------------------------------------------------------";
-	echo "";
-	echo "Beginning Home-Dir search...";
+  echo "------------------------------------------------------------";
+  echo "";
+  echo "Beginning Home-Dir search...";
 
-	# Get all dirs within current user's home-dir
-	find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
+  # Get all dirs within current user's home-dir
+  find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
     DIR_IS_EXCLUDED=0;
     for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
@@ -698,10 +698,10 @@ fi;
         REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");
       done;
     fi;
-	done;
+  done;
 
-	# Loop through array of local repository filepaths, attempting to parse their values & set applicable [ git config ... ] settings for each
-	for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
+  # Loop through array of local repository filepaths, attempting to parse their values & set applicable [ git config ... ] settings for each
+  for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 
     EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
     EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
@@ -856,8 +856,8 @@ fi;
 
     fi;
 
-	done;
-	
+  done;
+  
 echo "";
 
 exit 0;

@@ -14,26 +14,26 @@ fi;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
-	SERVICE_NAME="java";
+  # ------------------------------------------------------------
+  # Install Java SE8 (Standard Edition 8) "Headless" version (e.g. "CLI" or "Minimal")
+  SERVICE_NAME="java";
 
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+  if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
     PACKAGE_NAME="openjdk-8-jre-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}"; # Distros: Debian, Ubuntu, etc.
     # PACKAGE_NAME_DEVTOOLS="openjdk-8-jdk-headless"; apt-get -y update; apt-get -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Debian, Ubuntu, etc.
-	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+  elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
     PACKAGE_NAME="java-1.8.0-openjdk-headless"; yum -y check-update; yum -y install "${PACKAGE_NAME}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     # PACKAGE_NAME_DEVTOOLS="java-1.8.0-openjdk-devel"; yum -y check-update; yum -y install "${PACKAGE_NAME_DEVTOOLS}"; # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
-	# Setup Java
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+  # ------------------------------------------------------------
+  # Setup Java
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
     # Show local Java runtime's settings/properties
     JAVA_ALL_SETTINGS="$(java -XshowSettings:properties -version 2>&1;)"; echo "JAVA_ALL_SETTINGS = [ ${JAVA_ALL_SETTINGS} ]";  # Note: Java outputs to STDERR (2) by default - Redirect its output to STDOUT (1) by using 2>&1
@@ -85,7 +85,7 @@ else
     echo "Info:  Calling [ chmod 0644 \"${LOCAL_JAVA_FONTCONFIG_PROPS}\"; ]...";
     chmod 0644 "${LOCAL_JAVA_FONTCONFIG_PROPS}";
 
-	fi;
+  fi;
 
 fi;
 

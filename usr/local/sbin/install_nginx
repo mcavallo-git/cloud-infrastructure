@@ -14,43 +14,43 @@ fi;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Install NGINX Web Server
-	SERVICE_NAME="nginx";
+  # ------------------------------------------------------------
+  # Install NGINX Web Server
+  SERVICE_NAME="nginx";
 
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
+  if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
     apt-get -y update; apt-get -y install "dpkg-dev";
     add-apt-repository "ppa:nginx/stable";
     apt-get -y update; apt-get -y install "nginx-full";
-	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+  elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum -y check-update; yum -y install "epel-release";
     yum -y check-update; yum -y install "nginx";
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	# Autostart the service on bootup (as well as right now)
-	#
-	if \
+  # ------------------------------------------------------------
+  # Autostart the service on bootup (as well as right now)
+  #
+  if \
     [ "$(systemctl is-enabled ${SERVICE_NAME}.service 2>/dev/null;)" != "enabled" ] || \
     [ "$(systemctl is-active ${SERVICE_NAME}.service 2>/dev/null;)" != "active" ] || \
     [ $(systemctl is-enabled ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ] || \
     [ $(systemctl is-active ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ]; \
-	then
+  then
     echo "Info:  Service \"${SERVICE_NAME}\" is not both \"enabled\" and \"active\", currently";
     echo "Info:  Calling  [ systemctl enable \"${SERVICE_NAME}.service\" --now; ]  ...";
     systemctl enable "${SERVICE_NAME}.service" --now; # "enable --now" autostarts service at bootup && starts service immediately
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	# Setup NGINX
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+  # ------------------------------------------------------------
+  # Setup NGINX
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then
 
     # ------------------------------------------------------------
     # Check the NGINX service's status
@@ -116,7 +116,7 @@ else
       fi;
     fi;
 
-	fi;
+  fi;
 
 fi;
 

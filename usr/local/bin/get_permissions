@@ -21,22 +21,22 @@ STAT_WRITABLE="0";
 
 if [ -z "${STAT_PATH}" ]; then
 
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: empty path \${1} (filepath to stat)";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: empty path \${1} (filepath to stat)";
 
 else
 
-	if [[ -r "${STAT_PATH}" ]]; then # canonicalize symbolic links
+  if [[ -r "${STAT_PATH}" ]]; then # canonicalize symbolic links
     STAT_SYMLINK="1";
     STAT_ENDPOINT=$(readlink -f "${STAT_PATH}");
-	else
+  else
     STAT_ENDPOINT="${STAT_PATH}";
-	fi;
+  fi;
 
-	if [ ! -e "${STAT_ENDPOINT}" ]; then
+  if [ ! -e "${STAT_ENDPOINT}" ]; then
 
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: path not found: \"${STAT_ENDPOINT}\"";
 
-	else
+  else
 
     STAT_EXISTS="1";
 
@@ -112,7 +112,7 @@ else
 
     fi;
 
-	fi;
+  fi;
 
 fi;
 

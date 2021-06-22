@@ -29,73 +29,73 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 
 else
 
-	set -e; # Exit immediately if a command exits with a non-zero status
-	# set -x; # Print commands and their arguments as they are executed
+  set -e; # Exit immediately if a command exits with a non-zero status
+  # set -x; # Print commands and their arguments as they are executed
 
-	# If no username given, ask terminal user for username
-	while [ -z "${USER_NAME}" ]; do
+  # If no username given, ask terminal user for username
+  while [ -z "${USER_NAME}" ]; do
     echo "";
     read -p " Create a user with what username?   " -t 60 -r;
     USER_NAME="${REPLY}";
     if [ -n "${USER_NAME}" ]; then
       break;
     fi;
-	done;
+  done;
 
-	ROLLBACK_IFS="${IFS}";
-	IFS=' '; # Set the global delimiter
+  ROLLBACK_IFS="${IFS}";
+  IFS=' '; # Set the global delimiter
 
-	# USER_NAME="...";
-	# USER_UID="${USER_UID:-NEXT_AVAILABLE_ID}";
-	USER_GNAME="${USER_GNAME:-${USER_NAME}}";
-	# USER_GID="${USER_GID:-NEXT_AVAILABLE_ID}";
-	USER_SHELL="${USER_SHELL:-/bin/bash}";
+  # USER_NAME="...";
+  # USER_UID="${USER_UID:-NEXT_AVAILABLE_ID}";
+  USER_GNAME="${USER_GNAME:-${USER_NAME}}";
+  # USER_GID="${USER_GID:-NEXT_AVAILABLE_ID}";
+  USER_SHELL="${USER_SHELL:-/bin/bash}";
 
-	# User Directory-Info
-	DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
-	DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
-	
-	CREATE_HOME="${CREATE_HOME:-1}";
-	CREATE_HOME_SSH="${CREATE_HOME_SSH:-1}";
+  # User Directory-Info
+  DIR_USER_HOME="${DIR_USER_HOME:-/home/${USER_NAME}}";
+  DIR_USER_SSH="${DIR_USER_SSH:-${DIR_USER_HOME}/.ssh}";
+  
+  CREATE_HOME="${CREATE_HOME:-1}";
+  CREATE_HOME_SSH="${CREATE_HOME_SSH:-1}";
 
-	# Options - Password
-	SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
+  # Options - Password
+  SET_USER_PASSWORD="${SET_USER_PASSWORD:-0}";
 
-	# Set the user as a System User (uses useradd's --system arg)
-	SET_SYSTEM_USER=${SET_SYSTEM_USER:-0};
+  # Set the user as a System User (uses useradd's --system arg)
+  SET_SYSTEM_USER=${SET_SYSTEM_USER:-0};
 
-	# Options - Sudo
-	ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS:-0}";
-	SUDO_REQUIRES_PASS="${SUDO_REQUIRES_PASS:-1}";
+  # Options - Sudo
+  ADD_USER_TO_SUDOERS="${ADD_USER_TO_SUDOERS:-0}";
+  SUDO_REQUIRES_PASS="${SUDO_REQUIRES_PASS:-1}";
 
-	#	------------------------------------------------------------
-	#	   Values below are based off of the above values
-	# ------------------------------------------------------------
+  #	------------------------------------------------------------
+  #	   Values below are based off of the above values
+  # ------------------------------------------------------------
 
-	if [ -z "${USER_NAME}" ]; then
+  if [ -z "${USER_NAME}" ]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  \$USER_NAME is empty/unset";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
     exit 1;
 
-	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_UID ]; then
+  elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_UID ]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ User ID ] & [ System User ]";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate User IDs for System users";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
     exit 1;
 
-	elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_GID ]; then
+  elif [ ${SET_SYSTEM_USER} -eq 1 ] && [ -v USER_GID ]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Invalid argument combination: [ Group ID ] & [ System User ]";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Best practice dictates that the system should allocate Group IDs for System users";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
     exit 1;
 
-	elif [[ -v USER_NAME ]] \
+  elif [[ -v USER_NAME ]] \
       && [[ -v USER_UID ]] \
       && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
       && [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
@@ -104,7 +104,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
     exit 1;
 
-	elif [[ -v USER_GNAME ]] \
+  elif [[ -v USER_GNAME ]] \
       && [[ -v USER_GID ]] \
       && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
       && [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
@@ -113,13 +113,13 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
     exit 1;
 
-	elif [ "${CREATE_HOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
+  elif [ "${CREATE_HOME}" == "1" ] && [ -d "${DIR_USER_HOME}" ]; then
 
     echo "Home Directory already exists: \"${DIR_USER_HOME}\".";
     echo "If you still want to use this directory, set \$CREATE_HOME to \"0\" and re-run this script.";
     exit 1;
 
-	else
+  else
 
     # ------------------------------------------------------------
     # GROUP-CREATION
@@ -238,8 +238,8 @@ else
 
     exit 0;
 
-	fi;
+  fi;
 
-	IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
+  IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
 
 fi;

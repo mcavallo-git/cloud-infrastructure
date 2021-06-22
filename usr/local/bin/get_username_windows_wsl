@@ -4,14 +4,14 @@
 #
 
 if [ -z "$(uname -r | grep 'Microsoft')" ]; then
-	# Non-WSL (Non Windows-based OS)
-	exit 1;
-	
+  # Non-WSL (Non Windows-based OS)
+  exit 1;
+  
 else
 
-	DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
+  DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
 
-	if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
+  if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
     # Assumed to be a Windows based OS
 
     Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
@@ -115,13 +115,13 @@ else
       echo "";
     fi;
 
-	else
+  else
     # Assumed to be a NON-Windows based OS
     echo "Info: Directory not-found/empty: \"${DIR_WIN32_USERS}\"";
     echo "Info: Assuming that this is a Non-Windows based OS";
     exit 1;
 
-	fi;
+  fi;
 
 fi;
 

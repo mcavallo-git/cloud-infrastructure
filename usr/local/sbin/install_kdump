@@ -13,24 +13,24 @@ fi;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Install/setup kernel crash dump logging for use during RCA auditing workflows
-	#
-	SERVICE_NAME="kdump";
+  # ------------------------------------------------------------
+  #
+  # Install/setup kernel crash dump logging for use during RCA auditing workflows
+  #
+  SERVICE_NAME="kdump";
 
-	#	Search for one, specific service
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	echo "------------------------------------------------------------";
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service FOUND locally
+  #	Search for one, specific service
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  echo "------------------------------------------------------------";
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then # Service FOUND locally
     echo "";
     echo "Info:  Service \"kdump\" found to exist locally (skipping package-install)";
     /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
-	else # Service NOT found locally
+  else # Service NOT found locally
     echo "";
     echo "Warning:  Service \"${SERVICE_NAME}\" not found locally";
     echo "";
@@ -42,10 +42,10 @@ else
         yum -y install kexec-tools;
       fi;
     fi;
-	fi;
+  fi;
 
 
-	if [ -f "/etc/default/grub" ]; then
+  if [ -f "/etc/default/grub" ]; then
     #
     # Enabling Grub2's "crashkernel" setting
     #
@@ -59,10 +59,10 @@ else
       # Add inline argument "... crashkernel=auto ..." to grub startup options
       sed -i".$(date +'%Y%m%d_%H%M%S').bak" -re "s/^(GRUB_CMDLINE_LINUX=\".+)\"\$/\1 crashkernel=auto\"/" "/etc/default/grub";
     fi;
-	fi;
+  fi;
 
 
-	if [ -f "/etc/kdump.conf" ]; then
+  if [ -f "/etc/kdump.conf" ]; then
     #
     # Enabling KDump's "path" setting
     #
@@ -92,24 +92,24 @@ else
       # Add inline argument "... crashkernel=auto ..." to grub startup options
       echo "default dump_to_rootfs" > "/etc/kdump.conf";
     fi;
-	fi;
+  fi;
 
-	
-	# Verify that taget service is enabled
-	if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
+  
+  # Verify that taget service is enabled
+  if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
     echo "Info:  Service \"kdump\" is enabled (skipping enable-service)";
-	else
+  else
     echo "Warning:  Service \"kdump\" is not enabled --> Enabling it, now...";
     systemctl enable ${SERVICE_NAME};
-	fi;
+  fi;
 
-	# Verify that taget service is active
-	if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
+  # Verify that taget service is active
+  if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" == "0" ]; then
     echo "Info:  Service \"kdump\" is active (skipping start-service)";
-	else
+  else
     echo "Warning:  Service \"kdump\" is not active --> Starting it, now...";
     systemctl start ${SERVICE_NAME};
-	fi;
+  fi;
 
 
 fi;

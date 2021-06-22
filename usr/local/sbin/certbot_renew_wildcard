@@ -25,17 +25,17 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	#
-	# !!! REDIRECT TO "certbot_add_wildcard" RUNTIME !!!
-	#      |
-	#      |--> As-of June, 2020 due to certbot not offering any pure-backend methods of simplified wildcard certificate renewal (which can easily automated via a cron-job, etc. without needing to contact other services' additional APIs separately afterwards, etc. (possible for sure just not all packaged nicely through certbot, yet))
-	#           |
-	#           |--> e.g. you have to just recreate the wildcard certificate to renew it
-	#
-	DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${1}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
+  #
+  # !!! REDIRECT TO "certbot_add_wildcard" RUNTIME !!!
+  #      |
+  #      |--> As-of June, 2020 due to certbot not offering any pure-backend methods of simplified wildcard certificate renewal (which can easily automated via a cron-job, etc. without needing to contact other services' additional APIs separately afterwards, etc. (possible for sure just not all packaged nicely through certbot, yet))
+  #           |
+  #           |--> e.g. you have to just recreate the wildcard certificate to renew it
+  #
+  DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${1}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
 fi;
 

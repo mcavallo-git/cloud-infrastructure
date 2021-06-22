@@ -40,22 +40,22 @@ fi;
 #
 
 if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
-	VERBOSE=1;
+  VERBOSE=1;
 elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
-	VERBOSE=1;
+  VERBOSE=1;
 elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >= "1")); then
-	VERBOSE=1;
+  VERBOSE=1;
 elif [ -n "$@" ] && [ -n "$(echo $@ | grep 'verbose';)" ]; then
-	VERBOSE=1;
+  VERBOSE=1;
 else
-	VERBOSE=0;
+  VERBOSE=0;
 fi;
 
 VERBOSE="0";
 if [ -n "$1" ]; then
-	if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
+  if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
     VERBOSE="1";
-	fi;
+  fi;
 fi;
 
 RETURNED_OS="Unknown";
@@ -65,17 +65,17 @@ RETURNED_OS="Unknown";
 # OS (Operating System) Details
 #
 if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
-	if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
+  if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
     THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
-	else
+  else
     THIS_OS_TYPE='Linux';
-	fi;
+  fi;
 elif [ "$(uname -s)" == "VMkernel" ]; then
-	THIS_OS_TYPE='VMware ESX';
+  THIS_OS_TYPE='VMware ESX';
 elif [[ "${OSTYPE}" == "darwin"* ]]; then
-	THIS_OS_TYPE='Macintosh';
+  THIS_OS_TYPE='Macintosh';
 else
-	THIS_OS_TYPE='Windows';
+  THIS_OS_TYPE='Windows';
 fi;
 RETURNED_OS="${THIS_OS_TYPE}";
 
@@ -100,36 +100,36 @@ DISTRO_CODENAME="";
 DISTRO_DESCRIPTION="";
 
 if [ -n "$(which vmware 2>'/dev/null';)" ]; then
-	# VMware ESXi Hosts
-	DISTRO_ID="$(vmware -l;)";
-	DISTRO_RELEASE="$(vmware -v;)";
-	DISTRO_CODENAME="";
-	DISTRO_DESCRIPTION="$(vmware -l;)";
-	if [ -n "$(which sed 2>'/dev/null';)" ]; then
+  # VMware ESXi Hosts
+  DISTRO_ID="$(vmware -l;)";
+  DISTRO_RELEASE="$(vmware -v;)";
+  DISTRO_CODENAME="";
+  DISTRO_DESCRIPTION="$(vmware -l;)";
+  if [ -n "$(which sed 2>'/dev/null';)" ]; then
     DISTRO_ID=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\1/p';);
     DISTRO_RELEASE=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\2/p';);
     DISTRO_CODENAME=$(vmware -l | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (Update.+)$/\3/p';);
     DISTRO_BUILD=$(vmware -v | sed -rne 's/^([a-zA-Z\_\-\(\)\=\ ]+) ([0-9\.]+) (build.+)$/\3/p';);
     DISTRO_DESCRIPTION="${DISTRO_ID} ${DISTRO_RELEASE} ${DISTRO_CODENAME} ${DISTRO_BUILD}";
-	fi;
+  fi;
 
 elif [ -n "$(which lsb_release 2>'/dev/null';)" ]; then
-	DISTRO_ID="$(lsb_release --short --id;)";
-	DISTRO_RELEASE="$(lsb_release --short --release;)";
-	DISTRO_CODENAME="$(lsb_release --short --codename;)";
-	DISTRO_DESCRIPTION="$(lsb_release --short --description;)";
+  DISTRO_ID="$(lsb_release --short --id;)";
+  DISTRO_RELEASE="$(lsb_release --short --release;)";
+  DISTRO_CODENAME="$(lsb_release --short --codename;)";
+  DISTRO_DESCRIPTION="$(lsb_release --short --description;)";
 
 elif [ -n "$(which sed 2>'/dev/null';)" ] && [ -n "$(find /etc/os-release 2>'/dev/null';)" ]; then
-	DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release";);
-	DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
-	DISTRO_CODENAME=$(sed -rne 's/^VERSION=".+\((.+)\)"$/\1/p' "/etc/os-release";);
-	DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="(.+)"$/\1/p' "/etc/os-release";);
+  DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release";);
+  DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
+  DISTRO_CODENAME=$(sed -rne 's/^VERSION=".+\((.+)\)"$/\1/p' "/etc/os-release";);
+  DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="(.+)"$/\1/p' "/etc/os-release";);
 
 elif [ -n "$(which grep 2>'/dev/null';)" ] && [ -n "$(find /etc/*release 2>'/dev/null';)" ]; then
-	DISTRO_ID=$(cat /etc/*release | grep -i "^NAME=";);
-	DISTRO_RELEASE=$(cat /etc/*release | grep -i "^VERSION_ID=";);
-	DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);
-	DISTRO_DESCRIPTION=$(cat /etc/*release | grep -i "^PRETTY_NAME=";);
+  DISTRO_ID=$(cat /etc/*release | grep -i "^NAME=";);
+  DISTRO_RELEASE=$(cat /etc/*release | grep -i "^VERSION_ID=";);
+  DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);
+  DISTRO_DESCRIPTION=$(cat /etc/*release | grep -i "^PRETTY_NAME=";);
 
 fi;
 
@@ -139,10 +139,10 @@ fi;
 # Force uppercase letting (if command [ tr ] exists locally)
 #
 if [ -n "$(which tr 2>'/dev/null';)" ]; then
-	DISTRO_ID="$(echo "${DISTRO_ID}" | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_RELEASE="$(echo "${DISTRO_RELEASE}" | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_CODENAME="$(echo "${DISTRO_CODENAME}" | tr '[:lower:]' '[:upper:]';)";
-	DISTRO_DESCRIPTION="$(echo "${DISTRO_DESCRIPTION}" | tr '[:lower:]' '[:upper:]';)";
+  DISTRO_ID="$(echo "${DISTRO_ID}" | tr '[:lower:]' '[:upper:]';)";
+  DISTRO_RELEASE="$(echo "${DISTRO_RELEASE}" | tr '[:lower:]' '[:upper:]';)";
+  DISTRO_CODENAME="$(echo "${DISTRO_CODENAME}" | tr '[:lower:]' '[:upper:]';)";
+  DISTRO_DESCRIPTION="$(echo "${DISTRO_DESCRIPTION}" | tr '[:lower:]' '[:upper:]';)";
 fi;
 
 
@@ -163,111 +163,111 @@ IS_CYGWIN=$(if [[ $(uname -s | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}"
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
 if [ -n "${DISTRO_ID}" ]; then
-	# Directly-compare the current OS' Distro-ID against known values runtime
-	IS_ALPINE=$(if [ "${DISTRO_ID}" == "ALPINE" ]; then echo 1; else echo 0; fi;);
-	IS_CENTOS=$(if [ "${DISTRO_ID}" == "CENTOS" ]; then echo 1; else echo 0; fi;);
-	IS_DEBIAN=$(if [ "${DISTRO_ID}" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
-	IS_RASPBIAN=$(if [ "${DISTRO_ID}" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
-	IS_UBUNTU=$(if [ "${DISTRO_ID}" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
-	IS_RED_HAT=$(if [ "${DISTRO_ID}" == "RHEL" ]; then echo 1; else echo 0; fi;);
+  # Directly-compare the current OS' Distro-ID against known values runtime
+  IS_ALPINE=$(if [ "${DISTRO_ID}" == "ALPINE" ]; then echo 1; else echo 0; fi;);
+  IS_CENTOS=$(if [ "${DISTRO_ID}" == "CENTOS" ]; then echo 1; else echo 0; fi;);
+  IS_DEBIAN=$(if [ "${DISTRO_ID}" == "DEBIAN" ]; then echo 1; else echo 0; fi;);
+  IS_RASPBIAN=$(if [ "${DISTRO_ID}" == "RASPBIAN" ]; then echo 1; else echo 0; fi;);
+  IS_UBUNTU=$(if [ "${DISTRO_ID}" == "UBUNTU" ]; then echo 1; else echo 0; fi;);
+  IS_RED_HAT=$(if [ "${DISTRO_ID}" == "RHEL" ]; then echo 1; else echo 0; fi;);
 
 else
-	# Manually determine Distro-type
-	IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-	IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-	IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-	IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-	IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
-	IS_RED_HAT=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i 'red hat' | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  # Manually determine Distro-type
+  IS_ALPINE=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  IS_CENTOS=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  IS_DEBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  IS_RASPBIAN=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i raspbian | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  IS_UBUNTU=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
+  IS_RED_HAT=$(if [[ $(ls -al /etc | grep -i release | wc -l) -gt 0 ]] && [[ $(cat /etc/*release | grep -i 'red hat' | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi;);
 
 fi;
 
 # Get this host's shell-distro
 THIS_DISTRO="Unknown";
 if [[ ${IS_WINDOWS} -gt 0 ]]; then
-	# Windows shell-distro(s)
-	if [[ ${IS_CYGWIN} -gt 0 ]]; then
+  # Windows shell-distro(s)
+  if [[ ${IS_CYGWIN} -gt 0 ]]; then
     THIS_DISTRO="Cygwin";
-	elif [[ ${IS_MINGW} -gt 0 ]]; then
+  elif [[ ${IS_MINGW} -gt 0 ]]; then
     THIS_DISTRO="MinGW";
-	fi;
+  fi;
 elif [[ ${IS_ESXI} -gt 0 ]]; then
-	THIS_DISTRO="ESXi";
+  THIS_DISTRO="ESXi";
 elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
-	# Linux shell-distro(s)
-	if [[ ${IS_RASPBIAN} -gt 0 ]]; then
+  # Linux shell-distro(s)
+  if [[ ${IS_RASPBIAN} -gt 0 ]]; then
     THIS_DISTRO="Raspbian";
-	elif [[ ${IS_RED_HAT} -gt 0 ]]; then
+  elif [[ ${IS_RED_HAT} -gt 0 ]]; then
     THIS_DISTRO="Red Hat";
-	elif [[ ${IS_CENTOS} -gt 0 ]]; then
+  elif [[ ${IS_CENTOS} -gt 0 ]]; then
     THIS_DISTRO="CentOS";
-	elif [[ ${IS_UBUNTU} -gt 0 ]]; then
+  elif [[ ${IS_UBUNTU} -gt 0 ]]; then
     THIS_DISTRO="Ubuntu";
-	elif [[ ${IS_ALPINE} -gt 0 ]]; then
+  elif [[ ${IS_ALPINE} -gt 0 ]]; then
     THIS_DISTRO="Alpine";
-	elif [[ ${IS_DEBIAN} -gt 0 ]]; then
+  elif [[ ${IS_DEBIAN} -gt 0 ]]; then
     THIS_DISTRO="Debian";
-	fi;
+  fi;
 fi;
 
 THIS_RELEASE="Unknown";
 if [ -n "$(which lsb_release 2>'/dev/null';)" ]; then
-	if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
+  if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
     THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
-	fi;
+  fi;
 elif [ -n "${DISTRO_RELEASE}" ]; then
-	THIS_RELEASE="${DISTRO_RELEASE}";
+  THIS_RELEASE="${DISTRO_RELEASE}";
 fi;
 
 if [ "${THIS_DISTRO}" != "Unknown" ]; then
-	COMBINED_DISTRO_RELEASE="${THIS_DISTRO}";
-	if [ "${THIS_RELEASE}" != "Unknown" ]; then
+  COMBINED_DISTRO_RELEASE="${THIS_DISTRO}";
+  if [ "${THIS_RELEASE}" != "Unknown" ]; then
     COMBINED_DISTRO_RELEASE="${COMBINED_DISTRO_RELEASE} ${THIS_RELEASE}";
-	fi;
-	RETURNED_OS="${COMBINED_DISTRO_RELEASE} running on ${RETURNED_OS}";
+  fi;
+  RETURNED_OS="${COMBINED_DISTRO_RELEASE} running on ${RETURNED_OS}";
 fi;
 
 if [ ${VERBOSE} -eq 1 ]; then
-	echo "";
-	echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
-	echo "THIS_DISTRO=${THIS_DISTRO}";
-	echo "THIS_RELEASE=${THIS_RELEASE}";
-	echo "";
-	echo "IS_WINDOWS=${IS_WINDOWS}";
-	echo "IS_LINUX=${IS_LINUX}"; \
-	echo "IS_MAC=${IS_MAC}"; \
-	echo "IS_WSL=${IS_WSL}"; \
-	echo "";
-	echo "IS_ALPINE=${IS_ALPINE}"; \
-	echo "IS_CYGWIN=${IS_CYGWIN}"; \
-	echo "IS_CENTOS=${IS_CENTOS}"; \
-	echo "IS_DEBIAN=${IS_DEBIAN}"; \
-	echo "IS_MINGW=${IS_MINGW}";
-	echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
-	echo "IS_RED_HAT=${IS_RED_HAT}"; \
-	echo "IS_UBUNTU=${IS_UBUNTU}"; \
-	echo ""; \
-	echo "DISTRO_ID=${DISTRO_ID}"; \
-	echo "DISTRO_RELEASE=${DISTRO_RELEASE}"; \
-	echo "DISTRO_CODENAME=${DISTRO_CODENAME}"; \
-	echo "DISTRO_DESCRIPTION=${DISTRO_DESCRIPTION}"; \
-	echo "";
+  echo "";
+  echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
+  echo "THIS_DISTRO=${THIS_DISTRO}";
+  echo "THIS_RELEASE=${THIS_RELEASE}";
+  echo "";
+  echo "IS_WINDOWS=${IS_WINDOWS}";
+  echo "IS_LINUX=${IS_LINUX}"; \
+  echo "IS_MAC=${IS_MAC}"; \
+  echo "IS_WSL=${IS_WSL}"; \
+  echo "";
+  echo "IS_ALPINE=${IS_ALPINE}"; \
+  echo "IS_CYGWIN=${IS_CYGWIN}"; \
+  echo "IS_CENTOS=${IS_CENTOS}"; \
+  echo "IS_DEBIAN=${IS_DEBIAN}"; \
+  echo "IS_MINGW=${IS_MINGW}";
+  echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
+  echo "IS_RED_HAT=${IS_RED_HAT}"; \
+  echo "IS_UBUNTU=${IS_UBUNTU}"; \
+  echo ""; \
+  echo "DISTRO_ID=${DISTRO_ID}"; \
+  echo "DISTRO_RELEASE=${DISTRO_RELEASE}"; \
+  echo "DISTRO_CODENAME=${DISTRO_CODENAME}"; \
+  echo "DISTRO_DESCRIPTION=${DISTRO_DESCRIPTION}"; \
+  echo "";
 fi;
 
 if [ ${VERBOSE} -eq 1 ]; then
-	echo "";
-	echo "------------------------------------------------------------";
-	echo "";
-	echo -n "THIS OS:   ";
+  echo "";
+  echo "------------------------------------------------------------";
+  echo "";
+  echo -n "THIS OS:   ";
 fi;
 
 # Return the combined OS value
 echo "${RETURNED_OS}";
 
 if [ ${VERBOSE} -eq 1 ]; then
-	echo "";
-	echo "------------------------------------------------------------";
-	echo "";
+  echo "";
+  echo "------------------------------------------------------------";
+  echo "";
 fi;
 
 

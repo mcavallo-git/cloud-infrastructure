@@ -1,10 +1,10 @@
 #!/bin/bash
 if [ -n "$0" ]; then
-	
-	if [ -z "$(which docker 2>'/dev/null')" ]; then
+  
+  if [ -z "$(which docker 2>'/dev/null')" ]; then
     echo "Error: command \"docker\" not found";
 
-	else
+  else
 
     unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash array
     unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash array
@@ -62,10 +62,10 @@ if [ -n "$0" ]; then
 
     fi;
 
-	fi;
+  fi;
 
 else 
-	echo "\n\n$ 0: Variable is either unset or contains a null value\n\n";
-	exit 1;
-	
+  echo "\n\n$ 0: Variable is either unset or contains a null value\n\n";
+  exit 1;
+  
 fi;

@@ -14,11 +14,11 @@ fi;
 # Target Host (FQDN / IPv4 / etc.)
 HOST_NAME="";
 if [ -n "$1" ]; then
-	HOST_NAME="$1";
+  HOST_NAME="$1";
 else
-	echo "";
-	read -p "Enter HTTP Host (or pass as inline argument \$1):  " -t 60 -r;
-	HOST_NAME="${REPLY}";
+  echo "";
+  read -p "Enter HTTP Host (or pass as inline argument \$1):  " -t 60 -r;
+  HOST_NAME="${REPLY}";
 fi;
 
 
@@ -26,12 +26,12 @@ fi;
 # Target Port
 #
 if [ -n "$2" ]; then
-	HOST_PORT="$2";
+  HOST_PORT="$2";
 else
-	echo "";
-	echo "Info:  Defaulting to port 443 - you may specify a different port as argument \$2";
-	echo "";
-	HOST_PORT="443";
+  echo "";
+  echo "Info:  Defaulting to port 443 - you may specify a different port as argument \$2";
+  echo "";
+  HOST_PORT="443";
 fi;
 
 #
@@ -80,10 +80,10 @@ STARTTLS_PORT_PROTOS+=(["5281"]="xmpp-serve");  # 5281 is (xmpp-serve) Extensibl
 STARTTLS_PORT_PROTOS+=(["5298"]="xmpp-serve");  # 5298 is (xmpp-serve) Extensible Messaging and Presence Protocol
 
 for EACH_PORT in "${!STARTTLS_PORT_PROTOS[@]}"; do
-	if [ "${HOST_PORT}" == "${EACH_PORT}" ]; then
+  if [ "${HOST_PORT}" == "${EACH_PORT}" ]; then
     PROTO_STARTTLS="${STARTTLS_PORT_PROTOS[${EACH_PORT}]}";
     break;
-	fi;
+  fi;
 done;
 
 
@@ -98,19 +98,19 @@ ARGS_DEBUG_MODE=0;
 # Walk through any inline-arguments passed to this function
 for (( i=0;i<$ARGS_COUNT;i++ )); do
 
-	EACH_ARG=${ARGS[${i}]};
+  EACH_ARG=${ARGS[${i}]};
 
-	# Check if this is the last inline-argument or if there are more to follow
-	if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
+  # Check if this is the last inline-argument or if there are more to follow
+  if [ $((${i}+1)) -eq ${ARGS_COUNT} ]; then # if this is the last argument
     NEXT_ARG="";
-	else
+  else
     NEXT_ARG=${ARGS[$((${i}+1))]};
     if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
       NEXT_ARG="";
     fi;
-	fi;
+  fi;
 
-	if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
+  if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
     # Parse cronjob calls
     if [ "${EACH_ARG}" == "-starttls" ] || [ "${EACH_ARG}" == "--starttls" ]; then
@@ -151,7 +151,7 @@ for (( i=0;i<$ARGS_COUNT;i++ )); do
       fi;
     fi;
 
-	fi;
+  fi;
 
 done;
 
@@ -166,15 +166,15 @@ if [ -n "${PROTO_STARTTLS}" ]; then
 echo "Target Proto:  \"${PROTO_STARTTLS}\"";
 fi;
 if [ -n "${PROTO_STARTTLS}" ]; then
-	echo "";
-	echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" -starttls ${PROTO_STARTTLS}; ] ...";
-	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS};);
+  echo "";
+  echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" -starttls ${PROTO_STARTTLS}; ] ...";
+  CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS};);
 else
-	echo "";
-	echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";
-	CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
-	CERT_DATE_INFO=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" 2>/dev/null | openssl x509 -noout -dates;);
-	CERT_DETAILS="${CERT_DETAILS}"$'\n'${CERT_DATE_INFO};
+  echo "";
+  echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";
+  CERT_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}";);
+  CERT_DATE_INFO=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" 2>/dev/null | openssl x509 -noout -dates;);
+  CERT_DETAILS="${CERT_DETAILS}"$'\n'${CERT_DATE_INFO};
 fi;
 echo "";
 echo "BEGIN OPENSSL OUTPUT ------------------------------------------------------------";

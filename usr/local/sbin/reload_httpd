@@ -17,21 +17,21 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	#
-	# Reload Httpd (Apache/Aapache2) service
-	#
-	SERVICE_NAME="httpd";
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -ne 0 ]; then
+  # ------------------------------------------------------------
+  #
+  # Reload Httpd (Apache/Aapache2) service
+  #
+  SERVICE_NAME="httpd";
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -ne 0 ]; then
     # Service NOT found to exist locally
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
-	else
+  else
     # Service EXISTS locally
     if [ -f "/etc/init.d/apache2" ]; then
       echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
@@ -44,7 +44,7 @@ else
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
     fi;
 
-	fi;
+  fi;
 
 fi;
 

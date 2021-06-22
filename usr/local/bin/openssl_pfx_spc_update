@@ -10,41 +10,41 @@
 #
 
 if [ -z "$1" ] || [ -z "$2" ]; then
-	echo -e "\n\n";
-	echo "First argument (\$1) should be the old PFX certificate's fullpath";
-	echo "Second argument (\$2) should be the new SPC certificate's fullpath";
-	echo -e "\n\n";
-	exit 1;
+  echo -e "\n\n";
+  echo "First argument (\$1) should be the old PFX certificate's fullpath";
+  echo "Second argument (\$2) should be the new SPC certificate's fullpath";
+  echo -e "\n\n";
+  exit 1;
 elif [ $(which pvk2pfx 1>/dev/null 2>&1; echo $?) -ne 0 ]; then
-	echo -e "\n\n";
-	echo "Error:  Command \"pvk2pfx\" not found";
-	echo "Must install command via \"Windows WDK\" from: https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk";
-	echo -e "\n\n";
-	exit 1;
+  echo -e "\n\n";
+  echo "Error:  Command \"pvk2pfx\" not found";
+  echo "Must install command via \"Windows WDK\" from: https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk";
+  echo -e "\n\n";
+  exit 1;
 else
 
-	WORKING_DIR="${HOME}/.pvk2pfx";
+  WORKING_DIR="${HOME}/.pvk2pfx";
 
-	mkdir -p "${WORKING_DIR}";
-	chmod 0700 "${WORKING_DIR}";
-	cd "${WORKING_DIR}";
+  mkdir -p "${WORKING_DIR}";
+  chmod 0700 "${WORKING_DIR}";
+  cd "${WORKING_DIR}";
 
-	# Convert PFX to PEM
-	openssl.exe pkcs12 -in "$1" -nocerts -out "$1.pem"
+  # Convert PFX to PEM
+  openssl.exe pkcs12 -in "$1" -nocerts -out "$1.pem"
 
-	# Convert the PEM-formatted private key into the PVK format:
-	# pvk.exe -in "$1.pem" -topvk -strong -out "$1.pvk"
+  # Convert the PEM-formatted private key into the PVK format:
+  # pvk.exe -in "$1.pem" -topvk -strong -out "$1.pvk"
   openssl rsa -in "$1.pem" -outform PVK -pvk-strong -out "$1.pvk"
 
-	# Combine the PVK and SPC into PFX:
-	echo -e "\n\n";
-	read -s -p "Enter OLD certificate encryption passphase:  " -n 1 -t 60 -r; OLD_PASS="${REPLY}"; REPLY="";
-	echo -e "\n\n";
-	read -s -p "Enter NEW certificate encryption passphase:  " -n 1 -t 60 -r; NEW_PASS="${REPLY}"; REPLY="";
-	echo -e "\n\n";
-	CERT_PASS="${REPLY}"; REPLY="";
-	mv -f "$1" "$1.$(date +'%Y%m%d_%H%M%S').old";
-	pvk2pfx.exe -pvk "$1.pvk" -pi "${OLD_PASS}" -spc "$2" -pfx "$1" -po "${NEW_PASS}" -f
+  # Combine the PVK and SPC into PFX:
+  echo -e "\n\n";
+  read -s -p "Enter OLD certificate encryption passphase:  " -n 1 -t 60 -r; OLD_PASS="${REPLY}"; REPLY="";
+  echo -e "\n\n";
+  read -s -p "Enter NEW certificate encryption passphase:  " -n 1 -t 60 -r; NEW_PASS="${REPLY}"; REPLY="";
+  echo -e "\n\n";
+  CERT_PASS="${REPLY}"; REPLY="";
+  mv -f "$1" "$1.$(date +'%Y%m%d_%H%M%S').old";
+  pvk2pfx.exe -pvk "$1.pvk" -pi "${OLD_PASS}" -spc "$2" -pfx "$1" -po "${NEW_PASS}" -f
 
 fi;
 

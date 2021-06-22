@@ -30,50 +30,50 @@ KEY_COMMENT="created_${START_TIMESTAMP}_by_$(whoami)_on_$(hostname)";
 USER_NAME="$(id -un)";
 
 if [ "$(id -un)" == "root" ]; then
-	echo "";
-	read -p "  Create SSH-Key for which User?:  " -t 60 -r;
-	USER_NAME="${REPLY}";
+  echo "";
+  read -p "  Create SSH-Key for which User?:  " -t 60 -r;
+  USER_NAME="${REPLY}";
 fi;
 
 
 # Check for valid data-entry
 if [ -z "${USER_NAME}" ]; then
-	echo "";
-	echo "  Error: Received empty or null username - exiting ...";
-	echo "";
-	exit 1;
+  echo "";
+  echo "  Error: Received empty or null username - exiting ...";
+  echo "";
+  exit 1;
 fi;
 
 
 # Check if selected user exists
 USER_PASSWD_INFO="$(getent passwd ${USER_NAME})";
 if [ -z "${USER_PASSWD_INFO}" ]; then
-	echo "";
-	echo "  Error: User \"${USER_NAME}\" not found - exiting ...";
-	echo "";
-	exit 1;
+  echo "";
+  echo "  Error: User \"${USER_NAME}\" not found - exiting ...";
+  echo "";
+  exit 1;
 fi;
 
 # Check if User's home-directory exists
 USER_HOME="$(echo ${USER_PASSWD_INFO} | cut -d: -f6)";
 if [ ! -d "${USER_HOME}" ]; then
-	echo "";
-	echo "  Error: Home-Directory not found for user \"${USER_NAME}\" - exiting ...";
-	echo "";
-	exit 1;
+  echo "";
+  echo "  Error: Home-Directory not found for user \"${USER_NAME}\" - exiting ...";
+  echo "";
+  exit 1;
 fi;
 
 # Get fqdn (hostname & domainname) for this device
 if [ -z "$(which hostname 2>'/dev/null';)" ]; then
-	THIS_FQDN="";
+  THIS_FQDN="";
 elif [ -z "$(hostname 2>'/dev/null';)" ]; then
-	THIS_FQDN="";
+  THIS_FQDN="";
 else
-	if [ -n "$(hostname -d 2>'/dev/null';)" ]; then
+  if [ -n "$(hostname -d 2>'/dev/null';)" ]; then
     THIS_FQDN="$(hostname 2>'/dev/null';).$(hostname -d 2>'/dev/null';)";
-	else
+  else
     THIS_FQDN="$(hostname 2>'/dev/null';)";
-	fi;
+  fi;
 fi;
 
 # Runtime variables
@@ -110,10 +110,10 @@ ssh-keygen -q -t rsa -b 2048 -f "${KEY_FULLPATH_NOEXT}" -N "${KEY_PASSPHRASE}" -
 # Add an IP whitelist to the public key (if variable is not blank)
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 if [ -n "${IP_WHITELIST}" ]; then # var is not empty
-	printf 'from="'${IP_WHITELIST}'" ' >> "${PUBLIC_KEY_PATH}"
-	IP_RESTRICTION_MSG="${IP_WHITELIST}";
+  printf 'from="'${IP_WHITELIST}'" ' >> "${PUBLIC_KEY_PATH}"
+  IP_RESTRICTION_MSG="${IP_WHITELIST}";
 else # var is empty
-	IP_RESTRICTION_MSG="ANY IP";
+  IP_RESTRICTION_MSG="ANY IP";
 fi;
 
 
@@ -130,55 +130,55 @@ ETC_SSH_AUTHKEYS="/etc/ssh/authorized_keys";
 ETC_SSH_AUTHKEYS_USERNAME="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
 
 if [ "$(id -un)" == "root" ]; then
-	echo "";
-	read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
-	APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
+  echo "";
+  read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
+  APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
 
 else # Non-root users --> block etc-authkey editing
-	APPEND_TO_ETC_SSH_AUTHKEYS="N";
+  APPEND_TO_ETC_SSH_AUTHKEYS="N";
 
 fi;
 
 
 if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "Y" ]]; then
-	
-	# Append the newly created key's public-file onto [ /etc/ssh/authorized_keys/$USER_NAME ]
-	# 	Note 1: The public-key matches with client-passed private-key at time of ssh-connection
-	#   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
-	echo "";
-	echo "    Appending Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
-	mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
-	cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 400 "${ETC_SSH_AUTHKEYS_USERNAME}";
-	
+  
+  # Append the newly created key's public-file onto [ /etc/ssh/authorized_keys/$USER_NAME ]
+  # 	Note 1: The public-key matches with client-passed private-key at time of ssh-connection
+  #   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
+  echo "";
+  echo "    Appending Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
+  mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
+  cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 400 "${ETC_SSH_AUTHKEYS_USERNAME}";
+  
 else
-	
-	if [ "$(id -un)" == "root" ]; then
+  
+  if [ "$(id -un)" == "root" ]; then
     echo "";
     echo "    Skipped Etc-Authkey";
-	fi;
+  fi;
     
-	# Setup filepaths for [ ${USER_HOME}/.ssh/authorized_keys ]
-	#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-	USERHOME_SSH="${USER_HOME}/.ssh";
-	USERHOME_SSH_AUTHKEY="${USERHOME_SSH}/authorized_keys";
+  # Setup filepaths for [ ${USER_HOME}/.ssh/authorized_keys ]
+  #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
+  USERHOME_SSH="${USER_HOME}/.ssh";
+  USERHOME_SSH_AUTHKEY="${USERHOME_SSH}/authorized_keys";
 
-	# Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
-	#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-	echo "";
-	read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
-	APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
-	
-	if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then
+  # Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
+  #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
+  echo "";
+  read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( y/n ) " -n 1 -t 60 -r; # Await single keypress
+  APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
+  
+  if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then
     echo "";
     echo "    Appending Private Key onto  \"${USERHOME_SSH_AUTHKEY}\" ...";
     mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
     cat "${PRIVATE_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
 
-	else
+  else
     echo "";
     echo "    Skipped Userhome-Authkey";
-	fi;
-	
+  fi;
+  
 fi;
 
 

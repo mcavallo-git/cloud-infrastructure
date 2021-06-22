@@ -7,17 +7,17 @@
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	if [ -z "$1" ]; then
+  if [ -z "$1" ]; then
     # Show all services
     # SERVICE_LIST_ALL=$(systemctl list-unit-files --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null');
     /bin/systemctl list-unit-files --no-legend --no-pager --full | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
 
-	else
+  else
     #	Search for one, specific service
     SERVICE_NAME="${1}";
     # SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 1>'/dev/null' 2>&1; echo $?;);
@@ -32,10 +32,10 @@ else
       exit 1;
     fi;
 
-	fi;
+  fi;
 
-	###	List only services matching a given state, such as "enabled"
-	### /bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
+  ###	List only services matching a given state, such as "enabled"
+  ### /bin/systemctl list-unit-files --state=enabled --no-legend | awk '{print $1}' | sed -rne 's/^([A-Za-z0-9\.\_\-]+)\.service$/\1/p' | sort 2> '/dev/null';
 
 fi;
 

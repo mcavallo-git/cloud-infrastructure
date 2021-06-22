@@ -23,16 +23,16 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	BIN_DOCKER="/usr/bin/docker";
-	BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
+  BIN_DOCKER="/usr/bin/docker";
+  BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
 
-	# ------------------------------------------------------------
-	if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
+  # ------------------------------------------------------------
+  if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
     #
     # WSL Docker Installation
     #
@@ -57,7 +57,7 @@ else
     ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
     ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
 
-	else # ------------------------------------------------------------
+  else # ------------------------------------------------------------
     #
     # Non-WSL Docker Installation
     #
@@ -106,12 +106,12 @@ else
 
     fi;
     
-	fi;
+  fi;
 
-	systemctl enable docker --now;
+  systemctl enable docker --now;
 
-	"${BIN_DOCKER}" --version;
-	"${BIN_DOCKER_COMPOSE}" --version;
+  "${BIN_DOCKER}" --version;
+  "${BIN_DOCKER_COMPOSE}" --version;
 
 fi;
 

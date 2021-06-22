@@ -23,33 +23,33 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	RET_CODE=1;
-	if [ -n "$(which mc)" ]; then
+  RET_CODE=1;
+  if [ -n "$(which mc)" ]; then
     echo "Info: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
 
-	elif [ -f "/usr/local/bin/mc" ]; then
+  elif [ -f "/usr/local/bin/mc" ]; then
     echo "Info: Skipping install of [ mc ] command - File \"/usr/local/bin/mc\" already exists";
 
-	else
+  else
     # Download MC (as-per reccommend by MinIO Guide ( see Citation(s), below )
     echo "Info: Adding MinIO management package - Call using command [ mc ]";
     curl -ssL "https://dl.min.io/client/mc/release/linux-amd64/mc" -o "/usr/local/bin/mc" && chmod 0755 "/usr/local/bin/mc";
 
-	fi;
+  fi;
 
-	# Ensure that docker is installed
-	curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
+  # Ensure that docker is installed
+  curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_docker?t=$(date +'%s.%N')" | bash;
 
-	# Ensure the docker-service is started
-	SERVICE_NAME="docker";
-	/usr/sbin/service "${SERVICE_NAME}" start;
+  # Ensure the docker-service is started
+  SERVICE_NAME="docker";
+  /usr/sbin/service "${SERVICE_NAME}" start;
 
-	# Pull & Spin-up the MINIO server as a docker container ( pulls from https://hub.docker.com/r/minio/minio/ )
-	PORT_MINIO="9000"; DIR_MINIO_DATA="/data"; docker run -d --name "minio" -p "${PORT_MINIO}:9000" "minio/minio" "server" "${DIR_MINIO_DATA}";
+  # Pull & Spin-up the MINIO server as a docker container ( pulls from https://hub.docker.com/r/minio/minio/ )
+  PORT_MINIO="9000"; DIR_MINIO_DATA="/data"; docker run -d --name "minio" -p "${PORT_MINIO}:9000" "minio/minio" "server" "${DIR_MINIO_DATA}";
 
 # Locate Min-IO Config file(s)
 find \

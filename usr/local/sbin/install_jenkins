@@ -27,53 +27,53 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Install Jenkins CI/CD Server
-	SERVICE_NAME="jenkins";
+  # ------------------------------------------------------------
+  # Install Jenkins CI/CD Server
+  SERVICE_NAME="jenkins";
 
-	# ------------------------------------------------------------
-	#
-	# Docker-based installs:
-	#	"/usr/local/bin/docker_create_jenkins"
-	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
-	#  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins:alpine
-	#
-	# ------------------------------------------------------------
-	#
-	# Instantiate runtime variables
+  # ------------------------------------------------------------
+  #
+  # Docker-based installs:
+  #	"/usr/local/bin/docker_create_jenkins"
+  #  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean
+  #  |--> docker run -u root --rm -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins:alpine
+  #
+  # ------------------------------------------------------------
+  #
+  # Instantiate runtime variables
 
-	SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
+  SERVICE_LOGFILE="/var/log/jenkins/jenkins.log";
 
-	SERVICE_TOKEN_FILEPATH="/var/lib/jenkins/secrets/initialAdminPassword";
+  SERVICE_TOKEN_FILEPATH="/var/lib/jenkins/secrets/initialAdminPassword";
 
-	SERVICE_RESTART_REQD=0;
-	
-	EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
+  SERVICE_RESTART_REQD=0;
+  
+  EXIT_CODE=1; # Default to error-ing out. Only return success if every check passes
 
-	START_SECONDS_NANOSECONDS=$(date +'%s.%N');
-	START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
-	# START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
-	# START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
-	# START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
-	START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
-	START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+  START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+  START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+  # START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+  # START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+  # START_MILLISECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-3);
+  START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+  START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
-	BENCHMARK_START=${START_SECONDS_NANOSECONDS};
+  BENCHMARK_START=${START_SECONDS_NANOSECONDS};
 
-	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
+  # ------------------------------------------------------------
+  # Parse inline arguments (passed to current script)
 
-	ARGS=("$@");
-	ARGS_COUNT=${#ARGS[@]};
+  ARGS=("$@");
+  ARGS_COUNT=${#ARGS[@]};
 
-	ARGS_FORCE_AGREE=0;
-	
-	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$ARGS_COUNT;i++ )); do
+  ARGS_FORCE_AGREE=0;
+  
+  # Walk through any inline-arguments passed to this function
+  for (( i=0;i<$ARGS_COUNT;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
 
@@ -95,9 +95,9 @@ else
 
     fi;
 
-	done;
+  done;
 
-	if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
+  if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
     echo "------------------------------------------------------------";
     echo "";
     echo "Info:  This will install the Jenkins CI/CD service";
@@ -115,18 +115,18 @@ else
       echo "Denied - Skipping the \"${SERVICE_NAME}\" service install";
       exit 1;
     fi;
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
-	# Check for the Jenkins service locally
-	# SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	# if [ ${SERVICE_RET_CODE} -eq 0 ]; then
-	# 	# Jenkins is already installed
-	# 	echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
-	# else
+  # ------------------------------------------------------------
+  # Check for the Jenkins service locally
+  # SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  # if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+  # 	# Jenkins is already installed
+  # 	echo -e "\n""Info:  Skipping Jenkins package-install (service already exists locally)";
+  # else
 
-	# ------------------------------------------------------------
-	if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Debian, Ubuntu, etc.
+  # ------------------------------------------------------------
+  if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Debian, Ubuntu, etc.
 
     # ------------------------------------------------------------
     # Install Java
@@ -148,7 +148,7 @@ else
     PACKAGE_APT="jenkins"; apt-get -y update; apt-get -y install "${PACKAGE_APT}"; # Install Jenkins
 
 
-	elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+  elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 
     # ------------------------------------------------------------
     # Install Java
@@ -189,26 +189,26 @@ else
       yum -y check-update; yum -y install "${PACKAGE_YUM}"; # Install Jenkins
     fi;
 
-	fi;
+  fi;
 
-	# ------------------------------------------------------------
-	# Autostart the service on bootup (as well as right now)
-	#
-	if \
+  # ------------------------------------------------------------
+  # Autostart the service on bootup (as well as right now)
+  #
+  if \
     [ "$(systemctl is-enabled ${SERVICE_NAME}.service 2>/dev/null;)" != "enabled" ] || \
     [ "$(systemctl is-active ${SERVICE_NAME}.service 2>/dev/null;)" != "active" ] || \
     [ $(systemctl is-enabled ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ] || \
     [ $(systemctl is-active ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ]; \
-	then
+  then
     echo "Info:  Service \"${SERVICE_NAME}\" is not both \"enabled\" and \"active\", currently";
     echo "Info:  Calling  [ systemctl enable \"${SERVICE_NAME}.service\" --now; ]  ...";
     systemctl enable "${SERVICE_NAME}.service" --now; # "enable --now" autostarts service at bootup && starts service immediately
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-	if [ ${SERVICE_RET_CODE} -eq 0 ]; then
+  # ------------------------------------------------------------
+  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+  if [ ${SERVICE_RET_CODE} -eq 0 ]; then
     EXIT_CODE=0;
 
     # Show Jenkins' service status
@@ -260,24 +260,24 @@ else
       fi;
     fi;
 
-	else
+  else
     EXIT_CODE=1;
     # ERROR - Jenkins Service STILL not detected after install-attempt
     echo -e "\n""Error:  Jenkins service not detected after install attempt";
 
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	# Sync jenkins-config to cloud-infrastructure repo (require user confirmation)
-	JENKINS_CONFIG_PATH="";
-	if [ -f "/etc/default/jenkins" ]; then
+  # ------------------------------------------------------------
+  # Sync jenkins-config to cloud-infrastructure repo (require user confirmation)
+  JENKINS_CONFIG_PATH="";
+  if [ -f "/etc/default/jenkins" ]; then
     JENKINS_CONFIG_PATH="/etc/default/jenkins";
-	elif [ -f "/etc/sysconfig/jenkins" ]; then
+  elif [ -f "/etc/sysconfig/jenkins" ]; then
     JENKINS_CONFIG_PATH="/etc/sysconfig/jenkins";
-	fi;
+  fi;
 
-	if [ -n "${JENKINS_CONFIG_PATH}" ]; then
+  if [ -n "${JENKINS_CONFIG_PATH}" ]; then
     if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
       # Not Forced
       echo "";
@@ -300,68 +300,68 @@ else
     else
       echo "Denied - Skipping Jenkins config-file sync";
     fi;
-	fi;
+  fi;
 
-	# Start/Restart the service (will build the Jenkins service from the ground-up if it was just installed)
-	/usr/sbin/service "${SERVICE_NAME}" restart;
-	### /usr/sbin/service "${SERVICE_NAME}" status;
+  # Start/Restart the service (will build the Jenkins service from the ground-up if it was just installed)
+  /usr/sbin/service "${SERVICE_NAME}" restart;
+  ### /usr/sbin/service "${SERVICE_NAME}" status;
 
-	# ------------------------------------------------------------
-	#
-	# ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
-	# echo "*************************************************************";
-	# echo "*************************************************************";
-	# echo "*************************************************************";
-	# Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
-	# if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
-	# 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
-	# 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
-	# 	sleep 1;
-	# fi;
-	# while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
-	# 	sleep 2;
-	# 	echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
-	# done;
-	#
+  # ------------------------------------------------------------
+  #
+  # ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+  # echo "*************************************************************";
+  # echo "*************************************************************";
+  # echo "*************************************************************";
+  # Wait until the Jenkins Logfile contains the Admin Password required for the user to log-in with for the first time
+  # if [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
+  # 	SED_TAIL_UNTIL="/${ESCAPED_ASTERISKS}/ q";
+  # 	tail -n +1 -f "${SERVICE_LOGFILE}" | sed "${SED_TAIL_UNTIL}";
+  # 	sleep 1;
+  # fi;
+  # while [ -z "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; do
+  # 	sleep 2;
+  # 	echo "Waiting 2s for \"${SERVICE_LOGFILE}\" to contain Admin Password";
+  # done;
+  #
 
-	echo "";
-	echo "Jenkins installed!";
-	echo "";
-	echo "Waiting for \"${SERVICE_TOKEN_FILEPATH}\" to be created w/ initial Jenkins admin token (password)";
-	echo "  ( Cancel with Ctrl+C )";
-	
-	CURRENT_WAIT_DURATION=0;
-	
-	MAX_WAIT_DURATION=30;
-	
-	ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
+  echo "";
+  echo "Jenkins installed!";
+  echo "";
+  echo "Waiting for \"${SERVICE_TOKEN_FILEPATH}\" to be created w/ initial Jenkins admin token (password)";
+  echo "  ( Cancel with Ctrl+C )";
+  
+  CURRENT_WAIT_DURATION=0;
+  
+  MAX_WAIT_DURATION=30;
+  
+  ESCAPED_ASTERISKS="\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*";
 
-	while [ ! -f "${SERVICE_TOKEN_FILEPATH}" ] && [ ${CURRENT_WAIT_DURATION} -lt ${MAX_WAIT_DURATION} ]; do
+  while [ ! -f "${SERVICE_TOKEN_FILEPATH}" ] && [ ${CURRENT_WAIT_DURATION} -lt ${MAX_WAIT_DURATION} ]; do
     CURRENT_WAIT_DURATION=$((${CURRENT_WAIT_DURATION}+1));
     sleep 1;
-	done;
-	sleep 1;
+  done;
+  sleep 1;
 
-	clear;
-	
-	SERVICE_INITIAL_TOKEN="";
-	SERVICE_TOKEN_ECHO="";
-	if [ -f "${SERVICE_TOKEN_FILEPATH}" ]; then
+  clear;
+  
+  SERVICE_INITIAL_TOKEN="";
+  SERVICE_TOKEN_ECHO="";
+  if [ -f "${SERVICE_TOKEN_FILEPATH}" ]; then
     # Read-in the initial token
     SERVICE_INITIAL_TOKEN=$(cat "${SERVICE_TOKEN_FILEPATH}");
     SERVICE_TOKEN_ECHO="
 Contents of \"${SERVICE_TOKEN_FILEPATH}\":
 ${SERVICE_INITIAL_TOKEN}
 ";
-	elif [ -n "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
+  elif [ -n "$(cat ${SERVICE_LOGFILE} | grep ${ESCAPED_ASTERISKS};)" ]; then
     # Attempt to parse the token from Jenkins' logfile
     JENKINS_LOG_SETUP_FIRST_LINE=$(cat -n "${SERVICE_LOGFILE}" | grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | head -n 1;);
     JENKINS_LOG_SETUP_LAST_LINE=$(cat -n "${SERVICE_LOGFILE}" |  grep ${ESCAPED_ASTERISKS} | awk '{print $1}' | tail -n 1;);
     SERVICE_TOKEN_ECHO="$(sed -n ${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p ${SERVICE_LOGFILE};)";
     # SERVICE_INITIAL_TOKEN="$(sed -n ${JENKINS_LOG_SETUP_FIRST_LINE},${JENKINS_LOG_SETUP_LAST_LINE}p ${SERVICE_LOGFILE};)";
-	fi;
+  fi;
 
-	if [ -n "${SERVICE_TOKEN_ECHO}" ]; then
+  if [ -n "${SERVICE_TOKEN_ECHO}" ]; then
 
     # ------------------------------------------------------------
     # Display the IPv4 of this server as a suggestion to help the user to get logged into Jenkins
@@ -377,20 +377,20 @@ ${SERVICE_INITIAL_TOKEN}
     echo "Initial admin token (required to activate new Jenkins service):";
     echo -e "${SERVICE_TOKEN_ECHO}";
     echo "";
-	else
+  else
     EXIT_CODE=1;
     # ERROR - Jenkins initial admin token not found
     echo -e "\n""Error:  Unable to locate jenkins token (required to activate new Jenkins service)";
 
-	fi;
+  fi;
 
 
-	echo "*************************************************************";
-	echo "";
-	BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-	echo "End of Line - Net runtime was ${BENCHMARK_DELTA}s";
-	echo "";
-	exit ${EXIT_CODE};
+  echo "*************************************************************";
+  echo "";
+  BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+  echo "End of Line - Net runtime was ${BENCHMARK_DELTA}s";
+  echo "";
+  exit ${EXIT_CODE};
 
 fi;
 

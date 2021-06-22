@@ -18,45 +18,45 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Instantiate runtime variables
-	
-	if [ -n "$1" ]; then
+  # ------------------------------------------------------------
+  # Instantiate runtime variables
+  
+  if [ -n "$1" ]; then
     java -jar jenkins-cli.jar -s http://127.0.0.1:8080/ install-plugin "$1";
-	else
+  else
     echo "Error: Please include plugin name as first parameter (\$1)";
-	fi;
+  fi;
 
-	# # Log all shell output & error output to Logfile
-	# THIS_SCRIPT=$(basename "${0}")
-	# THIS_DIR=$(dirname "${0}")
-	# LOGFILE="${THIS_DIR}/logfile__${THIS_SCRIPT}" && touch "${LOGFILE}" && chmod 600 "${LOGFILE}"
-	# exec > >(tee -a "${LOGFILE}" )
-	# exec 2>&1
-	# echo "===== ------------------------------------------------------------ ====="
-	# echo "$(date +'%D  %r')   Starting ${THIS_SCRIPT}..."
+  # # Log all shell output & error output to Logfile
+  # THIS_SCRIPT=$(basename "${0}")
+  # THIS_DIR=$(dirname "${0}")
+  # LOGFILE="${THIS_DIR}/logfile__${THIS_SCRIPT}" && touch "${LOGFILE}" && chmod 600 "${LOGFILE}"
+  # exec > >(tee -a "${LOGFILE}" )
+  # exec 2>&1
+  # echo "===== ------------------------------------------------------------ ====="
+  # echo "$(date +'%D  %r')   Starting ${THIS_SCRIPT}..."
 
-	# # SCRIPT TO UPDATE ALL JENKINS PLUGINS
-	# JENKINS_CLI_PATH="/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar";
-	# CREDENTIALS="/var/lib/db_conn/shell_credentials_jenkins_localtrigger.conf";
-	# SERVER="http://127.0.0.1:8080/";
-	# source "${CREDENTIALS}";
-	# PLUGIN_UPDATE_LIST=$( java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" list-plugins | grep -e ')$' | awk '{ print $1 }' );
-	# if [ ! -z "${PLUGIN_UPDATE_LIST}" ]; then 
-	#   echo "$(date +'%D  %r') Updating Jenkins Plugins: [${PLUGIN_UPDATE_LIST}] ...";
-	#   java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" install-plugin "${PLUGIN_UPDATE_LIST}";
-	# 	echo "$(date +'%D  %r') Plugin Updates Finished, Restarting Jenkins ..."
-	#   java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" safe-restart;
-	# else
-	# 	echo "$(date +'%D  %r') No Plugins to Update";
-	# fi
+  # # SCRIPT TO UPDATE ALL JENKINS PLUGINS
+  # JENKINS_CLI_PATH="/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar";
+  # CREDENTIALS="/var/lib/db_conn/shell_credentials_jenkins_localtrigger.conf";
+  # SERVER="http://127.0.0.1:8080/";
+  # source "${CREDENTIALS}";
+  # PLUGIN_UPDATE_LIST=$( java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" list-plugins | grep -e ')$' | awk '{ print $1 }' );
+  # if [ ! -z "${PLUGIN_UPDATE_LIST}" ]; then 
+  #   echo "$(date +'%D  %r') Updating Jenkins Plugins: [${PLUGIN_UPDATE_LIST}] ...";
+  #   java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" install-plugin "${PLUGIN_UPDATE_LIST}";
+  # 	echo "$(date +'%D  %r') Plugin Updates Finished, Restarting Jenkins ..."
+  #   java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}" safe-restart;
+  # else
+  # 	echo "$(date +'%D  %r') No Plugins to Update";
+  # fi
 
-	# echo "$(date +'%D  %r') Finished ${THIS_SCRIPT}";
-	# exit 0;
+  # echo "$(date +'%D  %r') Finished ${THIS_SCRIPT}";
+  # exit 0;
 
 fi;
 
@@ -90,143 +90,143 @@ fi;
 ### Output from [  java -jar "${JENKINS_CLI_PATH}" -auth "${USER}:${SECRET}" -s "${SERVER}"  ]:
 #
 # add-job-to-view
-	# Adds jobs to view.
+  # Adds jobs to view.
 # build
-	# Builds a job, and optionally waits until its completion.
+  # Builds a job, and optionally waits until its completion.
 # cancel-quiet-down
-	# Cancel the effect of the "quiet-down" command.
+  # Cancel the effect of the "quiet-down" command.
 # clear-queue
-	# Clears the build queue.
+  # Clears the build queue.
 # connect-node
-	# Reconnect to a node(s)
+  # Reconnect to a node(s)
 # console
-	# Retrieves console output of a build.
+  # Retrieves console output of a build.
 # copy-job
-	# Copies a job.
+  # Copies a job.
 # create-credentials-by-xml
-	# Create Credential by XML
+  # Create Credential by XML
 # create-credentials-domain-by-xml
-	# Create Credentials Domain by XML
+  # Create Credentials Domain by XML
 # create-job
-	# Creates a new job by reading stdin as a configuration XML file.
+  # Creates a new job by reading stdin as a configuration XML file.
 # create-node
-	# Creates a new node by reading stdin as a XML configuration.
+  # Creates a new node by reading stdin as a XML configuration.
 # create-view
-	# Creates a new view by reading stdin as a XML configuration.
+  # Creates a new view by reading stdin as a XML configuration.
 # declarative-linter
-	# Validate a Jenkinsfile containing a Declarative Pipeline
+  # Validate a Jenkinsfile containing a Declarative Pipeline
 # delete-builds
-	# Deletes build record(s).
+  # Deletes build record(s).
 # delete-credentials
-	# Delete a Credential
+  # Delete a Credential
 # delete-credentials-domain
-	# Delete a Credentials Domain
+  # Delete a Credentials Domain
 # delete-job
-	# Deletes job(s).
+  # Deletes job(s).
 # delete-node
-	# Deletes node(s)
+  # Deletes node(s)
 # delete-view
-	# Deletes view(s).
+  # Deletes view(s).
 # disable-job
-	# Disables a job.
+  # Disables a job.
 # disconnect-node
-	# Disconnects from a node.
+  # Disconnects from a node.
 # enable-job
-	# Enables a job.
+  # Enables a job.
 # get-credentials-as-xml
-	# Get a Credentials as XML (secrets redacted)
+  # Get a Credentials as XML (secrets redacted)
 # get-credentials-domain-as-xml
-	# Get a Credentials Domain as XML
+  # Get a Credentials Domain as XML
 # get-gradle
-	# List available gradle installations
+  # List available gradle installations
 # get-job
-	# Dumps the job definition XML to stdout.
+  # Dumps the job definition XML to stdout.
 # get-node
-	# Dumps the node definition XML to stdout.
+  # Dumps the node definition XML to stdout.
 # get-view
-	# Dumps the view definition XML to stdout.
+  # Dumps the view definition XML to stdout.
 # groovy
-	# Executes the specified Groovy script.
+  # Executes the specified Groovy script.
 # groovysh
-	# Runs an interactive groovy shell.
+  # Runs an interactive groovy shell.
 # help
-	# Lists all the available commands or a detailed description of single command.
+  # Lists all the available commands or a detailed description of single command.
 # install-plugin
-	# Installs a plugin either from a file, an URL, or from update center.
+  # Installs a plugin either from a file, an URL, or from update center.
 # install-tool
-	# Performs automatic tool installation, and print its location to stdout. Can be only called from inside a build. [deprecated]
+  # Performs automatic tool installation, and print its location to stdout. Can be only called from inside a build. [deprecated]
 # keep-build
-	# Mark the build to keep the build forever.
+  # Mark the build to keep the build forever.
 # list-changes
-	# Dumps the changelog for the specified build(s).
+  # Dumps the changelog for the specified build(s).
 # list-credentials
-	# Lists the Credentials in a specific Store
+  # Lists the Credentials in a specific Store
 # list-credentials-context-resolvers
-	# List Credentials Context Resolvers
+  # List Credentials Context Resolvers
 # list-credentials-providers
-	# List Credentials Providers
+  # List Credentials Providers
 # list-jobs
-	# Lists all jobs in a specific view or item group.
+  # Lists all jobs in a specific view or item group.
 # list-plugins
-	# Outputs a list of installed plugins.
+  # Outputs a list of installed plugins.
 # login
-	# Saves the current credentials to allow future commands to run without explicit credential information. [deprecated]
+  # Saves the current credentials to allow future commands to run without explicit credential information. [deprecated]
 # logout
-	# Deletes the credentials stored with the login command. [deprecated]
+  # Deletes the credentials stored with the login command. [deprecated]
 # mail
-	# Reads stdin and sends that out as an e-mail.
+  # Reads stdin and sends that out as an e-mail.
 # offline-node
-	# Stop using a node for performing builds temporarily, until the next "online-node" command.
+  # Stop using a node for performing builds temporarily, until the next "online-node" command.
 # online-node
-	# Resume using a node for performing builds, to cancel out the earlier "offline-node" command.
+  # Resume using a node for performing builds, to cancel out the earlier "offline-node" command.
 # quiet-down
-	# Quiet down Jenkins, in preparation for a restart. Don’t start any builds.
+  # Quiet down Jenkins, in preparation for a restart. Don’t start any builds.
 # reload-configuration
-	# Discard all the loaded data in memory and reload everything from file system. Useful when you modified config files directly on disk.
+  # Discard all the loaded data in memory and reload everything from file system. Useful when you modified config files directly on disk.
 # reload-job
-	# Reload job(s)
+  # Reload job(s)
 # remove-job-from-view
-	# Removes jobs from view.
+  # Removes jobs from view.
 # replay-pipeline
-	# Replay a Pipeline build with edited script taken from standard input
+  # Replay a Pipeline build with edited script taken from standard input
 # restart
-	# Restart Jenkins.
+  # Restart Jenkins.
 # safe-restart
-	# Safely restart Jenkins.
+  # Safely restart Jenkins.
 # safe-shutdown
-	# Puts Jenkins into the quiet mode, wait for existing builds to be completed, and then shut down Jenkins.
+  # Puts Jenkins into the quiet mode, wait for existing builds to be completed, and then shut down Jenkins.
 # session-id
-	# Outputs the session ID, which changes every time Jenkins restarts.
+  # Outputs the session ID, which changes every time Jenkins restarts.
 # set-build-description
-	# Sets the description of a build.
+  # Sets the description of a build.
 # set-build-display-name
-	# Sets the displayName of a build.
+  # Sets the displayName of a build.
 # set-build-parameter
-	# Update/set the build parameter of the current build in progress. [deprecated]
+  # Update/set the build parameter of the current build in progress. [deprecated]
 # set-build-result
-	# Sets the result of the current build. Works only if invoked from within a build. [deprecated]
+  # Sets the result of the current build. Works only if invoked from within a build. [deprecated]
 # set-external-build-result
-	# Set external monitor job result.
+  # Set external monitor job result.
 # shutdown
-	# Immediately shuts down Jenkins server.
+  # Immediately shuts down Jenkins server.
 # update-credentials-by-xml
-	# Update Credentials by XML
+  # Update Credentials by XML
 # update-credentials-domain-by-xml
-	# Update Credentials Domain by XML
+  # Update Credentials Domain by XML
 # update-job
-	# Updates the job definition XML from stdin. The opposite of the get-job command.
+  # Updates the job definition XML from stdin. The opposite of the get-job command.
 # update-node
-	# Updates the node definition XML from stdin. The opposite of the get-node command.
+  # Updates the node definition XML from stdin. The opposite of the get-node command.
 # update-view
-	# Updates the view definition XML from stdin. The opposite of the get-view command.
+  # Updates the view definition XML from stdin. The opposite of the get-view command.
 # version
-	# Outputs the current version.
+  # Outputs the current version.
 # wait-node-offline
-	# Wait for a node to become offline.
+  # Wait for a node to become offline.
 # wait-node-online
-	# Wait for a node to become online.
+  # Wait for a node to become online.
 # who-am-i
-	# Reports your credential and permissions.
+  # Reports your credential and permissions.
 #
 # ------------------------------------------------------------
 # Citation(s)

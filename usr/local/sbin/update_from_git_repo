@@ -17,28 +17,28 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	
-	EXIT_CODE=1;
+  # ------------------------------------------------------------
+  
+  EXIT_CODE=1;
 
-	# Make sure required runtime(s) are installed
-	if [ -z "$(which dos2unix 2>'/dev/null')" ]; then
+  # Make sure required runtime(s) are installed
+  if [ -z "$(which dos2unix 2>'/dev/null')" ]; then
     apt-get-update -y; apt-get install -y dos2unix;
-	fi;
-	
-	DIR_REPO_BASE="";
+  fi;
+  
+  DIR_REPO_BASE="";
 
-	# Detect & handle WSL instance(s)
-	WSL_CHECK_EXISTS=$(which get_username_windows_wsl 2>'/dev/null');
-	if [ -n "${WSL_CHECK_EXISTS}" ]; then
+  # Detect & handle WSL instance(s)
+  WSL_CHECK_EXISTS=$(which get_username_windows_wsl 2>'/dev/null');
+  if [ -n "${WSL_CHECK_EXISTS}" ]; then
     WIN32_USERNAME=$(get_username_windows_wsl);
     WIN32_USER_ERRORS="$?";
-	fi;
-	if [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
+  fi;
+  if [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
     #  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
     WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
     WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
@@ -51,7 +51,7 @@ else
       DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
     fi;
 
-	else
+  else
 
     WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
     WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -maxdepth 10 -name 'local' -type d | grep '/cloud-infrastructure/usr/local');
@@ -67,17 +67,17 @@ else
       DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
       SOURCE_DIR_ERRS=$?;
     fi;
-	
-	fi;
+  
+  fi;
 
-	if [ -z "${DIR_REPO_BASE}" ]; then
+  if [ -z "${DIR_REPO_BASE}" ]; then
     # Error-out if any required variable(s) are empty/unset
     EXIT_CODE=1;
 
     echo "";
     echo "Error: Required variable found to be empty/unset: \${DIR_REPO_BASE}";
 
-	elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
+  elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
     # Error-out if any required source directories are missing
     EXIT_CODE=1;
 
@@ -90,7 +90,7 @@ else
       echo "Error: Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
     fi;
 
-	else
+  else
     # Required source directories exist - Update local runtimes from them
     EXIT_CODE=0;
 
@@ -179,8 +179,8 @@ else
     TO_DEL="/usr/local/sbin/jenkins_war_update"; if [ -f "${TO_DEL}" ] && [ ! -h "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
 
 
-	fi;
+  fi;
 
-	exit ${EXIT_CODE};
+  exit ${EXIT_CODE};
 
 fi;

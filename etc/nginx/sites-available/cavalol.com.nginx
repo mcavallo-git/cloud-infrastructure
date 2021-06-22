@@ -3,18 +3,18 @@
 #==--  cavalol.com
 #
 server {
-	listen 80;
-	listen 443 ssl http2;
-	listen [::]:80;
-	listen [::]:443 ssl http2;
-	server_name ~^(?<subdomain>\w+\.)?cavalol\.com$;
-	if ($scheme != "https") {
+  listen 80;
+  listen 443 ssl http2;
+  listen [::]:80;
+  listen [::]:443 ssl http2;
+  server_name ~^(?<subdomain>\w+\.)?cavalol\.com$;
+  if ($scheme != "https") {
     return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
-	}
-	ssl_certificate "/etc/letsencrypt/live/cavalol.com/fullchain.pem";
-	ssl_certificate_key "/etc/letsencrypt/live/cavalol.com/privkey.pem";
-	ssl_trusted_certificate "/etc/letsencrypt/live/cavalol.com/chain.pem";
-	location / {
+  }
+  ssl_certificate "/etc/letsencrypt/live/cavalol.com/fullchain.pem";
+  ssl_certificate_key "/etc/letsencrypt/live/cavalol.com/privkey.pem";
+  ssl_trusted_certificate "/etc/letsencrypt/live/cavalol.com/chain.pem";
+  location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
       return 302 https://mcavallo.com/sh;  # curl -ssL https://cavalol.com | bash -s -- --all;
@@ -23,8 +23,8 @@ server {
     if ($http_user_agent !~* "^curl") {
       return 302 https://${subdomain}mcavallo.com${request_uri};
     }
-	}
-	include "/etc/nginx/nginx_error_locations.conf";
+  }
+  include "/etc/nginx/nginx_error_locations.conf";
 }
 
 

@@ -21,20 +21,20 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
-	ARGS=("$@");
-	COUNT_ARGS=${#ARGS[@]};
-	
-	DISABLE_MOTD=0;
-	ENABLE_MOTD=0;
+  # ------------------------------------------------------------
+  # Parse inline arguments (passed to current script)
+  ARGS=("$@");
+  COUNT_ARGS=${#ARGS[@]};
+  
+  DISABLE_MOTD=0;
+  ENABLE_MOTD=0;
 
-	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$COUNT_ARGS;i++ )); do
+  # Walk through any inline-arguments passed to this function
+  for (( i=0;i<$COUNT_ARGS;i++ )); do
     EACH_ARG=${ARGS[${i}]};
     # Check if this is the last inline-argument or if there are more to follow
     if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
@@ -58,15 +58,15 @@ else
       # ------------------------------------------------------------
     fi;
 
-	done;
+  done;
 
-	if [ -z "$(which sed 2>'/dev/null';)" ]; then
+  if [ -z "$(which sed 2>'/dev/null';)" ]; then
     # Missing required package
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
     echo -e "${EXAMPLE_VALID_CALL}";
     exit 1;
 
-	else
+  else
 
     if [ ${ENABLE_MOTD} -eq 1 ]; then
       MOTD_ENABLED_VALUE=1;
@@ -104,7 +104,7 @@ else
 
     fi;
 
-	fi;
+  fi;
 
 fi;
 

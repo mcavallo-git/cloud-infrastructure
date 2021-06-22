@@ -25,31 +25,31 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo -e "\n""$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo -e "\n""$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
 
-	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
-	#
+  # ------------------------------------------------------------
+  # Parse inline arguments (passed to current script)
+  #
 
-	ARGS=("$@");
-	COUNT_ARGS=${#ARGS[@]};
-	ARGS_HOSTNAME_DEFINED=0;
-	USE_WAN_IPV4=0;
-	USE_SEARCH_DOMAIN=0;
-	USE_STATIC_IPV4=0;
-	DRY_RUN=1;
+  ARGS=("$@");
+  COUNT_ARGS=${#ARGS[@]};
+  ARGS_HOSTNAME_DEFINED=0;
+  USE_WAN_IPV4=0;
+  USE_SEARCH_DOMAIN=0;
+  USE_STATIC_IPV4=0;
+  DRY_RUN=1;
 
-	#
-	# DNS "SEARCH": TAKES A SET OF ONE OR MORE DOMAINS AND TRIES CONCATENATING EACH OF THEM WITH THE LOCAL ENVIRONMENT'S HOSTNAME (to try and resolve dns query) BEFORE REVERTING TO GOING EXTERNAL FOR RESOLUTION OF THE DNS QUERY IN_QUESTION
-	#
-	# MAX IS 6 DOMAINS TOTALING 256 OR LESS CHARACTERS)
-	#
-	DNS_SEARCH_DOMAIN="";
+  #
+  # DNS "SEARCH": TAKES A SET OF ONE OR MORE DOMAINS AND TRIES CONCATENATING EACH OF THEM WITH THE LOCAL ENVIRONMENT'S HOSTNAME (to try and resolve dns query) BEFORE REVERTING TO GOING EXTERNAL FOR RESOLUTION OF THE DNS QUERY IN_QUESTION
+  #
+  # MAX IS 6 DOMAINS TOTALING 256 OR LESS CHARACTERS)
+  #
+  DNS_SEARCH_DOMAIN="";
 
-	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$COUNT_ARGS;i++ )); do
+  # Walk through any inline-arguments passed to this function
+  for (( i=0;i<$COUNT_ARGS;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
     # BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
@@ -126,11 +126,11 @@ else
       fi;
 
     fi;
-	done;
+  done;
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	if [ $(which nmcli 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  if [ $(which nmcli 2>'/dev/null' | wc -l;) -gt 0 ]; then
     #
     # Prioritize DHCP DNS Nameservers from nmcli (NetworkManager), where available
     #
@@ -146,79 +146,79 @@ else
         fi;
       done;
     fi;
-	fi;
+  fi;
 
 
-	# ------------------------------------------------------------
-	#
-	#		DNS SERVER OPTIONS
-	#
+  # ------------------------------------------------------------
+  #
+  #		DNS SERVER OPTIONS
+  #
 
-	GOOGLE_DNS_1="8.8.8.8";       # https://developers.google.com/speed/public-dns/docs/using
-	GOOGLE_DNS_2="8.8.4.4";       # https://developers.google.com/speed/public-dns/docs/using
+  GOOGLE_DNS_1="8.8.8.8";       # https://developers.google.com/speed/public-dns/docs/using
+  GOOGLE_DNS_2="8.8.4.4";       # https://developers.google.com/speed/public-dns/docs/using
 
-	GOOGLE_DNSv6_1="2001:4860:4860::8888";       # https://developers.google.com/speed/public-dns/docs/using
-	GOOGLE_DNSv6_2="2001:4860:4860::8844";       # https://developers.google.com/speed/public-dns/docs/using
+  GOOGLE_DNSv6_1="2001:4860:4860::8888";       # https://developers.google.com/speed/public-dns/docs/using
+  GOOGLE_DNSv6_2="2001:4860:4860::8844";       # https://developers.google.com/speed/public-dns/docs/using
 
-	CLOUDFARE_DNS_1="1.1.1.1";    # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
-	CLOUDFARE_DNS_2="1.0.0.1";    # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
+  CLOUDFARE_DNS_1="1.1.1.1";    # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
+  CLOUDFARE_DNS_2="1.0.0.1";    # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
 
-	CLOUDFARE_DNSv6_1="2606:4700:4700::1111";       # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
-	CLOUDFARE_DNSv6_2="2606:4700:4700::1001";       # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
+  CLOUDFARE_DNSv6_1="2606:4700:4700::1111";       # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
+  CLOUDFARE_DNSv6_2="2606:4700:4700::1001";       # https://developers.cloudflare.com/1.1.1.1/setting-up-1.1.1.1/
 
-	OPEN_DNS_1="208.67.222.222";  # https://use.opendns.com
-	OPEN_DNS_2="208.67.220.220";  # https://use.opendns.com
+  OPEN_DNS_1="208.67.222.222";  # https://use.opendns.com
+  OPEN_DNS_2="208.67.220.220";  # https://use.opendns.com
 
-	OPEN_DNSv6_1="2620:119:35::35";  # https://www.opendns.com/about/innovations/ipv6
-	OPEN_DNSv6_2="2620:119:53::53";  # https://www.opendns.com/about/innovations/ipv6
+  OPEN_DNSv6_1="2620:119:35::35";  # https://www.opendns.com/about/innovations/ipv6
+  OPEN_DNSv6_2="2620:119:53::53";  # https://www.opendns.com/about/innovations/ipv6
 
-	VERISIGN_DNS_1="64.6.64.6";   # https://www.verisign.com/en_US/security-services/public-dns/index.xhtml
-	VERISIGN_DNS_2="64.6.65.6";   # https://www.verisign.com/en_US/security-services/public-dns/index.xhtml
+  VERISIGN_DNS_1="64.6.64.6";   # https://www.verisign.com/en_US/security-services/public-dns/index.xhtml
+  VERISIGN_DNS_2="64.6.65.6";   # https://www.verisign.com/en_US/security-services/public-dns/index.xhtml
 
-	VERISIGN_DNSv6_1="2620:74:1b::1:1";   # https://publicdnsforum.verisign.com/discussion/13/verisign-public-dns-set-up-configuration-instructions
-	VERISIGN_DNSv6_2="2620:74:1c::2:2";   # https://publicdnsforum.verisign.com/discussion/13/verisign-public-dns-set-up-configuration-instructions
+  VERISIGN_DNSv6_1="2620:74:1b::1:1";   # https://publicdnsforum.verisign.com/discussion/13/verisign-public-dns-set-up-configuration-instructions
+  VERISIGN_DNSv6_2="2620:74:1c::2:2";   # https://publicdnsforum.verisign.com/discussion/13/verisign-public-dns-set-up-configuration-instructions
 
-	# ------------------------------------------------------------
-	#
-	#		SELECTED DNS SERVERS (HOSTS/IPS TO TARGET AS DNS NAMESERVERS)
+  # ------------------------------------------------------------
+  #
+  #		SELECTED DNS SERVERS (HOSTS/IPS TO TARGET AS DNS NAMESERVERS)
 
-	DNS_NAMESRVR_1="${USER_DNS_1:-${DHCP_NAMESRVR_1:-${GOOGLE_DNS_1}}}";
-	DNS_NAMESRVR_2="${USER_DNS_2:-${DHCP_NAMESRVR_2:-${GOOGLE_DNS_2}}}";
-	DNS_NAMESRVR_3="${USER_DNS_3:-${DHCP_NAMESRVR_3:-${CLOUDFARE_DNS_1}}}";
-	DNS_FALLBACK_1="${OPEN_DNS_1}";
-	DNS_FALLBACK_2="${CLOUDFARE_DNS_2}";
-	DNS_FALLBACK_3="${VERISIGN_DNS_1}";
+  DNS_NAMESRVR_1="${USER_DNS_1:-${DHCP_NAMESRVR_1:-${GOOGLE_DNS_1}}}";
+  DNS_NAMESRVR_2="${USER_DNS_2:-${DHCP_NAMESRVR_2:-${GOOGLE_DNS_2}}}";
+  DNS_NAMESRVR_3="${USER_DNS_3:-${DHCP_NAMESRVR_3:-${CLOUDFARE_DNS_1}}}";
+  DNS_FALLBACK_1="${OPEN_DNS_1}";
+  DNS_FALLBACK_2="${CLOUDFARE_DNS_2}";
+  DNS_FALLBACK_3="${VERISIGN_DNS_1}";
 
-	# ------------------------------------------------------------
+  # ------------------------------------------------------------
 
-	# Dingbats, intuitive logging chars/info
-	BOX_CHECK="☑";
-	BOX_XMARK="☒":
-	DASHES="-----------------------------------------------------------------------";
-	START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
+  # Dingbats, intuitive logging chars/info
+  BOX_CHECK="☑";
+  BOX_XMARK="☒":
+  DASHES="-----------------------------------------------------------------------";
+  START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
 
-	# Detect current IP Config
-	THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;);
-	THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p" | head -n 1;);
-	THIS_LAN_PREFIX=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\7/p" | head -n 1;);
-	THIS_LAN_IPV4=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\9/p" | head -n 1;);
-	THIS_GATEWAY_IPV4=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\2/p" | head -n 1;);
-	THIS_LAN_NIC=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\3/p" | head -n 1;);
-	test -z "${THIS_LAN_IPV4}" && THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' | head -n 1 2>'/dev/null';);
-	test -z "${THIS_LAN_PREFIX}" && THIS_LAN_PREFIX=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' | head -n 1 2>'/dev/null';);
-	test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;);
-	test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
-	test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
+  # Detect current IP Config
+  THIS_LAN_SUBNET=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\2/p" | head -n 1;);
+  THIS_LAN_BROADCAST=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\3/p" | head -n 1;);
+  THIS_LAN_PREFIX=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\7/p" | head -n 1;);
+  THIS_LAN_IPV4=$(ip route | grep -v '169.254.0.0/16' | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ([a-zA-Z0-9]+) [a-zA-Z0-9 ]* (((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))( [a-zA-Z0-9 ]*)?$/\9/p" | head -n 1;);
+  THIS_GATEWAY_IPV4=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\2/p" | head -n 1;);
+  THIS_LAN_NIC=$(ip route | grep 'default via '| sed -rne "s/^([a-zA-Z0-9]* )*default +via +([0-9a-fA-F\:\.]+) +[a-zA-Z0-9]+ +([a-zA-Z0-9]+).+$/\3/p" | head -n 1;);
+  test -z "${THIS_LAN_IPV4}" && THIS_LAN_IPV4=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' | head -n 1 2>'/dev/null';);
+  test -z "${THIS_LAN_PREFIX}" && THIS_LAN_PREFIX=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/^.*\///' | head -n 1 2>'/dev/null';);
+  test -z "${THIS_LAN_SUBNET}" && THIS_LAN_SUBNET=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\2/p" | head -n 1;);
+  test -z "${THIS_LAN_BROADCAST}" && THIS_LAN_BROADCAST=$(ip route | grep "$(echo ${THIS_LAN_IPV4} | cut -d. -f1-2)" | sed -rne "s/^([a-zA-Z0-9]* )*((((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\/([0-9]+)) dev ${THIS_LAN_NIC}.*$/\3/p" | head -n 1;);
+  test -z "${THIS_LAN_NETMASK}" && THIS_LAN_NETMASK=$(M=$(( 0xffffffff ^ ((1 << (32-${THIS_LAN_PREFIX})) -1) )) 2>'/dev/null'; echo "$(( (M>>24) & 0xff )).$(( (M>>16) & 0xff )).$(( (M>>8) & 0xff )).$(( M & 0xff ))" 2>'/dev/null';);
 
 
-	# Kernel-Info
-	IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
-	IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
-	if [ "${IS_LINUX}" != "1" ]; then
+  # Kernel-Info
+  IS_LINUX=$(if [[ $(uname -s | grep Linux | wc -l) -gt 0 ]]; then echo 1; else echo 0; fi; );
+  IS_WINDOWS_WSL=$(if [[ "$(< /proc/version)" == *@(Microsoft|WSL)* ]]; then echo 1; else echo 0; fi; );
+  if [ "${IS_LINUX}" != "1" ]; then
     echo -e "\n""Error:  Must run in a Linux-based environment";
     exit 1;
 
-	elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
+  elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
     if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
 
       #
@@ -268,19 +268,19 @@ else
       echo "Error:  Linux kernel/distro not supported";
       exit 1;
     fi;
-	fi;
+  fi;
 
-	# Network config filepaths
-	ETC_DHCPCD_CONF="/etc/dhcpcd.conf"; # DHCPCD Service Config-File
-	DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
-	NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
-	NETWORK_SYSCONF="/etc/sysconfig/network";
-	ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
+  # Network config filepaths
+  ETC_DHCPCD_CONF="/etc/dhcpcd.conf"; # DHCPCD Service Config-File
+  DEBIAN_NETWORK_CONF="/etc/network/interfaces.d/999-update_dns_config.cfg";
+  NMCLI_CONF=$(find '/etc/sysconfig/network-scripts/' -name "ifcfg-${THIS_LAN_NIC}" | head -n 1 2>'/dev/null';);
+  NETWORK_SYSCONF="/etc/sysconfig/network";
+  ETC_RESOLVCONF="/etc/resolv.conf"; # Final output which is-built-from/pulls-from from multiple sources
 
-	# Rename/Remove old network config filepath
-	OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then if [ -f "${DEBIAN_NETWORK_CONF}"]; then rm -f "${OLD_DEBIAN_CONF}"; else mv -f "${OLD_DEBIAN_CONF}" "${DEBIAN_NETWORK_CONF}"; fi; fi;
+  # Rename/Remove old network config filepath
+  OLD_DEBIAN_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"; if [ -f "${OLD_DEBIAN_CONF}" ]; then if [ -f "${DEBIAN_NETWORK_CONF}"]; then rm -f "${OLD_DEBIAN_CONF}"; else mv -f "${OLD_DEBIAN_CONF}" "${DEBIAN_NETWORK_CONF}"; fi; fi;
 
-	if [ -n "${NMCLI_CONF}" ]; then
+  if [ -n "${NMCLI_CONF}" ]; then
 
     # NetworkManager Device Configuration
 
@@ -461,7 +461,7 @@ else
 
     fi;
 
-	else # ------------------------------------------------------------
+  else # ------------------------------------------------------------
 
     /usr/bin/networkctl status;
 
@@ -715,33 +715,33 @@ else
       fi;
 
     fi;
-	
-	fi;
+  
+  fi;
 
-	# ------------------------------------------------------------
-	#
-	# Show the final network configuration
-	#
+  # ------------------------------------------------------------
+  #
+  # Show the final network configuration
+  #
 
-	# verify the configuration tied to eth0
-	# echo "";
-	# echo "Calling [ifconfig eth0]...";
-	# echo "${DASHES}"; ifconfig eth0; echo "${DASHES}";
+  # verify the configuration tied to eth0
+  # echo "";
+  # echo "Calling [ifconfig eth0]...";
+  # echo "${DASHES}"; ifconfig eth0; echo "${DASHES}";
 
-	sleep 2;
+  sleep 2;
 
-	if [ -f "${DEBIAN_NETWORK_CONF}" ]; then
+  if [ -f "${DEBIAN_NETWORK_CONF}" ]; then
     echo -e "\n""Info:  Calling [cat \"${DEBIAN_NETWORK_CONF}\"]";
     echo "${DASHES}"; cat "${DEBIAN_NETWORK_CONF}"; echo "${DASHES}";
-	elif [ -f "${NMCLI_CONF}" ]; then
+  elif [ -f "${NMCLI_CONF}" ]; then
     echo -e "\n""Info:  Calling [cat \"${NMCLI_CONF}\"]";
     echo "${DASHES}"; cat "${NMCLI_CONF}"; echo "${DASHES}";
-	fi;
+  fi;
 
-	if [ -f "${ETC_RESOLVCONF}" ]; then
+  if [ -f "${ETC_RESOLVCONF}" ]; then
     echo -e "\n""Info:  Calling [cat \"${ETC_RESOLVCONF}\"]";
     echo "${DASHES}"; cat "${ETC_RESOLVCONF}"; echo "${DASHES}";
-	fi;
+  fi;
 
 fi;
 

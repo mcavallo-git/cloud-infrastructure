@@ -20,10 +20,10 @@ TARGET_USER=$(if [ -n "$1" ]; then echo "$1"; else whoami; fi;);
 
 ERROR_FINDING_USER=$(id ${TARGET_USER} 1>"/dev/null" 2>&1; echo $?;);
 if [ "${ERROR_FINDING_USER}" == "0" ]; then
-	USER_HOMEDIR=$(getent passwd "${TARGET_USER}" | cut --delimiter=: --fields=6);
-	echo "${USER_HOMEDIR}";
-	exit 0;
+  USER_HOMEDIR=$(getent passwd "${TARGET_USER}" | cut --delimiter=: --fields=6);
+  echo "${USER_HOMEDIR}";
+  exit 0;
 else
-	id ${TARGET_USER};
-	exit 1;
+  id ${TARGET_USER};
+  exit 1;
 fi;

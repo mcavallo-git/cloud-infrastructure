@@ -17,19 +17,19 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  # ------------------------------------------------------------
+  if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
     #
     # Disabled for Fedora distros (RHEL/CentOS)
     #
     echo "System-Update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
     exit 1;
 
-	else
+  else
     #
     #  Linux - Fetch, Pull, & Install updates (system & package)
     #
@@ -190,5 +190,5 @@ else
     echo "$(date '+%Y-%m-%d %H:%M:%S') | Finished \"${THIS_SCRIPT}\"";
     echo "------------------------------------------------------------";
     exit 0;
-	fi;
+  fi;
 fi;

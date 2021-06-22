@@ -31,22 +31,22 @@ exec 2>&1;
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
-	echo "";
-	echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-	exit 1;
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
 else
-	# ------------------------------------------------------------
-	# Parse inline arguments (passed to current script)
-	ARGS=("$@");
-	COUNT_ARGS=${#ARGS[@]};
-	
-	EDIT_ACTION="";
-	TARGET_USER="";
-	SUDO_REQUIRES_USERPASS="1";
-	EXAMPLE_VALID_CALL="\n$(date +'%Y-%m-%d %H:%M:%S') | Info --> Please specify a valid local user via:  >  sudoer_status --user USERNAME""\n";
+  # ------------------------------------------------------------
+  # Parse inline arguments (passed to current script)
+  ARGS=("$@");
+  COUNT_ARGS=${#ARGS[@]};
+  
+  EDIT_ACTION="";
+  TARGET_USER="";
+  SUDO_REQUIRES_USERPASS="1";
+  EXAMPLE_VALID_CALL="\n$(date +'%Y-%m-%d %H:%M:%S') | Info --> Please specify a valid local user via:  >  sudoer_status --user USERNAME""\n";
 
-	# Walk through any inline-arguments passed to this function
-	for (( i=0;i<$COUNT_ARGS;i++ )); do
+  # Walk through any inline-arguments passed to this function
+  for (( i=0;i<$COUNT_ARGS;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
 
@@ -105,23 +105,23 @@ else
 
     fi;
 
-	done;
+  done;
 
 
-	# Verify validity of argument(s) passed to script
-	if [ -z "${TARGET_USER}" ]; then 
+  # Verify validity of argument(s) passed to script
+  if [ -z "${TARGET_USER}" ]; then 
 
     # Error: Empty/Unset target-user
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
     echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
-	elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
+  elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
     # Error: User not found
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
     echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
 
-	else
+  else
 
     SUDOERS_D="";
     if [ -d "/etc/sudoers.d" ]; then
@@ -191,7 +191,7 @@ else
 
 
     # ------------------------------------------------------------
-	fi;
+  fi;
 
 fi;
 

@@ -1,9 +1,9 @@
 #!/bin/sh
 
 if [ "$(dmesg | grep -q 'EFI v' > /dev/null 2>&1; echo $?;)" == "0" ]; then
-	FIRMWARE_TYPE="UEFI";
+  FIRMWARE_TYPE="UEFI";
 else
-	FIRMWARE_TYPE="BIOS";
+  FIRMWARE_TYPE="BIOS";
 fi;
 
 echo "FIRMWARE_TYPE = [ ${FIRMWARE_TYPE} ]";

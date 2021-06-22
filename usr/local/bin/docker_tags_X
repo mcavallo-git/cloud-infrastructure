@@ -1,31 +1,31 @@
 #!/bin/bash
 
 if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
-	read -p "Search for Tags on which Docker Image?  " -t 60 -r; READ_RET_CODE=$?;
-	if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
+  read -p "Search for Tags on which Docker Image?  " -t 60 -r; READ_RET_CODE=$?;
+  if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
     echo -e "Error: Response timed out ";
-	elif [ -n "${REPLY}" ]; then
+  elif [ -n "${REPLY}" ]; then
     DOCKER_IMAGE="${REPLY}";
-	fi;
+  fi;
 fi;
 
 
 if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
-	echo "Error: Empty/unset Docker Image-Name";
-	echo "  |--> Please retry using syntax [ env DOCKER_IMAGE=\"YOUR_IMAGE\" ${0} ]";
-	exit 1;
+  echo "Error: Empty/unset Docker Image-Name";
+  echo "  |--> Please retry using syntax [ env DOCKER_IMAGE=\"YOUR_IMAGE\" ${0} ]";
+  exit 1;
 
 else
 
-	REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
+  REQUIRED_PKG="jq"; if [ -z "$(which ${REQUIRED_PKG} 2>'/dev/null')" ]; then apt-get update -y; apt-get install -y ${REQUIRED_PKG}; fi;
 
-	DOCKER_IMAGE_NAME="${DOCKER_IMAGE}";
+  DOCKER_IMAGE_NAME="${DOCKER_IMAGE}";
 
-	DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${DOCKER_IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
-	if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
+  DOCKER_IMAGE_TAGS=$(curl -s -S "https://registry.hub.docker.com/v1/repositories/${DOCKER_IMAGE_NAME}/tags" | jq -r ".[].name" 2>"/dev/null";); ERRORS_TAG_LOOKUP=$?;
+  if [ ${ERRORS_TAG_LOOKUP} -ne 0 ]; then
     echo "Error: No docker images found to match \"${DOCKER_IMAGE_NAME}\"";
     exit 1;
-	else
+  else
 
     echo "";
     echo "\${#DOCKER_IMAGE_TAGS} = [ ${#DOCKER_IMAGE_TAGS} ]";
@@ -114,7 +114,7 @@ else
       fi;
     fi;
 
-	fi;
+  fi;
 
 fi;
 

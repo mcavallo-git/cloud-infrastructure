@@ -9,7 +9,7 @@ if [ 0 -eq 1 ]; then
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/gpg_git_config_sync?$(date +'%s.%N')" | bash;
 
 # Run the local copy of this script:
-bash "${HOME}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\gpg_git_config_sync";
+bash "${USERPROFILE}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\gpg_git_config_sync";
 
 fi;
 # ------------------------------------------------------------
@@ -95,7 +95,7 @@ GIT_SYNC_FULLNAMES=""; # Git Emails (Key) and their associated Fullname (Val) [ 
 
 # ------------------------------------------------------------
 
-DEFAULT_CONFIG_DIRNAME="${HOME}/.gpg_git";
+DEFAULT_CONFIG_DIRNAME="${USERPROFILE}/.gpg_git";
 DEFAULT_CONFIG_FULLPATH="${DEFAULT_CONFIG_DIRNAME}/config";
 GIT_SYNC_CONFIG_FULLPATH="";
 
@@ -164,7 +164,7 @@ elif [ -d "/mnt/c" ]; then
   DISK_ROOT="/mnt/c";
 fi;
 
-# USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${HOME}" || USERPROFILE_LINUX="${MM}";
+# USERPROFILE_LINUX=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; USERPROFILE_LINUX="${USERPROFILE}" || USERPROFILE_LINUX="${MM}";
 # USERPROFILE_WIN32=""; MM=$(realpath "${USERPROFILE}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; USERPROFILE_WIN32="${MM}";
 
 WIN32_USERNAME=$(get_username_windows_wsl);
@@ -183,6 +183,10 @@ fi;
 
 if [ ! -v PROGRAMFILES ]; then
   export PROGRAMFILES="${DISK_ROOT}/Program Files";
+fi;
+
+if [ ! -v USERPROFILE ]; then
+  export USERPROFILE="${DISK_ROOT}/Users/${WIN32_USERNAME}";
 fi;
 
 APPDATA_LINUX=""; MM=$(realpath "${APPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; APPDATA_LINUX="${MM}";
@@ -286,8 +290,8 @@ IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>/dev/null);
 GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/mingw64/etc/gitconfig" 2>/dev/null);
 
-GIT_CONF_GLOBAL_FILE_1=$(realpath "${HOME}/.gitconfig" 2>/dev/null);
-GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${HOME}}/git/config" 2>/dev/null);
+GIT_CONF_GLOBAL_FILE_1=$(realpath "${USERPROFILE}/.gitconfig" 2>/dev/null);
+GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${USERPROFILE}}/git/config" 2>/dev/null);
 
 echo -n "" > "${GIT_CONF_SYSTEM_PATHS_LINUX}";
 if [ -f "${GIT_CONF_SYSTEM_FILE_1}" ]; then echo "${GIT_CONF_SYSTEM_FILE_1}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}"; fi;
@@ -404,10 +408,10 @@ done;
 # Gpg4win's GnuPG configuration (on Windows workstations) is stored in one of two locations   -->   %APPDATA%\gnupg  ||  %USERPROFILE%\.gnupg
 #
 
-mkdir --parents --verbose "$(realpath ${HOME})/.gnupg";
+mkdir --parents --verbose "$(realpath ${USERPROFILE})/.gnupg";
 mkdir --parents --verbose "$(realpath ${APPDATA_LINUX})/gnupg";
 
-USERPROFILE_GNUPG_LINUX="$(realpath ${HOME}/.gnupg)";
+USERPROFILE_GNUPG_LINUX="$(realpath ${USERPROFILE}/.gnupg)";
 USERPROFILE_GNUPG_WIN32=""; MM="${USERPROFILE_GNUPG_LINUX/${DISK_ROOT}\//C:\\}"; USERPROFILE_GNUPG_WIN32="${MM//\//\\}";
 
 GCONF_USERPROFILE_LINUX="${USERPROFILE_GNUPG_LINUX}/gpg-agent.conf";
@@ -445,7 +449,7 @@ if [ ! -f "${EACH_FULLCONF}" ]; then
 fi;
 
 # if [ "$(cat ${EACH_FULLCONF} | grep 'pinentry-mode')" == "" ]; then echo "pinentry-mode loopback" >> "${EACH_FULLCONF}"; fi;
-# if [ "$(cat ${EACH_FULLCONF} | grep 'passphrase')" == "" ]; then echo "passphrase $(cat ${HOME}/.gnupg/passphrase.personal)" >> "${EACH_FULLCONF}"; fi;
+# if [ "$(cat ${EACH_FULLCONF} | grep 'passphrase')" == "" ]; then echo "passphrase $(cat ${USERPROFILE}/.gnupg/passphrase.personal)" >> "${EACH_FULLCONF}"; fi;
 # if [ "$(cat ${EACH_FULLCONF} | grep 'verbose')" == "" ]; then echo "verbose" >> "${EACH_FULLCONF}"; fi;
 if [ "$(cat ${EACH_FULLCONF} | grep 'utf8-strings')" == "" ]; then echo "utf8-strings" >> "${EACH_FULLCONF}"; fi;
 if [ "$(cat ${EACH_FULLCONF} | grep 'keyid-format')" == "" ]; then echo "keyid-format ${GPG_KEY_ID_FORMAT}" >> "${EACH_FULLCONF}"; fi;
@@ -578,7 +582,7 @@ fi;
 ###  Download the "git_config_all" script, which will scour the current drive for all git exe's, then
 ###  perform config-updates on each exe's global & system config-files with the values given (below)
 # GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
-# GIT_CONFIG_ALL_LOCAL="${HOME}/.gpg_git/git_config_all" && \
+# GIT_CONFIG_ALL_LOCAL="${USERPROFILE}/.gpg_git/git_config_all" && \
 # mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
 # curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
@@ -673,20 +677,20 @@ fi;
   unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
   # AppData
-  if [ -d "${HOME}/AppData" ]; then
-    EXCLUDED_HOMEDIRS+=(["${HOME}/AppData"]="");
+  if [ -d "${USERPROFILE}/AppData" ]; then
+    EXCLUDED_HOMEDIRS+=(["${USERPROFILE}/AppData"]="");
   fi;
   # DropBox
-  if [ -d "${HOME}/Dropbox" ]; then
-    EXCLUDED_HOMEDIRS+=(["${HOME}/Dropbox"]="");
+  if [ -d "${USERPROFILE}/Dropbox" ]; then
+    EXCLUDED_HOMEDIRS+=(["${USERPROFILE}/Dropbox"]="");
   fi;
   # Google Drive
-  if [ -d "${HOME}/Google Drive" ]; then
-    EXCLUDED_HOMEDIRS+=(["${HOME}/Google Drive"]="");
+  if [ -d "${USERPROFILE}/Google Drive" ]; then
+    EXCLUDED_HOMEDIRS+=(["${USERPROFILE}/Google Drive"]="");
   fi;
   # iCloud (Apple)
-  if [ -d "${HOME}/iCloudDrive" ]; then
-    EXCLUDED_HOMEDIRS+=(["${HOME}/iCloudDrive"]="");
+  if [ -d "${USERPROFILE}/iCloudDrive" ]; then
+    EXCLUDED_HOMEDIRS+=(["${USERPROFILE}/iCloudDrive"]="");
   fi;
 
   #
@@ -707,7 +711,7 @@ fi;
     if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
       EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
       DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
-      if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${HOME}" ]; then
+      if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${USERPROFILE}" ]; then
         EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
       fi;
     fi;
@@ -722,7 +726,7 @@ fi;
   echo "Beginning Home-Dir search...";
 
   # Get all dirs within current user's home-dir
-  find "${HOME}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
+  find "${USERPROFILE}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
     DIR_IS_EXCLUDED=0;
     for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
@@ -781,7 +785,7 @@ fi;
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-        TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
         if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
@@ -810,7 +814,7 @@ fi;
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-        TEST_SSH_KEY=$(find "${HOME}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
         if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
@@ -850,7 +854,7 @@ fi;
       GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 
-      # SSH_KEY=$(find "${HOME}/.ssh/" -iname *".pem" -type f -printf "%f\n");
+      # SSH_KEY=$(find "${USERPROFILE}/.ssh/" -iname *".pem" -type f -printf "%f\n");
       # echo "";
       # echo "${SSH_KEY}";
 

@@ -154,16 +154,16 @@ security:
 # 			if [[ $REPLY =~ ^[Yy]$ ]]; then
 # 				echo ""; read -p "Enter the name of the replication set to join:  " -t 60 -r; echo "";
 # 				if [ -n "${REPLY}" ]; then
-# 					NEW_REPL_SET_NAME="${REPLY}";
-# 					sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
+#           NEW_REPL_SET_NAME="${REPLY}";
+#           sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e '
 # /^#replication:/ {
 # a\
 #   replSetName: '${NEW_REPL_SET_NAME}'
 # c\
 # replication:
 # }' "/etc/mongod.conf";
-# 					cat "/etc/mongod.conf";
-# 					service mongod restart;
+#           cat "/etc/mongod.conf";
+#           service mongod restart;
 # 				fi;
 # 			fi;
 # 		fi;

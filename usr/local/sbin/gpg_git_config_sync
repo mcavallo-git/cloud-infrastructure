@@ -721,8 +721,8 @@ fi;
   #
   REGKEY_ONEDRIVE_BUSINESS="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Business1\ScopeIdToMountPointPathCache";  # OneDrive for Business
   REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
-  PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
-  PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
+  PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction SilentlyContinue}; ";
+  PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction SilentlyContinue}; ";
   DIRS_ONEDRIVE_BUSINESS=$(powershell -Command "${PS1_ONEDRIVE_BUSINESS}";);
   DIRS_ONEDRIVE_PERSONAL=$(powershell -Command "${PS1_ONEDRIVE_PERSONAL}";);
   

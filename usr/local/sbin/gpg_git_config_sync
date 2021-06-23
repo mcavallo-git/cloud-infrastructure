@@ -79,13 +79,11 @@ GPG_PASS_FILE_WORK=""; # GPG Credential 2 (Work)
 
 GPG_CACHE_TIMEOUT=""; # GPG Cache Timeout
 
-GPG_CONFIG_DIR=""; # GPG Config-Directory
-
-GPG_KEYSERVER_URL=""; # GPG Key-Server URL
-
 GPG_KEY_ID_FORMAT=""; # GPG Key-ID Format
 
 GPG_KEYSERVER_OPTIONS=""; # GPG Key-Server Options
+
+GPG_KEYSERVER_URL="hkps://hkps.pool.sks-keyservers.net:443"; # GPG Key-Server URL
 
 # ------------------------------------------------------------
 
@@ -270,6 +268,8 @@ GPG4WIN_EXE_DIR_WIN32="${PROG_FILES_X86_WIN32}\GnuPG\bin";
 GPG4WIN_GPG_EXE_LINUX="${GPG4WIN_EXE_DIR_LINUX}/gpg.exe";
 GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 
+GPG_CONFIG_DIR=$(${GPG4WIN_GPG_EXE_LINUX} --version | grep 'Home:' | sed --regexp-extended --quiet --expression='s/^Home\:\ ?(.+)$/\1/p');
+
 # ------------------------------------------------------------
 
 # Check if running as w/ administrative privileges (or not)
@@ -372,7 +372,7 @@ IFS="${ROLLBACK_IFS}";
 # ------------------------------------------------------------
 
 if [ "list gnupg" == "key ids" ]; then
-  gpg --list-keys;
+  ${GPG4WIN_GPG_EXE_LINUX} --list-keys;
 fi;
 
 #

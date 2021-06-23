@@ -721,8 +721,8 @@ fi;
   #
   REGKEY_ONEDRIVE_BUSINESS="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Business1\ScopeIdToMountPointPathCache";  # OneDrive for Business
   REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
-  PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction SilentlyContinue}; ";
-  PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction SilentlyContinue}; ";
+  PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction SilentlyContinue }; ";
+  PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction SilentlyContinue }; ";
   DIRS_ONEDRIVE_BUSINESS=$(powershell -Command "${PS1_ONEDRIVE_BUSINESS}";);
   DIRS_ONEDRIVE_PERSONAL=$(powershell -Command "${PS1_ONEDRIVE_PERSONAL}";);
   
@@ -808,6 +808,8 @@ fi;
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
         TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        echo "SSH_KEY_SYNTAX=\"${SSH_KEY_SYNTAX}\"";
+        echo "TEST_SSH_KEY=\"${TEST_SSH_KEY}\"";
         if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else

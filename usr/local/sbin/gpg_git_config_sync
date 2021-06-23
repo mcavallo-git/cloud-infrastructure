@@ -341,15 +341,15 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
     echo "EACH_GIT_LINUX=\"${EACH_GIT_LINUX}\"";
     echo "EACH_GIT_WIN32=\"${EACH_GIT_WIN32}\"";
 
-    SYSTEM_CONF_PATH=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-    SYSTEM_CONF_LINUX=""; MM=$(realpath "${SYSTEM_CONF_PATH}"); MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX="${MM}";
+    SYSTEM_CONF_WIN32=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    SYSTEM_CONF_LINUX=""; MM="${SYSTEM_CONF_WIN32}"; MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX=$(realpath "${MM}");
     SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
     if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
       echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
     fi;
 
-    GLOBAL_CONF_PATH=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
-    GLOBAL_CONF_LINUX=""; MM=$(realpath "${GLOBAL_CONF_PATH}"); MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX="${MM}";
+    GLOBAL_CONF_WIN32=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    GLOBAL_CONF_LINUX=""; MM="${GLOBAL_CONF_WIN32}"; MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX=$(realpath "${MM}");
     GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
     if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
       echo "${GLOBAL_CONF_LINUX}" >> "${GIT_CONF_GLOBAL_PATHS_LINUX}";

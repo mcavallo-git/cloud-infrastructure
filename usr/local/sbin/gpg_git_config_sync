@@ -130,11 +130,8 @@ fi;
 
 
 if [ -z "$(which powershell)" ]; then
-  find "${DISK_ROOT}" \
-  -type f \
-  -name "powershell.exe" \
-  -print0 \
-  2>"/dev/null";
+  POWERSHELL_EXE_PATH=$(find "${DISK_ROOT}/Windows/System32" -type f -name "powershell.exe" 2>"/dev/null" | head -n 1;);
+  ln -sf "${POWERSHELL_EXE_PATH}" "/usr/local/bin";
 fi;
 
 echo "APPDATA=\"${APPDATA}\"";

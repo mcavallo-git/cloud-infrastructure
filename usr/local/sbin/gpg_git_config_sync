@@ -89,9 +89,9 @@ GPG_KEYSERVER_OPTIONS=""; # GPG Key-Server Options
 
 # ------------------------------------------------------------
 
-GIT_SYNC_REPOS_ID1=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
+GIT_SYNC_REPOS_PERS=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
 
-GIT_SYNC_REPOS_ID2=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
+GIT_SYNC_REPOS_WORK=""; # Git Repo-URLs (Key) & Associated Email for Read (and/or Write) user (Val) [ Implemented 2019-11-06 ]
 
 GIT_SYNC_GPG_KEYS=""; # Git Emails (Key) and their associated GnuPG-Key Fingerprint (Val) [ Implemented 2019-11-06 ]
 
@@ -795,9 +795,9 @@ fi;
 
     # ------------------------------------------------------------
 
-    if [ -v GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+    if [ -v GIT_SYNC_REPOS_PERS[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
       # Use Primary ID Array values, first
-      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID1[${EACH_REPO_URI}]}");
+      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_PERS[${EACH_REPO_URI}]}");
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
@@ -824,9 +824,9 @@ fi;
       fi;
     fi;
 
-    if [ -v GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
+    if [ -v GIT_SYNC_REPOS_WORK[${EACH_REPO_URI}] ] && [ -z "${SSH_KEY}" ]; then
       # Fallback to Secondary ID Array values
-      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_ID2[${EACH_REPO_URI}]}");
+      TEST_EMAIL=$(echo "${GIT_SYNC_REPOS_WORK[${EACH_REPO_URI}]}");
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
@@ -915,8 +915,8 @@ fi;
       #   fi;
       # done;
 
-      # ${GIT_SYNC_REPOS_ID1}
-      # ${GIT_SYNC_REPOS_ID2}
+      # ${GIT_SYNC_REPOS_PERS}
+      # ${GIT_SYNC_REPOS_WORK}
       # ${GIT_SYNC_GPG_KEYS}
       # ${GIT_SYNC_FULLNAMES}
 

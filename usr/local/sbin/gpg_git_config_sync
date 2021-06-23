@@ -128,6 +128,15 @@ if [ ! -v USERPROFILE ]; then
   export USERPROFILE="${DISK_ROOT}/Users/${WIN32_USERNAME}";
 fi;
 
+
+if [ -z "$(which powershell)" ]; then
+  find "${DISK_ROOT}" \
+  -type f \
+  -name "powershell.exe" \
+  -print0 \
+  2>"/dev/null";
+fi;
+
 echo "APPDATA=\"${APPDATA}\"";
 echo "LOCALAPPDATA=\"${LOCALAPPDATA}\"";
 echo "ProgramData=\"${ProgramData}\"";

@@ -47,37 +47,37 @@ START_TIMESTAMP="$(date +'%Y%m%d%H%M%S')";
 
 IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
-PERSONAL_PUBLIC_REPOS=(); # Remote Public Repos (Personal)
+# PERSONAL_PUBLIC_REPOS=(); # Remote Public Repos (Personal)
 
-PERSONAL_PRIVATE_REPOS=(); # Remote Private Repos (Personal)
+# PERSONAL_PRIVATE_REPOS=(); # Remote Private Repos (Personal)
 
-WORK_PUBLIC_REPOS=(); # Remote Public Repos (Work)
+# WORK_PUBLIC_REPOS=(); # Remote Public Repos (Work)
 
-WORK_PRIVATE_REPOS=(); # Remote Private Repos (Work)
+# WORK_PRIVATE_REPOS=(); # Remote Private Repos (Work)
 
-REPOS_DIR=""; # Git Repo(s) Directory
+# REPOS_DIR=""; # Git Repo(s) Directory
 
-COMMIT_NAME_PERSONAL=""; # Commit Fullname (Personal)
+# COMMIT_NAME_PERSONAL=""; # Commit Fullname (Personal)
 
-COMMIT_NAME_WORK=""; # Commit Fullname (Work)
+# COMMIT_NAME_WORK=""; # Commit Fullname (Work)
 
-GIT_EMAIL_PERSONAL=""; # Commit Email (Personal)
+# GIT_EMAIL_PERSONAL=""; # Commit Email (Personal)
 
-GIT_EMAIL_WORK=""; # Commit Email (Work)
+# GIT_EMAIL_WORK=""; # Commit Email (Work)
 
-GIT_SSH_PERSONAL=""; # Commit SSH-Key (Personal)
+# GIT_SSH_PERSONAL=""; # Commit SSH-Key (Personal)
 
-GIT_SSH_WORK=""; # Commit SSH-Key (Work)
+# GIT_SSH_WORK=""; # Commit SSH-Key (Work)
 
-GPG_KEY_ID_PERSONAL=""; # GPG Credential 1 (Personal)
+# GPG_KEY_ID_PERSONAL=""; # GPG Credential 1 (Personal)
 
-GPG_PASS_FILE_PERSONAL=""; # GPG Credential 2 (Personal)
+# GPG_PASS_FILE_PERSONAL=""; # GPG Credential 2 (Personal)
 
-GPG_KEY_ID_WORK=""; # GPG Credential 1 (Work)
+# GPG_KEY_ID_WORK=""; # GPG Credential 1 (Work)
 
-GPG_PASS_FILE_WORK=""; # GPG Credential 2 (Work)
+# GPG_PASS_FILE_WORK=""; # GPG Credential 2 (Work)
 
-GPG_CACHE_TIMEOUT=""; # GPG Cache Timeout
+GPG_CACHE_TIMEOUT_SECONDS=""; # GPG Cache Timeout
 
 GPG_KEY_ID_FORMAT="0xlong"; # GPG Key-ID Format
 
@@ -492,10 +492,10 @@ fi;
 # if [ "$(cat ${EACH_FULLCONF} | grep 'batch')" == "" ]; then echo "batch" >> "${EACH_FULLCONF}"; fi;
 # if [ "$(cat ${EACH_FULLCONF} | grep 'allow-loopback-pinentry')" == "" ]; then echo "allow-loopback-pinentry" >> "${EACH_FULLCONF}"; fi;
 # if [ "$(cat ${EACH_FULLCONF} | grep 'allow-preset-passphrase')" == "" ]; then echo "allow-preset-passphrase" >> "${EACH_FULLCONF}"; fi;
-# if [ "$(cat ${EACH_FULLCONF} | grep 'default-cache-ttl-ssh')" == "" ]; then echo "default-cache-ttl-ssh ${GPG_CACHE_TIMEOUT}" >> "${EACH_FULLCONF}"; fi;
-# if [ "$(cat ${EACH_FULLCONF} | grep 'max-cache-ttl-ssh')" == "" ]; then echo "max-cache-ttl-ssh ${GPG_CACHE_TIMEOUT}" >> "${EACH_FULLCONF}"; fi;
-if [ "$(cat ${EACH_FULLCONF} | grep 'default-cache-ttl')" == "" ]; then echo "default-cache-ttl ${GPG_CACHE_TIMEOUT}" >> "${EACH_FULLCONF}"; fi;
-if [ "$(cat ${EACH_FULLCONF} | grep 'max-cache-ttl')" == "" ]; then echo "max-cache-ttl ${GPG_CACHE_TIMEOUT}" >> "${EACH_FULLCONF}"; fi;
+# if [ "$(cat ${EACH_FULLCONF} | grep 'default-cache-ttl-ssh')" == "" ]; then echo "default-cache-ttl-ssh ${GPG_CACHE_TIMEOUT_SECONDS}" >> "${EACH_FULLCONF}"; fi;
+# if [ "$(cat ${EACH_FULLCONF} | grep 'max-cache-ttl-ssh')" == "" ]; then echo "max-cache-ttl-ssh ${GPG_CACHE_TIMEOUT_SECONDS}" >> "${EACH_FULLCONF}"; fi;
+if [ "$(cat ${EACH_FULLCONF} | grep 'default-cache-ttl')" == "" ]; then echo "default-cache-ttl ${GPG_CACHE_TIMEOUT_SECONDS}" >> "${EACH_FULLCONF}"; fi;
+if [ "$(cat ${EACH_FULLCONF} | grep 'max-cache-ttl')" == "" ]; then echo "max-cache-ttl ${GPG_CACHE_TIMEOUT_SECONDS}" >> "${EACH_FULLCONF}"; fi;
 
 # [ GnuPG USER-DIR ] gpgconf.conf
 EACH_CONF="gpgconf.conf";
@@ -776,6 +776,7 @@ fi;
   for EACH_REPO_FULLPATH in "${!REPO_FULLPATHS[@]}"; do
 
     EACH_REPO_BASENAME=$(basename "${EACH_REPO_FULLPATH}";);
+    EACH_REPO_DIRNAME=$(dirname "${EACH_REPO_FULLPATH}";);
     EACH_REPO_ORIGIN=$(cd "${EACH_REPO_FULLPATH}" && git config --get "remote.origin.url");
     if [[ ${EACH_REPO_ORIGIN} == https://*/*/* ]]; then
       # Origin-url in [ https://SERVICE.TLD/USER/REPO ] format
@@ -901,7 +902,7 @@ fi;
       KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
       KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
       if [ -z "${GPG_KEY_ID}" ]; then
-        echo "No GPG Key was assigned for repo \"${REPOS_DIR}/${EACH_REPO_BASENAME}\"";
+        echo "No GPG Key was assigned for repo \"${EACH_REPO_DIRNAME}/${EACH_REPO_BASENAME}\"";
       else
         # Strings (GPG)
         KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";           git config --local --replace-all "${KEY}" "${VAL}";

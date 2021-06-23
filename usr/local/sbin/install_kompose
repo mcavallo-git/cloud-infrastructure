@@ -18,7 +18,7 @@ if [ $(which kompose 2>'/dev/null' | wc -l;) -eq 0 ]; then
   echo "Downloading Kompose...";
   if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
     # Install Kompose for Linux
-    curl -L "curl -L https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-linux-amd64" -o kompose;
+    curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-linux-amd64" -o kompose;
   elif [[ "${OSTYPE}" == "darwin"* ]]; then
     # Install Kompose for MacOS
     curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-darwin-amd64" -o kompose;

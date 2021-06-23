@@ -819,8 +819,9 @@ fi;
           COMMIT_EMAIL="${TEST_EMAIL}";
           COMMIT_NAME="${TEST_FULLNAME}";
           TEST_GPG_KEY=$(echo "${GIT_SYNC_GPG_KEYS[${COMMIT_EMAIL}]}");
+          LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '\[S' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
           # LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '   rsa' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
-          LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
+          # LOCAL_GPG_KEY_MATCHES=$("${GPG4WIN_GPG_EXE_LINUX}" --list-keys --keyid-format 'LONG' | grep -i '^pub' | grep "/${TEST_GPG_KEY} " | wc -l 2>/dev/null;);
           if [ ${LOCAL_GPG_KEY_MATCHES} -gt 0 ]; then # GPG-Key for given email exists on local workstation
             GPG_KEY_ID="${TEST_GPG_KEY}";
             echo "  |--> Local match found for user \"${COMMIT_EMAIL}\" w/ GPG-Key \"${GPG_KEY_ID}\" & Full-Name \"${COMMIT_NAME}\"";

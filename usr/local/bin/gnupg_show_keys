@@ -1,30 +1,32 @@
 #!/bin/bash
+# ------------------------------------------------------------
 #
-# Check GPG Key(s) saved locally
+# GPG (GnuPG) - Export target public/private GPG (GnuPG) keys to taget directory
 #
 
+if [ "1" == "1" ]; then
+
+# Path to GPG executable (mainly for Windows installs running a Git Bash / WSL terminal which needs to use GPG4Win's gpg.exe)
 GPG_CLI="$(which gpg)";
 
-GnuPG_PrimaryKeyID=$("${GPG_CLI}" --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^sec\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
-GnuPG_SecondaryKeyID=$("${GPG_CLI}" --list-secret-keys --keyid-format 'LONG' | sed --regexp-extended --quiet --expression='s/^ssb\ +([A-Za-z0-9]+)\/([A-F0-9]{16})\ +([0-9\-]{1,10})\ +(.+)$/\2/p');
-GnuPG_PrimaryPrivateKey=$("${GPG_CLI}" --armor --export-secret-keys "${GnuPG_PrimaryKeyID}");
-GnuPG_PrimaryPublicKey=$("${GPG_CLI}" --armor --export "${GnuPG_PrimaryKeyID}");
-GnuPG_SecondaryPrivateKey=$("${GPG_CLI}" --armor --export-secret-keys "${GnuPG_SecondaryKeyID}");
-GnuPG_SecondaryPublicKey=$("${GPG_CLI}" --armor --export "${GnuPG_SecondaryKeyID}");
+# Directory Path to export keys to
+OUTPUT_DIRNAME="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d_%H%M%S')";
+mkdir -p "${OUTPUT_DIRNAME}";
 
-OutputDirname="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d%H%M%S')";
+# GPG Key IDs to Export
+unset GPG_KEY_IDS_TO_EXPORT; declare -a GPG_KEY_IDS_TO_EXPORT; # [Re-]Instantiate bash array
+GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
+GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
+GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
 
-mkdir -p "${OutputDirname}";
-chmod -R 0400 "${OutputDirname}";
+for GPG_KEY_ID in "${GPG_KEY_IDS_TO_EXPORT[@]}"; do
+${GPG_CLI} --armor --export-secret-keys "${GPG_KEY_ID_1}" > "${OUTPUT_DIRNAME}/GnuPG_PrivateKey_${GPG_KEY_ID_1}.pem";
+${GPG_CLI} --armor --export "${GPG_KEY_ID_1}" > "${OUTPUT_DIRNAME}/GnuPG_PublicKey_${GPG_KEY_ID_1}.pub";
+done;
 
-echo "${GnuPG_PrimaryKeyID}" > "${OutputDirname}/GnuPG_PrimaryKeyID.txt";
-echo "${GnuPG_PrimaryPrivateKey}" > "${OutputDirname}/GnuPG_PrimaryKey.pem";
-echo "${GnuPG_PrimaryPublicKey}" > "${OutputDirname}/GnuPG_PrimaryKey.pub";
-echo "${GnuPG_SecondaryKeyID}" > "${OutputDirname}/GnuPG_SecondaryKeyID.txt";
-echo "${GnuPG_SecondaryPrivateKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pem";
-echo "${GnuPG_SecondaryPublicKey}" > "${OutputDirname}/GnuPG_SecondaryKey.pub";
+echo "Files exported to directory `"${OUTPUT_DIRNAME}`"";
 
-chmod -R 0400 "${OutputDirname}";
+fi;
 
 
 # ------------------------------------------------------------

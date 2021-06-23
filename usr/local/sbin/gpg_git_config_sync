@@ -77,7 +77,7 @@ IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" =
 
 # GPG_PASS_FILE_WORK=""; # GPG Credential 2 (Work)
 
-GPG_CACHE_TIMEOUT_SECONDS=""; # GPG Cache Timeout
+GPG_CACHE_TIMEOUT_SECONDS="7200"; # GPG Cache Timeout (defaults to 2 hours or 7200 seconds)
 
 GPG_KEY_ID_FORMAT="0xlong"; # GPG Key-ID Format
 

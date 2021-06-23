@@ -206,9 +206,6 @@ APPDATA_WIN32=""; MM=$(realpath "${APPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; M
 LOCALAPPDATA_LINUX=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; LOCALAPPDATA_LINUX="${MM}";
 LOCALAPPDATA_WIN32=""; MM=$(realpath "${LOCALAPPDATA}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; LOCALAPPDATA_WIN32="${MM}";
 
-TEMP_FILES_LINUX=""; MM="${LOCALAPPDATA_LINUX}/Temp";
-TEMP_FILES_WIN32=""; MM="${LOCALAPPDATA_WIN32}\\Temp\\${START_TIMESTAMP}";
-
 PROG_FILES_X64_W_FALLBACK=${PROGRAMFILES:-C:\\Program Files};
 PROG_FILES_X64_LINUX=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; PROG_FILES_X64_LINUX="${MM}";
 PROG_FILES_X64_WIN32=""; MM=$(realpath "${PROG_FILES_X64_W_FALLBACK}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; PROG_FILES_X64_WIN32="${MM}";
@@ -222,6 +219,9 @@ PROG_DATA_WIN32=""; MM=$(realpath "${PROG_DATA_W_FALLBACK}"); MM="${MM/${DISK_RO
 
 TEMPDIR_LINUX="${LOCALAPPDATA_LINUX}/Temp";
 TEMPDIR_WIN32="${LOCALAPPDATA_WIN32}\\Temp";
+
+TEMP_FILES_LINUX="${LOCALAPPDATA_LINUX}/Temp";
+TEMP_FILES_WIN32="${LOCALAPPDATA_WIN32}\\Temp\\${START_TIMESTAMP}";
 
 echo "APPDATA_LINUX=\"${APPDATA_LINUX}\"";
 echo "APPDATA_WIN32=\"${APPDATA_WIN32}\"";
@@ -298,7 +298,7 @@ ROLLBACK_IFS="${IFS}";
 IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 
 GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>/dev/null);
-GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/mingw64/etc/gitconfig" 2>/dev/null);
+GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/etc/gitconfig" 2>/dev/null);
 
 GIT_CONF_GLOBAL_FILE_1=$(realpath "${USERPROFILE}/.gitconfig" 2>/dev/null);
 GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${USERPROFILE}}/git/config" 2>/dev/null);

@@ -723,8 +723,8 @@ fi;
   REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
   PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
   PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}')).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction ('SilentlyContinue')}; ";
-  DIRS_ONEDRIVE_BUSINESS=$(PowerShell -Command "${PS1_ONEDRIVE_BUSINESS}";);
-  DIRS_ONEDRIVE_PERSONAL=$(PowerShell -Command "${PS1_ONEDRIVE_PERSONAL}";);
+  DIRS_ONEDRIVE_BUSINESS=$(powershell -Command "${PS1_ONEDRIVE_BUSINESS}";);
+  DIRS_ONEDRIVE_PERSONAL=$(powershell -Command "${PS1_ONEDRIVE_PERSONAL}";);
   
   echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
     # Verify each path exists before excluding it (otherwise it doesn't matter)

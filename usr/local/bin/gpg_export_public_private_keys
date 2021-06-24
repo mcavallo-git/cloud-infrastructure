@@ -5,6 +5,7 @@
 #
 
 if [ "1" == "1" ]; then
+  # Determine path to desired GPG executable
   GPG4WIN_GPG_EXE_LINUX="/c/Program Files (x86)/GnuPG/bin/gpg.exe"; # Path to GPG4Win's GPG executable (Windows-based deployment)
   if [ -f "${GPG4WIN_GPG_EXE_LINUX}" ]; then
     GPG_CLI="${GPG4WIN_GPG_EXE_LINUX}";
@@ -13,23 +14,23 @@ if [ "1" == "1" ]; then
   else
     GPG_CLI="$(which gpg)";
   fi;
-  echo "\$GPG_CLI=\"${GPG_CLI}\"";
+  echo "Info:  If you are unsure of what your GPG Key IDs are, you may run the following command to list all local GPG Key IDs:";
+  echo "       \"${GPG_CLI}\" --list-keys --format 0xlong;";
+  echo "";
 
   # Directory Path to export keys to
   OUTPUT_DIRNAME="${HOME}/Desktop/GnuPG_Keys_$(date +'%Y%m%d_%H%M%S')";
   mkdir -p "${OUTPUT_DIRNAME}";
-
   # GPG Key IDs to Export
   unset GPG_KEY_IDS_TO_EXPORT; declare -a GPG_KEY_IDS_TO_EXPORT; # [Re-]Instantiate bash array
   GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
   GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
   GPG_KEY_IDS_TO_EXPORT+=("1A2B3C4D5E6F7A8B");
-
+  # Export the Keys
   for GPG_KEY_ID in "${GPG_KEY_IDS_TO_EXPORT[@]}"; do
     "${GPG_CLI}" --armor --export-secret-keys "${GPG_KEY_ID}" > "${OUTPUT_DIRNAME}/GnuPG_PrivateKey_${GPG_KEY_ID}.pem";
     "${GPG_CLI}" --armor --export "${GPG_KEY_ID}" > "${OUTPUT_DIRNAME}/GnuPG_PublicKey_${GPG_KEY_ID}.pub";
   done;
-
   echo "Files exported to directory \"${OUTPUT_DIRNAME}\"";
 fi;
 

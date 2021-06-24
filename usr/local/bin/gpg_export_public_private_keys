@@ -11,7 +11,7 @@ if [ "1" == "1" ]; then
   elif [ -f "/mnt${GPG4WIN_GPG_EXE_LINUX}" ]; then
     GPG_CLI="/mnt${GPG4WIN_GPG_EXE_LINUX}";
   else
-  GPG_CLI="$(which gpg)";
+    GPG_CLI="$(which gpg)";
   fi;
   echo "\$GPG_CLI=\"${GPG_CLI}\"";
 

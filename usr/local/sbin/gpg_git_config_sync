@@ -14,6 +14,15 @@ bash "${USERPROFILE}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\gpg_gi
 fi;
 # ------------------------------------------------------------
 #
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/gpg_git_config_sync"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/gpg_git_config_sync"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>/dev/null; chmod 0770 "${LOGDIR}" 2>/dev/null;
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+# ------------------------------------------------------------
+#
 # In a Windows environment, take control of signing commits in Git by redirecting gpg commands to use
 # [ Gpg4win ]'s [ Kleopatra ]  module's keyring and keyring handler to sign local commits used/sent by
 # [ Git Bash ], [ GitHub Desktop ], & [ Tortoise Git ]

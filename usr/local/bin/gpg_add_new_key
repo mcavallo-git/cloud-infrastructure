@@ -7,16 +7,22 @@
 #   |--> Requires GPG v2.1.17 or later installed (for use of gpg's --full-generate-key)
 #   |--> Refer to GitHub's help-article (e.g. their full-walkthrough) @ https://help.github.com/en/articles/generating-a-new-gpg-key
 #
-#
+# ------------------------------------------------------------
+
+# GUIDE/REFERENCE:  https://dev.to/benjaminblack/signing-git-commits-with-modern-encryption-1koh
+
+# ------------------------------------------------------------
+
 # Check GPG Version
-
-echo "
-------------------------------------------------------------
-Acquiring GPG Version (v2.1.17 or later required):
-
-";
-
+echo "------------------------------------------------------------";
+echo -e "Acquiring GPG Version (v2.1.17 or later required):\n\n";
 gpg --version | grep gpg;
+
+
+# ------------------------------------------------------------
+
+# Start the key creation process
+gpg --full-generate-key;
 
 echo "
 ------------------------------------------------------------
@@ -43,17 +49,12 @@ Enter the following items while creating a GnuPG key:
 ------------------------------------------------------------
 ";
 
-#
-# Begin the key-creation process by running the following:
-#
-
-gpg --full-generate-key;
-
-
 
 # ------------------------------------------------------------
 #
 # Citation(s)
+#
+#   dev.to  |  "Signing Git commits with GPG keys that use modern encryption - DEV Community"  |  https://dev.to/benjaminblack/signing-git-commits-with-modern-encryption-1koh
 #
 #   help.github.com  |  "Generating a new GPG key - GitHub Docs"  |  https://help.github.com/en/articles/generating-a-new-gpg-key
 #

@@ -787,9 +787,9 @@ fi;
       # Origin-url in [ git@SERVICE.TLD/USER/REPO ] format
       if [ $(echo "${EACH_REPO_ORIGIN}" | grep 'dev.azure.com' | wc -l;) -gt 0 ]; then
         # Azure DevOps Git Repo
-        EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+(?:\.git)?)$/\1/ip' 2>/dev/null;);
-        EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+(?:\.git)?)$/\2/ip' 2>/dev/null;);
-        EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+(?:\.git)?)$/\3/ip' 2>/dev/null;);
+        EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)$/\1/ip' 2>/dev/null;);
+        EACH_REPO_OWNER=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)$/\2/ip' 2>/dev/null;);
+        EACH_REPO_NAME=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+:v[0-9]+)\/([a-z0-9\_\.\-]+\/[a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+)$/\3/ip' 2>/dev/null;);
       else
         # GitHub, BitBucket, GitLab, etc. Repo (e.g. non-Azure DevOps Git Repo)
         EACH_REPO_FQDN=$(echo "${EACH_REPO_ORIGIN}" | sed --regexp-extended --quiet --expression='s/^[a-z0-9\_\.\-]+@([a-z0-9\_\.\-]+):([a-z0-9\_\.\-]+)\/([a-z0-9\_\.\-]+).git$/\1/ip' 2>/dev/null;);

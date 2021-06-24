@@ -268,7 +268,7 @@ GPG4WIN_EXE_DIR_WIN32="${PROG_FILES_X86_WIN32}\GnuPG\bin";
 GPG4WIN_GPG_EXE_LINUX="${GPG4WIN_EXE_DIR_LINUX}/gpg.exe";
 GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 
-GPG_CONFIG_DIR=$(${GPG4WIN_GPG_EXE_LINUX} --version | grep 'Home:' | sed --regexp-extended --quiet --expression='s/^Home\:\ ?(.+)$/\1/p');
+GPG_CONFIG_DIR=$("${GPG4WIN_GPG_EXE_LINUX}" --version | grep 'Home:' | sed --regexp-extended --quiet --expression='s/^Home\:\ ?(.+)$/\1/p');
 
 # ------------------------------------------------------------
 
@@ -372,7 +372,7 @@ IFS="${ROLLBACK_IFS}";
 # ------------------------------------------------------------
 
 if [ "list gnupg" == "key ids" ]; then
-  ${GPG4WIN_GPG_EXE_LINUX} --list-keys;
+  "${GPG4WIN_GPG_EXE_LINUX}" --list-keys;
 fi;
 
 #

@@ -437,7 +437,7 @@ else
       BENCHMARK_START=$(date +'%s.%N');
       curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" -o "${THIS_SOURCECODE_LOCAL}" && chmod 0755 "${THIS_SOURCECODE_LOCAL}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-      test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Update complete";
 
       echo -e "\n""---- Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
@@ -476,7 +476,7 @@ else
         git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && \
         git pull --quiet;
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # Set ownership for git-repo files as-intended
         echo -e "\n""Info:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
@@ -484,7 +484,7 @@ else
         # find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
         find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # Set ownership for git-repo directories as-intended
         echo -e "\n""Info:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
@@ -492,7 +492,7 @@ else
         # find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
         find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       fi;
 
       # Detect if current runtime is being executed within a WSL instance/terminal
@@ -550,7 +550,7 @@ else
           fi;
         fi;
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
       else # Running in WSL environment/terminal on Windows-based OS
 
@@ -637,7 +637,7 @@ else
         if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -655,7 +655,7 @@ else
         if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -668,7 +668,7 @@ else
             echo -e "\n""Info:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
             sed -i".${START_TIMESTAMP}.bak" -r -e 's/^#\s*(set\s+bell-style\s+none\s*)$/\1/' '/etc/inputrc'; # Uncomment lines starting with  [ # set bell-style none ]
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
 
@@ -684,7 +684,7 @@ else
             sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
             sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
 
@@ -705,7 +705,7 @@ else
           if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-          test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+          if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
           ## Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
           update-ca-trust force-enable;
@@ -729,7 +729,7 @@ else
         if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -747,7 +747,7 @@ else
         if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -765,7 +765,7 @@ else
         if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -856,7 +856,7 @@ else
                     && cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
                     && RESTART_SERVICE_SSH=1;
                   BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-                  test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+                  if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 fi;
 
               elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -908,7 +908,7 @@ else
                   echo -e "\n""Info:  Skipped SSH Config-Update - Already running the latest revision";
                 fi;
                 BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-                test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
 
             fi;
@@ -1011,7 +1011,7 @@ else
               && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
               && RESTART_SERVICE_CRON=1;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
 
         fi;
@@ -1039,7 +1039,7 @@ else
           if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-          test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+          if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
           # ------------------------------------------------------------
           #
@@ -1065,7 +1065,7 @@ else
                 if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-                test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - SSL (TLS/HTTPS) certificate auto-renewal disabled";
               fi;
@@ -1095,7 +1095,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             else
               echo "  |--> Denied - Logfile Auto-Cleanup disabled";
             fi;
@@ -1124,7 +1124,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             else
               echo "  |--> Denied - DNS-server sync disabled";
             fi;
@@ -1154,7 +1154,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             else
               echo "  |--> Denied - System & package weekly updates disabled";
             fi;
@@ -1179,7 +1179,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
 
@@ -1241,7 +1241,7 @@ else
         done;
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |";
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # ------------------------------------------------------------
         #
@@ -1260,7 +1260,7 @@ else
               && RESTART_SERVICE_CRON=1;
 
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
 
@@ -1304,7 +1304,7 @@ else
             if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
             # /var/cache/jenkins/war - Set policies to stop Selinux from blocking access to cached Jenkins images within "/var/cache/jenkins/war/images"
             if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -1328,7 +1328,7 @@ else
             if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
             if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
 
@@ -1348,7 +1348,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
               # ------------------------------------------------------------
               #
@@ -1366,7 +1366,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
               # ------------------------------------------------------------
               #
@@ -1384,7 +1384,7 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
               # ------------------------------------------------------------
               #
@@ -1402,13 +1402,13 @@ else
               if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-              test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
             fi;
 
             RESTART_SERVICE_JENKINS=1;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
           fi;
 
@@ -1501,7 +1501,7 @@ else
 
             RESTART_SERVICE_NGINX=1;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
           fi;
 
@@ -1681,7 +1681,7 @@ else
         echo -e "\n""Info:  End of \"sync_cloud_infrastructure\" runtime";
         BENCHMARK_START=${START_SECONDS_NANOSECONDS};
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
-        test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         echo "";
 
       fi;

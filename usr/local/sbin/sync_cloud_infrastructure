@@ -659,6 +659,21 @@ else
 
         # ------------------------------------------------------------
         #
+        # /etc/inputrc
+        #
+        if [ -f '/etc/inputrc' ]; then
+          if [ $(sed -rne 's/^#\s*(set\s+bell-style\s+none\s*)$/\0/p' '/etc/inputrc' | wc -l 2>'/dev/null';) -gt 0 ]; then
+            ### Bash - Disable the bell sound effect (specifically intended for WSL (Windows  Subsystem for Linux))
+            BENCHMARK_START=$(date +'%s.%N');
+            echo -e "\n""Info:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
+            sed -i".${START_TIMESTAMP}.bak" -r -e 's/^#\s*(set\s+bell-style\s+none\s*)$/\1/' '/etc/inputrc'; # Uncomment lines starting with  [ # set bell-style none ]
+            BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+            test ${ARGS_DEBUG_MODE} -eq 1 && echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+          fi;
+        fi;
+
+        # ------------------------------------------------------------
+        #
         # /etc/profile
         #
         if [ $(sed -rne 's/^MAIL=""$/\0/p' '/etc/profile' | wc -l 2>'/dev/null';) -eq 0 ]; then

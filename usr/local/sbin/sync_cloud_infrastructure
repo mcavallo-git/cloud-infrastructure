@@ -626,7 +626,7 @@ else
         # /usr/local/bin
         #
         DESTINATION_PATH="/usr/local/bin";
-        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0755"; DIR_PERMS="0755";
         echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -644,7 +644,7 @@ else
         # /usr/local/sbin
         #
         DESTINATION_PATH="/usr/local/sbin";
-        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0755"; DIR_PERMS="0755";
         echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -694,7 +694,7 @@ else
         #
         if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
           DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
-          SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+          SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
           FILE_PERMS="0644"; DIR_PERMS="0644";
           echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
           BENCHMARK_START=$(date +'%s.%N');
@@ -718,7 +718,7 @@ else
         # /etc/profile.d/required_paths.sh
         #
         DESTINATION_PATH="/etc/profile.d/required_paths.sh";
-        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0644";
         echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -736,7 +736,7 @@ else
         # /etc/profile.d/bash_history_logging.sh
         #
         DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
-        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0644";
         echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -754,7 +754,7 @@ else
         # /etc/whitelist.d
         #
         DESTINATION_PATH="/etc/whitelist.d";
-        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+        SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0755";
         echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -1028,7 +1028,7 @@ else
           # /etc/cron.d/CRON_sync_cloud_infrastructure
           #
           DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
-          SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+          SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
           FILE_PERMS="0644"; DIR_PERMS="0644";
           echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
           BENCHMARK_START=$(date +'%s.%N');
@@ -1054,7 +1054,7 @@ else
                 echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
               fi;
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-                SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+                SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
                 FILE_PERMS="0644"; DIR_PERMS="0644";
                 echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
                 BENCHMARK_START=$(date +'%s.%N');
@@ -1084,7 +1084,7 @@ else
               echo ""; read -p "Enable Logfile Auto-Cleanup? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1113,7 +1113,7 @@ else
               echo ""; read -p "Enable DNS-server sync? (Runs \"update_dns_config\" daily at 04:05 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1143,7 +1143,7 @@ else
             fi;
 
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1168,7 +1168,7 @@ else
             RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
             if [ "${RaspberryPi_Check}" == "BCM2835" ]; then
               DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1293,7 +1293,7 @@ else
             # /var/cache/jenkins/war
             #
             DESTINATION_PATH="/var/cache/jenkins/war";
-            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
             echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
@@ -1317,7 +1317,7 @@ else
             # /etc/default/jenkins
             #
             DESTINATION_PATH="/etc/default/jenkins";
-            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
             echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
@@ -1337,7 +1337,7 @@ else
               # /etc/cron.d/CRON_jenkins_export_config
               #
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1355,7 +1355,7 @@ else
               # /etc/cron.d/CRON_jenkins_log_cleanup
               #
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1373,7 +1373,7 @@ else
               # /etc/cron.d/CRON_jenkins_sync_ci
               #
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_sync_ci";
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1391,7 +1391,7 @@ else
               # /etc/cron.d/CRON_jenkins_warfile_update
               #
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
-              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+              SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
               echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
@@ -1430,7 +1430,7 @@ else
           else
             # NGINX exists locally
             DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
-            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
             echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
@@ -1443,7 +1443,7 @@ else
 
             # /var/www/error
             DESTINATION_PATH="/var/www/error"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
-            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(test -d "${DIR_REPO_BASE}${DESTINATION_PATH}" && echo "/";);
+            SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
             echo -e "  |--> Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');

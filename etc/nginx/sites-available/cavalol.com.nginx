@@ -35,7 +35,7 @@ server {
 #
 #
 # ------------------------------------------------------------
-### Create/Renew SSL-Certificate (Wildcard, Let's Encrypt using [ _acme-challenge ] TXT records)
+### Create/Renew SSL Certificate (Wildcard, Let's Encrypt using [ _acme-challenge ] TXT records)
 #
 # DN="cavalol.com"; certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DN}" -d "*.${DN}"; certbot certificates -d "${DN}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
 #
@@ -47,6 +47,12 @@ server {
 ###   |--> Revokes Certificate thru LetsEncrypt (Invalidates the certificate on the Certificate-Authority's end)
 #
 # FQDN="cavalol.com"; certbot certificates; certbot revoke --cert-path "/etc/letsencrypt/live/${FQDN}/fullchain.pem"; certbot delete --cert-name "${FQDN}"; find "/etc/letsencrypt/" -name "*${FQDN}*"; unlink "/etc/nginx/sites-enabled/${FQDN}"; rm "/etc/nginx/sites-available/${FQDN}".nginx; certbot certificates;
+#
+#
+#------------------------------------------------------------
+### Check SSL Certificate Expiration Date
+#
+# DN="cavalol.com"; openssl_test_host_certificate "${DN}" 2>&1 | grep 'notAfter';
 #
 #
 # ------------------------------------------------------------

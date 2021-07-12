@@ -58,7 +58,11 @@ else
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
         sudo apt-get -y update;
         if [ $(which update_unifi 2>'/dev/null' | wc -l;) -eq 0 ]; then
-          sudo update_unifi;
+          if [ $(/bin/systemctl list-unit-files --no-legend --no-pager --full "unifi.service" | grep "^unifi.service" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+            echo "";
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo update_unifi";
+            sudo update_unifi;
+          fi;
         fi;
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt list --upgradable";

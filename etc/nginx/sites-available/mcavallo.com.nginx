@@ -16,9 +16,9 @@
 #
 server {
   listen 80;
-  listen 443 ssl http2;
+  listen 443 ssl http2 default_server;
   listen [::]:80;
-  listen [::]:443 ssl http2;
+  listen [::]:443 ssl http2 default_server;
   server_name ~^(?<subdomain>.+\.)?mcavallo\.com$;
   include "/etc/nginx/nginx_error_locations.conf";
   access_log "/var/log/nginx/access_$host.excessive.log" excessive;

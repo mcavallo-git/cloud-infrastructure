@@ -16,12 +16,12 @@ fi;
 # Target Port
 #
 if [ -n "$2" ]; then
-  HOST_PORT="$2";
+  HOST_PORT_RANGE="$2";
 else
   echo "";
   echo "Info:  Defaulting port(s) to scan to 1-65535 (all ports) (this may be set by calling this script with desired port range as second inline argument, e.g. \${2})";
   echo "";
-  HOST_PORT="1-65535";
+  HOST_PORT_RANGE="1-65535";
 fi;
 
 
@@ -45,7 +45,7 @@ else
   fi;
   # 
   if [ -n "$(which nmap 2>'/dev/null';)" ]; then
-    nmap -T Aggressive -A -v "${HOST_NAME}" -p ${HOST_PORT};
+    nmap -T Aggressive -A -v "${HOST_NAME}" -p ${HOST_PORT_RANGE};
   fi;
 fi;
 

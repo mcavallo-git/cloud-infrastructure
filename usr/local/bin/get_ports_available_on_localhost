@@ -9,37 +9,43 @@
 #
 # ------------------------------------------------------------
 
+# Determine if running in WSL (Windows Subsystem for Linux) or not
 if [ $(which NETSTAT.EXE 2>'/dev/null' | wc -l;) -gt 0 ]; then
-IP_PORT_COLUMN=2;
-NETSTAT_CLI="NETSTAT.EXE -nao";
+  # WSL (Windows Subsystem for Linux)
+  IP_PORT_COLUMN=2;
+  NETSTAT_CLI="NETSTAT.EXE -nao";
 else
-IP_PORT_COLUMN=4;
-NETSTAT_CLI="netstat -tulpen";
+  # Linux distro (non-WSL)
+  IP_PORT_COLUMN=4;
+  NETSTAT_CLI="netstat -tulpen";
 fi;
 
+
+# Get all sockets that are already in use
 RESERVED_PORTS="$(${NETSTAT_CLI} | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}" | sed -rne 's/^.+:([0-9]+)$/\1/p' | sort -gu;)";
 
-STARTING_PORT=40000;
 
-if [ ! -v PORT_ITERATOR ]; then
-  # PORT_ITERATOR=$(shuf -i 40000-42500 -n 1);  # Start on a random port in a given range
-  PORT_ITERATOR=${STARTING_PORT};
+# Determine starting port (to find a port at or above the value of which is unused)
+if [[ -z ${1//[0-9]/} ]]; then
+  PORT_ITERATOR=${1};  # Use first argument as starting port
 else
-  PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
+  PORT_ITERATOR=40000;
 fi;
 
+# Locate an available local port (which doesn't have a socket already attached to it)
 while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   DUPLICATE_PORT=0;
   for EACH_RESERVED_PORT in ${RESERVED_PORTS}; do
     if [[ "${PORT_ITERATOR}" == "${EACH_RESERVED_PORT}" ]]; then
-      # Socket already exists on port - iterate to the next port & check again
+      # Socket already atttached to port - iterate to the next port & re-check for socket-availability
       PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
       DUPLICATE_PORT=1;
     fi;
   done;
 done;
 
-echo ${PORT_ITERATOR};  # Return the value of the available port (so that this module may be called as a sub-module for a single open/available port, as-needed)
+# Return the value of the available port (use this module as a sub-module which simple hands back a single open/available port)
+echo ${PORT_ITERATOR};
 
 
 # ------------------------------------------------------------

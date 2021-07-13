@@ -33,9 +33,9 @@ while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   DUPLICATE_PORT=0;
   for EACH_RESERVED_PORT in ${RESERVED_PORTS}; do
     if [[ "${PORT_ITERATOR}" == "${EACH_RESERVED_PORT}" ]]; then
-      DUPLICATE_PORT=1;
-      echo "Info:  Skipping port ${PORT_ITERATOR}  (socket already exists on port)";
+      # Socket already exists on port - iterate to the next port & check again
       PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
+      DUPLICATE_PORT=1;
     fi;
   done;
 done;

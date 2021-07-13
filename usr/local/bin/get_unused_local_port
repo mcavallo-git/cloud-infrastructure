@@ -1,34 +1,36 @@
 #!/bin/bash
-
-
-if [ 1 == 1 ]; then
+# ------------------------------------------------------------
 #
-# Dynamically locate a few open ports on this machine (to be potentially utilized by the parent-service calling this script)
-#   --> Ports 0 to 1023 - Well-Known Ports
-#   --> Ports 1024 to 49151 - Registered Ports
-#   --> Ports 49152 to 65535 - Public Ports
+# Dynamically locate an open port on local device
+#  |
+#  |--> Note:  Ports 0 to 1023 are "Well-Known" Ports
+#              Ports 1024 to 49151 are "Registered" Ports
+#              Ports 49152 to 65535 are "Public" Ports
 #
-RANDOM_PORT=$(shuf -i 40000-42500 -n 1);
-CURRENT_PORT=${RANDOM_PORT};
+# ------------------------------------------------------------
+
 RESERVED_PORTS="$(netstat -tulpen | grep ':' | grep -v 'processes' | awk '{print $4}'; )";
 
 #  Find this many open ports on localhost
 declare -a SERVICES_TO_FIND_PORTS_FOR=( \
-"PORT_A_22_SSH" \
-"PORT_B_25_SMTP" \
-"PORT_C_80_HTTP" \
-"PORT_D_443_HTTPS" \
-"PORT_E_8080_WS_HTTP" \
-"PORT_F_8443_WS_HTTPS" \
 "XTRA_PORT_001" \
 "XTRA_PORT_002" \
 "XTRA_PORT_003" \
 "XTRA_PORT_004" \
 "XTRA_PORT_005" \
+"XTRA_PORT_006" \
+"XTRA_PORT_007" \
+"XTRA_PORT_008" \
+"XTRA_PORT_009" \
+"XTRA_PORT_010" \
 );
 PORTS_NO_DUPES=($(echo "${SERVICES_TO_FIND_PORTS_FOR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 for EACH_PORT_VARNAME in "${PORTS_NO_DUPES[@]}"; do
-  CURRENT_PORT=$(expr ${CURRENT_PORT} + 1); 
+  if [ ! -v CURRENT_PORT ]; then
+    CURRENT_PORT=$(shuf -i 40000-42500 -n 1);
+  else
+    CURRENT_PORT=$(expr ${CURRENT_PORT} + 1);
+  fi;
   DUPLICATE_PORT=1;
   while [[ "${DUPLICATE_PORT}" != "0" ]]; do
     DUPLICATE_PORT=0;
@@ -37,20 +39,15 @@ for EACH_PORT_VARNAME in "${PORTS_NO_DUPES[@]}"; do
       if [[ "${THIS_PORT}" == "${CURRENT_PORT}" ]]; then
         echo "  (Skipping - Port already reserved)     ${THIS_PORT}";
         DUPLICATE_PORT=1;
-        CURRENT_PORT=$(expr ${CURRENT_PORT} + 1); 
+        CURRENT_PORT=$(expr ${CURRENT_PORT} + 1);
       fi;
     done;
   done;
   declare -i "${EACH_PORT_VARNAME}"=${CURRENT_PORT};
-  if [[ "${QUIET_MODE}" != "1" ]]; then
+  if [[ "${VERBOSE_MODE}" == "1" ]]; then
     echo "\"${EACH_PORT_VARNAME}\" = \"${CURRENT_PORT}\"";
+  else
+    echo ${CURRENT_PORT};
   fi;
 done;
-SSH_PORT=${PORT_A_22_SSH};
-SMTP_PORT=${PORT_B_25_SMTP};
-HTTP_PORT=${PORT_C_80_HTTP};
-HTTPS_PORT=${PORT_D_443_HTTPS};
-WS_HTTP_PORT=${PORT_F_8080_WS_HTTP};
-WS_HTTPS_PORT=${PORT_G_8443_WS_HTTPS};
 
-fi;

@@ -11,7 +11,9 @@ HOST_NAME="example.com"; HOST_PORT="443"; openssl s_client -showcerts -servernam
 fi;
 # ------------------------------------------------------------
 
+#
 # Target Host (FQDN / IPv4 / etc.)
+#
 HOST_NAME="";
 if [ -n "${1}" ]; then
   HOST_NAME="${1}";
@@ -37,7 +39,6 @@ fi;
 #
 # Determine if a STARTTLS request is warranted (based on target port)
 #
-
 unset STARTTLS_PORT_PROTOS; declare -A STARTTLS_PORT_PROTOS; # [Re-]Instantiate bash array
 
 STARTTLS_PORT_PROTOS+=(["21"]="ftp");

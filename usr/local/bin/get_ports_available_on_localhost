@@ -15,49 +15,28 @@ echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
 
 else
 
-RESERVED_PORTS="$(netstat -tulpen | grep ':' | grep -v 'processes' | awk '{print $4}'; )";
+RESERVED_IP_PORTS="$(netstat -tulpen | grep ':' | grep -v 'processes' | awk '{print $4}'; )";
 
-#  Find this many open ports on localhost
-declare -a SERVICES_TO_FIND_PORTS_FOR=( \
-"XTRA_PORT_001" \
-"XTRA_PORT_002" \
-"XTRA_PORT_003" \
-"XTRA_PORT_004" \
-"XTRA_PORT_005" \
-"XTRA_PORT_006" \
-"XTRA_PORT_007" \
-"XTRA_PORT_008" \
-"XTRA_PORT_009" \
-"XTRA_PORT_010" \
-);
 STARTING_PORT=40000;
-PORTS_NO_DUPES=($(echo "${SERVICES_TO_FIND_PORTS_FOR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-for EACH_PORT_VARNAME in "${PORTS_NO_DUPES[@]}"; do
-  if [ ! -v PORT_ITERATOR ]; then
-    # PORT_ITERATOR=$(shuf -i 40000-42500 -n 1);  # Start on a random port in a given range
-    PORT_ITERATOR=${STARTING_PORT};
-  else
-    PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
-  fi;
-  DUPLICATE_PORT=1;
-  while [[ "${DUPLICATE_PORT}" != "0" ]]; do
-    DUPLICATE_PORT=0;
-    for EACH_IP in ${RESERVED_PORTS}; do
-      THIS_PORT="$(echo "${EACH_IP}" | rev | cut --delimiter=':' -f1 | rev )";
-      if [[ "${THIS_PORT}" == "${PORT_ITERATOR}" ]]; then
-        echo "  (Skipping - Port already reserved)     ${THIS_PORT}";
-        DUPLICATE_PORT=1;
-        PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
-      fi;
-    done;
+
+if [ ! -v PORT_ITERATOR ]; then
+  # PORT_ITERATOR=$(shuf -i 40000-42500 -n 1);  # Start on a random port in a given range
+  PORT_ITERATOR=${STARTING_PORT};
+else
+  PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
+fi;
+DUPLICATE_PORT=1;
+while [[ "${DUPLICATE_PORT}" != "0" ]]; do
+  DUPLICATE_PORT=0;
+  for EACH_IP_PORT in ${RESERVED_IP_PORTS}; do
+    EACH_PORT="$(echo "${EACH_IP_PORT}" | rev | cut --delimiter=':' -f1 | rev )";
+    if [[ "${EACH_PORT}" == "${PORT_ITERATOR}" ]]; then
+      echo "  (Skipping - Port already reserved)     ${EACH_PORT}";
+      DUPLICATE_PORT=1;
+      PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
+    fi;
   done;
-  declare -i "${EACH_PORT_VARNAME}"=${PORT_ITERATOR};
-  if [[ "${VERBOSE_MODE}" == "1" ]]; then
-    echo "\"${EACH_PORT_VARNAME}\" = \"${PORT_ITERATOR}\"";
-  else
-    echo ${PORT_ITERATOR};
-  fi;
 done;
 
-fi;
+echo ${PORT_ITERATOR};
 

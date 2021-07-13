@@ -24,30 +24,32 @@ declare -a SERVICES_TO_FIND_PORTS_FOR=( \
 "XTRA_PORT_009" \
 "XTRA_PORT_010" \
 );
+STARTING_PORT=40000;
 PORTS_NO_DUPES=($(echo "${SERVICES_TO_FIND_PORTS_FOR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
 for EACH_PORT_VARNAME in "${PORTS_NO_DUPES[@]}"; do
-  if [ ! -v CURRENT_PORT ]; then
-    CURRENT_PORT=$(shuf -i 40000-42500 -n 1);
+  if [ ! -v PORT_ITERATOR ]; then
+    # PORT_ITERATOR=$(shuf -i 40000-42500 -n 1);  # Start on a random port in a given range
+    PORT_ITERATOR=${STARTING_PORT};
   else
-    CURRENT_PORT=$(expr ${CURRENT_PORT} + 1);
+    PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
   fi;
   DUPLICATE_PORT=1;
   while [[ "${DUPLICATE_PORT}" != "0" ]]; do
     DUPLICATE_PORT=0;
     for EACH_IP in ${RESERVED_PORTS}; do
       THIS_PORT="$(echo "${EACH_IP}" | rev | cut --delimiter=':' -f1 | rev )";
-      if [[ "${THIS_PORT}" == "${CURRENT_PORT}" ]]; then
+      if [[ "${THIS_PORT}" == "${PORT_ITERATOR}" ]]; then
         echo "  (Skipping - Port already reserved)     ${THIS_PORT}";
         DUPLICATE_PORT=1;
-        CURRENT_PORT=$(expr ${CURRENT_PORT} + 1);
+        PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
       fi;
     done;
   done;
-  declare -i "${EACH_PORT_VARNAME}"=${CURRENT_PORT};
+  declare -i "${EACH_PORT_VARNAME}"=${PORT_ITERATOR};
   if [[ "${VERBOSE_MODE}" == "1" ]]; then
-    echo "\"${EACH_PORT_VARNAME}\" = \"${CURRENT_PORT}\"";
+    echo "\"${EACH_PORT_VARNAME}\" = \"${PORT_ITERATOR}\"";
   else
-    echo ${CURRENT_PORT};
+    echo ${PORT_ITERATOR};
   fi;
 done;
 

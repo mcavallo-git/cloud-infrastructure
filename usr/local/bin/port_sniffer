@@ -1,7 +1,8 @@
 #!/bin/bash
 
-EXIT_CODE=1;
-
+#
+# Target Host (FQDN / IPv4 / etc.)
+#
 HOST_NAME="";
 if [ -n "${1}" ]; then
   HOST_NAME="${1}";
@@ -11,15 +12,23 @@ else
   HOST_NAME="${REPLY}";
 fi;
 
-if [ -z "${HOST_NAME}" ]; then
-
-  echo "Error: Blank hostname given";
-  EXIT_CODE=1;
-
+#
+# Target Port
+#
+if [ -n "$2" ]; then
+  HOST_PORT="$2";
 else
+  echo "";
+  echo "Info:  Defaulting to port 443 - you may specify a different port as argument \$2";
+  echo "";
+  HOST_PORT="443";
+fi;
 
+
+if [ -z "${HOST_NAME}" ]; then
+  echo "Error: Blank hostname given";
+else
   if [ -z "$(which nmap 2>'/dev/null')" ]; then
-
     # Install the "nmap" package
     echo "";
     echo "Error: command \"nmap\" not found";
@@ -37,9 +46,14 @@ else
   # 
   if [ -n "$(which nmap 2>'/dev/null';)" ]; then
     nmap -T Aggressive -A -v "${HOST_NAME}" -p 1-65535;
-    EXIT_CODE=0;
   fi;
-
 fi;
 
-exit ${EXIT_CODE};
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   en.wikipedia.org  |  "List of TCP and UDP port ports numbers - Wikipedia"  |  https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+#
+# ------------------------------------------------------------

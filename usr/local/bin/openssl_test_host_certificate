@@ -19,7 +19,7 @@ if [ -n "${1}" ]; then
   HOST_NAME="${1}";
 else
   echo "";
-  read -p "Enter HTTP Host (or call script with host as first argument, e.g. \${1}}):  " -t 60 -r;
+  read -p "Enter HTTP Host (set this using first inline argument, e.g. \${1}}):  " -t 60 -r;
   HOST_NAME="${REPLY}";
 fi;
 
@@ -31,7 +31,7 @@ if [ -n "$2" ]; then
   HOST_PORT="$2";
 else
   echo "";
-  echo "Info:  Defaulting to port 443 - you may specify a different port as argument \$2";
+  echo "Info:  Defaulting to port 443 (set this using second inline argument, e.g. \${2})";
   echo "";
   HOST_PORT="443";
 fi;

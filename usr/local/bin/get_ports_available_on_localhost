@@ -12,13 +12,13 @@
 if [ $(which NETSTAT.EXE 2>'/dev/null' | wc -l;) -gt 0 ]; then
 # echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
 IP_PORT_COLUMN=2;
-NETSTAT_CLI="NETSTAT.EXE";
-RESERVED_IP_PORTS="$(${NETSTAT_CLI} -nao | grep 'LISTEN' | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}";)";
+NETSTAT_CLI="NETSTAT.EXE -nao";
 else
 IP_PORT_COLUMN=4;
-NETSTAT_CLI="netstat";
-RESERVED_IP_PORTS="$(${NETSTAT_CLI} -tulpen | grep 'LISTEN' | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}";)";
+NETSTAT_CLI="netstat -tulpen";
 fi;
+
+RESERVED_PORTS="$(${NETSTAT_CLI} | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}" | sed -rne 's/^.+:([0-9]+)$/\1/p' | sort -gu;)";
 
 echo "${RESERVED_IP_PORTS}";
 
@@ -33,8 +33,7 @@ fi;
 DUPLICATE_PORT=1;
 while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   DUPLICATE_PORT=0;
-  for EACH_IP_PORT in ${RESERVED_IP_PORTS}; do
-    EACH_PORT="$(echo "${EACH_IP_PORT}" | rev | cut --delimiter=':' -f1 | rev )";
+  for EACH_PORT in ${RESERVED_PORTS}; do
     if [[ "${EACH_PORT}" == "${PORT_ITERATOR}" ]]; then
       echo "  (Skipping - Port already reserved)     ${EACH_PORT}";
       DUPLICATE_PORT=1;

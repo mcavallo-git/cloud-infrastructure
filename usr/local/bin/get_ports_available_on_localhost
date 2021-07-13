@@ -10,7 +10,6 @@
 # ------------------------------------------------------------
 
 if [ $(which NETSTAT.EXE 2>'/dev/null' | wc -l;) -gt 0 ]; then
-# echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
 IP_PORT_COLUMN=2;
 NETSTAT_CLI="NETSTAT.EXE -nao";
 else
@@ -28,7 +27,7 @@ if [ ! -v PORT_ITERATOR ]; then
 else
   PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
 fi;
-DUPLICATE_PORT=1;
+
 while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   DUPLICATE_PORT=0;
   for EACH_RESERVED_PORT in ${RESERVED_PORTS}; do
@@ -40,5 +39,7 @@ while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   done;
 done;
 
-echo ${PORT_ITERATOR};
+echo ${PORT_ITERATOR};  # Return the value of the available port (so that this module may be called as a sub-module for a single open/available port, as-needed)
 
+
+# ------------------------------------------------------------

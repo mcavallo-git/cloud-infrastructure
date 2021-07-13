@@ -46,7 +46,11 @@ else
   # 
   if [ -n "$(which nmap 2>'/dev/null';)" ]; then
     # nmap -T Aggressive -A -v "${HOST_NAME}" -p ${HOST_PORT_RANGE};
+    echo "------------------------------------------------------------";
+    echo "";
+    echo "Calling [ nmap -T Aggressive -A -v \"${HOST_NAME}\" -p ${HOST_PORT_RANGE} | grep \"Discovered\"; ]";
     nmap -T Aggressive -A -v "${HOST_NAME}" -p ${HOST_PORT_RANGE} | grep "Discovered";
+    echo "------------------------------------------------------------";
   fi;
 fi;
 

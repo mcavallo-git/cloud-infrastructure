@@ -8,7 +8,7 @@ if [ -n "${1}" ]; then
   HOST_NAME="${1}";
 else
   echo "";
-  read -p "Enter HTTP Host (or call script with host as first argument, e.g. \${1}}):  " -t 60 -r;
+  read -p "Enter HTTP Host (or call script with host as first inline argument, e.g. \${1}}):  " -t 60 -r;
   HOST_NAME="${REPLY}";
 fi;
 
@@ -19,9 +19,9 @@ if [ -n "$2" ]; then
   HOST_PORT="$2";
 else
   echo "";
-  echo "Info:  Defaulting to port 443 - you may specify a different port as argument \$2";
+  echo "Info:  Defaulting port(s) to scan to 1-65535 (all ports) (this may be set by calling this script with desired port range as second inline argument, e.g. \${2})";
   echo "";
-  HOST_PORT="443";
+  HOST_PORT="1-65535";
 fi;
 
 
@@ -45,7 +45,7 @@ else
   fi;
   # 
   if [ -n "$(which nmap 2>'/dev/null';)" ]; then
-    nmap -T Aggressive -A -v "${HOST_NAME}" -p 1-65535;
+    nmap -T Aggressive -A -v "${HOST_NAME}" -p ${HOST_PORT};
   fi;
 fi;
 

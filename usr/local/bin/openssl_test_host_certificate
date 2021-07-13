@@ -17,7 +17,7 @@ if [ -n "${1}" ]; then
   HOST_NAME="${1}";
 else
   echo "";
-  read -p "Enter HTTP Host (or pass as first inline argument (evaluated by script as \$1)):  " -t 60 -r;
+  read -p "Enter HTTP Host (or pass as first inline argument (evaluated by script as \${1})):  " -t 60 -r;
   HOST_NAME="${REPLY}";
 fi;
 

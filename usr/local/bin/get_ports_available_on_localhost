@@ -9,6 +9,12 @@
 #
 # ------------------------------------------------------------
 
+if [ $(which NETSTAT.EXE 2>'/dev/null' | wc -l;) -gt 0 ]; then
+
+echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
+
+else
+
 RESERVED_PORTS="$(netstat -tulpen | grep ':' | grep -v 'processes' | awk '{print $4}'; )";
 
 #  Find this many open ports on localhost
@@ -52,4 +58,6 @@ for EACH_PORT_VARNAME in "${PORTS_NO_DUPES[@]}"; do
     echo ${PORT_ITERATOR};
   fi;
 done;
+
+fi;
 

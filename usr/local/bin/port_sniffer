@@ -2,10 +2,18 @@
 
 EXIT_CODE=1;
 
-if [ -z "${1}" ]; then
+HOST_NAME="";
+if [ -n "${1}" ]; then
+  HOST_NAME="${1}";
+else
+  echo "";
+  read -p "Enter HTTP Host (or call script with host as first argument, e.g. \${1}}):  " -t 60 -r;
+  HOST_NAME="${REPLY}";
+fi;
 
-  echo "Error: Please specify a hostname or ip-address to detect open ports-on, such as [  ${0} example.com  ]"
-  
+if [ -z "${HOST_NAME}" ]; then
+
+  echo "Error: Blank hostname given";
   EXIT_CODE=1;
 
 else
@@ -28,7 +36,7 @@ else
   fi;
   # 
   if [ -n "$(which nmap 2>'/dev/null';)" ]; then
-    nmap -T Aggressive -A -v "${1}" -p 1-65535;
+    nmap -T Aggressive -A -v "${HOST_NAME}" -p 1-65535;
     EXIT_CODE=0;
   fi;
 

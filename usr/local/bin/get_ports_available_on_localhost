@@ -20,8 +20,6 @@ fi;
 
 RESERVED_PORTS="$(${NETSTAT_CLI} | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}" | sed -rne 's/^.+:([0-9]+)$/\1/p' | sort -gu;)";
 
-echo "${RESERVED_IP_PORTS}";
-
 STARTING_PORT=40000;
 
 if [ ! -v PORT_ITERATOR ]; then
@@ -33,10 +31,10 @@ fi;
 DUPLICATE_PORT=1;
 while [[ "${DUPLICATE_PORT}" != "0" ]]; do
   DUPLICATE_PORT=0;
-  for EACH_PORT in ${RESERVED_PORTS}; do
-    if [[ "${EACH_PORT}" == "${PORT_ITERATOR}" ]]; then
-      echo "  (Skipping - Port already reserved)     ${EACH_PORT}";
+  for EACH_RESERVED_PORT in ${RESERVED_PORTS}; do
+    if [[ "${PORT_ITERATOR}" == "${EACH_RESERVED_PORT}" ]]; then
       DUPLICATE_PORT=1;
+      echo "Info:  Skipping port ${PORT_ITERATOR}  (socket already exists on port)";
       PORT_ITERATOR=$(expr ${PORT_ITERATOR} + 1);
     fi;
   done;

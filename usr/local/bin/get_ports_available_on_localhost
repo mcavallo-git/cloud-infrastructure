@@ -26,7 +26,7 @@ RESERVED_PORTS="$(${NETSTAT_CLI} | grep ':' | grep -v 'processes' | awk "{print 
 
 
 # Determine starting port (to find a port at or above the value of which is unused)
-if [ -v 1 ] && [ -n "${1}" ] && [[ -z ${1//[0-9]/} ]]; then
+if [ -n "${1}" ] && [[ -z ${1//[0-9]/} ]]; then
   PORT_ITERATOR=${1};  # Use first argument as starting port
 else
   PORT_ITERATOR=40000;

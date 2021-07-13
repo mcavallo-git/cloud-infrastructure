@@ -1542,6 +1542,7 @@ else
         TO_DEL="${DELDIR}/get_lan_ipv4"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_open_ports"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_port_available_on_localhost"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_ports_open_on_host"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
         TO_DEL="${DELDIR}/get_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
         TO_DEL="${DELDIR}/get_unused_local_port"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_wan_ip"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;

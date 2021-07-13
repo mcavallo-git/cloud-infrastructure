@@ -8,7 +8,7 @@ if [ -n "${1}" ]; then
   HOST_NAME="${1}";
 else
   echo "";
-  read -p "Enter HTTP Host (or call script with host as first inline argument, e.g. \${1}}):  " -t 60 -r;
+  read -p "Enter HTTP Host (set this using first inline argument, e.g. \${1}}):  " -t 60 -r;
   HOST_NAME="${REPLY}";
 fi;
 
@@ -19,7 +19,7 @@ if [ -n "$2" ]; then
   HOST_PORT_RANGE="$2";
 else
   echo "";
-  echo "Info:  Defaulting port(s) to scan to 1-65535 (all ports) (this may be set by calling this script with desired port range as second inline argument, e.g. \${2})";
+  echo "Info:  Defaulting port(s) to scan to 1-65535 (all ports) (set this using second inline argument, e.g. \${2})";
   echo "";
   HOST_PORT_RANGE="1-65535";
 fi;

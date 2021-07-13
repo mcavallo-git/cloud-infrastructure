@@ -26,7 +26,7 @@ RESERVED_PORTS="$(${NETSTAT_CLI} | grep ':' | grep -v 'processes' | awk "{print 
 
 
 # Determine starting port (to find a port at or above the value of which is unused)
-if [[ -z ${1//[0-9]/} ]]; then
+if [ -v 1 ] && [ -n "${1}" ] && [[ -z ${1//[0-9]/} ]]; then
   PORT_ITERATOR=${1};  # Use first argument as starting port
 else
   PORT_ITERATOR=40000;
@@ -46,6 +46,16 @@ done;
 
 # Return the value of the available port (use this module as a sub-module which simple hands back a single open/available port)
 echo ${PORT_ITERATOR};
+
+
+echo "\${DUPLICATE_PORT} = [ ${DUPLICATE_PORT} ]";
+echo "\${PORT_ITERATOR} = [ ${PORT_ITERATOR} ]";
+echo "\${RESERVED_PORTS} = [ ${RESERVED_PORTS} ]";
+
+
+for EACH_RESERVED_PORT in ${RESERVED_PORTS}; do
+echo "\${EACH_RESERVED_PORT} = [ ${EACH_RESERVED_PORT} ]";
+done;
 
 
 # ------------------------------------------------------------

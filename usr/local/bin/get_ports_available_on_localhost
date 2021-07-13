@@ -10,12 +10,17 @@
 # ------------------------------------------------------------
 
 if [ $(which NETSTAT.EXE 2>'/dev/null' | wc -l;) -gt 0 ]; then
-
-echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
-
+# echo "Module not yet compatible on WSL (Windows Subsystem for Linux)";
+IP_PORT_COLUMN=2;
+NETSTAT_CLI="NETSTAT.EXE";
+RESERVED_IP_PORTS="$(${NETSTAT_CLI} -nao | grep 'LISTEN' | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}";)";
 else
+IP_PORT_COLUMN=4;
+NETSTAT_CLI="netstat";
+RESERVED_IP_PORTS="$(${NETSTAT_CLI} -tulpen | grep 'LISTEN' | grep ':' | grep -v 'processes' | awk "{print \$${IP_PORT_COLUMN}}";)";
+fi;
 
-RESERVED_IP_PORTS="$(netstat -tulpen | grep ':' | grep -v 'processes' | awk '{print $4}'; )";
+echo "${RESERVED_IP_PORTS}";
 
 STARTING_PORT=40000;
 

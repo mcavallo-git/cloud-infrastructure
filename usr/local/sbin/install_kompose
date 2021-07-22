@@ -8,44 +8,63 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_kompose?t=$(date +'%s.%N')" | bash;
 
 fi;
-# ------------------------------------------------------------
+# ------------------------------
 #
-# Install Kompose
-#  |
-#  |--> Converts docker-compose YAML files to Kubernetes YAML files, which kubectl can then deploy to K8S (Kubneretes) clusters)
+# kompose - Install kompose (converts ('bakes') docker-compose YAML files to Kubernetes YAML files, which kubectl can then deploy to K8S (Kubneretes) clusters))
 #
-if [ $(which kompose 2>'/dev/null' | wc -l;) -eq 0 ]; then
-  echo "Downloading Kompose...";
-  if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
-    # Install Kompose for Linux
-    curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-linux-amd64" -o kompose;
-  elif [[ "${OSTYPE}" == "darwin"* ]]; then
-    # Install Kompose for MacOS
-    curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-darwin-amd64" -o kompose;
-  else
-    # Install Kompose for Windows
-    curl -L "https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-windows-amd64.exe" -o kompose.exe;
-  fi;
-  chmod +x "kompose";
-  # Determine the local executable directory to place Kompose into (which exists on the PATH)
+# Get the latest version of kompose
+echo "Getting the latest version of \"kompose\"...";
+KOMPOSE_LATEST_VERSION=$(curl -sL "https://github.com/kubernetes/kompose/releases" | grep 'https://github.com/kubernetes/kompose/releases/download' | grep -i 'linux' | head -n 1 | sed -re "s/^.+https:\/\/github\.com\/kubernetes\/kompose\/releases\/download\/v([0-9\.]+)\/kompose-linux-amd64\s+.+$/\1/";);
+echo "Latest version of \"kompose\":  [ ${KOMPOSE_LATEST_VERSION} ]";
+# Determine if latest version of kompose is installed
+if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; then
+  # kompose - Determine the local executable directory to place kompose into (which exists on the PATH)
   BIN_DIR="/usr/local/bin";
-  # Test directory write permissions (required for Git Bash, as Windows doesn't show filepath write permissions accurately until a write is actually performed (and fails))
-  BIN_PATH_TESTWRITE="${BIN_DIR}/testwrite-$(date +'%Y%m%d_%H%M%S')";
-  ERRORS_FOUND=$(touch "${BIN_PATH_TESTWRITE}" 2>&1 | grep 'Permission denied' | wc -l);
-  if [ $(touch "${BIN_PATH_TESTWRITE}" 2>&1 | grep 'Permission denied' | wc -l;) -gt 0 ]; then
-    BIN_DIR="${HOME}/bin";
+  BIN_PATH_TESTWRITE="${BIN_DIR}/test-write-permissions-$(date +'%Y%m%d_%H%M%S')";
+  # Note: touch is required as Git Bash (for Windows) doesn't accurately show filepath write-permissions, thereby requiring actually performing a write & reactively performing followup steps if it fails
+  touch "${BIN_PATH_TESTWRITE}" 1>'/dev/null' 2>&1;
+  if [ ! -f "${BIN_PATH_TESTWRITE}" ]; then
+    # If write failed, add path to user-specific directory already on said user's PATH env-var
+    BIN_DIR=$(echo ${PATH} | tr ':' "\n" | grep ${HOME} | head -n 1);
     mkdir -p "${BIN_DIR}";
   else
-    rm "${BIN_PATH_TESTWRITE}";
+    rm -f "${BIN_PATH_TESTWRITE}";
   fi;
-  # Move the Kompose executable into target executables directory which is included in the PATH environment variable
-  mv "kompose" "${BIN_DIR}/kompose" --force;
+  BIN_DIR_KOMPOSE_CLI="${BIN_DIR}/kompose";
+  BIN_DIR_KOMPOSE_VERSIONED_CLI="${BIN_DIR}/kompose-${KOMPOSE_LATEST_VERSION}";
+  echo "Downloading kompose-${KOMPOSE_LATEST_VERSION} ]...";
+  if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then # Install kompose for Linux
+    curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-linux-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+  elif [[ "${OSTYPE}" == "darwin"* ]]; then # Install kompose for MacOS
+    curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-darwin-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+  else # Install kompose for Git Bash (Windows)
+    curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-windows-amd64.exe" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+  fi;
+  chmod +x "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+  # kompose - create a symbolic link from "kompose" command to "kompose-(version)" command
+  ln -sf "${BIN_DIR_KOMPOSE_VERSIONED_CLI}" "${BIN_DIR_KOMPOSE_CLI}";
+  # kompose - Show path to executables
+  echo "------------------------------------------------------------";
   echo "";
-  echo "which kompose = [ $(which kompose 2>'/dev/null';) ]";
+  echo "To use kompose, either:"
+  echo " |";
+  echo " |--> Call [ cd \"\${DIRNAME_INPUT_DOCKER_COMPOSE}\"; kompose convert; ]";
+  echo " |    - Set the value of \${DIRNAME_INPUT_DOCKER_COMPOSE} to the desired path of the docker-compose input file's parent/working directory";
+  echo " |    - kompose will output the Kubernetes Manifest file(s) to the same (input) parent/working directory path, \${DIRNAME_INPUT_DOCKER_COMPOSE}";
+  echo " |";
+  echo " |--> Call [ kompose convert -f \"\${FULLPATH_INPUT_DOCKER_COMPOSE}\" -o \"\${FULLPATH_OUTPUT_KUBERNETES_MANIFEST}\"; ]";
+  echo "      - Set the value of \${FULLPATH_INPUT_DOCKER_COMPOSE} to the desired path of the input docker-compose file (to be converted)";
+  echo "      - Set the value of \${FULLPATH_OUTPUT_KUBERNETES_MANIFEST} to the desired path of the Kubernetes Manifest file output by kompose";
   echo "";
-  echo "To use Kompose, please change directory (cd) to the directory containing your \"docker-compose.yml\" file (to convert), then call [ kompose convert ] to convert it to kubectl YAML file(s)";
-  echo "";
+else
+echo "Skipping (kompose-${KOMPOSE_LATEST_VERSION} already installed)";
 fi;
+echo "------------------------------------------------------------";
+echo "Calling [ which kompose; ]...";
+which kompose;
+echo "------------------------------------------------------------";
+echo "Calling [ which kompose-${KOMPOSE_LATEST_VERSION}; ]...";
+which kompose-${KOMPOSE_LATEST_VERSION};
 
 
 # ------------------------------------------------------------

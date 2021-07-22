@@ -50,12 +50,12 @@ if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; 
   echo "To use kompose, either:"
   echo " |";
   echo " |--> Call [ cd \"\${DIRNAME_INPUT_DOCKER_COMPOSE}\"; kompose convert; ]";
-  echo " |    - Set the value of \${DIRNAME_INPUT_DOCKER_COMPOSE} to the desired path of the docker-compose input file's parent/working directory";
+  echo " |    - Set \${DIRNAME_INPUT_DOCKER_COMPOSE} to the desired path of the docker-compose input file's parent/working directory";
   echo " |    - kompose will output the Kubernetes Manifest file(s) to the same (input) parent/working directory path, \${DIRNAME_INPUT_DOCKER_COMPOSE}";
   echo " |";
   echo " |--> Call [ kompose convert -f \"\${FULLPATH_INPUT_DOCKER_COMPOSE}\" -o \"\${FULLPATH_OUTPUT_KUBERNETES_MANIFEST}\"; ]";
-  echo "      - Set the value of \${FULLPATH_INPUT_DOCKER_COMPOSE} to the desired path of the input docker-compose file (to be converted)";
-  echo "      - Set the value of \${FULLPATH_OUTPUT_KUBERNETES_MANIFEST} to the desired path of the Kubernetes Manifest file output by kompose";
+  echo "      - Set \${FULLPATH_INPUT_DOCKER_COMPOSE} to the desired path of the input docker-compose file (to be converted)";
+  echo "      - Set \${FULLPATH_OUTPUT_KUBERNETES_MANIFEST} to the desired path of the Kubernetes Manifest file output by kompose";
   echo "";
 else
   echo "------------------------------------------------------------";

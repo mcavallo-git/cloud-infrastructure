@@ -13,6 +13,7 @@ fi;
 # kompose - Install kompose (converts ('bakes') docker-compose YAML files to Kubernetes YAML files, which kubectl can then deploy to K8S (Kubneretes) clusters))
 #
 # Get the latest version of kompose
+echo "------------------------------------------------------------";
 echo "Getting the latest version of \"kompose\"...";
 KOMPOSE_LATEST_VERSION=$(curl -sL "https://github.com/kubernetes/kompose/releases" | grep 'https://github.com/kubernetes/kompose/releases/download' | grep -i 'linux' | head -n 1 | sed -re "s/^.+https:\/\/github\.com\/kubernetes\/kompose\/releases\/download\/v([0-9\.]+)\/kompose-linux-amd64\s+.+$/\1/";);
 echo "Latest version of \"kompose\":  [ ${KOMPOSE_LATEST_VERSION} ]";
@@ -32,6 +33,7 @@ if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; 
   fi;
   BIN_DIR_KOMPOSE_CLI="${BIN_DIR}/kompose";
   BIN_DIR_KOMPOSE_VERSIONED_CLI="${BIN_DIR}/kompose-${KOMPOSE_LATEST_VERSION}";
+  echo "------------------------------------------------------------";
   echo "Downloading \"kompose-${KOMPOSE_LATEST_VERSION}\"...";
   if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then # Install kompose for Linux
     curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-linux-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
@@ -43,7 +45,6 @@ if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; 
   chmod +x "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
   # kompose - create a symbolic link from "kompose" command to "kompose-(version)" command
   ln -sf "${BIN_DIR_KOMPOSE_VERSIONED_CLI}" "${BIN_DIR_KOMPOSE_CLI}";
-  # kompose - Show path to executables
   echo "------------------------------------------------------------";
   echo "";
   echo "To use kompose, either:"
@@ -57,8 +58,10 @@ if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; 
   echo "      - Set the value of \${FULLPATH_OUTPUT_KUBERNETES_MANIFEST} to the desired path of the Kubernetes Manifest file output by kompose";
   echo "";
 else
-echo "Skipping (kompose-${KOMPOSE_LATEST_VERSION} already installed)";
+  echo "------------------------------------------------------------";
+  echo "Skipping install (kompose-${KOMPOSE_LATEST_VERSION} already installed)";
 fi;
+# kompose - Show path to executables
 echo "------------------------------------------------------------";
 echo "Calling [ which kompose; ]...";
 which kompose;

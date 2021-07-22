@@ -32,7 +32,7 @@ if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; 
   fi;
   BIN_DIR_KOMPOSE_CLI="${BIN_DIR}/kompose";
   BIN_DIR_KOMPOSE_VERSIONED_CLI="${BIN_DIR}/kompose-${KOMPOSE_LATEST_VERSION}";
-  echo "Downloading kompose-${KOMPOSE_LATEST_VERSION} ]...";
+  echo "Downloading kompose-${KOMPOSE_LATEST_VERSION} ...";
   if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then # Install kompose for Linux
     curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-linux-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
   elif [[ "${OSTYPE}" == "darwin"* ]]; then # Install kompose for MacOS

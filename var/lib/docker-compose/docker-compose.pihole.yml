@@ -1,12 +1,12 @@
 
-# WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env WEBPASSWORD="${WEBPASSWORD}" CONFIG_DIR="${CONFIG_DIR}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
+# WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; DOMAIN_STARTING_WITH_PERIOD=".LOCAL.DNS_DOMAIN"; mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env WEBPASSWORD="${WEBPASSWORD}" CONFIG_DIR="${CONFIG_DIR}" DOMAIN="${DOMAIN_STARTING_WITH_PERIOD}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
 
 version: "3"
 
 services:
   pihole:
-    hostname: pihole
-    container_name: pihole
+    hostname: 'pihole${DOMAIN}'
+    container_name: 'pihole'
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"

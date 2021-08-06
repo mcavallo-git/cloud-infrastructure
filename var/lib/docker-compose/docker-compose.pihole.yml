@@ -1,5 +1,5 @@
 
-# WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; DOMAIN=".localdomain"; SERVER_IPV4=$(ip addr show | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\.' | head -n 1); mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env CONFIG_DIR="${CONFIG_DIR}" DOMAIN="${DOMAIN}" SERVER_IPV4="${SERVER_IPV4}" WEBPASSWORD="${WEBPASSWORD}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
+# WEBPASSWORD="PASTE_PASSWORD_HERE"; CONFIG_DIR="/root/docker-configs/pihole"; DOMAIN=".localdomain"; mkdir -p "${CONFIG_DIR}/etc-dnsmasq.d"; mkdir -p "${CONFIG_DIR}/etc-pihole"; curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml"; env CONFIG_DIR="${CONFIG_DIR}" DOMAIN="${DOMAIN}" WEBPASSWORD="${WEBPASSWORD}" docker-compose -f "${CONFIG_DIR}/docker-compose.pihole.yml" up -d; watch docker logs pihole;
 
 version: "3"
 
@@ -17,12 +17,11 @@ services:
     environment:
       TZ: 'America/New_York'
       WEBPASSWORD: ${WEBPASSWORD}
-      ServerIP: ${SERVER_IPV4:-127.0.0.1}
     # Volumes store your data between container upgrades
     volumes:
       - '${CONFIG_DIR:-.}/etc-pihole/:/etc/pihole/'
       - '${CONFIG_DIR:-.}/etc-dnsmasq.d/:/etc/dnsmasq.d/'
-      # - /etc/hosts:/etc/hosts:ro
+      - /etc/hosts:/etc/hosts:ro
     # Recommended but not required (DHCP needs NET_ADMIN)
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:

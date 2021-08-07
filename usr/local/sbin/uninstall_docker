@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/uninstall_docker" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT REMOTELY:
+
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/uninstall_docker?t=$(date +'%s.%N')" | bash;
+
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Uninstall Docker
+  #
+  SERVICE_NAME="docker";
+
+  # ------------------------------------------------------------
+  #
+  # Require user-confirmation to perform this action
+  #
+  echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
+  read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  echo "";
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+    read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+    echo "";
+    if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+
+      echo "  |--> Calling [ apt-get remove -y --auto-remove docker; ]...";
+      apt-get remove -y --auto-remove docker;
+
+      echo "  |--> Calling [ apt-get purge -y docker-ce; ]...";
+      apt-get purge -y docker-ce;
+
+      echo "  |--> Calling [ rm -rf /var/lib/docker; ]...";
+      rm -rf /var/lib/docker;
+
+      echo "";
+    fi;
+
+  fi;
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   serverfault.com  |  "debian - Uninstall Docker when installed via curl - Server Fault"  |  https://serverfault.com/a/722472
+#
+# ------------------------------------------------------------

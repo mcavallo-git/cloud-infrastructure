@@ -47,11 +47,11 @@ else
     echo "";
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
-      echo "  |--> Calling [ apt-get remove -y --auto-remove docker; ]...";
-      apt-get remove -y --auto-remove docker;
-
       echo "  |--> Calling [ apt-get purge -y docker-ce; ]...";
       apt-get purge -y docker-ce;
+
+      echo "  |--> Calling [ apt-get remove -y --auto-remove docker; ]...";
+      apt-get remove -y --auto-remove docker;
 
       echo "  |--> Calling [ rm -rf /var/lib/docker; ]...";
       rm -rf /var/lib/docker;

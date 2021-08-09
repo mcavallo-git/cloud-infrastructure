@@ -1,4 +1,12 @@
 #!/bin/bash
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then
+# Run this script remotely
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X?t=$(date +'%s.%N')" | bash;
+
+
+fi;
 if [ -n "$0" ]; then
   
   if [ -z "$(which docker 2>'/dev/null')" ]; then

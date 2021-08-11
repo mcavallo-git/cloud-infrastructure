@@ -1,0 +1,20 @@
+#!/bin/bash
+
+read -p "Enter namespace to delete: " -t 60 -r;
+if [ -n "${REPLY}" ]; then
+  kubectl get namespace "${REPLY}" 1>/dev/null 2>&1; EXIT_CODE=${?};
+  if [ "${EXIT_CODE}" == 0 ]; then
+    kubectl delete namespace "${REPLY}";
+    kubectl create namespace "${REPLY}";
+    kubectl delete namespace "${REPLY}";
+  fi;
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "How to delete all resources from Kubernetes one time? - Stack Overflow"  |  https://stackoverflow.com/a/55838844
+#
+# ------------------------------------------------------------

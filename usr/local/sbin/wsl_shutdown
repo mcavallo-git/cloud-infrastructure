@@ -28,15 +28,12 @@ else
   #
   if [ -f "/usr/local/bin/get_os" ] && [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
     source /usr/local/bin/get_os 1>'/dev/null' 2>&1;
-
-    echo "";
-    echo "Info:  Creating file \"/var/run/reboot-required\"...";
     sudo touch "/var/run/reboot-required";
-
-    echo "";
-    echo "Info:  Press CTRL+D (may need to press more than once) to finish WSL shutdown";
-    echo "";
-
+    # Kill all bash shells (current shell as well as any other bash shells on local device)
+    PROCESSES=$(ps -o pid,cmd);
+    for EACH_PID in $(echo "${PROCESSES}" | sed -rne 's/^([0-9]+)\s+(-bash)$/\1/p';); do
+      kill -SIGKILL ${EACH_PID};
+    done;
   else
     # Non-WSL Environment detected
     echo "";

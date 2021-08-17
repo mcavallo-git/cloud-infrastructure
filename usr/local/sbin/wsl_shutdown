@@ -23,7 +23,7 @@ if [ "$(id -un)" != "root" ]; then
 else
 
   #
-  # WSL (Windows Subsystem for Linux)
+  # Shutdown WSL (Windows Subsystem for Linux)
   #  |--> To shutdown WSL, signal to linux that a reboot is required by manually creating file '/var/run/reboot-required', otherwise the WSL linux environment persists the background as a service (and continues to consume hardware resources as-needed)
   #
   if [ -f "/usr/local/bin/get_os" ] && [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then

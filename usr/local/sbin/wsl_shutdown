@@ -37,14 +37,17 @@ else
       echo "Error:  Response timed out after ${READ_TIMEOUT}s";
     elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
       echo "Info:  Confirmed - Performing Action [ ${ACTION_DESCRIPTION} ] ...";
+
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'
       sudo touch "/var/run/reboot-required";
+
       # Kill all bash shells (current shell as well as any other bash shells on local device)
       PROCESSES=$(ps -e -o pid,cmd);
       for EACH_PID in $(echo "${PROCESSES}" | sed -rne 's/^\s*([0-9]+)\s+(-bash)$/\1/p';); do
         echo "Calling [ kill -SIGKILL ${EACH_PID}; ]...";
         kill -SIGKILL ${EACH_PID};
       done;
+
     else
       echo "Info:  Denied - Skipping action [ ${ACTION_DESCRIPTION} ]";
     fi;
@@ -58,4 +61,5 @@ else
     exit 1;
 
   fi;
+
 fi;

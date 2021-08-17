@@ -49,18 +49,6 @@ else
       echo "Info:  Denied - Skipping action [ ${ACTION_DESCRIPTION} ]";
     fi;
 
-
-    # source /usr/local/bin/get_os 1>'/dev/null' 2>&1;
-
-    sudo touch "/var/run/reboot-required";
-
-    # Kill all bash shells (current shell as well as any other bash shells on local device)
-    PROCESSES=$(ps -e -o pid,cmd);
-    for EACH_PID in $(echo "${PROCESSES}" | sed -rne 's/^\s*([0-9]+)\s+(-bash)$/\1/p';); do
-      echo "Calling [ kill -SIGKILL ${EACH_PID}; ]...";
-      kill -SIGKILL ${EACH_PID};
-    done;
-
   else
 
     # Non-WSL Environment detected

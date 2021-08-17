@@ -21,6 +21,7 @@ if [ "$(id -un)" != "root" ]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
+
   #
   # WSL (Windows Subsystem for Linux)
   #  |--> To shutdown WSL, signal to linux that a reboot is required by manually creating file '/var/run/reboot-required', otherwise the WSL linux environment persists the background as a service (and continues to consume hardware resources as-needed)

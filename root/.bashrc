@@ -161,6 +161,10 @@ bash_prompt() {
   # extra backslash in front of \$ to make bash colorize the prompt
 }
 
+# Docker for Windows - Redirect for WSL (Windows Subsystem for Linux) terminals
+if [ -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
+  alias docker="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
+fi;
 
 #  PROMPT_COMMAND (environment-variable)
 #   |--> Holds one or more commands which run prior-to every command-line command

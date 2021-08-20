@@ -161,15 +161,25 @@ bash_prompt() {
   # extra backslash in front of \$ to make bash colorize the prompt
 }
 
-# Docker for Windows - Redirect for WSL (Windows Subsystem for Linux) terminals
-if [ -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
+# WSL - Docker Desktop redirection
+WINDOWS_DOCKER_FULLPATH="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
+if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
   WHICH_DOCKER="$(which docker;)";
   FULLPATH_DOCKER="${WHICH_DOCKER:-/usr/bin/docker}";
-  if [ -f "${FULLPATH_DOCKER}" ] && [ ! -h "${FULLPATH_DOCKER}" ]; then
-    mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
-  fi;
-  if [ ! -h "${FULLPATH_DOCKER}" ]; then
-    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${FULLPATH_DOCKER}";
+  if [ -f "${FULLPATH_DOCKER}" ]; then
+    if [ -h "${FULLPATH_DOCKER}" ]; then
+      if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
+        # WSL Docker command exists but links to something other than WSL
+        ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+      fi;
+    else
+      # WSL Docker command exists as a file
+      mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
+      ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+    fi;
+  else
+    # WSL Docker command doesn't, yet exist
+    ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
   fi;
 fi;
 

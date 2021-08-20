@@ -163,7 +163,14 @@ bash_prompt() {
 
 # Docker for Windows - Redirect for WSL (Windows Subsystem for Linux) terminals
 if [ -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
-  alias docker="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
+  WHICH_DOCKER="$(which docker;)";
+  FULLPATH_DOCKER="${WHICH_DOCKER:-/usr/bin/docker}";
+  if [ -f "${FULLPATH_DOCKER}" ] && [ ! -h "${FULLPATH_DOCKER}" ]; then
+    mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
+  fi;
+  if [ ! -h "${FULLPATH_DOCKER}" ]; then
+    ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${FULLPATH_DOCKER}";
+  fi;
 fi;
 
 #  PROMPT_COMMAND (environment-variable)

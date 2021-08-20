@@ -165,19 +165,25 @@ bash_prompt() {
 WINDOWS_DOCKER_FULLPATH="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
 if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
   WHICH_DOCKER="$(which docker;)";
-  FULLPATH_DOCKER="${WHICH_DOCKER:-/usr/bin/docker}";
+  LINUX_DEFAULT_DOCKER_FULLPATH="/usr/bin/docker";
+  FULLPATH_DOCKER="${WHICH_DOCKER:-${LINUX_DEFAULT_DOCKER_FULLPATH}}";
   if [ -f "${FULLPATH_DOCKER}" ]; then
-    if [ -h "${FULLPATH_DOCKER}" ]; then
-      if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
-        # WSL Docker command exists but links to something other than WSL
-        echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (instead of \"$(realpath "${FULLPATH_DOCKER}";)\")";
+    if [[ ${StringToTest} =~ ^/usr/local/.+$ ]]; then
+      if [ -h "${FULLPATH_DOCKER}" ]; then
+        if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
+          # WSL Docker command exists but links to something other than WSL
+          echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (instead of \"$(realpath "${FULLPATH_DOCKER}";)\")";
+          ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+        fi;
+      else
+        # WSL Docker command exists as a file
+        echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (and moving existing docker command to path \"${FULLPATH_DOCKER}.old\")";
+        mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
         ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
       fi;
     else
-      # WSL Docker command exists as a file
-      echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (and moving existing docker command to path \"${FULLPATH_DOCKER}.old\")";
-      mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
-      ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+      # WSL Docker command directly references windows docker executable (usually without '.exe' appended to it) --> update it to propertly reference the Windows docker executable
+      ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${LINUX_DEFAULT_DOCKER_FULLPATH}";
     fi;
   else
     # WSL Docker command doesn't, yet exist

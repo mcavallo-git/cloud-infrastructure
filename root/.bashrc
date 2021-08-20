@@ -172,7 +172,7 @@ if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
       if [ -h "${FULLPATH_DOCKER}" ]; then
         if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
           # WSL Docker command exists but links to something other than WSL
-          echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (instead of \"$(realpath "${FULLPATH_DOCKER}";)\")";
+          echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (instead of referencing \"$(realpath "${FULLPATH_DOCKER}";)\")";
           ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
         fi;
       else
@@ -183,6 +183,7 @@ if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
       fi;
     else
       # WSL Docker command directly references windows docker executable (usually without '.exe' appended to it) --> update it to propertly reference the Windows docker executable
+      echo "~/.bashrc - Updating command \"docker\" to reference \"${WINDOWS_DOCKER_FULLPATH}\" (instead of referencing \"$(realpath "${FULLPATH_DOCKER}";)\")";
       ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${LINUX_DEFAULT_DOCKER_FULLPATH}";
     fi;
   else

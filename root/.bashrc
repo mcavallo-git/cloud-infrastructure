@@ -189,6 +189,30 @@ if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
   fi;
 fi;
 
+# PATH Appends (Directories/Executables)
+unset PATH_APPENDS_ARR; declare -a PATH_APPENDS_ARR; # [Re-]Instantiate bash array
+PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/bin");
+PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
+PATH_APPENDS_ARR+=("${HOME}/.azure-kubectl");
+PATH_APPENDS_ARR+=("${HOME}/.azure-kubelogin");
+for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
+  if [ -f "${EACH_PATH_APPEND}" ]; then
+    ROLLBACK_IFS="${IFS}";
+    IFS=':' read -ra PATH_CURRENT_ARR <<< "${PATH}";
+    APPEND_TO_PATH="1";
+    for EACH_PATH_ITEM in "${PATH_CURRENT_ARR[@]}"; do
+      if [ "${EACH_PATH_ITEM}" == "${EACH_PATH_APPEND}" ]; then
+        APPEND_TO_PATH="0";
+        break;
+      fi;
+    done;
+    IFS="${ROLLBACK_IFS}";
+    if [ "${APPEND_TO_PATH}" == "1" ]; then
+      export PATH="${PATH}:${EACH_PATH_APPEND}";
+    fi;
+  fi;
+done;
+
 #  PROMPT_COMMAND (environment-variable)
 #   |--> Holds one or more commands which run prior-to every command-line command
 #   |--> Check if it already contains a value before attempting to set it

@@ -196,7 +196,7 @@ PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/loca
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubectl");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubelogin");
 for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
-  if [ -f "${EACH_PATH_APPEND}" ]; then
+  if [ -e "${EACH_PATH_APPEND}" ]; then
     ROLLBACK_IFS="${IFS}";
     IFS=':' read -ra PATH_CURRENT_ARR <<< "${PATH}";
     APPEND_TO_PATH="1";

@@ -224,7 +224,9 @@ server {
   if ($request_uri ~* "^/sync$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-
+  if ($http_user_agent ~* "^curl") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
+  }
 
   # ------------------------------------------------------------
   # PowerShell Script/Module Requests (commonly Windows-based powershell scripts, i.e. not intended to be used in a [ PowerShell Core for Linux ] environment)

@@ -40,7 +40,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^cash.$") {
     return 302 "https://cash.me/mcavallo";
   }
@@ -56,7 +56,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^cloud-infrastructure.$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
   }
@@ -66,7 +66,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^cv.$") {
     return 302 "https://linkedin.mcavallo.com";
   }
@@ -76,7 +76,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^git.$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
@@ -86,7 +86,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^good-credit.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
   }
@@ -96,7 +96,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^linkedin.$") {
     return 302 "https://linkedin.com/in/matt-cavallo";
   }
@@ -106,7 +106,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^linux.$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
   }
@@ -116,7 +116,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^pay.$") {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
   }
@@ -132,7 +132,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^pc.$") {
     return 302 "https://pcpartpicker.com/b/bH7TwP";
   }
@@ -142,7 +142,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^resume.$") {
     return 302 "https://cv.mcavallo.com";
   }
@@ -152,7 +152,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^repos.$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
@@ -162,7 +162,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^spotify.$") {
     return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
   }
@@ -187,7 +187,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^venmo.$") {
     return 302 "https://venmo.com/cavalol";
   }
@@ -197,7 +197,7 @@ server {
 
 
   # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^youtube.$") {
     return 302 "https://youtu.be/1CJIw-Rxleo";
   }
@@ -211,7 +211,7 @@ server {
   #
   #   curl -ssL https://mcavallo.com/sh | bash -s -- --all;
   #
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^sh.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
@@ -224,9 +224,7 @@ server {
   if ($request_uri ~* "^/sync$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($http_user_agent ~* "^curl") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
-  }
+
 
   # ------------------------------------------------------------
   # PowerShell Script/Module Requests (commonly Windows-based powershell scripts, i.e. not intended to be used in a [ PowerShell Core for Linux ] environment)
@@ -266,17 +264,31 @@ server {
   # Fallthrough Request Handler
   #  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
   #
-  #                ~* [regex match, case-insensitive]
+  #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^$") {
-    return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+    #                    ~* [regex match, case-insensitive]
+    if ($http_user_agent ~* "^curl") {
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
+    }
+    #                    !~* [inversed regex, case-insensitive]
+    if ($http_user_agent !~* "^curl") {
+      return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+    }
   }
   if ($request_uri ~* "^/$") {
-    return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+    #                    ~* [regex match, case-insensitive]
+    if ($http_user_agent ~* "^curl") {
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
+    }
+    #                    !~* [inversed regex, case-insensitive]
+    if ($http_user_agent !~* "^curl") {
+      return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
+    }
   }
 
 
   # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
+  #                ~* [regex match, case-insensitive]
   # if ($subdomain ~* "^cv.$") {
   #   root /var/www/html/wordpress; # webroot
   #   index index.php;

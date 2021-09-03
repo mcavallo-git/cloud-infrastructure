@@ -38,6 +38,7 @@ LENGTH_WAN_IP=0;
 # Get current WAN IPv4
 for EACH_RESOLVER in "${IP_RESOLVERS[@]}"; do
   if [ -z "${THIS_WAN_IPv4}" ] || [[ ${LENGTH_WAN_IP} -gt 15 ]]; then
+    RESPONSE_SRVR="${EACH_RESOLVER}";
     THIS_WAN_IPv4=$(curl -L -s "${EACH_RESOLVER}");
     LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IPv4}" | wc -c);
   fi;

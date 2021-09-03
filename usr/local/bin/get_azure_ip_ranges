@@ -1,0 +1,26 @@
+#!/bin/bash
+# ------------------------------------------------------------
+# Azure IP Ranges and Service Tags – Public Cloud
+# ------------------------------------------------------------
+
+
+# NOTE: Syntax for latest IP-Range filename is last Monday's date (just before ".json" file extension on URLs):
+URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210816.json";
+URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210823.json";
+
+CIDRv4_EASTUS2=$(curl -ssL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep -v ':';); echo -e "CIDRv4_EASTUS2=[\n${CIDRv4_EASTUS2}\n]";
+
+CIDRv6_EASTUS2=$(curl -ssL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep ':';);    echo -e "CIDRv6_EASTUS2=[\n${CIDRv6_EASTUS2}\n]";
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.microsoft.com  |  "Microsoft-hosted agents for Azure Pipelines - Azure Pipelines | Microsoft Docs"  |  https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml
+#
+#   github.com  |  "Allow "raw" output of arrays · Issue #189 · stedolan/jq · GitHub"  |  https://github.com/stedolan/jq/issues/189#issuecomment-26078544
+#
+#   www.microsoft.com  |  "Download Azure IP Ranges and Service Tags – Public Cloud from Official Microsoft Download Center"  |  https://www.microsoft.com/en-us/download/details.aspx?id=56519
+#
+# ------------------------------------------------------------

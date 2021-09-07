@@ -15,14 +15,17 @@ if [ -n "${1}" ] && [ -f "${1}" ]; then
 
   # Decrypt pkcs12/pfx certificate
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -clcerts -nokeys -out "${1}.crt.pem";
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.crt.pem";
       echo "Certificate output path:    ${1}.crt.pem";
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -nocerts -nodes -out "${1}.key.pem";
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > "${1}.key.pem";
       echo "Private key output path:    ${1}.key.pem";
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -cacerts -nokeys -out "${1}.chain.pem";
-      echo "CA Bundle output path:    ${1}.chain.pem";
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -cacerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.chain.pem";
+      echo "CA Bundle output path:      ${1}.chain.pem";
+
+  cat "${1}.crt.pem" "${1}.chain.pem" > "${1}.fullchain.pem";
+      echo "Fullchain output path:      ${1}.fullchain.pem";
 
 fi;
 
@@ -32,5 +35,7 @@ fi;
 # Citation(s)
 #
 #   superuser.com  |  "linux - How to use password argument in via command line to openssl for decryption - Super User"  |  https://superuser.com/a/724987
+#
+#   unix.stackexchange.com  |  "openssl - How to export CA certificate chain from PFX in PEM format without bag attributes - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/393484
 #
 # ------------------------------------------------------------

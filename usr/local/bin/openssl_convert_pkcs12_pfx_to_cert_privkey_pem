@@ -13,28 +13,13 @@ fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
+  # Decrypt pkcs12/pfx certificate
 
-  if [ -n "${2}" ]; then
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -clcerts -nokeys -out "${1}.cert.pem";
 
-    # Decrypt password-encrypted pkcs12/pfx certificate
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -nocerts -nodes -out "${1}.key.pem";
 
-    openssl pkcs12 -in "${1}" -password "${2}" -clcerts -nokeys -out "${1}.cert.pem";
-
-    openssl pkcs12 -in "${1}" -password "${2}" -nodes -out "${1}.key.pem";
-
-    openssl pkcs12 -in "${1}" -password "${2}" -nokeys -out "${1}.chain.pem";
-
-  else
-
-    # Decrypt NON-password-encrypted pkcs12/pfx certificate
-
-    openssl pkcs12 -in "${1}" -password "pass:" -clcerts -nokeys -out "${1}.cert.pem";
-
-    openssl pkcs12 -in "${1}" -password "pass:" -nocerts -nodes -out "${1}.key.pem";
-
-    openssl pkcs12 -in "${1}" -password "pass:" -cacerts -nokeys -out "${1}.chain.pem";
-
-  fi;
+  openssl pkcs12 -in "${1}" -password "pass:${2}" -cacerts -nokeys -out "${1}.chain.pem";
 
 fi;
 

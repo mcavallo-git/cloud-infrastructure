@@ -1,12 +1,14 @@
 #!/bin/bash
 
-read -p "Enter namespace to delete: " -t 60 -r;
-if [ -n "${REPLY}" ]; then
-  kubectl get namespace "${REPLY}" 1>/dev/null 2>&1; EXIT_CODE=${?};
-  if [ "${EXIT_CODE}" == 0 ]; then
-    kubectl delete namespace "${REPLY}";
-    kubectl create namespace "${REPLY}";
-    kubectl delete namespace "${REPLY}";
+if [ 1 -eq 1 ]; then
+  read -p "Enter namespace to delete: " -t 60 -r;
+  if [ -n "${REPLY}" ]; then
+    kubectl get namespace "${REPLY}" 1>/dev/null 2>&1; EXIT_CODE=${?};
+    if [ "${EXIT_CODE}" == 0 ]; then
+      kubectl delete namespace "${REPLY}";
+      kubectl create namespace "${REPLY}";
+      kubectl delete namespace "${REPLY}";
+    fi;
   fi;
 fi;
 

@@ -2,22 +2,50 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
-# Option 2:  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
-CERTIFICATE_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERTIFICATE_FULLPATH}";
+# Decrypt password-encrypted pkcs12/pfx certificate
+CERT_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; CERT_PASSWORD="CERT_PASSWORD_IF_ANY"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERT_FULLPATH}" "${CERT_PASSWORD}";
+
+# Decrypt NON-password-encrypted pkcs12/pfx certificate
+CERT_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERT_FULLPATH}";
 
 fi;
 # ------------------------------------------------------------
+#
+# DONT USE GIT BASH  - USE WSL INSTEAD
+#
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
-  # DONT USE GIT BASH  - USE WSL INSTEAD
 
-  openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.cert.pem";
+  if [ -n "${2}" ]; then
 
-  openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
+    # Decrypt password-encrypted pkcs12/pfx certificate
 
-  openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${1}.chain.pem";
+    openssl pkcs12 -in "${1}" -pass "pass:${2}" -clcerts -nokeys -out "${1}.cert.pem";
+
+    openssl pkcs12 -in "${1}" -pass "pass:${2}" -nodes -out "${1}.key.pem";
+
+    openssl pkcs12 -in "${1}" -pass "pass:${2}" -nokeys -out "${1}.chain.pem";
+
+  else
+
+    # Decrypt NON-password-encrypted pkcs12/pfx certificate
+
+    openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.cert.pem";
+
+    openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
+
+    openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${1}.chain.pem";
+
+  fi;
 
 fi;
 
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   superuser.com  |  "linux - How to use password argument in via command line to openssl for decryption - Super User"  |  https://superuser.com/a/724987
+#
 # ------------------------------------------------------------

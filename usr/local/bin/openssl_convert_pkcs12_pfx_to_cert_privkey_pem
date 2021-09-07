@@ -1,21 +1,23 @@
 #!/bin/bash
 # ------------------------------------------------------------
-# RUN THIS SCRIPT
-#
-#
-#   "${HOME}/Documents/GitHub/cloud-infrastructure'usr'local'bin'split_pkcs12_pfx_to_cert_privkey" "SOME_FILEPATH";
-#
-#
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+# Option 2:  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
+CERTIFICATE_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERTIFICATE_FULLPATH}";
+
+fi;
 # ------------------------------------------------------------
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
   # DONT USE GIT BASH  - USE WSL INSTEAD
 
-  openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.crt.pem";
+  FULLPATH_CERT_NO_EXT=$(echo "${1}" | cut -d. -f1);
 
-  openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
+  openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${FULLPATH_CERT_NO_EXT}.cert.pem";
 
-  openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${1}.chain.pem";
+  openssl pkcs12 -in "${1}" -nocerts -nodes -out "${FULLPATH_CERT_NO_EXT}.key.pem";
+
+  openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${FULLPATH_CERT_NO_EXT}.chain.pem";
 
 fi;

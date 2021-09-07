@@ -2,11 +2,8 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
-# Decrypt password-encrypted pkcs12/pfx certificate
-CERT_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; CERT_PASSWORD="CERT_PASSWORD_IF_ANY"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERT_FULLPATH}" "${CERT_PASSWORD}";
-
-# Decrypt NON-password-encrypted pkcs12/pfx certificate
-CERT_FULLPATH="REPLACE_WITH_CERT_FULLPATH"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERT_FULLPATH}";
+# Decrypt pkcs12/pfx certificate
+CERT_FULLPATH=""; CERT_PASSWORD=""; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pkcs12_pfx_to_cert_privkey_pem?t=$(date +'%s.%N')" | bash -s -- "${CERT_FULLPATH}" "${CERT_PASSWORD}";
 
 fi;
 # ------------------------------------------------------------
@@ -17,7 +14,7 @@ fi;
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
 
-  if [ -n "${2}" ]; then
+  # if [ -n "${2}" ]; then
 
     # Decrypt password-encrypted pkcs12/pfx certificate
 
@@ -27,17 +24,17 @@ if [ -n "${1}" ] && [ -f "${1}" ]; then
 
     openssl pkcs12 -in "${1}" -pass "pass:${2}" -nokeys -out "${1}.chain.pem";
 
-  else
+  # else
 
-    # Decrypt NON-password-encrypted pkcs12/pfx certificate
+  #   # Decrypt NON-password-encrypted pkcs12/pfx certificate
 
-    openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.cert.pem";
+  #   openssl pkcs12 -in "${1}" -clcerts -nokeys -out "${1}.cert.pem";
 
-    openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
+  #   openssl pkcs12 -in "${1}" -nocerts -nodes -out "${1}.key.pem";
 
-    openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${1}.chain.pem";
+  #   openssl pkcs12 -in "${1}" -cacerts -nokeys -out "${1}.chain.pem";
 
-  fi;
+  # fi;
 
 fi;
 

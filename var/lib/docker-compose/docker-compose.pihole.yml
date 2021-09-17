@@ -22,7 +22,7 @@ services:
     environment:
       ServerIP: ${ServerIP}
       TZ: '${TZ:-America/New_York}'
-      VIRTUAL_HOST: '${VIRTUAL_HOST:-pihole}'
+      VIRTUAL_HOST: '${VIRTUAL_HOST:-${ServerIP:-pihole}}'
       WEBPASSWORD: ${WEBPASSWORD}
     # Volumes store your data between container upgrades
     volumes:

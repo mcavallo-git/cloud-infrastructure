@@ -1,0 +1,135 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_pihole" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pihole?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Spin-up pihole instance (using docker-compose)
+#
+# ------------------------------------------------------------
+#
+# Free-up port 53 by stopping service [ systemd-resolved ] from listening on it
+#  |
+#  |--> Update "/etc/systemd/resolved.conf"
+#  |     |--> Uncomment "DNS=" line and set to "DNS=8.8.4.4"
+#  |     |--> Uncomment "FallbackDNS=" line and set to "FallbackDNS=1.1.1.1"
+#  |     |--> Uncomment "DNSStubListener=" line and set to "DNSStubListener=no"
+#  |
+#  |--> Redirect "/etc/resolv.conf"
+#  |     |--> Run [ ln -sf "/run/systemd/resolve/resolv.conf" "/etc/resolv.conf"; ]
+#  |
+#  |--> Restart the machine via [ reboot ]
+#
+# ------------------------------------------------------------
+#
+# Spin-up the pihole docker (after port 53 is freed up)
+#
+echo "";
+echo "!!        !!                                                   !!        !!";
+echo "!! NOTICE !!  This will reinstall any existing pihole dockers  !! NOTICE !!";
+echo "!!   |    !!   Make sure you've freed up port 53 on localhost  !!        !!";
+echo "     |";
+read "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+echo "";
+if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+  echo "     |";
+  read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  echo "";
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+
+    CONFIG_DIR="/root/docker-configs/pihole";
+    HOSTNAME="$(cat ${CONFIG_DIR}/HOSTNAME;)";
+    DOMAIN="$(cat ${CONFIG_DIR}/DOMAIN;)";
+    WEBPASSWORD="$(cat ${CONFIG_DIR}/WEBPASSWORD;)";
+    SERVER_IP="$(cat ${CONFIG_DIR}/SERVER_IP;)";
+
+    mkdir -p "${CONFIG_DIR}";
+    mkdir -p "${CONFIG_DIR}/etc/pihole";
+    mkdir -p "${CONFIG_DIR}/etc/dnsmasq.d";
+
+    cd "${CONFIG_DIR}";
+
+    REVERT_RESOLV_CONF=0;
+    if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
+      echo -e "\n\n""Temporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"""\n\n";
+      sed -i -re 's/^# (nameserver 8.8.4.4)$/\1/' '/etc/resolv.conf';
+      REVERT_RESOLV_CONF=1;
+    fi;
+
+    docker_kill_all;
+
+    curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
+
+    if [ 1 -eq 1 ]; then
+      env \
+      CONFIG_DIR="${CONFIG_DIR}" \
+      DOMAIN="${DOMAIN}" \
+      HOSTNAME="${HOSTNAME}" \
+      WEBPASSWORD="${WEBPASSWORD}" \
+      SERVER_IP="${SERVER_IP}" \
+      docker-compose --file "${CONFIG_DIR}/docker-compose.pihole.yml" up --detach;
+    fi;
+
+    docker stop pihole;
+
+    systemctl stop systemd-resolved.service;
+    systemctl disable systemd-resolved.service;
+
+    docker start pihole;
+
+    if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
+      echo -e "\n\n""Disabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"""\n\n";
+      sed -i -re 's/^(nameserver 8.8.4.4)$/# \1/' '/etc/resolv.conf';
+    fi;
+
+  fi;
+
+fi;
+
+
+# 
+# Set pihole file permissions as-intended
+#   !!! PERFORM THESE STEPS MANUALLY  !!!
+#
+if [ 0 -eq 1 ]; then
+
+# Bash into the docker
+docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]
+
+chown -R "pihole:pihole" "/etc/pihole/";
+chown -R "pihole:pihole" "/etc/pihole/dhcp.leases";
+chown -R "pihole:pihole" "/etc/pihole/gravity.db";
+chown -R "pihole:pihole" "/etc/pihole/macvendor.db";
+chown -R "pihole:root"   "/etc/pihole/pihole-FTL.conf";
+chown -R "pihole:pihole" "/etc/pihole/pihole-FTL.db";
+
+fi;
+
+#
+# Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and adlist updating via [ pihole -g ]
+#  |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
+#
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   discourse.pi-hole.net  |  "[Solved] While executing: attempt to write a readonly database error - Help / Community Help - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/solved-while-executing-attempt-to-write-a-readonly-database-error/33003/4
+#
+#   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
+#
+#   github.com  |  "GitHub - pi-hole/docker-pi-hole: Pi-hole in a docker container"  |  https://github.com/pi-hole/docker-pi-hole/
+#
+#   hub.docker.com  |  "pihole/pihole - Docker Hub"  |  https://hub.docker.com/r/pihole/pihole
+#
+#   www.linuxuprising.com  |  "Ubuntu: How To Free Up Port 53, Used By systemd-resolved - Linux Uprising Blog"  |  https://www.linuxuprising.com/2020/07/ubuntu-how-to-free-up-port-53-used-by.html
+#
+# ------------------------------------------------------------

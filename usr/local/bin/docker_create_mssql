@@ -55,7 +55,7 @@ docker run \
 --env "MSSQL_SA_PASSWORD=$(cat /mssql_creds)" \
 --env "MSSQL_PID=Enterprise" \
 --publush 1433:1433 \
---detached \
+--detach \
 mcr.microsoft.com/mssql/server;
 
 winpty docker exec \

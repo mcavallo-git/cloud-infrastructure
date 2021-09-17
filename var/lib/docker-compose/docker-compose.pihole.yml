@@ -20,8 +20,7 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     environment:
-      ServerIP: ${ServerIP}
-      TZ: '${TZ:-America/New_York}'
+      TZ: 'America/New_York'
       WEBPASSWORD: ${WEBPASSWORD}
     # Volumes store your data between container upgrades
     volumes:

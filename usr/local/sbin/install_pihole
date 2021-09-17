@@ -32,15 +32,15 @@ fi;
 # Spin-up the pihole docker (after port 53 is freed up)
 #
 echo "";
-echo "!!        !!                                                   !!        !!";
-echo "!! NOTICE !!  This will reinstall any existing pihole dockers  !! NOTICE !!";
-echo "!!   |    !!   Make sure you've freed up port 53 on localhost  !!        !!";
-echo "     |";
-read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+echo "! !        ! !                                                   ! !        ! !";
+echo "! ! NOTICE ! !  This will reinstall any existing pihole dockers  ! ! NOTICE ! !";
+echo "! !   |    ! !   Make sure you've freed up port 53 on localhost  ! !        ! !";
+echo "      |";
+read -p "      |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r;   # Await single keypress
 echo "";
 if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-  echo "     |";
-  read -p "     |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  echo "      |";
+  read -p "      |--> Are you completely positive you wish to continue? (y/n)  " -n 1 -t 60 -r;   # Await single keypress
   echo "";
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 

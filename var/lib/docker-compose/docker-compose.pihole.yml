@@ -20,9 +20,9 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     environment:
-      ServerIP: ${ServerIP}
+      ServerIP: ${SERVER_IP}
       TZ: '${TZ:-America/New_York}'
-      VIRTUAL_HOST: '${VIRTUAL_HOST:-${ServerIP:-pihole}}'
+      VIRTUAL_HOST: '${VIRTUAL_HOST:-${SERVER_IP:-pihole}}'
       WEBPASSWORD: ${WEBPASSWORD}
     # Volumes store your data between container upgrades
     volumes:

@@ -623,7 +623,7 @@ fi;
 
 # # Strings
 # KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
-# KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+# KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 # KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 # # Unsets
 # KEY="core.sshcommand";               "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "--unset";
@@ -651,7 +651,7 @@ fi;
 # KEY="user.email";       VAL="${GLOBAL_COMMIT_EMAIL}";                  git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="core.sshcommand";  VAL="ssh -4 -i '${GLOBAL_COMMIT_SSH_KEY}'${GIT_SSH_OPTS}"     git config --global --replace-all "${KEY}" "${VAL}";
 # KEY="gpg.program";      VAL="${GPG4WIN_GPG_EXE_WIN32}";                git config --global --replace-all "${KEY}" "${VAL}";
-# KEY="core.autocrlf";    VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";
+# KEY="core.autocrlf";    VAL="input";  "${GIT_CONFIG_ALL_LOCAL}" "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 # KEY="core.eol";         VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 # KEY="color.ui";         VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 # Booleans
@@ -915,7 +915,7 @@ fi;
       KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
       KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY/\/mnt\/c/\/c}'${GIT_SSH_OPTS}";  git config --local --replace-all "${KEY}" "${VAL}";
       # Strings - Formatting (Line-Endings/Syntax-Highlighting)
-      KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+      KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
       KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
       KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
       if [ -z "${GPG_KEY_ID}" ]; then
@@ -984,7 +984,7 @@ exit 0;
 #     KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 #     # Strings - Formatting (Line-Endings/Syntax-Highlighting)
-#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 #     KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 #     if [ -z "${GPG_KEY_ID}" ]; then
@@ -1025,7 +1025,7 @@ exit 0;
 #       KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 #       KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 #       # Strings - Formatting (Line-Endings/Syntax-Highlighting)
-#       KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+#       KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 #       KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 #       KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 #       if [ -z "${GPG_KEY_ID}" ]; then
@@ -1086,7 +1086,7 @@ exit 0;
 #     KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 #     # Strings - Formatting (Line-Endings/Syntax-Highlighting)
-#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 #     KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 #     if [ -z "${GPG_KEY_ID}" ]; then
@@ -1126,7 +1126,7 @@ exit 0;
 #     KEY="user.email";      VAL="${COMMIT_EMAIL}";                       git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="core.sshcommand"; VAL="ssh -4 -i '${SSH_KEY}'${GIT_SSH_OPTS}"     git config --local --replace-all "${KEY}" "${VAL}";
 #     # Strings - Formatting (Line-Endings/Syntax-Highlighting)
-#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";
+#     KEY="core.autocrlf";   VAL=$(if [[ "${EACH_REPO_BASENAME}" == *"infrastructure" ]]; then echo "false"; else echo "input"; fi;);   git config --local --replace-all "${KEY}" "${VAL}";  #  https://stackoverflow.com/q/3206843
 #     KEY="core.eol";        VAL="lf";     git config --local --replace-all "${KEY}" "${VAL}";
 #     KEY="color.ui";        VAL="auto";   git config --local --replace-all "${KEY}" "${VAL}";
 #     if [ -z "${GPG_KEY_ID}" ]; then
@@ -1181,6 +1181,8 @@ exit 0;
 #   riseup.net  |  "OpenPGP Best Practices"  |  https://riseup.net/en/security/message-security/openpgp/best-practices
 #
 #   riseup.net  |  "Managing OpenPGP Keys"  |  https://riseup.net/en/security/message-security/openpgp/gpg-keys
+#
+#   stackoverflow.com  |  "newline - How line ending conversions work with git core.autocrlf between different operating systems - Stack Overflow"  |  https://stackoverflow.com/q/3206843
 #
 #   superuser.com  |  "Where is my gpgconf file on Windows?"  |  https://superuser.com/questions/1068980
 #

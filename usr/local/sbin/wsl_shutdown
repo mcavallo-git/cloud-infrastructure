@@ -21,7 +21,6 @@ if [ "$(id -un)" != "root" ]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
-
   #
   # Shutdown WSL (Windows Subsystem for Linux)
   #  |--> To shutdown WSL, signal to linux that a reboot is required by manually creating file '/var/run/reboot-required', otherwise the WSL linux environment persists the background as a service (and continues to consume hardware resources as-needed)
@@ -37,24 +36,25 @@ else
       echo "Info:  Confirmed - Performing Action [ ${ACTION_DESCRIPTION} ] ...";
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'
       sudo touch "/var/run/reboot-required";
-      # Kill all bash shells (current shell as well as any other bash shells on local device)
-      PROCESSES=$(ps -e -o pid,cmd);
-      for EACH_PID in $(echo "${PROCESSES}" | sed -rne 's/^\s*([0-9]+)\s+(-bash)$/\1/p';); do
-        echo "Calling [ kill -SIGKILL ${EACH_PID}; ]...";
-        kill -SIGKILL ${EACH_PID};
-      done;
+      if [ 1 -eq 1 ]; then
+        # Call Windows Subsystem for Linux's built-in method to shutdown all WSL terminals (wsl --shutdown)
+        /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe 'C:\\Windows\\System32\\wsl.exe --shutdown';
+      else
+        # Kill all bash shells (current shell as well as any other bash shells on local device)
+        PROCESSES=$(ps -e -o pid,cmd);
+        for EACH_PID in $(echo "${PROCESSES}" | sed -rne 's/^\s*([0-9]+)\s+(-bash)$/\1/p';); do
+          echo "Calling [ kill -SIGKILL ${EACH_PID}; ]...";
+          kill -SIGKILL ${EACH_PID};
+        done;
+      fi;
     else
       echo "Info:  Denied - Skipping action [ ${ACTION_DESCRIPTION} ]";
     fi;
-
   else
-
     # Exit - Non-WSL Environment detected
     echo "";
     echo "Info:  Skipping shutdown (unable to detect WSL environment)";
     echo "";
     exit 1;
-
   fi;
-
 fi;

@@ -52,7 +52,7 @@ else
 
   THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
-  WAN_TEST_CURL_FQDN="raw.githubusercontent.com";
+  WAN_TEST_FQDN="raw.githubusercontent.com";
 
   # ------------------------------------------------------------
   # Log the starting timestamp for the current runtime
@@ -235,9 +235,9 @@ else
   # ------------------------------------------------------------
   # Check for a valid WAN (internet) connection
 
-  WAN_TEST_RESPONSE=$(curl -sLI "${WAN_TEST_CURL_FQDN}";); WAN_TEST_CURL_EXIT_CODE=${?};
-  WAN_TEST_CURL_HTTP_CODE=$(echo "${WAN_TEST_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
-  WAN_TEST_EXIT_CODE=$(if [ ${WAN_TEST_CURL_EXIT_CODE} -eq 0 ] && [ ${WAN_TEST_CURL_HTTP_CODE} -ge 200 ] && [ ${WAN_TEST_CURL_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
+  WAN_TEST_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";); WAN_TEST_CURL_EXIT_CODE=${?};
+  WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
+  WAN_TEST_EXIT_CODE=$(if [ ${WAN_TEST_CURL_EXIT_CODE} -eq 0 ] && [ ${WAN_TEST_HTTP_CODE} -ge 200 ] && [ ${WAN_TEST_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
   if [ "${WAN_TEST_EXIT_CODE}" != "0" ]; then
     echo "";
     echo "Error:  WAN (internet) connection unable to be verified (required to sync cloud-infrastructure files) - Exiting...";
@@ -270,9 +270,9 @@ else
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
     echo "";
     echo "Debug:  WAN_TEST_CURL_EXIT_CODE = [ ${WAN_TEST_CURL_EXIT_CODE} ]";
-    echo "Debug:  WAN_TEST_CURL_FQDN = [ ${WAN_TEST_CURL_FQDN} ]";
-    echo "Debug:  WAN_TEST_CURL_HTTP_CODE = [ ${WAN_TEST_CURL_HTTP_CODE} ]";
     echo "Debug:  WAN_TEST_EXIT_CODE = [ ${WAN_TEST_EXIT_CODE} ]";
+    echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
+    echo "Debug:  WAN_TEST_HTTP_CODE = [ ${WAN_TEST_HTTP_CODE} ]";
   fi;
 
   # If no errors are found up-until this point, continue

@@ -238,7 +238,7 @@ else
   CURL_RESPONSE=$(curl -sLI 'https://raw.githubusercontent.com';); CURL_EXIT_CODE=${?};
   CURL_HTTP_CODE=$(echo "${CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
   WAN_TEST_RETURN_CODE=$(if [ ${CURL_EXIT_CODE} -eq 0 ] && [ ${CURL_HTTP_CODE} -ge 200 ] && [ ${CURL_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
-  # WAN_TEST_RETURN_CODE="$(ping -c 1 -w 1 -W 1 ${WAN_TEST_IPV4} 1>'/dev/null' 2>&1; echo $?;)";
+  # WAN_TEST_RETURN_CODE="$(ping -c 1 -w 1 -W 1 ${WAN_TEST_IPV4} 1>'/dev/null' 2>&1; echo $?;)";  # Ping test doesn't work in controlled environments which disallow ICMP-8 outgoing/incoming messages
   if [ "${WAN_TEST_RETURN_CODE}" != "0" ]; then
     echo "";
     echo "Error:  Unable to ping IPv4 address [ ${WAN_TEST_IPV4} ]  (used to test/verify WAN connection)";

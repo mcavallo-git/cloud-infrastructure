@@ -38,7 +38,7 @@ else
       sudo touch "/var/run/reboot-required";
       if [ 1 -eq 1 ]; then
         # Call Windows Subsystem for Linux's built-in method to shutdown all WSL terminals (wsl --shutdown)
-        /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe 'C:\\Windows\\System32\\wsl.exe --shutdown';
+        /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe "C:\\Windows\\System32\\wsl.exe --shutdown";
       else
         # Kill all bash shells (current shell as well as any other bash shells on local device)
         PROCESSES=$(ps -e -o pid,cmd);

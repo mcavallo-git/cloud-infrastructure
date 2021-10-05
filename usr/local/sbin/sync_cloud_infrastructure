@@ -235,8 +235,8 @@ else
   # ------------------------------------------------------------
   # Check for a valid WAN (internet) connection
 
-  WAN_TEST_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";); WAN_TEST_CURL_EXIT_CODE=${?};
-  WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
+  WAN_TEST_CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";); WAN_TEST_CURL_EXIT_CODE=${?};
+  WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
   WAN_TEST_EXIT_CODE=$(if [ ${WAN_TEST_CURL_EXIT_CODE} -eq 0 ] && [ ${WAN_TEST_HTTP_CODE} -ge 200 ] && [ ${WAN_TEST_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
   if [ "${WAN_TEST_EXIT_CODE}" != "0" ]; then
     echo "";

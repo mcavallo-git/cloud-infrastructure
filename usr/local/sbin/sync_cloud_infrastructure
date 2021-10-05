@@ -52,7 +52,7 @@ else
 
   THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
-  WAN_TEST_IPV4="8.8.8.8";
+  WAN_TEST_FQDN="https://raw.githubusercontent.com";
 
   # ------------------------------------------------------------
   # Log the starting timestamp for the current runtime
@@ -235,12 +235,12 @@ else
   # ------------------------------------------------------------
   # Check for a valid WAN (internet) connection
 
-  CURL_RESPONSE=$(curl -sLI 'https://raw.githubusercontent.com';); CURL_EXIT_CODE=${?};
+  CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";); CURL_EXIT_CODE=${?};
   CURL_HTTP_CODE=$(echo "${CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
   WAN_TEST_RETURN_CODE=$(if [ ${CURL_EXIT_CODE} -eq 0 ] && [ ${CURL_HTTP_CODE} -ge 200 ] && [ ${CURL_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
   if [ "${WAN_TEST_RETURN_CODE}" != "0" ]; then
     echo "";
-    echo "Error:  Unable to ping IPv4 address [ ${WAN_TEST_IPV4} ]  (used to test/verify WAN connection)";
+    echo "Error:  WAN (internet) connection unable to be verified (required to sync cloud-infrastructure files) - Exiting...";
     EXIT_CODE=1;
   fi;
 
@@ -269,7 +269,7 @@ else
     echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
     echo "";
-    echo "Debug:  WAN_TEST_IPV4 = [ ${WAN_TEST_IPV4} ]";
+    echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
     echo "Debug:  WAN_TEST_RETURN_CODE = [ ${WAN_TEST_RETURN_CODE} ]";
   fi;
 

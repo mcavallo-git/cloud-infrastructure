@@ -925,8 +925,7 @@ else
         # Sync Timezone
         TZ="America/New_York";
         if [ ${ARGS_SYNC_TIMEZONE} -eq 1 ] && [ "$(cat /etc/timezone;)" != "${TZ}" ]; then
-            echo -e "\n";
-            echo "Info:  Request to set Timezone to \"${TZ}\"";
+            echo -e "\n""Info:  Request to set Timezone to \"${TZ}\"";
             read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
             echo "";
             if [[ $REPLY =~ ^[Yy]$ ]]; then

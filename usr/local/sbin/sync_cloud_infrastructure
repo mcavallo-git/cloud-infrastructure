@@ -613,6 +613,14 @@ else
 
       # ------------------------------------------------------------
 
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+        echo "";
+        echo "Debug:  DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
+        echo "Debug:  DIR_REPO_USR = [ ${DIR_REPO_USR} ]";
+        echo "Debug:  SUDOER_HOMEDIR = [ ${SUDOER_HOMEDIR} ]";
+        echo "Debug:  WSL_DIR = [ ${WSL_DIR} ]";
+      fi;
+
       if [ -z "${DIR_REPO_BASE}" ]; then
         # Required variable(s) are empty/unset
         EXIT_CODE=1;

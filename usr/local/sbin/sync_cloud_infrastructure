@@ -547,7 +547,7 @@ else
         DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
         RET_CODE=$?;
         if [ ${RET_CODE} -eq 0 ]; then
-          echo "  |--> Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
+          if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
         else 
           if [ -v SUDO_USER ] && [ -n "${SUDO_USER}" ]; then
             #  Linux OS - Locate source directory from amongst Non-Sudo User's files
@@ -561,7 +561,7 @@ else
             RET_CODE=$?;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${RET_CODE} -eq 0 ]; then
-              echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]";
+              if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
             fi;
           fi;
         fi;

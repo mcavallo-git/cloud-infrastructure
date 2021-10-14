@@ -1233,7 +1233,9 @@ else
         # Begin copying files to SSH-Enabled User-Home Directories
         for EACH_FILE in ${FILES_TO_COPY}; do
           if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-            echo "  |--> \"~/${EACH_FILE}\"";
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+              echo "  |--> \"~/${EACH_FILE}\"";
+            fi;
             SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
             for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
               EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";

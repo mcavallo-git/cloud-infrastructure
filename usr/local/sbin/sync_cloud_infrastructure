@@ -1233,12 +1233,11 @@ else
         # Begin copying files to SSH-Enabled User-Home Directories
         for EACH_FILE in ${FILES_TO_COPY}; do
           if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-            echo "  |--> \"${EACH_FILE}\" (Home-Directory File)";
+            echo "  |--> \"${EACH_FILE}\"";
             SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
             for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
               EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
               DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
-              USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}");
               # Only copy files to SSH-Enabled user home-directories (plus root)
               if [ -d "${DIR_USER_HOME}/.ssh" ] || [ -f "${DIR_USER_HOME}/.bash_history" ] || [ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ] || [ "${EACH_SSH_USER}" == "root" ]; then
                 DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
@@ -1256,7 +1255,10 @@ else
                   chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
                   chmod 600 "${DEST_FULLPATH}";
                 fi;
-                echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]";
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then 
+                  USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}");
+                  echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]";
+                fi;
               fi;
             done;
           fi;

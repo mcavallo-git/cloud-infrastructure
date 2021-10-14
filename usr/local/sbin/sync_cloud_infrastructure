@@ -90,7 +90,7 @@ else
   ARGS=("$@");
   ARGS_COUNT=${#ARGS[@]};
 
-  ARGS_CHECK_WSL=$(if [ -z "$(uname -r | grep -i 'microsoft' 1>'/dev/null' 2>&1; )" ]; then echo 1; else echo 0; fi;);
+  ARGS_CHECK_WSL=$(if [ -z "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then echo 0; else echo 1; fi;);
   ARGS_CRONJOB_REMOVE=0;
   ARGS_CRONJOB_SYNC=0;
   ARGS_DEBUG_MODE=0;

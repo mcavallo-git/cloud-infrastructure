@@ -65,10 +65,10 @@ RETURNED_OS="Unknown";
 # OS (Operating System) Details
 #
 if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
-  if [ $(uname -a | grep -i 'Microsoft' | wc -l) -ge 1 ]; then
-    THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
-  else
+  if [ -z "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
     THIS_OS_TYPE='Linux';
+  else
+    THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
   fi;
 elif [ "$(uname -s)" == "VMkernel" ]; then
   THIS_OS_TYPE='VMware ESX';

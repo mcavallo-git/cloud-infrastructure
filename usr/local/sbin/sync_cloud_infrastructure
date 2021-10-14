@@ -466,10 +466,8 @@ else
 
         # Fetch/Pull/Clone the Remote Repo
         echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
-        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then 
-          echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
-          echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
-        fi;
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}"; fi;
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}"; fi;
         BENCHMARK_START=$(date +'%s.%N');
         # Clone the repo if it hasn't been synced, yet
         if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then
@@ -1235,9 +1233,7 @@ else
         # Begin copying files to SSH-Enabled User-Home Directories
         for EACH_FILE in ${FILES_TO_COPY}; do
           if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-              echo "  |--> \"~/${EACH_FILE}\"";
-            fi;
+            if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> \"~/${EACH_FILE}\""; fi;
             SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
             for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
               EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
@@ -1259,10 +1255,7 @@ else
                   chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
                   chmod 600 "${DEST_FULLPATH}";
                 fi;
-                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then 
-                  USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}");
-                  echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]";
-                fi;
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}"); echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]"; fi;
               fi;
             done;
           fi;

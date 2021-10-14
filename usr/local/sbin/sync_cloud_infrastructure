@@ -466,8 +466,10 @@ else
 
         # Fetch/Pull/Clone the Remote Repo
         echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
-        echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
-        echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then 
+          echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}";
+          echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}";
+        fi;
         BENCHMARK_START=$(date +'%s.%N');
         # Clone the repo if it hasn't been synced, yet
         if [ ! -d "${GIT_LOCAL_REPO_PATH}" ]; then

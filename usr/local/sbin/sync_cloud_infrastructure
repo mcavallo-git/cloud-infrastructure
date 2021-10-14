@@ -524,6 +524,16 @@ else
         fi;
       fi;
 
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+        echo "";
+        echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
+        echo "Debug:  WIN32_HOMEDIR = [ ${WIN32_HOMEDIR} ]";
+        echo "Debug:  WIN32_USERNAME = [ ${WIN32_USERNAME} ]";
+        echo "Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
+        echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
+        echo "";
+      fi;
+
       if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
         # Windows/WSL check(s) failed (or were skipped)
         #  |--> Check for required Linux filepath(s) as a fallback

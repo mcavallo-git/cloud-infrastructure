@@ -1503,8 +1503,8 @@ else
               Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
               if [ "$(hostname --fqdn)" == "${Each_FQDN}" ] || [ "$(dig +short ${Each_FQDN})" == "$(hostname -i | awk '{print $1}';)" ] || [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
                 # The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
+                echo "  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" (exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-                echo "  |--> Enabling NGINX FQDN \"${Each_FQDN}\" (Exact match found between FQDN's-resolved-IPv4 & Current-WAN-IPv4)";
               else
                 rm -f "${Each_SitesAvailable}";
                 if [ -L "${Each_SitesEnabled}" ]; then

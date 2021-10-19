@@ -276,7 +276,8 @@ server {
   #   }
   # }
   #        ~* [regex match, case-insensitive]
-  location ~* "^/$" {
+  # location ~* "^/$" {
+  location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
       return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;

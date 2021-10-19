@@ -262,21 +262,8 @@ server {
 
   # ------------------------------------------------------------
   # Fallthrough Request Handler
-  #  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
+  #  - Is overridden by any matched nginx directive which either [ occurrs earlier in the current nginx server {...} directive's block ] or [ is a location block which has the longest 'matched' length ]
   #
-  #              ~* [regex match, case-insensitive]
-  # if ($subdomain ~* "^$") {
-  #   #                    ~* [regex match, case-insensitive]
-  #   if ($http_user_agent ~* "^curl") {
-  #     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
-  #   }
-  #   #                    !~* [inversed regex, case-insensitive]
-  #   if ($http_user_agent !~* "^curl") {
-  #     return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#devops-resource-reference";
-  #   }
-  # }
-  #        ~* [regex match, case-insensitive]
-  # location ~* "^/$" {
   location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {

@@ -1,4 +1,11 @@
 #!/bin/bash
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pwsh?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
 #
 # LOCAL_SBIN="/usr/local/sbin/install_pwsh" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #

@@ -30,7 +30,16 @@ else
     OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p');
     OS_VERSION_MINOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\2/p');
 
-    if [[ ${OS_VERSION_MAJOR} -ge 19 ]]; then
+    if [ "${OS_VERSION_MAJOR}" == "20" ] && [ "${OS_VERSION_MINOR}" == "04" ]; then
+      # UBUNTU 20.04
+      sudo apt-get update -y;
+      sudo apt-get install -y wget apt-transport-https software-properties-common;
+      wget -q "https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb";
+      sudo dpkg -i "packages-microsoft-prod.deb";
+      sudo apt-get update -y;
+      sudo apt-get install -y "powershell";
+
+    elif [[ ${OS_VERSION_MAJOR} -ge 19 ]]; then
       # UBUNTU 19.x
       sudo snap install powershell --classic; # "PowerShell Core, for Linux, is published to the Snap store for easy installation (and updates). This is the preferred method.
 
@@ -95,5 +104,7 @@ fi;
 # Citation(s)
 #
 #   docs.microsoft.com  |  "Installing PowerShell Core on Linux"  |  https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux
+#
+#   docs.microsoft.com  |  "Installing PowerShell on Ubuntu - PowerShell | Microsoft Docs"  |  https://docs.microsoft.com/en-us/powershell/scripting/install/install-ubuntu
 #
 # ------------------------------------------------------------

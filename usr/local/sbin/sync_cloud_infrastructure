@@ -67,7 +67,7 @@ else
   if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
     mkdir -p "${DIRNAME_LOCAL_CONFIG}";
   fi;
-  if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(which stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
+  if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
     chmod 755 "${DIRNAME_LOCAL_CONFIG}";
   fi;
 
@@ -291,11 +291,11 @@ else
     REQUIRED_PKGS_ARRAY+=("wget");
 
     # Debian-specific packages
-    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+    if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
       REQUIRED_PKGS_ARRAY+=("cron");
       REQUIRED_PKGS_ARRAY+=("jq");
       # REQUIRED_PKGS_ARRAY+=("sslscan");
-    elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
       REQUIRED_PKGS_ARRAY+=("bind-utils");
       REQUIRED_PKGS_ARRAY+=("epel-release");
       REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");
@@ -308,18 +308,18 @@ else
     # Determine if any required packages are missing
     for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
       if [ -n "${EACH_REQUIRED_PKG}" ]; then
-        if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+        if [ -n "$(command -v dpkg 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
           # Query Debian's Package-Manager for each package
           if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
-        elif [ $(which rpm 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+        elif [ -n "$(command -v rpm 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
           # Query RHEL's Package-Manager for each package
           if [ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         else # Other distros
-          if [ "$(which ${EACH_REQUIRED_PKG} 1>'/dev/null' 2>&1; echo $?;)" != "0" ]; then
+          if [ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]; then
             MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         fi;
@@ -334,7 +334,7 @@ else
         echo "Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
       fi;
 
-      if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then
+      if [ -n "$(command -v apt 2>'/dev/null';)" ]; then
         if [ 1 -eq 1 ]; then
           # Debian distros (Ubuntu, Raspbian, etc.)
           #  |--> Individually install missing packages (to avoid errors from single-packages from taking-out the entire bulk-install attempt)
@@ -351,13 +351,13 @@ else
           apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
         fi;
 
-      elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+      elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then
         # RHEL, CentOS distros
         #  |--> Bulk install missing packages
         echo -e "\n""Info:  Calling [ yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
         yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]};
 
-      elif [ $(which apk 2>'/dev/null' | wc -l;) -gt 0 ]; then
+      elif [ -n "$(command -v apk 2>'/dev/null';)" ]; then
         # Alpine distros
         #  |--> Bulk install missing packages
         echo -e "\n""Info:  Calling [ apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
@@ -368,18 +368,18 @@ else
       # Verify that all required packages (which are needed later in this script) are installed as-intended
       unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
       for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
-        if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+        if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
           # Query Debian's Package-Manager for each package
           if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
-        elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+        elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
           # Query RHEL's Package-Manager for each package
           if [ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         else # Other distros
-          if [ "$(which ${EACH_REQUIRED_PKG} 1>'/dev/null' 2>&1; echo $?;)" != "0" ]; then
+          if [ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]; then
             FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         fi;
@@ -455,7 +455,7 @@ else
 
     else
 
-      if [ -z "$(which git 2>'/dev/null')" ]; then
+      if [ -z "$(command -v git 2>'/dev/null';)" ]; then
         # Unable to pull updated version of code-repository via git
         echo -e "\n""Warning:  Unable to pull/update repository codebase - Pre-requisite command \"git\" not found";
 
@@ -502,7 +502,7 @@ else
 
       # Detect if current runtime is being executed within a WSL instance/terminal
       if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
-        WSL_CHECK_EXISTS=$(which get_username_windows_wsl 2>'/dev/null');
+        WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
         if [ -n "${WSL_CHECK_EXISTS}" ]; then
           # Attempt to resolve the Windows-user who is running the current WSL instance
           echo -e "\n""Info:  Checking for Windows Subsystem for Linux (WSL) Environment";
@@ -716,7 +716,7 @@ else
         #
         # /etc/pki/ca-trust/source/anchors  (Server root-certificates & CA-bundles)
         #
-        if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+        if [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
           DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
           FILE_PERMS="0644"; DIR_PERMS="0644";
@@ -797,7 +797,7 @@ else
         #
         if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
-          if [ -z "$(which ssh 2>'/dev/null')" ]; then
+          if [ -z "$(command -v ssh 2>'/dev/null';)" ]; then
             echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
 
           else
@@ -860,7 +860,7 @@ else
               ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
               ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  ";
 
-              if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+              if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
                 # Require user-confirmation to proceed with config-update
                 echo -e "${ECHO_SSH_WARNING}";
                 read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 -r; # Await single keypress
@@ -883,7 +883,7 @@ else
                   if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 fi;
 
-              elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+              elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 
                 # Amongst other things, disable the "root" user and require that users login with SSH private keys (deny password-based login)
                 BENCHMARK_START=$(date +'%s.%N');
@@ -959,7 +959,7 @@ else
         ENABLE_CRON_DDNS_UPDATER=0;
         if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
           # Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
-          if [ $(which ufw 2>'/dev/null' | wc -l) -gt 0 ]; then
+          if [ -n "$(command -v ufw 2>'/dev/null';)" ]; then
             # Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
             if [[ $(ufw status 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
               # Check UFW Enabled/Disabled Status
@@ -1018,7 +1018,7 @@ else
 
             fi;
 
-          elif [ $(which firewall-cmd 2>'/dev/null' | wc -l) -gt 0 ]; then
+          elif [ -n "$(command -v firewall-cmd 2>'/dev/null';)" ]; then
 
             if [ $(systemctl is-enabled firewalld 1>'/dev/null' 2>&1; echo $?) -eq 0 ]; then
               ENABLE_CRON_DDNS_UPDATER=1;
@@ -1069,7 +1069,7 @@ else
           # /etc/cron.d/CRON_certbot_renew_all
           #
           if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
-            if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+            if [ -n "$(command -v certbot 2>'/dev/null';)" ]; then
               DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
               if [ -f "${DESTINATION_PATH}" ]; then
                 REPLY="y";
@@ -1334,7 +1334,7 @@ else
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
             # /var/cache/jenkins/war - Set policies to stop Selinux from blocking access to cached Jenkins images within "/var/cache/jenkins/war/images"
-            if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+            if [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
               chcon -R -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
               semanage fcontext -a -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
             fi;
@@ -1446,7 +1446,7 @@ else
         # /etc/nginx
         #
         if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
-          if [ -z "$(which nginx 2>'/dev/null')" ]; then
+          if [ -z "$(command -v nginx 2>'/dev/null';)" ]; then
             # NGINX does NOT exist locally
             echo -e "\n""Info:  Skipped NGINX sync - No local 'nginx' service exists";
 
@@ -1477,7 +1477,7 @@ else
             if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
 
-            if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+            if [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
               # Allow files to be read without selinux blocking them
               chcon -Rt httpd_sys_content_t "${DESTINATION_PATH}";
             fi;
@@ -1491,9 +1491,9 @@ else
             fi;
 
             # Set the environment-specific web-server runtime user
-            if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+            if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
               sed -i 's|user www-data;|user www-data;|g' "/etc/nginx/nginx.conf";
-            elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+            elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
               sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
             fi;
 
@@ -1682,7 +1682,7 @@ else
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
           if [ ${SERVICE_RET_CODE} -eq 0 ]; then
             /usr/sbin/service "${SERVICE_NAME}" restart;
-            if [ -n "$(which ${SERVICE_NAME} 2>'/dev/null';)" ]; then
+            if [ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]; then
               ufw reload;
             fi;
             /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;

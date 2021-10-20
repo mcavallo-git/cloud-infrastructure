@@ -62,15 +62,18 @@ RETURNED_OS="Unknown";
 
 # ------------------------------------------------------------
 #
-# OS (Operating System) Details
+# Linux Kernel (OS / Operating System) Info
 #
-if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
-  if [ -z "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
+THIS_KERNEL="$(uname -a;)";
+THIS_KERNEL_NAME="$(uname -s;)";
+THIS_KERNEL_RELEASE="$(uname -r 2>&1;)";
+if [ "${THIS_KERNEL_NAME}" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then
+  if [ -z "$(echo ${THIS_KERNEL_RELEASE} | grep -i 'microsoft' 2>&1;)" ]; then
     THIS_OS_TYPE='Linux';
   else
     THIS_OS_TYPE='WSL (Microsoft Windows Subsystem for Linux)';
   fi;
-elif [ "$(uname -s)" == "VMkernel" ]; then
+elif [ "${THIS_KERNEL_NAME}" == "VMkernel" ]; then
   THIS_OS_TYPE='VMware ESX';
 elif [[ "${OSTYPE}" == "darwin"* ]]; then
   THIS_OS_TYPE='Macintosh';
@@ -82,7 +85,7 @@ RETURNED_OS="${THIS_OS_TYPE}";
 
 # ------------------------------------------------------------
 #
-# Linux Distro (Distribution) Details
+# Linux Distro (Distribution) Info
 #
 
 #
@@ -131,6 +134,12 @@ elif [ -n "$(which grep 2>'/dev/null';)" ] && [ -n "$(find /etc/*release 2>'/dev
   DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);
   DISTRO_DESCRIPTION=$(cat /etc/*release | grep -i "^PRETTY_NAME=";);
 
+elif [ -n "$(which mintty 2>'/dev/null';)" ]; then # Git Bash
+  DISTRO_ID=$(mintty --version | head -n 1 | cut -d' ' -f1;);
+  DISTRO_RELEASE=$(mintty --version | head -n 1 | cut -d' ' -f2;);
+  DISTRO_CODENAME="";
+  DISTRO_DESCRIPTION="Mintty - Cygwin Terminal Emulator";
+
 fi;
 
 
@@ -145,13 +154,10 @@ if [ -n "$(which tr 2>'/dev/null';)" ]; then
   DISTRO_DESCRIPTION="$(echo "${DISTRO_DESCRIPTION}" | tr '[:lower:]' '[:upper:]';)";
 fi;
 
-
 # ------------------------------------------------------------
 #
-# Kernel Info
+# Determine OS type
 #
-THIS_KERNEL="$(uname -a;)";
-THIS_KERNEL_NAME="$(uname -s;)";
 
 IS_WINDOWS=$(if [ "${THIS_OS_TYPE}" == "Windows" ]; then echo 1; else echo 0; fi;);
 IS_LINUX=$(if [ "${THIS_OS_TYPE}" == "Linux" ]; then echo 1; else echo 0; fi;);
@@ -159,8 +165,8 @@ IS_ESXI=$(if [ "${THIS_OS_TYPE}" == "VMware ESX" ]; then echo 1; else echo 0; fi
 IS_MAC=$(if [ "${THIS_OS_TYPE}" == "Macintosh" ]; then echo 1; else echo 0; fi;);
 IS_WSL=$(if [ "${THIS_OS_TYPE}" == "WSL (Microsoft Windows Subsystem for Linux)" ]; then echo 1; else echo 0; fi;);
 
-IS_CYGWIN=$(if [[ $(uname -s | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "cygwin" ]; then echo 1; else echo 0; fi;);
-IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
+IS_CYGWIN=$(if [[ $(echo "${THIS_KERNEL_NAME}" | grep -i CYGWIN | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "cygwin" ]; then echo 1; else echo 0; fi;);
+IS_MINGW=$(if [[ $(echo "${THIS_KERNEL_NAME}" | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" == "msys" ]; then echo 1; else echo 0; fi;);
 
 if [ -n "${DISTRO_ID}" ]; then
   # Directly-compare the current OS' Distro-ID against known values runtime
@@ -228,6 +234,10 @@ if [ "${THIS_DISTRO}" != "Unknown" ]; then
 fi;
 
 if [ ${VERBOSE} -eq 1 ]; then
+  echo "";
+  echo "THIS_KERNEL=${THIS_KERNEL}";
+  echo "THIS_KERNEL_NAME=${THIS_KERNEL_NAME}";
+  echo "THIS_KERNEL_RELEASE=${THIS_KERNEL_RELEASE}";
   echo "";
   echo "THIS_OS_TYPE=${THIS_OS_TYPE}";
   echo "THIS_DISTRO=${THIS_DISTRO}";

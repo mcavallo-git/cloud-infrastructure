@@ -3,6 +3,7 @@ set fileencoding=utf-8
 set number
 set showcmd
 set softtabstop=2
+set t_vb=
 set tabstop=2
 set visualbell
 syntax enable

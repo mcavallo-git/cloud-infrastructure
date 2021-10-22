@@ -22,49 +22,74 @@ if [ "$(id -un)" != "root" ]; then
   exit 1;
 else
   # ------------------------------------------------------------
+
   SERVICE_NAME="nginx";
   SYSCTL_NAME="${SERVICE_NAME}.service";
   SYSCTL_HEALTH_CHECK_EXIT_CODE=$(/bin/systemctl list-sockets 1>'/dev/null' 2>&1; echo ${?};);
-  if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ]; then
 
+  if [ ${SYSCTL_HEALTH_CHECK_EXIT_CODE} -eq 1 ]; then
+    # Systemctl error(s)  -  TODO:  Catch WSL instance(s), here, then search for nginx processes using powershell methods, etc. (instead of Linux methods thru WSL)
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a WSL terminal? If so, please install and use NGINX for Windows @ https://nginx.org/en/download.html )";
+    exit 1;
 
   else
 
     SERVICE_EXISTS_EXIT_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SYSCTL_NAME}" | grep "^${SYSCTL_NAME}" 1>'/dev/null' 2>&1; echo ${?};);
     SERVICE_STATUS_EXIT_CODE=$(/bin/systemctl status "${SYSCTL_NAME}" 1>'/dev/null' 2>&1; echo ${?};);
 
-    echo "SERVICE_EXISTS_EXIT_CODE=[ ${SERVICE_EXISTS_EXIT_CODE} ]";
-    echo "SERVICE_STATUS_EXIT_CODE=[ ${SERVICE_STATUS_EXIT_CODE} ]";
-
-    if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ]; then
+    if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ] || [ ${SERVICE_STATUS_EXIT_CODE} -eq 1 ]; then
       # Service NOT found to exist locally
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a Windows Machine? If yes, please use NGINX for Windows)";
+
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst Systemctl's services";
       exit 1;
+
     else
+      # Service exists locally
+
       if [ ${SERVICE_STATUS_EXIT_CODE} -eq 3 ]; then
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
-        /bin/systemctl status "${SYSCTL_NAME}"
+
+        # Service is stopped - start it
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: NGINX Service not started - Starting it, now...";
+        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
+
+      elif [ -f "/run/${SERVICE_NAME}.pid" ]; then
+
+        # Service found to exist locally - Restart the service
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Reloading NGINX Service...";
+        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
+        SYSCTL_RESTART_EXIT_CODE=${?};
+
+      else
+
+        # Get PIDs (Process-IDs) for any non-primary/rogue NGINX runtime(s)
+        MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | grep ${SERVICE_NAME} | wc -l;);
+        for EACH_NGINX_PID in $(netstat -nlp | grep :80 | grep ${SERVICE_NAME} | awk '{print $7}' | cut -d/ -f 1 | sort -u;); do
+          EACH_PID_USER="$(ps --format "user" --pid "${EACH_NGINX_PID}" --no-headers;)";
+          if [ "${EACH_PID_USER}" != "root" ] && [ "${EACH_PID_USER}" != "www-data" ]; then
+            # Kill rogue NGINX processes
+            echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Killing NGINX process with PID=[ ${EACH_NGINX_PID} ]...";
+            ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --pid "${EACH_NGINX_PID}" --no-headers;
+            kill -SIGKILL ${EACH_NGINX_PID};
+          fi;
+        done;
+
+        # [Re-]Start & Reload NGINX service
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Starting NGINX Service...";
+        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
+
       fi;
 
-      if [ -f "/run/${SERVICE_NAME}.pid" ]; then
-        # Service found to exist locally - Restart the service
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
-        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_SNAME}";
-        SYSCTL_RESTART_EXIT_CODE=${?};
-      else
-        # Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
-        MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | wc -l;);
-        # PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1;);
-        if [ -n "${MATCHED_PROCS_PS}" ]; then
-          # Snipe rogue nginx PIDs
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
-          # kill "${PID_ROGUE_NGINX_INSTANCE}";
-        fi;
-        # Start nginx service, again
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
-        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_SNAME}";
-      fi;
     fi;
 
   fi;
+
 fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   nginx.org  |  "nginx: download"  |  https://nginx.org/en/download.html
+#
+# ------------------------------------------------------------

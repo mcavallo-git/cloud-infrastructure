@@ -23,40 +23,49 @@ if [ "$(id -un)" != "root" ]; then
 else
   # ------------------------------------------------------------
   SERVICE_NAME="nginx";
-  SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
-  if [ ${SERVICE_RET_CODE} -eq 1 ]; then
-    # Service NOT found to exist locally
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+  SYSCTL_NAME="${SERVICE_NAME}.service";
+  SYSCTL_HEALTH_CHECK_EXIT_CODE=$(/bin/systemctl list-sockets 1>'/dev/null' 2>&1; echo ${?};);
+  if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ]; then
+
 
   else
-    if [ ${SERVICE_RET_CODE} -ne 0 ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
-      /usr/sbin/service "${SERVICE_NAME}" restart;
-    fi;
 
-    # Service found to exist locally
+    SERVICE_EXISTS_EXIT_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SYSCTL_NAME}" | grep "^${SYSCTL_NAME}" 1>'/dev/null' 2>&1; echo ${?};);
+    SERVICE_STATUS_EXIT_CODE=$(/bin/systemctl status "${SYSCTL_NAME}" 1>'/dev/null' 2>&1; echo ${?};);
 
-    # echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (before reload)...";
-    # /usr/sbin/service "${SERVICE_NAME}" status;
-    if [ -f "/run/nginx.pid" ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
-      nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" reload;
+    echo "SERVICE_EXISTS_EXIT_CODE=[ ${SERVICE_EXISTS_EXIT_CODE} ]";
+    echo "SERVICE_STATUS_EXIT_CODE=[ ${SERVICE_STATUS_EXIT_CODE} ]";
+
+    if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ]; then
+      # Service NOT found to exist locally
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a Windows Machine? If yes, please use NGINX for Windows)";
+      exit 1;
     else
-      # Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
-      MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | wc -l;);
-      # PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
-      if [ -n "${MATCHED_PROCS_PS}" ]; then
-        # Snipe rogue nginx PIDs
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
-        kill "${PID_ROGUE_NGINX_INSTANCE}";
+      if [ ${SERVICE_STATUS_EXIT_CODE} -eq 3 ]; then
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): NGINX Service not started - Starting it, now...";
+        /bin/systemctl status "${SYSCTL_NAME}"
       fi;
-      # Start nginx service, again
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
-       nginx -t && sleep 1 && /usr/sbin/service "${SERVICE_NAME}" start;
-    fi;
 
-    # echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status; ] (after reload)...";
-    # /usr/sbin/service "${SERVICE_NAME}" status;
+      if [ -f "/run/${SERVICE_NAME}.pid" ]; then
+        # Service found to exist locally - Restart the service
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading NGINX Service...";
+        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_SNAME}";
+        SYSCTL_RESTART_EXIT_CODE=${?};
+      else
+        # Get PIDs (Process-IDs) for any non-primary/rogue nginx runtime(s)
+        MATCHED_PROCS_PS=$(ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --no-headers -U "www-data" | wc -l;);
+        # PID_ROGUE_NGINX_INSTANCE=$(netstat -nlp | grep :80 | grep nginx | awk '{print $7}' | cut -d/ -f 1);
+        if [ -n "${MATCHED_PROCS_PS}" ]; then
+          # Snipe rogue nginx PIDs
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Killing Rogue NGINX Instance...";
+          kill "${MATCHED_PROCS_PS}";
+          # kill "${PID_ROGUE_NGINX_INSTANCE}";
+        fi;
+        # Start nginx service, again
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Starting NGINX Service...";
+        nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_SNAME}";
+      fi;
+    fi;
 
   fi;
 fi;

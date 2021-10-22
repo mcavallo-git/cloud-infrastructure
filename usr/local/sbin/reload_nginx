@@ -30,10 +30,8 @@ else
   if [ ${SYSCTL_HEALTH_CHECK_EXIT_CODE} -eq 1 ]; then
     # Systemctl error(s) 
 
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a WSL terminal? If so, please install and use NGINX for Windows @ https://nginx.org/en/download.html )";
-
     # TODO:  Catch WSL instance(s), here, then search for nginx processes using powershell methods, etc. (instead of Linux methods thru WSL)
-
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a WSL terminal? If so, please install and use NGINX for Windows @ https://nginx.org/en/download.html )";
 
   else
 

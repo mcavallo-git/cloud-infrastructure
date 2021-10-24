@@ -69,11 +69,12 @@ if [ 1 -eq 1 ]; then
         echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
         sed -i -re 's/^# (nameserver 8.8.4.4)$/\1/' '/etc/resolv.conf';
         REVERT_RESOLV_CONF=1;
-        echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
-        sleep 30;
       fi;
 
       docker_kill_all;
+
+      echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
+      sleep 30;
 
       curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
 

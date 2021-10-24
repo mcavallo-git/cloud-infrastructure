@@ -66,9 +66,11 @@ if [ 1 -eq 1 ]; then
 
       REVERT_RESOLV_CONF=0;
       if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
-        echo -e "\n\n""Temporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"""\n\n";
+        echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
         sed -i -re 's/^# (nameserver 8.8.4.4)$/\1/' '/etc/resolv.conf';
         REVERT_RESOLV_CONF=1;
+        echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
+        sleep 30;
       fi;
 
       docker_kill_all;
@@ -93,7 +95,7 @@ if [ 1 -eq 1 ]; then
       docker start pihole;
 
       if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
-        echo -e "\n\n""Disabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"""\n\n";
+        echo -e "\n\nDisabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"\n\n";
         sed -i -re 's/^(nameserver 8.8.4.4)$/# \1/' '/etc/resolv.conf';
       fi;
 

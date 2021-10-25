@@ -40,6 +40,8 @@ fi;
 # Runtime Variable(s)
 #
 
+VERBOSE=0;
+
 if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
   VERBOSE=1;
 elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
@@ -48,18 +50,11 @@ elif [ -n "${VERBOSE}" ] && [[ "${VERBOSE}" =~ ^-?[0-9]+$ ]] && (("${VERBOSE}" >
   VERBOSE=1;
 elif [ -n "$@" ] && [ -n "$(echo $@ | grep 'verbose';)" ]; then
   VERBOSE=1;
-else
-  VERBOSE=0;
+elif [ -n "$1" ] && [ "$1" == "-v" ]; then
+  VERBOSE=1;
+elif [ -n "$1" ] && [ "$1" == "--verbose" ]; then
+  VERBOSE=1;
 fi;
-
-VERBOSE="0";
-if [ -n "$1" ]; then
-  if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
-    VERBOSE="1";
-  fi;
-fi;
-
-RETURNED_OS="Unknown";
 
 
 # ------------------------------------------------------------

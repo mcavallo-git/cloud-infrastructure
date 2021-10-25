@@ -121,11 +121,14 @@ elif [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
 
 elif [ -e "/etc/os-release" ] && [ -n "$(command -v sed 2>'/dev/null';)" ]; then
   DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release";);
-  DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
+  DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID=".+\((.+)\)"$/\1/p' "/etc/os-release";);
+  if [ -z "${DISTRO_RELEASE}" ]; then
+    DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
+  fi;
   DISTRO_CODENAME=$(sed -rne 's/^VERSION=".+\((.+)\)"$/\1/p' "/etc/os-release";);
   DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="(.+)"$/\1/p' "/etc/os-release";);
 
-elif [ -n "$(command -v grep 2>'/dev/null';)" ] && [ -n "$(find /etc/*release 2>'/dev/null';)" ]; then
+elif [ -n "$(find /etc/*release 2>'/dev/null';)" ] && [ -n "$(command -v grep 2>'/dev/null';)" ]; then
   DISTRO_ID=$(cat /etc/*release | grep -i "^NAME=";);
   DISTRO_RELEASE=$(cat /etc/*release | grep -i "^VERSION_ID=";);
   DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);

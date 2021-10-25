@@ -450,8 +450,10 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        echo "      |--> Calling [ eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\"; ]...";
-        eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\";
+        echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) $@; ]...";
+        eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) $@;
+        # echo "      |--> Calling [ eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\"; ]...";
+        # eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\";
       else
         echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" $@; ]...";
         "${THIS_SOURCECODE_LOCAL}" $@;

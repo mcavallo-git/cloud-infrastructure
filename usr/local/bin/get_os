@@ -118,7 +118,7 @@ if [ -n "$(command -v vmware 2>'/dev/null';)" ]; then
     DISTRO_DESCRIPTION="${DISTRO_ID} ${DISTRO_RELEASE} ${DISTRO_CODENAME} ${DISTRO_BUILD}";
   fi;
 
-elif [ -n "$(command -v lsb_release 2>'/dev/null';)"
+elif [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
   DISTRO_ID="$(lsb_release --short --id;)";
   DISTRO_RELEASE="$(lsb_release --short --release;)";
   DISTRO_CODENAME="$(lsb_release --short --codename;)";

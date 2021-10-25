@@ -127,7 +127,7 @@ elif [ -e "/etc/os-release" ] && [ -n "$(command -v sed 2>'/dev/null';)" ]; then
   DISTRO_ID=$(sed -rne 's/^ID="?(.+)"?$/\1/p' "/etc/os-release";);
   DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID="?.+\((.+)\)"?$/\1/p' "/etc/os-release";); # Debian (10)
   if [ -z "${DISTRO_RELEASE}" ]; then
-    DISTRO_RELEASE=$(sed -rne 's/^VERSION="?(.+) ?\(.+\)"?$/\1/p' "/etc/os-release";);
+    DISTRO_RELEASE=$(sed -rne 's/^VERSION="?(.+) ?\(.+\)"?$/\1/p' "/etc/os-release";); # Debian (10) - fallback
     if [ -z "${DISTRO_RELEASE}" ]; then
       DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
     fi;

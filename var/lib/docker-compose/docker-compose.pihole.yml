@@ -29,6 +29,9 @@ services:
       - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
       - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
       - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
+      - '${CONFIG_DIR:-.}/etc/lighttpd/external.conf:/etc/lighttpd/external.conf:ro'
+      - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/privkey.pem:/etc/letsencrypt/live/pihole/privkey.pem:ro'
+      - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/fullchain.pem:/etc/letsencrypt/live/pihole/fullchain.pem:ro'
       - /etc/hosts:/etc/hosts:ro
     # Recommended but not required (DHCP needs NET_ADMIN)
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities

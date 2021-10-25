@@ -464,12 +464,12 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) $@; ]...";
-        eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) $@;
-        # echo "      |--> Calling [ eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\"; ]...";
-        # eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) $@\";
+        echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@; ]...";
+        eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@;
+        # echo "      |--> Calling [ eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@\"; ]...";
+        # eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@\";
       else
-        echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" $@; ]...";
+        echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]...";
         "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;
       fi;
       

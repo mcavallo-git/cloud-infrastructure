@@ -95,6 +95,7 @@ else
   ARGS_CRONJOB_SYNC=0;
   ARGS_DEBUG_MODE=0;
   ARGS_GIT_BRANCH="";
+  ARGS_SKIP_SELF_UPDATE=0;
   ARGS_SYNC_DDNS=0;
   ARGS_SYNC_JENKINS=0;
   ARGS_SYNC_NGINX=0;
@@ -170,6 +171,10 @@ else
         ARGS_SYNC_SSH_CONFIG=1;
         ARGS_SYNC_TIMEZONE=1;
         ARGS_SYNC_UFW=1;
+      fi;
+
+      if [ "${EACH_ARG}" == "--skip-self-update" ]; then
+        ARGS_SKIP_SELF_UPDATE=1; # Parse skip-self-update calls
       fi;
 
       if [ "${EACH_ARG}" == "--remove-cronjobs" ] || [ "${EACH_ARG}" == "--remove" ]; then
@@ -257,6 +262,7 @@ else
     echo "Debug:  ARGS_CRONJOB_SYNC = [ ${ARGS_CRONJOB_SYNC} ]";
     echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
     echo "Debug:  ARGS_GIT_BRANCH = [ ${ARGS_GIT_BRANCH} ]";
+    echo "Debug:  ARGS_SKIP_SELF_UPDATE = [ ${ARGS_SKIP_SELF_UPDATE} ]";
     echo "Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
     echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
     echo "Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
@@ -399,37 +405,45 @@ else
 
     UPDATE_SELF_REQUIRED=0;
 
-    THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
-
-    CHECKSUM_LOCAL=$(if [ -f "${THIS_SOURCECODE_LOCAL}" ]; then cat "${THIS_SOURCECODE_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
-    CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);
-    CHECKSUM_ERROR_UNSIGNED=4294967295;
-
-    TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
-    TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
-
-    if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-      echo "";
-      echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-      echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
-      echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
-      echo "Debug:  THIS_SOURCECODE_REMOTE  = [ ${THIS_SOURCECODE_REMOTE} ]";
-      echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
-      echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
-    fi;
-
-    if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
+    if [ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\nInfo:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
-    elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
-      UPDATE_SELF_REQUIRED=0;
-      echo -e "\nInfo:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
-    elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
-      UPDATE_SELF_REQUIRED=0;
-      echo -e "\nInfo:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
-    elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
-      UPDATE_SELF_REQUIRED=1;
-      echo -e "\nInfo:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+      echo -e "\nInfo:  Update skipped - Script called with '--skip-self-update'";
+
+    else
+
+      THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
+
+      CHECKSUM_LOCAL=$(if [ -f "${THIS_SOURCECODE_LOCAL}" ]; then cat "${THIS_SOURCECODE_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
+      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);
+      CHECKSUM_ERROR_UNSIGNED=4294967295;
+
+      TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | wc -l);
+      TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
+
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+        echo "";
+        echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+        echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+        echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
+        echo "Debug:  THIS_SOURCECODE_REMOTE  = [ ${THIS_SOURCECODE_REMOTE} ]";
+        echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
+        echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
+      fi;
+
+      if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
+        UPDATE_SELF_REQUIRED=0;
+        echo -e "\nInfo:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
+      elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
+        UPDATE_SELF_REQUIRED=0;
+        echo -e "\nInfo:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
+      elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
+        UPDATE_SELF_REQUIRED=0;
+        echo -e "\nInfo:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+      elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
+        UPDATE_SELF_REQUIRED=1;
+        echo -e "\nInfo:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+      fi;
+
     fi;
 
     if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then

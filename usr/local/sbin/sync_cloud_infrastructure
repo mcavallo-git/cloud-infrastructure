@@ -1499,6 +1499,7 @@ else
 
             # Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match
             find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
+
               Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
               Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
 
@@ -1527,6 +1528,7 @@ else
                 fi;
 
               fi;
+
             done;
 
             # Setup certbot to reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot

@@ -407,7 +407,7 @@ else
 
     if [ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\nInfo:  Update skipped - Script called with '--skip-self-update'";
+      echo -e "\nInfo:  Update skipped (script called with '--skip-self-update')";
 
     else
 
@@ -432,16 +432,16 @@ else
 
       if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
+        echo -e "\nInfo:  Update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${THIS_SOURCECODE_REMOTE}\")";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
+        echo -e "\nInfo:  Update skipped (checksum of remote version (${CHECKSUM_REMOTE}) is invalid (unsigned int error))";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+        echo -e "\nInfo:  Update skipped (checksum equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
       elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
         UPDATE_SELF_REQUIRED=1;
-        echo -e "\nInfo:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+        echo -e "\nInfo:  Update required (checksums difference detected between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
       fi;
 
     fi;
@@ -464,10 +464,10 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@; ]...";
-        eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@;
-        # echo "      |--> Calling [ eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@\"; ]...";
-        # eval \" $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@\";
+        echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} --skip-self-update $@ \"; ]...";
+        eval " ${THIS_SOURCECODE_LOCAL} --skip-self-update $@ ";
+        # echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@; ]...";
+        # eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@;
       else
         echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]...";
         "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;

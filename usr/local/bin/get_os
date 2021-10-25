@@ -94,12 +94,14 @@ RETURNED_OS="${THIS_OS_TYPE}";
 # fi;
 #
 
+DISTRO_IF_ELIF_BLOCK="";
 DISTRO_ID=""
 DISTRO_RELEASE="";
 DISTRO_CODENAME="";
 DISTRO_DESCRIPTION="";
 
 if [ -n "$(command -v vmware 2>'/dev/null';)" ]; then
+  DISTRO_IF_ELIF_BLOCK="vmware";
   # VMware ESXi Hosts
   DISTRO_ID="$(vmware -l;)";
   DISTRO_RELEASE="$(vmware -v;)";
@@ -114,12 +116,14 @@ if [ -n "$(command -v vmware 2>'/dev/null';)" ]; then
   fi;
 
 elif [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
+  DISTRO_IF_ELIF_BLOCK="lsb_release";
   DISTRO_ID="$(lsb_release --short --id;)";
   DISTRO_RELEASE="$(lsb_release --short --release;)";
   DISTRO_CODENAME="$(lsb_release --short --codename;)";
   DISTRO_DESCRIPTION="$(lsb_release --short --description;)";
 
 elif [ -e "/etc/os-release" ] && [ -n "$(command -v sed 2>'/dev/null';)" ]; then
+  DISTRO_IF_ELIF_BLOCK="/etc/os-release";
   DISTRO_ID=$(sed -rne 's/^ID="(.+)"$/\1/p' "/etc/os-release";);
   DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID=".+\((.+)\)"$/\1/p' "/etc/os-release";); # Debian (10)
   if [ -z "${DISTRO_RELEASE}" ]; then
@@ -129,12 +133,14 @@ elif [ -e "/etc/os-release" ] && [ -n "$(command -v sed 2>'/dev/null';)" ]; then
   DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="(.+)"$/\1/p' "/etc/os-release";);
 
 elif [ -n "$(find /etc/*release 2>'/dev/null';)" ] && [ -n "$(command -v grep 2>'/dev/null';)" ]; then
+  DISTRO_IF_ELIF_BLOCK="/etc/*release";
   DISTRO_ID=$(cat /etc/*release | grep -i "^NAME=";);
   DISTRO_RELEASE=$(cat /etc/*release | grep -i "^VERSION_ID=";);
   DISTRO_CODENAME=$(cat /etc/*release | grep -i "^VERSION=";);
   DISTRO_DESCRIPTION=$(cat /etc/*release | grep -i "^PRETTY_NAME=";);
 
 elif [ -n "$(command -v mintty 2>'/dev/null';)" ]; then # Git Bash
+  DISTRO_IF_ELIF_BLOCK="mintty";
   DISTRO_ID=$(mintty --version | head -n 1 | cut -d' ' -f1;);
   DISTRO_RELEASE=$(mintty --version | head -n 1 | cut -d' ' -f2;);
   DISTRO_CODENAME="";
@@ -258,6 +264,7 @@ if [ ${VERBOSE} -eq 1 ]; then
   echo "IS_RED_HAT=${IS_RED_HAT}"; \
   echo "IS_UBUNTU=${IS_UBUNTU}"; \
   echo ""; \
+  echo "DISTRO_IF_ELIF_BLOCK=${DISTRO_IF_ELIF_BLOCK}"; \
   echo "DISTRO_ID=${DISTRO_ID}"; \
   echo "DISTRO_RELEASE=${DISTRO_RELEASE}"; \
   echo "DISTRO_CODENAME=${DISTRO_CODENAME}"; \

@@ -449,7 +449,6 @@ else
       echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
-      echo "---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
         echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} $@\"; ]...";
         eval \" ${THIS_SOURCECODE_LOCAL} $@\";

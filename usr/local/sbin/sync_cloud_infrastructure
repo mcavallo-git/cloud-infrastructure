@@ -1505,16 +1505,16 @@ else
 
               if [ "$(dig +short ${Each_FQDN};)" == "$(hostname -i | awk '{print $1}';)" ]; then
                 # The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
-                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\" (exact match found between target FQDN's resolved (using dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (using hostname) WAN IPv4 \"$(hostname -i | awk '{print $1}';)\")"; fi;
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN's resolved (using dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (using hostname) WAN IPv4 \"$(hostname -i | awk '{print $1}';)\""; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
 
               elif [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
                 # The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
-                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\" (exact match found between target FQDN's resolved (using dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (using curl) WAN IPv4 \"$(curl -s -4 https://icanhazip.com)\")"; fi;
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN's resolved (using dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (using curl) WAN IPv4 \"$(curl -s -4 https://icanhazip.com)\""; fi;
 
               elif [ "${Each_FQDN}" == "$(hostname --fqdn;)" ]; then
                 # The FQDN is equal to the current device's hostname as a FQDN
-                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\" (exact match found between target FQDN \"${Each_FQDN}\" & current device's hostname as a FQDN \"$(hostname --fqdn;)\")"; fi;
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN \"${Each_FQDN}\" & current device's hostname as a FQDN \"$(hostname --fqdn;)\""; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
 
               else

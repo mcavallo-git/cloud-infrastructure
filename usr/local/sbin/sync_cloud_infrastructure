@@ -1519,12 +1519,17 @@ else
 
               else
                 rm -f "${Each_SitesAvailable}";
-                if [ -L "${Each_SitesEnabled}" ]; then
+                if [ -h "${Each_SitesEnabled}" ] || [ -f "${Each_SitesEnabled}" ]; then
                   # If the FQDN's IPv4 didn't resolve to the same IPv4 as the current workstation/server's WAN IPv4, but the FQDN is found to be enabled anyways, then disable it
-                  if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\"\n        |--> No match found between FQDN's resolved WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved WAN IPv4 \"$(hostname -i | awk '{print $1}';)\"\n        |--> No match found between target FQDN \"${Each_FQDN}\" & current device's hostname (formatted as a FQDN) \"$(hostname --fqdn;)\""; fi;
-                  unlink "${Each_SitesEnabled}";
+                  if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n        |--> No match found between FQDN's resolved WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved WAN IPv4 \"$(hostname -i | awk '{print $1}';)\"\n        |--> No match found between target FQDN \"${Each_FQDN}\" & current device's hostname (formatted as a FQDN) \"$(hostname --fqdn;)\""; fi;
+                    if [ -h "${Each_SitesEnabled}" ]; then
+                      unlink "${Each_SitesEnabled}";
+                    elif [ -f "${Each_SitesEnabled}" ]; then
+                      rm -f "${Each_SitesEnabled}";
+                    fi;
                   # else
                   #   echo -e "  |\n  |--> Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
+                  # fi;
                 fi;
 
               fi;

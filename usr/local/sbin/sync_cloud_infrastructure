@@ -56,7 +56,7 @@ else
 
   # ------------------------------------------------------------
   # Log the starting timestamp for the current runtime
-  echo -e "\n""-- Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+  echo -e "\n-- Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
   # ------------------------------------------------------------
   #
@@ -338,29 +338,29 @@ else
         if [ 1 -eq 1 ]; then
           # Debian distros (Ubuntu, Raspbian, etc.)
           #  |--> Individually install missing packages (to avoid errors from single-packages from taking-out the entire bulk-install attempt)
-          echo -e "\n""Info:  Calling [ apt-get update -y; ]...";
+          echo -e "\nInfo:  Calling [ apt-get update -y; ]...";
           apt-get -y update;
           for EACH_MISSING_PKG in "${MISSING_PKGS_ARRAY[@]}"; do
-            echo -e "\n""Info:  Calling [ apt-get -y install ${EACH_MISSING_PKG}; ]...";
+            echo -e "\nInfo:  Calling [ apt-get -y install ${EACH_MISSING_PKG}; ]...";
             apt-get -y install ${EACH_MISSING_PKG};
           done;
         else
           # Debian distros (Ubuntu, Raspbian, etc.)
           #  |--> Bulk install missing packages
-          echo -e "\n""Info:  Calling [ apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
+          echo -e "\nInfo:  Calling [ apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
           apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
         fi;
 
       elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then
         # RHEL, CentOS distros
         #  |--> Bulk install missing packages
-        echo -e "\n""Info:  Calling [ yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
+        echo -e "\nInfo:  Calling [ yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
         yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]};
 
       elif [ -n "$(command -v apk 2>'/dev/null';)" ]; then
         # Alpine distros
         #  |--> Bulk install missing packages
-        echo -e "\n""Info:  Calling [ apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
+        echo -e "\nInfo:  Calling [ apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
         apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]};
 
       fi;
@@ -386,7 +386,7 @@ else
       done;
 
       if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
-        echo -e "\n""Error:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
+        echo -e "\nError:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
         EXIT_CODE=1;
       fi;
 
@@ -420,16 +420,16 @@ else
 
     if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\n""Info:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
+      echo -e "\nInfo:  Update skipped - Minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source-code (${TOTAL_LINES_THISSCRIPT_REMOTE}) of path/url \"${THIS_SOURCECODE_REMOTE}\"";
     elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\n""Info:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
+      echo -e "\nInfo:  Update skipped - Checksum of remote-version (${CHECKSUM_REMOTE}) is invalid (unsigned-int error)";
     elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\n""Info:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+      echo -e "\nInfo:  Update skipped - Checksum equal between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
     elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
       UPDATE_SELF_REQUIRED=1;
-      echo -e "\n""Info:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
+      echo -e "\nInfo:  Update required - Checksums-difference detected between local-version (${CHECKSUM_LOCAL}) & remote-version (${CHECKSUM_REMOTE})";
     fi;
 
     if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
@@ -446,18 +446,18 @@ else
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Update complete";
 
-      echo -e "\n""---- Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
+      echo -e "\n---- Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       "${THIS_SOURCECODE_LOCAL}" $@;
-      echo -e "\n""==== End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
+      echo -e "\n==== End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
       exit 0;
 
     else
 
       if [ -z "$(command -v git 2>'/dev/null';)" ]; then
         # Unable to pull updated version of code-repository via git
-        echo -e "\n""Warning:  Unable to pull/update repository codebase - Pre-requisite command \"git\" not found";
+        echo -e "\nWarning:  Unable to pull/update repository codebase - Pre-requisite command \"git\" not found";
 
       else
         # Ensure the (GitHub) Repos directory exists, locally
@@ -466,7 +466,7 @@ else
         fi;
 
         # Fetch/Pull/Clone the Remote Repo
-        echo -e "\n""Info:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
+        echo -e "\nInfo:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}"; fi;
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}"; fi;
         BENCHMARK_START=$(date +'%s.%N');
@@ -484,7 +484,7 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # Set ownership for git-repo files as-intended
-        echo -e "\n""Info:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
+        echo -e "\nInfo:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
         BENCHMARK_START=$(date +'%s.%N');
         # find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
         find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
@@ -492,7 +492,7 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
         # Set ownership for git-repo directories as-intended
-        echo -e "\n""Info:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
+        echo -e "\nInfo:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
         BENCHMARK_START=$(date +'%s.%N');
         # find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
         find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
@@ -505,13 +505,13 @@ else
         WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
         if [ -n "${WSL_CHECK_EXISTS}" ]; then
           # Attempt to resolve the Windows-user who is running the current WSL instance
-          echo -e "\n""Info:  Checking for Windows Subsystem for Linux (WSL) Environment";
+          echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment";
           WIN32_USERNAME=$(get_username_windows_wsl);
           WIN32_USER_ERRORS="$?";
         fi;
         if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
           #  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
-          echo -e "\n""Info:  Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+          echo -e "\nInfo:  Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
           WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
           WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
           if [ ! -n "${WIN32_USR_LOCAL}" ]; then
@@ -538,7 +538,7 @@ else
       if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
         # Windows/WSL check(s) failed (or were skipped)
         #  |--> Check for required Linux filepath(s) as a fallback
-        echo -e "\n""Info:  Checking for local repository files within user [ $(whoami) ]'s home-directory";
+        echo -e "\nInfo:  Checking for local repository files within user [ $(whoami) ]'s home-directory";
         BENCHMARK_START=$(date +'%s.%N');
         WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
         WHOAMI_USR_LOCAL=$(find ${WHOAMI_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
@@ -652,7 +652,7 @@ else
         DESTINATION_PATH="/usr/local/bin";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0755"; DIR_PERMS="0755";
-        echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -670,7 +670,7 @@ else
         DESTINATION_PATH="/usr/local/sbin";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0755"; DIR_PERMS="0755";
-        echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -689,7 +689,7 @@ else
           if [ $(sed -rne 's/^#\s*(set\s+bell-style\s+none\s*)$/\0/p' '/etc/inputrc' | wc -l 2>'/dev/null';) -gt 0 ]; then
             ### Bash - Do not bell on tab-completion (silence it, instead - especially intended for WSL (Windows Subsystem for Linux))
             BENCHMARK_START=$(date +'%s.%N');
-            echo -e "\n""Info:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
+            echo -e "\nInfo:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
             sed -i".${START_TIMESTAMP}.bak" -r -e 's/^#\s*(set\s+bell-style\s+none\s*)$/\1/' '/etc/inputrc'; # Uncomment lines starting with  [ # set bell-style none ]
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
@@ -704,7 +704,7 @@ else
           if [ $(sed -rne 's/^(\s*export ?.*)( MAIL)( ?.*)$/\0/p' '/etc/profile' | wc -l 2>'/dev/null';) -gt 0 ]; then
             ### Bash - Disable "You have mail in ..." && "You have new mail in /var/spool/mail/..." alerts
             BENCHMARK_START=$(date +'%s.%N');
-            echo -e "\n""Info:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
+            echo -e "\nInfo:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
             sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
             sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
@@ -720,7 +720,7 @@ else
           DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
           BENCHMARK_START=$(date +'%s.%N');
           rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
@@ -744,7 +744,7 @@ else
         DESTINATION_PATH="/etc/profile.d/required_paths.sh";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0644";
-        echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -762,7 +762,7 @@ else
         DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0644";
-        echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -780,7 +780,7 @@ else
         DESTINATION_PATH="/etc/whitelist.d";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
         FILE_PERMS="0644"; DIR_PERMS="0755";
-        echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -798,7 +798,7 @@ else
         if [ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]; then
 
           if [ -z "$(command -v ssh 2>'/dev/null';)" ]; then
-            echo -e "\n""Info:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
+            echo -e "\nInfo:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
 
           else
 
@@ -810,7 +810,7 @@ else
             SSHD_CONFIG_SED="${SSHD_CONFIG_LIVE}.sed";
 
             if [ ! -d "/etc/ssh/authorized_keys" ]; then
-              echo -e "\n""Info:  Creating directory \"/etc/ssh/authorized_keys\"";
+              echo -e "\nInfo:  Creating directory \"/etc/ssh/authorized_keys\"";
               mkdir "/etc/ssh/authorized_keys";
               chmod 0755 "/etc/ssh/authorized_keys";
               chown "root:root" "/etc/ssh/authorized_keys";
@@ -838,16 +838,16 @@ else
             dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
             if [ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
               # SSH-Config file already fully up-to-date
-              echo -e "\n""Info:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
+              echo -e "\nInfo:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
               echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
 
             elif [ ! -d "/home/" ] || [ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
               # Need another user other than root to SSH into this machine --> No user directories found in /home/.
-              echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one user other than root whose home directory is within  [ /home/. ] to access this workstation";
+              echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one user other than root whose home directory is within  [ /home/. ] to access this workstation";
 
             elif [ ! -d "/etc/ssh/authorized_keys/" ] || [ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]; then
               # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
-              echo -e "\n""Info:  Skipped SSH Config-Update - Must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ]";
+              echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/$SUDO_USER ]";
 
             else
               # At least one Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
@@ -929,7 +929,7 @@ else
                       && RESTART_SERVICE_SSH=1;
                   fi;
                 else
-                  echo -e "\n""Info:  Skipped SSH Config-Update - Already running the latest revision";
+                  echo -e "\nInfo:  Skipped SSH Config-Update - Already running the latest revision";
                 fi;
                 BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
@@ -944,7 +944,7 @@ else
         # Sync Timezone
         TZ="America/New_York";
         if [ ${ARGS_SYNC_TIMEZONE} -eq 1 ] && [ "$(cat /etc/timezone;)" != "${TZ}" ]; then
-            echo -e "\n""Info:  Request to set Timezone to \"${TZ}\"";
+            echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
             read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
             echo "";
             if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -971,7 +971,7 @@ else
 
               if [ ${UFW_ENABLED} -eq 0 ]; then
                 # UFW DISABLED - Show recommendations for general-practice setup
-                echo -e "\n""!!! Warning !!!";
+                echo -e "\n!!! Warning !!!";
                 echo "  |";
                 echo "  |--> Firewall package UFW (default Debian firewall) is installed but disabled";
                 echo "  |";
@@ -1028,7 +1028,7 @@ else
 
           if [ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]; then
             CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-            echo -e "\n""Info:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
+            echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
             wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
               && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
@@ -1053,7 +1053,7 @@ else
           DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
           BENCHMARK_START=$(date +'%s.%N');
           rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
@@ -1079,7 +1079,7 @@ else
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+                echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
                 BENCHMARK_START=$(date +'%s.%N');
                 rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
@@ -1109,7 +1109,7 @@ else
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1138,7 +1138,7 @@ else
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1168,7 +1168,7 @@ else
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1193,7 +1193,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1229,7 +1229,7 @@ else
             USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
           fi;
         done;
-        echo -e "\n""Info:  Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+        echo -e "\nInfo:  Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
         BENCHMARK_START=$(date +'%s.%N');
         # Begin copying files to SSH-Enabled User-Home Directories
         for EACH_FILE in ${FILES_TO_COPY}; do
@@ -1273,7 +1273,7 @@ else
           if [ ${ARGS_SYNC_DDNS} -eq 1 ]; then
             # Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
             CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
-            echo -e "\n""Info:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository";
+            echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
 
             /usr/local/bin/ddns_setup \
@@ -1297,7 +1297,7 @@ else
           if [ ${SERVICE_RET_CODE} -ne 0 ]; then
 
             # Service not found locally
-            echo -e "\n""Info:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
+            echo -e "\nInfo:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
 
           else
 
@@ -1322,7 +1322,7 @@ else
             DESTINATION_PATH="/var/cache/jenkins/war";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
@@ -1346,7 +1346,7 @@ else
             DESTINATION_PATH="/etc/default/jenkins";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
@@ -1366,7 +1366,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1384,7 +1384,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1402,7 +1402,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_sync_ci";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1420,7 +1420,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1448,14 +1448,14 @@ else
         if [ ${ARGS_SYNC_NGINX} -eq 1 ]; then
           if [ -z "$(command -v nginx 2>'/dev/null';)" ]; then
             # NGINX does NOT exist locally
-            echo -e "\n""Info:  Skipped NGINX sync - No local 'nginx' service exists";
+            echo -e "\nInfo:  Skipped NGINX sync - No local 'nginx' service exists";
 
           else
             # NGINX exists locally
             DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\n""Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "root:root" "${DESTINATION_PATH}";
@@ -1551,9 +1551,9 @@ else
           LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>'/dev/null';);
           COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
           if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
-            echo -e "\n""Info:  Skipped removal of cron sync-triggers - No scripts found matching \"/etc/cron.d/CRON_*\"";
+            echo -e "\nInfo:  Skipped removal of cron sync-triggers - No scripts found matching \"/etc/cron.d/CRON_*\"";
           else
-            echo -e "\n""Info:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
+            echo -e "\nInfo:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
             for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
               echo "  |";
               read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\"? (y/n)  " -n 1 -t 60 -r; # Await single keypress
@@ -1713,14 +1713,14 @@ else
         fi;
         if [ "${LOGDIR}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${LOGDIR}" == "/var/log/sync_cloud_infrastructure" ]; then
           if [ -d "${LOGDIR}" ]; then
-            echo -e "\n""Info:  Cleaning logs older than 3 days old from directory \"${LOGDIR}\"";
+            echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${LOGDIR}\"";
             find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
           fi;
         fi;
 
         # ------------------------------------------------------------
         # Show runtime statistics (intended only to be shown during runs which complete without error)
-        echo -e "\n""Info:  End of \"sync_cloud_infrastructure\" runtime";
+        echo -e "\nInfo:  End of \"sync_cloud_infrastructure\" runtime";
         BENCHMARK_START=${START_SECONDS_NANOSECONDS};
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
@@ -1734,7 +1734,7 @@ else
 
       # ------------------------------------------------------------
       # Log the ending timestamp for the current runtime
-      echo -e "\n""== Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+      echo -e "\n== Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
     fi;
 

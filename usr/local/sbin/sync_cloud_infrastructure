@@ -464,10 +464,16 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} --skip-self-update $@ \"; ]...";
-        eval " ${THIS_SOURCECODE_LOCAL} --skip-self-update $@ ";
+        RECURSIVE_CALLBACK_TRIMMED="$(echo "${THIS_SOURCECODE_LOCAL} --skip-self-update $@" | awk '{$1=$1};1';)";
+        echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_TRIMMED}\"; ]...";
+        eval " ${RECURSIVE_CALLBACK_TRIMMED}";
+        # ------------------------------
+        # echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} --skip-self-update $@\"; ]...";
+        # eval " ${THIS_SOURCECODE_LOCAL} --skip-self-update $@";
+        # ------------------------------
         # echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@; ]...";
         # eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@;
+        # ------------------------------
       else
         echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]...";
         "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;

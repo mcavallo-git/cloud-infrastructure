@@ -464,9 +464,14 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        RECURSIVE_CALLBACK_TRIMMED="$(echo "${THIS_SOURCECODE_LOCAL} --skip-self-update $@" | awk '{$1=$1};1';)";
-        echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_TRIMMED}\"; ]...";
-        eval " ${RECURSIVE_CALLBACK_TRIMMED}";
+        RECURSIVE_CALLBACK_COMMAND="${THIS_SOURCECODE_LOCAL} --skip-self-update $@";
+        if [ -n "$(command -v sed 2>'/dev/null';)" ]; then
+          # Trim leading/trailing whitespace
+          RECURSIVE_CALLBACK_COMMAND="$(echo "${RECURSIVE_CALLBACK_COMMAND}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+        fi;
+        # Recursively call this script
+        echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...";
+        eval " ${RECURSIVE_CALLBACK_COMMAND}";
         # ------------------------------
         # echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} --skip-self-update $@\"; ]...";
         # eval " ${THIS_SOURCECODE_LOCAL} --skip-self-update $@";
@@ -478,9 +483,8 @@ else
         echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]...";
         "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;
       fi;
-      
+
       echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
-      exit 0;
 
     else
 

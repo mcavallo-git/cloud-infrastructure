@@ -32,7 +32,7 @@ exec 2>&1;
 if [ "$(id -un)" != "root" ]; then
   echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-  EXIT_CODE=1;
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
   # ------------------------------------------------------------
   #
@@ -141,7 +141,7 @@ else
           echo "                        |--> Sync cron-job(s) via '--cron sync' argument";
           echo "                        |--> Remove synced cron-job(s) via '--cron remove' argument";
           echo "";
-          EXIT_CODE=1;
+          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
         fi;
       fi;
 
@@ -155,7 +155,7 @@ else
           echo "                        |";
           echo "                        |--> Change repository branch via '--git-branch BRANCH_NAME_HERE' argument";
           echo "";
-          EXIT_CODE=1;
+          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
         fi;
       fi;
 
@@ -247,7 +247,7 @@ else
   if [ "${WAN_TEST_EXIT_CODE}" != "0" ]; then
     echo "";
     echo "Error:  WAN (internet) connection unable to be verified (required to sync cloud-infrastructure files) - Exiting...";
-    EXIT_CODE=1;
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 
   # ------------------------------------------------------------
@@ -393,7 +393,7 @@ else
 
       if [ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]; then
         echo -e "\nError:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
-        EXIT_CODE=1;
+        EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
       fi;
 
     fi;
@@ -543,7 +543,7 @@ else
           if [ ! -n "${WIN32_USR_LOCAL}" ]; then
             echo "";
             echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
-            EXIT_CODE=1;
+            EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
           else
             DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
             DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
@@ -648,12 +648,12 @@ else
       # ------------------------------
       if [ -z "${DIR_REPO_BASE}" ]; then
         # Required variable(s) are empty/unset
-        EXIT_CODE=1;
+        EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
         echo "";
         echo "Error:  Required variable is empty/unset: \${DIR_REPO_BASE}";
       elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
         # Required source directory/directories not found
-        EXIT_CODE=1;
+        EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
         if [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ]; then
           echo "";
           echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/bin/ ]";
@@ -1694,10 +1694,14 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         echo "";
 
-      elif [ "${EXIT_CODE}" != "0" ]; then
-        echo -e "\nError:  One or more errors were found ( EXIT_CODE=[ ${EXIT_CODE} ] )";
+      elif [ -v EXIT_CODE ] && [ "${EXIT_CODE}" != "0" ]; then
+
+        echo -e "\nError:  One or more errors were found ( EXIT_CODE = [ ${EXIT_CODE} ] )";
+
       else 
+
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nInfo:  'Else' statement placeholder (to-be-updated)"; fi;
+
       fi;
       # ------------------------------
       if [ 1 -eq 1 ]; then
@@ -1720,4 +1724,4 @@ fi;
 if [ ! -v EXIT_CODE ]; then
   EXIT_CODE=0;
 fi;
-exit ${EXIT_CODE};
+# exit ${EXIT_CODE};

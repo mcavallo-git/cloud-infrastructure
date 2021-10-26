@@ -407,7 +407,7 @@ else
 
     if [ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]; then
       UPDATE_SELF_REQUIRED=0;
-      echo -e "\nInfo:  Update skipped (script called with '--skip-self-update')";
+      echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')";
 
     else
 
@@ -432,16 +432,16 @@ else
 
       if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${THIS_SOURCECODE_REMOTE}\")";
+        echo -e "\nInfo:  Self-update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${THIS_SOURCECODE_REMOTE}\")";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped (checksum of remote version (${CHECKSUM_REMOTE}) is invalid (unsigned int error))";
+        echo -e "\nInfo:  Self-update skipped (checksum of remote version (${CHECKSUM_REMOTE}) is invalid (unsigned int error))";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_LOCAL}" ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Update skipped (checksum equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
+        echo -e "\nInfo:  Self-update skipped (checksum equal between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
       elif [ "${CHECKSUM_REMOTE}" != "${CHECKSUM_LOCAL}" ]; then
         UPDATE_SELF_REQUIRED=1;
-        echo -e "\nInfo:  Update required (checksums difference detected between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
+        echo -e "\nInfo:  Self-update required (checksums difference detected between local version (${CHECKSUM_LOCAL}) & remote version (${CHECKSUM_REMOTE}))";
       fi;
 
     fi;
@@ -453,12 +453,13 @@ else
 
     if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then
       # Allow this script to update itself by downloading the latest version directly from the source
-      echo "Info:  Updating local runtime \"${THIS_SOURCECODE_LOCAL}\"...";
+      echo "Info:  Running self-update...";
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${THIS_SOURCECODE_REMOTE}\" to local path \"${THIS_SOURCECODE_LOCAL}\""; fi
       BENCHMARK_START=$(date +'%s.%N');
       curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" -o "${THIS_SOURCECODE_LOCAL}" && chmod 0755 "${THIS_SOURCECODE_LOCAL}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-      echo "Info:  Update complete";
+      echo "Info:  Self-update complete";
 
       echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
 

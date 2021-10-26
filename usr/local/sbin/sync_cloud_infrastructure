@@ -970,9 +970,9 @@ else
         if [ ${ARGS_SYNC_UFW} -eq 1 ]; then
           # Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
           if [ -n "$(command -v ufw 2>'/dev/null';)" ]; then
-            # Check for base-level errors with the UFW runtime (usually from Windows Subsystem for Linux + IPTables)
+            # Distros: Debian, Ubuntu, etc.
             if [[ $(ufw status 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
-              # Check UFW Enabled/Disabled Status
+              # Check if UFW is enabled or disabled
               UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
                 echo "";
@@ -982,6 +982,8 @@ else
               if [ ${UFW_ENABLED} -eq 0 ]; then
                 # UFW DISABLED - Show recommendations for general-practice setup
                 echo -e "\nWarning:  Firewall package UFW (default Debian firewall) is installed but disabled";
+                echo -e "Warning:  Firewall package UFW (default Debian firewall) is installed but disabled";
+                echo -e "  |--> Call this script with \"--debug\" for suggested resolution path";
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
                   echo "  |";
                   echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
@@ -1013,30 +1015,24 @@ else
                 #   fi;
                 # fi;
               fi;
-
-              # Proceed if UFW is, indeed, enabled
               if [ ${UFW_ENABLED} -eq 1 ]; then
-
+                # UFW is enabled
                 RESTART_SERVICE_UFW=1;
                 RESTART_SERVICE_SSH=1;
-
                 # Sync Cronjob Automation:  UFW DDNS Updates
                 if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
                   ENABLE_CRON_DDNS_UPDATER=1;
                 fi;
               fi;
-
             fi;
-
           elif [ -n "$(command -v firewall-cmd 2>'/dev/null';)" ]; then
-
+            # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             if [ $(systemctl is-enabled firewalld 1>'/dev/null' 2>&1; echo $?) -eq 0 ]; then
               ENABLE_CRON_DDNS_UPDATER=1;
             fi;
-
           fi;
-
           if [ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]; then
+            # Enable a cronjob to perform scheduled updates/syncs of the UFW firewall whitelist
             CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
             echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository";
             BENCHMARK_START=$(date +'%s.%N');
@@ -1054,7 +1050,6 @@ else
         #
         if [ ${ARGS_CRONJOB_SYNC} -eq 1 ]; then
           RESTART_SERVICE_CRON=1;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_sync_cloud_infrastructure
@@ -1072,7 +1067,6 @@ else
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
           if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_certbot_renew_all
@@ -1103,7 +1097,6 @@ else
               fi;
             fi;
           fi;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_journalctl_logfile_cleanup
@@ -1132,7 +1125,6 @@ else
               echo "  |--> Denied - Logfile Auto-Cleanup disabled";
             fi;
           fi;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_update_dns_config
@@ -1161,7 +1153,6 @@ else
               echo "  |--> Denied - DNS-server sync disabled";
             fi;
           fi;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_update_system
@@ -1191,7 +1182,6 @@ else
               echo "  |--> Denied - System & package weekly updates disabled";
             fi;
           fi;
-
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_raspi_hw_monitor
@@ -1214,21 +1204,16 @@ else
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
-
         fi;
-
         # ------------------------------------------------------------
         #
         # ${HOME}/.
         #
-
         # Get list of files to Copy into Home-Dirs
         COPY_FROM_SOURCE="${DIR_REPO_BASE}/root";
         FILES_TO_COPY=$(ls -hAl "${COPY_FROM_SOURCE}/" | awk '{print $9}');
-
         # User-List whose Home-Dirs will be updated
         LINUX_BASH_USERS=$(cat /etc/passwd | grep /bin/bash | awk -F':' '{ print $1}');
-
         # Determine longest Username to enhance log-readability by left-padding (right-aligning) output text, below
         #   NOTE: Linux usernames cannot be longer than 32 chars (according to useradd man page)
         USERNAMES_MOSTCHARS=0;
@@ -1273,7 +1258,6 @@ else
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |"; fi;
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # ------------------------------------------------------------
         #
         # /etc/cron.d/CRON_ddns_updater
@@ -1294,28 +1278,22 @@ else
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
-
         # ------------------------------------------------------------
         #
         # Jenkins Items
         #
         if [ ${ARGS_SYNC_JENKINS} -eq 1 ] && [ ${RESTART_SERVICE_JENKINS} -eq 0 ] && [ -x "/usr/sbin/service" ]; then
-
           SERVICE_NAME="jenkins";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
           if [ ${SERVICE_RET_CODE} -ne 0 ]; then
-
             # Service not found locally
             echo -e "\nInfo:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
-
           else
-
             # ------------------------------------------------------------
             #
             # Set directory permissions as-intended
             #  |--> Fix for issue where jenkins images wouldn't show-up while on "Manage Jenkins" page (or directly accessing them)
             #
-
             DESTINATION_PATH="/var/cache/jenkins";
             DIR_PERMS="0751";
             chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
@@ -1323,7 +1301,6 @@ else
             DESTINATION_PATH="/var/cache/jenkins/war";
             DIR_PERMS="0755";
             chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
-
             # ------------------------------------------------------------
             #
             # /var/cache/jenkins/war
@@ -1341,13 +1318,11 @@ else
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
             # /var/cache/jenkins/war - Set policies to stop Selinux from blocking access to cached Jenkins images within "/var/cache/jenkins/war/images"
             if [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
               chcon -R -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
               semanage fcontext -a -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
             fi;
-
             # ------------------------------------------------------------
             #
             # /etc/default/jenkins
@@ -1365,9 +1340,7 @@ else
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
             if [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
-
               # ------------------------------------------------------------
               #
               # /etc/cron.d/CRON_jenkins_export_config
@@ -1385,7 +1358,6 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
               # ------------------------------------------------------------
               #
               # /etc/cron.d/CRON_jenkins_log_cleanup
@@ -1403,7 +1375,6 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
               # ------------------------------------------------------------
               #
               # /etc/cron.d/CRON_jenkins_sync_ci
@@ -1421,7 +1392,6 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
               # ------------------------------------------------------------
               #
               # /etc/cron.d/CRON_jenkins_warfile_update
@@ -1439,17 +1409,12 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
             fi;
-
             RESTART_SERVICE_JENKINS=1;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
           fi;
-
         fi;
-
         # ------------------------------------------------------------
         #
         # /etc/nginx
@@ -1458,9 +1423,12 @@ else
           if [ -z "$(command -v nginx 2>'/dev/null';)" ]; then
             # NGINX does NOT exist locally
             echo -e "\nInfo:  Skipped NGINX sync - No local 'nginx' service exists";
-
           else
             # NGINX exists locally
+            # ------------------------------------------------------------
+            #
+            # /etc/nginx
+            #
             DESTINATION_PATH="/etc/nginx"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
@@ -1472,8 +1440,10 @@ else
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
             if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-
+            # ------------------------------------------------------------
+            #
             # /var/www/error
+            #
             DESTINATION_PATH="/var/www/error"; if [ ! -d  "${DESTINATION_PATH}" ]; then mkdir -p "${DESTINATION_PATH}"; fi;
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
             FILE_PERMS="0644"; DIR_PERMS="0755";
@@ -1485,12 +1455,11 @@ else
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \;; # chmod files
             if [ "${FILE_PERMS}" == "${DIR_PERMS}" ]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-
+            # Check if running on Fedora
             if [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-              # Allow files to be read without selinux blocking them
+              # Selinux - Whitelist/allow read actions on a specific file/directory filepath (otherwise Selinux (by-default) will prevent read requests on said filepath(s) for the local web service user (commonly 'wwww-data') and therefore fail web requests to servers hosted from this device
               chcon -Rt httpd_sys_content_t "${DESTINATION_PATH}";
             fi;
-
             # Ensure that the Diffie-Hellman parameter for DHE ciphersuites exists
             DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
             DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
@@ -1498,34 +1467,27 @@ else
               echo "  |--> Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
               openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
             fi;
-
             # Set the environment-specific web-server runtime user
             if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
               sed -i 's|user www-data;|user www-data;|g' "/etc/nginx/nginx.conf";
             elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
               sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
             fi;
-
             # Walk through all sites-available (from repo), resolve their IPv4, then compare against current device's WAN IPv4 & only sync if the two IPv4's are a direct match
             find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
-
               Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
               Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
-
               if [ "$(dig +short ${Each_FQDN};)" == "$(hostname -i | awk '{print $1}';)" ]; then
                 # The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN's resolved (dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (hostname) WAN IPv4 \"$(hostname -i | awk '{print $1}';)\""; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-
               elif [ "$(dig +short ${Each_FQDN})" == "$(curl -s -4 https://icanhazip.com)" ]; then
                 # The FQDN resolved to an IPv4 which matches this workstation/server's WAN IPv4 - Set this FQDN to "Enabled" for the current NGINX server
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN's resolved (dig) WAN IPv4 \"$(dig +short ${Each_FQDN})\" & current device's resolved (curl) WAN IPv4 \"$(curl -s -4 https://icanhazip.com)\""; fi;
-
               elif [ "${Each_FQDN}" == "$(hostname --fqdn;)" ]; then
                 # The FQDN is equal to the current device's hostname as a FQDN
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "  |\n  |--> $(if [ -e "${Each_SitesEnabled}" ]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between target FQDN \"${Each_FQDN}\" & current device's hostname (formatted as a FQDN) \"$(hostname --fqdn;)\""; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-
               else
                 rm -f "${Each_SitesAvailable}";
                 if [ -h "${Each_SitesEnabled}" ] || [ -f "${Each_SitesEnabled}" ]; then
@@ -1538,11 +1500,9 @@ else
                     fi;
                   # else
                   #   echo -e "  |\n  |--> Skipped NGINX FQDN \"${Each_FQDN}\" (No match found between FQDN's-Resolved-IPv4 & Current WAN IPv4)";
-                  # fi;
+                  fi;
                 fi;
-
               fi;
-
             done;
 
             # Setup certbot to reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot

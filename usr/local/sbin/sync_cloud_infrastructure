@@ -1501,20 +1501,19 @@ else
                 fi;
               fi;
             done;
-
             # Setup certbot to reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot
             if [ -d "/etc/letsencrypt/renewal-hooks/deploy" ] && [ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ] && [ -f "/usr/local/sbin/reload_nginx" ]; then
               ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
             fi;
-
             RESTART_SERVICE_NGINX=1;
             BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
           fi;
-
         fi;
-
+        # ------------------------------------------------------------
+        #
+        # /etc/cron.d/CRON_*
+        #
         if [ ${ARGS_CRONJOB_REMOVE} -eq 1 ]; then
           #
           # --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
@@ -1536,13 +1535,10 @@ else
               fi;
             done;
           fi;
-
         fi;
-
         # ------------------------------------------------------------
         # DELETE OLD FILES / UNLINK OLD SYMLINKS
         # ------------------------------------------------------------
-
         DELDIR="/usr/local/bin/";
         TO_DEL="${DELDIR}/docker_check_installation_status"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/docker_list_volume_maps.sh"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
@@ -1590,11 +1586,12 @@ else
         TO_DEL="${DELDIR}Jenkins Material Theme (GitHub).url"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
 
         # ------------------------------------------------------------
-        # Restart Service (if needed)  -->  cron
-        # ------------------------------------------------------------
+        #
+        # cron  -->  Restart service (if needed)
+        #
         if [ ${RESTART_SERVICE_CRON} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
           CRON_SVC_FOUND=0; CRON_SVC_NAMES="";
-          # ------------------------------------------------------------
+          # cron  -->  Restart service
           SERVICE_NAME="cron";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
           if [ ${SERVICE_RET_CODE} -eq 0 ]; then
@@ -1603,7 +1600,7 @@ else
             /usr/sbin/service "${SERVICE_NAME}" restart;
             /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
           fi;
-          # ------------------------------------------------------------
+          # crond  -->  Restart service
           SERVICE_NAME="crond";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
           if [ ${SERVICE_RET_CODE} -eq 0 ]; then
@@ -1612,15 +1609,14 @@ else
             /usr/sbin/service "${SERVICE_NAME}" restart;
             /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
           fi;
-          # ------------------------------------------------------------
           if [ ${CRON_SVC_FOUND} -eq 0 ]; then
             echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
           fi;
         fi;
-
         # ------------------------------------------------------------
-        # Restart Service (if needed)  -->  jenkins
-        # ------------------------------------------------------------
+        #
+        # jenkins  -->  Restart service (if needed)
+        #
         if [ ${RESTART_SERVICE_JENKINS} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
           SERVICE_NAME="jenkins";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -1631,10 +1627,10 @@ else
             echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
           fi;
         fi;
-
         # ------------------------------------------------------------
-        # Restart Service (if needed)  -->  nginx
-        # ------------------------------------------------------------
+        #
+        # nginx  -->  Restart service (if needed)
+        #
         if [ ${RESTART_SERVICE_NGINX} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
           SERVICE_NAME="nginx";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -1646,8 +1642,9 @@ else
         fi;
 
         # ------------------------------------------------------------
-        # Restart Service (if needed)  -->  ssh
-        # ------------------------------------------------------------
+        #
+        # ssh  -->  Restart service (if needed)
+        #
         if [ ${RESTART_SERVICE_SSH} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
           SERVICE_NAME="sshd";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -1658,10 +1655,10 @@ else
             echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
           fi;
         fi;
-
         # ------------------------------------------------------------
-        # Restart Service (if needed)  -->  ufw
-        # ------------------------------------------------------------
+        #
+        # ufw  -->  Restart service (if needed)
+        #
         if [ ${RESTART_SERVICE_UFW} -eq 1 ] && [ -x "/usr/sbin/service" ]; then
           SERVICE_NAME="ufw";
           SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
@@ -1675,20 +1672,20 @@ else
             echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
           fi;
         fi;
-
         # ------------------------------------------------------------
-        # Cleanup log files outside of the retention-policy's max-age
-        # ------------------------------------------------------------
+        #
+        # Logfile cleanup
+        #
         if [ -z "${LOGDIR}" ]; then
           LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
         fi;
         if [ "${LOGDIR}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${LOGDIR}" == "/var/log/sync_cloud_infrastructure" ]; then
           if [ -d "${LOGDIR}" ]; then
+            # Cleanup log files (older than the retention-policy's max-allowed-age)
             echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${LOGDIR}\"";
             find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
           fi;
         fi;
-
         # ------------------------------------------------------------
         # Show runtime statistics (intended only to be shown during runs which complete without error)
         echo -e "\nInfo:  End of \"sync_cloud_infrastructure\" runtime";
@@ -1697,6 +1694,10 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         echo "";
 
+      elif [ "${EXIT_CODE}" != "0" ]; then
+        echo "Error:  One or more errors were found ( EXIT_CODE=[ ${EXIT_CODE} ] )";
+      else 
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Else placeholder (to-be-updated)"; fi;
       fi;
       # ------------------------------
       if [ 1 -eq 1 ]; then

@@ -470,17 +470,10 @@ else
           RECURSIVE_CALLBACK_COMMAND="$(echo "${RECURSIVE_CALLBACK_COMMAND}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
         fi;
         # Recursively call this script
-        echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
         eval " ${RECURSIVE_CALLBACK_COMMAND}";
-        # ------------------------------
-        # echo "      |--> Calling [ eval \" ${THIS_SOURCECODE_LOCAL} --skip-self-update $@\"; ]...";
-        # eval " ${THIS_SOURCECODE_LOCAL} --skip-self-update $@";
-        # ------------------------------
-        # echo "      |--> Calling [ eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@; ]...";
-        # eval ${SHELL} $(basename "${THIS_SOURCECODE_LOCAL}";) --skip-self-update $@;
-        # ------------------------------
       else
-        echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]...";
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]..."; fi;
         "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;
       fi;
 

@@ -452,7 +452,8 @@ else
     fi;
 
     if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then
-      # Allow this script to update itself by downloading the latest version directly from the source
+      # Update-self IS required
+
       echo "Info:  Running self-update...";
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${THIS_SOURCECODE_REMOTE}\" to local path \"${THIS_SOURCECODE_LOCAL}\""; fi
       BENCHMARK_START=$(date +'%s.%N');
@@ -481,17 +482,17 @@ else
       echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
 
     else
-
+      # Update-self NOT required
+      # ------------------------------
       if [ -z "$(command -v git 2>'/dev/null';)" ]; then
-        # Unable to pull updated version of code-repository via git
+        # git does NOT exist (as a local command)
         echo -e "\nWarning:  Unable to pull/update repository codebase - Pre-requisite command \"git\" not found";
-
       else
-        # Ensure the (GitHub) Repos directory exists, locally
+        # git DOES exist (as a local command)
         if [ ! -d "${GIT_LOCAL_PARENT_PATH}" ]; then
+          # Ensure that the directory designated to contain git repos exists (locally)
           mkdir -p "${GIT_LOCAL_PARENT_PATH}";
         fi;
-
         # Fetch/Pull/Clone the Remote Repo
         echo -e "\nInfo:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Source (URL):        ${GIT_SOURCE_REPO_URL}"; fi;
@@ -509,7 +510,6 @@ else
         git pull --quiet;
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # Set ownership for git-repo files as-intended
         echo -e "\nInfo:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -517,7 +517,6 @@ else
         find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # Set ownership for git-repo directories as-intended
         echo -e "\nInfo:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
         BENCHMARK_START=$(date +'%s.%N');
@@ -526,9 +525,9 @@ else
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       fi;
-
-      # Detect if current runtime is being executed within a WSL instance/terminal
+      # ------------------------------
       if [ ${ARGS_CHECK_WSL} -eq 1 ]; then
+        # Detect if current runtime is being executed within a WSL instance/terminal
         WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
         if [ -n "${WSL_CHECK_EXISTS}" ]; then
           # Attempt to resolve the Windows-user who is running the current WSL instance
@@ -552,7 +551,7 @@ else
           fi;
         fi;
       fi;
-
+      # ------------------------------
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
         echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
@@ -561,7 +560,7 @@ else
         echo "Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
         echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
       fi;
-
+      # ------------------------------
       if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
         # Windows/WSL check(s) failed (or were skipped)
         #  |--> Check for required Linux filepath(s) as a fallback
@@ -593,20 +592,19 @@ else
         fi;
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
-      else # Running in WSL environment/terminal on Windows-based OS
-
-        # Create link to WSL-User's local CLI-manuals directory
+      else
+        # Running in WSL environment/terminal on Windows-based OS
         WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/Coding/man";
         if [ -d "${WSL_DIR}" ]; then
-          # Current User
+          # Create link(s) to the Windows user's directory (who is masquerading as the current WSL User)
           if [ -d "${HOME}" ]; then
+            # Home Dir - Current User
             if [ ! -h "${HOME}/$(basename ${WSL_DIR})" ] || [ ! -e "${HOME}/$(basename ${WSL_DIR})" ]; then
               ln -sf "${WSL_DIR}" "${HOME}/$(basename ${WSL_DIR})";
             fi;
           fi;
           if [ -v SUDO_USER ]; then
-            # Sudoer User (also create link in default user's homedir)
+            # Home Dir - Sudoer User (also create link in default user's homedir)
             SUDOER_HOMEDIR="$(getent passwd ${SUDO_USER} | cut -d: -f 6;)";
             if [ -d "${SUDOER_HOMEDIR}" ]; then
               if [ ! -h "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ] || [ ! -e "${SUDOER_HOMEDIR}/$(basename ${WSL_DIR})" ]; then
@@ -638,9 +636,7 @@ else
         fi;
 
       fi;
-
-      # ------------------------------------------------------------
-
+      # ------------------------------
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
         echo "Debug:  DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
@@ -649,13 +645,12 @@ else
         echo "Debug:  SUDOER_HOMEDIR = [ ${SUDOER_HOMEDIR} ]";
         echo "Debug:  WSL_DIR = [ ${WSL_DIR} ]";
       fi;
-
+      # ------------------------------
       if [ -z "${DIR_REPO_BASE}" ]; then
         # Required variable(s) are empty/unset
         EXIT_CODE=1;
         echo "";
         echo "Error:  Required variable is empty/unset: \${DIR_REPO_BASE}";
-
       elif [ ! -d "${DIR_REPO_BASE}/usr/local/bin/" ] || [ ! -d "${DIR_REPO_BASE}/usr/local/sbin/" ]; then
         # Required source directory/directories not found
         EXIT_CODE=1;
@@ -668,12 +663,10 @@ else
           echo "Error:  Directory not-found: [ ${DIR_REPO_BASE}/usr/local/sbin/ ]";
         fi;
       fi;
-
+      # ------------------------------
       if [ ! -v EXIT_CODE ] || [ "${EXIT_CODE}" == "0" ]; then
         # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
-
-        # Run the part of the sync job which actually performs the sync
-
+        #  |--> Run the part of the sync job which actually performs the sync
         # ------------------------------------------------------------
         #
         # /usr/local/bin
@@ -691,7 +684,6 @@ else
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # ------------------------------------------------------------
         #
         # /usr/local/sbin
@@ -709,7 +701,6 @@ else
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # ------------------------------------------------------------
         #
         # /etc/inputrc
@@ -724,7 +715,6 @@ else
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
-
         # ------------------------------------------------------------
         #
         # /etc/profile
@@ -740,7 +730,6 @@ else
             if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
-
         # ------------------------------------------------------------
         #
         # /etc/pki/ca-trust/source/anchors  (Server root-certificates & CA-bundles)
@@ -763,9 +752,7 @@ else
           ## Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
           update-ca-trust force-enable;
           update-ca-trust extract; ## Update for Rhel/Centos
-
         fi;
-
         # ------------------------------------------------------------
         #
         # /etc/profile.d/required_paths.sh
@@ -783,7 +770,6 @@ else
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # ------------------------------------------------------------
         #
         # /etc/profile.d/bash_history_logging.sh
@@ -819,7 +805,6 @@ else
         dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
         # ------------------------------------------------------------
         #
         # /etc/ssh/sshd_config
@@ -963,12 +948,9 @@ else
                 BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
                 if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
-
             fi;
-
           fi;
         fi;
-
         # ------------------------------------------------------------
         # Sync Timezone
         TZ="America/New_York";
@@ -982,7 +964,6 @@ else
             fi;
           fi;
         fi;
-
         # ------------------------------------------------------------
         # Sync UFW ("Uncomplicated Firewall")
         ENABLE_CRON_DDNS_UPDATER=0;
@@ -1000,23 +981,23 @@ else
 
               if [ ${UFW_ENABLED} -eq 0 ]; then
                 # UFW DISABLED - Show recommendations for general-practice setup
-                echo -e "\n!!! Warning !!!";
-                echo "  |";
-                echo "  |--> Firewall package UFW (default Debian firewall) is installed but disabled";
-                echo "  |";
-                echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
-                echo "         ufw allow proto tcp from 10.0.0.0/8 to any port 22;     # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
-                echo "         ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
-                echo "         ufw allow proto tcp from 192.168.0.0/16 to any port 22; # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
-                echo "         ufw allow proto tcp from 0.0.0.0/0 to any port 80;      # Allow incoming HTTP requests from any IPv4 address";
-                echo "         ufw allow proto tcp from 0.0.0.0/0 to any port 443;     # Allow incoming HTTPS requests from any IPv4 address";
-                echo "         ufw allow proto tcp from ::/0 to any port 80;           # Allow incoming HTTP requests from any IPv6 address";
-                echo "         ufw allow proto tcp from ::/0 to any port 443;          # Allow incoming HTTPS requests from any IPv6 address";
-                echo "         ufw default allow outgoing; # allow all non-matched outgoing requests";
-                echo "         ufw default deny incoming;  # deny all non-matched incoming requests";
-                echo "         ufw logging on; # enable logging";
-                echo "         ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
-                echo "         ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
+                echo -e "\nWarning:  Firewall package UFW (default Debian firewall) is installed but disabled";
+                if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+                  echo "  |";
+                  echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
+                  echo "         ufw allow proto tcp from 10.0.0.0/8 to any port 22;     # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
+                  echo "         ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
+                  echo "         ufw allow proto tcp from 192.168.0.0/16 to any port 22; # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
+                  echo "         ufw allow proto tcp from 0.0.0.0/0 to any port 80;      # Allow incoming HTTP requests from any IPv4 address";
+                  echo "         ufw allow proto tcp from 0.0.0.0/0 to any port 443;     # Allow incoming HTTPS requests from any IPv4 address";
+                  echo "         ufw allow proto tcp from ::/0 to any port 80;           # Allow incoming HTTP requests from any IPv6 address";
+                  echo "         ufw allow proto tcp from ::/0 to any port 443;          # Allow incoming HTTPS requests from any IPv6 address";
+                  echo "         ufw default allow outgoing; # allow all non-matched outgoing requests";
+                  echo "         ufw default deny incoming;  # deny all non-matched incoming requests";
+                  echo "         ufw logging on; # enable logging";
+                  echo "         ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
+                  echo "         ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
+                fi;
                 # UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
                 # echo "  |";
                 # echo "  |--> UFW sync requested, however UFW is currently disabled";
@@ -1067,7 +1048,6 @@ else
           fi;
 
         fi;
-
         # ------------------------------------------------------------
         #
         # /etc/cron.d/...
@@ -1761,15 +1741,15 @@ else
         echo "";
 
       fi;
-
-      END_SECONDS_NANOSECONDS="$(date +'%s.%N')";
-      END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1)";
-      END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
-
-      # ------------------------------------------------------------
-      # Log the ending timestamp for the current runtime
-      echo -e "\n== Info:  Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
-
+      # ------------------------------
+      if [ 1 -eq 1 ]; then
+        # Log the ending timestamp for the current runtime
+        END_SECONDS_NANOSECONDS="$(date +'%s.%N')";
+        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1)";
+        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+        echo -e "\n== Info:  Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+      fi;
+      # ------------------------------
     fi;
 
   fi;

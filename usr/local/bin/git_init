@@ -6,17 +6,16 @@
 #
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT:
 
-# Download & run this script
-#   Note: Requires 'Git Bash' required for Windows devices ( download from https://git-scm.com/download/win )
+# Download & run this script - Note: Windows devices require a Linux emulator to run this script (such as WSL, Git Bash (https://git-scm.com/download/win), etc.)
 LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
 
-# Example Call (Azure DevOps repository)
+# Example)  Pull a git repository held in [ Azure DevOps ]
 env REMOTE_HOST="ssh.dev.azure.com" REMOTE_OWNER="ORGANIZATION_NAME/PROJECT_NAME" REMOTE_REPOSITORY="REPOSITORY_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
-# Example Call (BitBucket repository)
+# Example)  Pull a git repository held in [ BitBucket ]
 env REMOTE_HOST="bitbucket.org" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
-# Example Call (GitHub repository)
+# Example)  Pull a git repository held in [ GitHub ]
 env REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY="GITHUB_REPO_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
 
 fi;

@@ -40,7 +40,7 @@ else
     SERVICE_NAME="$1";
 
     echo "";
-    read -p "$(date +'%Y-%m-%d %H:%M:%S') Remove service \"${SERVICE_NAME}\", now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+    read -p "$(date +'%Y-%m-%d %H:%M:%S') Remove service \"${SERVICE_NAME}\", now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
 
     if [[ $REPLY =~ ^[Yy]$ ]]; then

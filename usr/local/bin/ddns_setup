@@ -22,26 +22,26 @@ fi;
 NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
 if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 
-  echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -n 1 -t 20 -r; # Await single keypress
+  echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record? (y/n)   " -n 1 -t 20 <'/dev/tty'; # Await single keypress
 
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
   
     # Namecheap Subdomain
-    REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 -r; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    REPLY=""; read -p "Enter Namecheap Subdomain (WITHOUT domain):   " -t 120 <'/dev/tty'; NAMECHEAP_SUBDOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
     if [ -z "${NAMECHEAP_SUBDOMAIN}" ]; then
       echo "Error: Invalid/empty Subdomain entered";
       exit 1;
     fi;
 
     # Namecheap Domain
-    REPLY=""; read -p "Enter Namecheap Domain (WITHOUT subdomain):   " -t 120 -r; NAMECHEAP_DOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    REPLY=""; read -p "Enter Namecheap Domain (WITHOUT subdomain):   " -t 120 <'/dev/tty'; NAMECHEAP_DOMAIN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
     if [ -z "${NAMECHEAP_DOMAIN}" ]; then
       echo "Error: Invalid/empty Domain entered";
       exit 1;
     fi;
 
     # Namecheap Auth-Token
-    REPLY=""; read -p "Enter Namecheap Authentication Token (Pass):  " -t 120 -r; NAMECHEAP_TOKEN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
+    REPLY=""; read -p "Enter Namecheap Authentication Token (Pass):  " -t 120 <'/dev/tty'; NAMECHEAP_TOKEN="$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)";
     if [ -z "${NAMECHEAP_TOKEN}" ]; then
       echo "Error: Invalid/empty Authentication Token entered";
       exit 1;

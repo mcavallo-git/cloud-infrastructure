@@ -300,7 +300,7 @@ else
         echo -e "\n";
         echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
         echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
-        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------
@@ -402,7 +402,7 @@ else
       if [ -v SET_STATIC_IPV4 ] && [ -n "${SET_STATIC_IPV4}" ]; then
         echo -e "\n";
         echo "Info: Request to set DNS NameServers to \"${DNS_NAMESRVR_1}\" (Primary) & \"${DNS_NAMESRVR_2}\" (Secondary)";
-        read -p "  |--> Set DNS Nameservers, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        read -p "  |--> Set DNS Nameservers, now? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------
@@ -448,7 +448,7 @@ else
       fi;
 
       echo -e "\n""NetworkManager must be restarted to apply changes ( required command [ nmcli connection reload; /etc/init.d/network restart; ] )";
-      read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 -r; echo ""; # Await single keypress
+      read -p "  |--> Restart NetworkManager, now? (y/n)  " -n 1 -t 60 <'/dev/tty'; echo ""; # Await single keypress
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "\n""Info:  Restarting NetworkManager via command [ nmcli connection reload; /etc/init.d/network restart; ]";
         nmcli connection reload;
@@ -559,7 +559,7 @@ else
         echo -e "\n";
         echo "Info: Current LAN IPv4 is \"${THIS_LAN_IPV4}\" on NIC \"${THIS_LAN_NIC}\"";
         echo "Info: Request to set LAN IPv4 as STATIC w/ value \"${SET_STATIC_IPV4}\"";
-        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+        read -p "  |--> Set STATIC IPv4 to \"${SET_STATIC_IPV4}\", now? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           # ------------------------------------------------------------

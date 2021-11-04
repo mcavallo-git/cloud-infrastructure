@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ 1 -eq 1 ]; then
-  read -p "Enter namespace to delete: " -t 60 -r;
+  read -p "Enter namespace to delete: " -t 60 <'/dev/tty';
   if [ -n "${REPLY}" ]; then
     kubectl get namespace "${REPLY}" 1>'/dev/null' 2>&1; EXIT_CODE=${?};
     if [ "${EXIT_CODE}" == 0 ]; then

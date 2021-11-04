@@ -23,7 +23,7 @@ else
   # Install NTP (Time Sync) package "chrony"
   #
   echo "";
-  read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+  read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync to NTP server(s), now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo "";
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     # ------------------------------------------------------------
@@ -52,7 +52,7 @@ else
       if [ -n "${CURRENT_NTP_SERVER_LINES}" ] && [ $(echo "${CURRENT_NTP_SERVER_LINES}" | grep "^${PRIMARY_NTP_SUGGESTION}$" | wc -l 2>'/dev/null';) -eq 0 ]; then
         CURRENT_NTP_PRIMARY_SERVER=$(echo "${CURRENT_NTP_SERVER_LINES}" | head -n 1;);
         echo "";
-        read -p "$(date +'%Y-%m-%d %H:%M:%S') Add  [ ${PRIMARY_NTP_SUGGESTION} ]  as primary NTP source, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+        read -p "$(date +'%Y-%m-%d %H:%M:%S') Add  [ ${PRIMARY_NTP_SUGGESTION} ]  as primary NTP source, now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "Calling  [ sed -i\".$(date +'%Y%m%d_%H%M%S').bak\" -r -e \"/^server ${CURRENT_NTP_PRIMARY_SERVER} .*$/{\" -e \"i\\server ${PRIMARY_NTP_SUGGESTION}\" -e \"}\" \"${PACKAGE_CONF}\"; ]  ...";
@@ -69,7 +69,7 @@ else
     # Optionally, sync the hardware clock to NTP Server(s)
     #
     echo "";
-    read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 -r; # Await single keypress
+    read -p "$(date +'%Y-%m-%d %H:%M:%S') Sync the hardware clock, now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       hwclock --systohc;

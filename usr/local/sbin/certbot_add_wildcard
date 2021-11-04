@@ -47,7 +47,7 @@ else
       echo "";
       echo "Info:  Required package(s):  [ python-certbot-nginx ]";
       echo "  |";
-      read -p "  |--> Install/Update these package(s), now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+      read -p "  |--> Install/Update these package(s), now? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
       echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then

@@ -155,7 +155,7 @@ else
           if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
             echo "Warning:  This will DISABLE SELinux on this system (and may allow unwarranted access to necessary services, such as SSH)";
-            READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+            READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
             echo "";
             if [ ${RETURN_CODE_READ} -gt 128 ]; then
               echo -e "Response timed out after ${READ_TIMEOUT}s";
@@ -211,7 +211,7 @@ else
           if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
             echo "";
             echo "Warning:  This will ENABLE SELinux on this system (and may restrict access to necessary services, such as SSH)";
-            READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 -r; RETURN_CODE_READ=$?;
+            READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
             echo "";
             if [ ${RETURN_CODE_READ} -gt 128 ]; then
               echo -e "Response timed out after ${READ_TIMEOUT}s";
@@ -317,7 +317,7 @@ else
     if [ -n "${REBOOT_REQUIRED_MSG}" ]; then
       echo "";
       echo "Info:  ${REBOOT_REQUIRED_MSG}";
-      read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+      read -p " --> Reboot, now? (y/n)  " -n 1 -t 60 <'/dev/tty';
       echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         reboot now;

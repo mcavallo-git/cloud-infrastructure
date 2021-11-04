@@ -46,7 +46,7 @@ else
       echo "  |--> Manually use VMware Tools via either [ /usr/bin/vmware-user ]  or  [ /usr/bin/vmware-toolbox-cmd ]  commands";
       echo "";
       echo "$(date +'%Y-%m-%d_%H-%M-%S')  |  System reboot is required to apply change(s)";
-      read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 -r;
+      read -p "  |--> Reboot, now? (y/n)  " -n 1 -t 60 <'/dev/tty';
       echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         reboot now;

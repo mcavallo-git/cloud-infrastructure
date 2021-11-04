@@ -85,7 +85,7 @@ fi;
 
 # Verify Repo Host
 if [ -z "${REMOTE_HOST}" ]; then
-  read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 -r;
+  read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 <'/dev/tty';
   REMOTE_HOST="${REPLY}";
   if [ -z "${REMOTE_HOST}" ]; then
     FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_HOST is empty.\n";
@@ -94,7 +94,7 @@ fi;
 
 # Verify Repo Owner
 if [ -z "${REMOTE_OWNER}" ]; then
-  read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 -r;
+  read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 <'/dev/tty';
   REMOTE_OWNER="${REPLY}";
   if [ -z "${REMOTE_OWNER}" ]; then
     FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_OWNER is empty.\n";
@@ -103,7 +103,7 @@ fi;
 
 # Verify Repo Basename
 if [ -z "${REMOTE_REPOSITORY}" ]; then
-  read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 -r;
+  read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 <'/dev/tty';
   REMOTE_REPOSITORY="${REPLY}";
   if [ -z "${REMOTE_REPOSITORY}" ]; then
     FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
@@ -113,7 +113,7 @@ fi;
 # Verify Repo SSH Private-Keys
 REMOTE_PRIVATE_KEY="${REMOTE_PRIVATE_KEY:-${REMOTE_SSH_KEY}}";
 if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
-  read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 -r;
+  read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 <'/dev/tty';
   REMOTE_PRIVATE_KEY="${REPLY}";
   if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
     FAIL_MSG="${FAIL_MSG}$(date '+%Y-%m-%d %H:%M:%S') | Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 

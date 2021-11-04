@@ -51,7 +51,7 @@ else
     ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
     
     # Let the user determine which tag (image-revision) to build-from
-    read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
+    read -p "Select which Tag to build:  " -t 60 <'/dev/tty'; READ_RET_CODE=$?;
     if [ ${READ_RET_CODE} -gt 128 ]; then
       # Error: Timeout reached for User-input ( from [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded" )
       echo -e "Error: Response timed out""\n""${ERROR_SUGGEST_HELP}";

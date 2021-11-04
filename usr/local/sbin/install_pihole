@@ -41,13 +41,13 @@ if [ 1 -eq 1 ]; then
   echo -e " ! ! NOTICE ! !  This will reinstall any existing pihole dockers  ! ! NOTICE ! ! ";
   echo -e " ! !   |    ! !   Make sure you've freed up port 53 on localhost  ! !        ! ! ";
   echo -e "       |  ";
-  read -p "       |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+  read -p "       |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo -e "";
 
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
     echo -e "       |  ";
-    read -p "       |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+    read -p "       |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo -e "";
 
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then

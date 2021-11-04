@@ -41,7 +41,7 @@ else
   # If no username given, ask terminal user for username
   while [ -z "${USER_NAME}" ]; do
     echo "";
-    read -p " Create a user with what username?   " -t 60 -r;
+    read -p " Create a user with what username?   " -t 60 <'/dev/tty';
     USER_NAME="${REPLY}";
     if [ -n "${USER_NAME}" ]; then
       break;

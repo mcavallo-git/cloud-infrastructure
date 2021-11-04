@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -v DOCKER_IMAGE ] || [ -z "${DOCKER_IMAGE}" ]; then
-  read -p "Search for Tags on which Docker Image?  " -t 60 -r; READ_RET_CODE=$?;
+  read -p "Search for Tags on which Docker Image?  " -t 60 <'/dev/tty'; READ_RET_CODE=$?;
   if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
     echo -e "Error: Response timed out ";
   elif [ -n "${REPLY}" ]; then
@@ -66,7 +66,7 @@ else
       ERROR_SUGGEST_HELP="  |--> Expected user-input to be of type [ integer ], with value between [ ${MIN_KEY} ] and [ ${MAX_KEY} ], inclusive";
       
       # Let the user determine which tag (image-revision) to build-from
-      read -p "Select which Tag to build:  " -t 60 -r; READ_RET_CODE=$?;
+      read -p "Select which Tag to build:  " -t 60 <'/dev/tty'; READ_RET_CODE=$?;
       if [ ${READ_RET_CODE} -gt 128 ]; then # From [ read --help ]: "The exit status is greater than 128 if the timeout is exceeded"
         echo -e "Error: Response timed out""\n""${ERROR_SUGGEST_HELP}";
 
@@ -88,7 +88,7 @@ else
             # Apply predefined docker-run arguments
             DOCKER_RUN_ARR+=("${DOCKER_RUN_ARGS}");
           else
-            read -p "Bash into the docker, now? (y/n)   " -n 1 -t 60 -r; # Await single keypress
+            read -p "Bash into the docker, now? (y/n)   " -n 1 -t 60 <'/dev/tty'; # Await single keypress
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               # Create & Bash into the Docker
               DOCKER_RUN_ARR+=("-i -t --rm ${DOCKER_IMAGE_WITH_TAG} /bin/bash");

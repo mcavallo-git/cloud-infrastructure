@@ -2,16 +2,16 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_hub_list_image_tags?t=$(date +'%s.%N')" | bash -s -- "nginx";
+IMAGE="library/nginx"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_hub_list_image_tags?t=$(date +'%s.%N')" | bash -s -- "${IMAGE}";
 
 fi;
 # ------------------------------------------------------------
 
 function listAllTags() {
-  local repo=${1};
+  local image_name=${1};
   local page_size=${2:-100};
-  [ -z "${repo}" ] && echo "Usage: listTags <repoName> [page_size]" 1>&2 && return 1;
-  local base_url="https://registry.hub.docker.com/api/content/v1/repositories/public/library/${repo}/tags";
+  [ -z "${image_name}" ] && echo "Usage: listAllTags <repoName> [page_size]" 1>&2 && return 1;
+  local base_url="https://registry.hub.docker.com/api/content/v1/repositories/public/${image_name}/tags";
   local page=1;
   local res=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>/dev/null);
   local tags=$(echo ${res} | jq --raw-output '.results[].name');

@@ -44,17 +44,22 @@ if [ -n "$0" ]; then
 
       echo "------------------------------------------------------------";
       echo "";
-      MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
-      if [ -z "${REPLY}" ]; then
+      MAX_READ_WAIT=20;
+      # read -p "Select: " -t ${MAX_READ_WAIT} -r USER_INPUT;
+      read -p "Select: " -t ${MAX_READ_WAIT} USER_INPUT <'/dev/tty';
+
+      if [ -z "${USER_INPUT}" ]; then
         echo "";
         echo "Error: Response timed out after ${MAX_READ_WAIT}s";
 
-      elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
+      elif [[ ${USER_INPUT} =~ ^-?[0-9]+$ ]]; then
 
-        USER_SELECTION_KEY=$((0+${REPLY}));
+        USER_SELECTION_KEY=$((0+${USER_INPUT}));
 
         if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
-          echo "Error: Invalid selection of \"${REPLY}\"";
+
+          echo "Error: Invalid selection of \"${USER_INPUT}\"";
+
         else
 
           LINES="${LINES:-$(tput lines;)}";
@@ -109,5 +114,7 @@ fi;
 #   docs.docker.com  |  "docker ps | Docker Documentation"  |  https://docs.docker.com/engine/reference/commandline/ps/
 #
 #   stackoverflow.com  |  "What are the PowerShell equivalents of Bash's && and || operators? - Stack Overflow"  |  https://stackoverflow.com/a/41816341
+#
+#   superuser.com  |  "command line - Possible to get a bash script to accept input from terminal if its stdin has been redirected? - Super User"  |  https://superuser.com/a/834508
 #
 # ------------------------------------------------------------

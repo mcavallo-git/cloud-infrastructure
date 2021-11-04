@@ -680,7 +680,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
 
   # Set ownership & privileges for the logging directory & its sub contents
-  if [ $(id "syslog" 1>/dev/null 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>/dev/null 2>&1; echo $?;) -eq 0 ]; then
+  if [ $(id "syslog" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
     chown -R "syslog:adm" "${LOGDIR}";
   fi;
   find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 

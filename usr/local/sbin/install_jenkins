@@ -195,10 +195,10 @@ else
   # Autostart the service on bootup (as well as right now)
   #
   if \
-    [ "$(systemctl is-enabled ${SERVICE_NAME}.service 2>/dev/null;)" != "enabled" ] || \
-    [ "$(systemctl is-active ${SERVICE_NAME}.service 2>/dev/null;)" != "active" ] || \
-    [ $(systemctl is-enabled ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ] || \
-    [ $(systemctl is-active ${SERVICE_NAME}.service 1>/dev/null 2>&1; echo $?;) -ne 0 ]; \
+    [ "$(systemctl is-enabled ${SERVICE_NAME}.service 2>'/dev/null';)" != "enabled" ] || \
+    [ "$(systemctl is-active ${SERVICE_NAME}.service 2>'/dev/null';)" != "active" ] || \
+    [ $(systemctl is-enabled ${SERVICE_NAME}.service 1>'/dev/null' 2>&1; echo $?;) -ne 0 ] || \
+    [ $(systemctl is-active ${SERVICE_NAME}.service 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; \
   then
     echo "Info:  Service \"${SERVICE_NAME}\" is not both \"enabled\" and \"active\", currently";
     echo "Info:  Calling  [ systemctl enable \"${SERVICE_NAME}.service\" --now; ]  ...";

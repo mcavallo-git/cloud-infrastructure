@@ -7,7 +7,7 @@ HOST_NAME="github.com";
 
 HOST_PORT=443;
 
-METHOD_ONE=$(echo | openssl s_client -servername ${HOST_NAME} -connect ${HOST_NAME}:${HOST_PORT} 2>/dev/null | openssl x509 -text | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/p');
+METHOD_ONE=$(echo | openssl s_client -servername ${HOST_NAME} -connect ${HOST_NAME}:${HOST_PORT} 2>'/dev/null' | openssl x509 -text | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/p');
 
 echo "";
 echo "SSL Certiifcate for ${HOST_NAME}:${HOST_PORT}";

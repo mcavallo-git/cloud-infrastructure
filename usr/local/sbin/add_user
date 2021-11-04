@@ -98,7 +98,7 @@ else
   elif [[ -v USER_NAME ]] \
       && [[ -v USER_UID ]] \
       && [[ "${USER_UID}" =~ ^-?[0-9]+$ ]] \
-      && [ "$(id -u ${USER_UID} >/dev/null 2>&1; echo $?;)" == "0" ] \
+      && [ "$(id -u ${USER_UID} 1>'/dev/null' 2>&1; echo $?;)" == "0" ] \
       && [ "$(id -un ${USER_UID})" != "${USER_NAME}" ]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  User ID \"${USER_UID}\" is already taken by user \"$(id -un ${USER_UID})\"";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
@@ -107,7 +107,7 @@ else
   elif [[ -v USER_GNAME ]] \
       && [[ -v USER_GID ]] \
       && [[ "${USER_GID}" =~ ^-?[0-9]+$ ]] \
-      && [ $(getent group ${USER_GID} >/dev/null 2>&1; echo $?;) -eq 0 ] \
+      && [ $(getent group ${USER_GID} 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] \
       && [ "$(getent group ${USER_GID} | cut -d: -f1;)" != "${USER_GNAME}" ]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Group-ID \"${USER_GID}\" resolved to Group Name \"$(id -gn ${USER_GID})\", which is NOT equal to the declared Group-Name value of \"${USER_GNAME}\"";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Exiting...";
@@ -126,7 +126,7 @@ else
 
     if [ -v SET_SYSTEM_USER ] && [ ${SET_SYSTEM_USER} -ne 1 ]; then
       # Non System Users
-      if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" >/dev/null 2>&1; echo $?;) -ne 0 ]; then
+      if [[ -v USER_GNAME ]] && [ $(getent group "${USER_GNAME}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
         # Group-Add Command
         GROUPADD_ARR=(groupadd);
         # Group-ID

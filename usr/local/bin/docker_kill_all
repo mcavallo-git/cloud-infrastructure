@@ -2,9 +2,9 @@
 
 if [ 0 -eq 1 ]; then
   # OneLiner (Option 1)
-  docker rm --force $(docker stop $(docker ps --all --quiet)) 2>/dev/null; docker rmi --force $(docker images --all --quiet) 2>/dev/null; docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}') 2>'/dev/null';
+  docker rm --force $(docker stop $(docker ps --all --quiet)) 2>'/dev/null'; docker rmi --force $(docker images --all --quiet) 2>'/dev/null'; docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}') 2>'/dev/null';
   # OneLiner (Option 2)
-  docker stop $(docker ps --quiet) 2>/dev/null; docker rm --force $(docker ps --all --quiet) 2>/dev/null; docker rmi --force $(docker images --all --quiet) 2>/dev/null; docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}') 2>'/dev/null';
+  docker stop $(docker ps --quiet) 2>'/dev/null'; docker rm --force $(docker ps --all --quiet) 2>'/dev/null'; docker rmi --force $(docker images --all --quiet) 2>'/dev/null'; docker network rm $(docker network ls --format='{{.ID}}  {{.Name}}' | grep -v 'bridge' | grep -v 'host' | grep -v 'none' | awk '{print $1}') 2>'/dev/null';
 fi;
 
 
@@ -13,7 +13,7 @@ number_of_live_dockers=$(docker ps --quiet | awk '{print $1}' | wc -l);
 printf "[ ${number_of_live_dockers:-0} ] Instances Running - ";
 if [[ "${number_of_live_dockers:-0}" -gt "0" ]]; then
   printf "Performing STOP on all Running Instances...\n";
-  docker stop $(docker ps --quiet) 2>/dev/null;
+  docker stop $(docker ps --quiet) 2>'/dev/null';
   printf "\n";
 else
   printf "No Action Necessary\n";
@@ -25,7 +25,7 @@ count_containers=$(docker ps --all --quiet | awk '{print $1}' | wc -l);
 printf "[ ${count_containers:-0} ] Containers Stored Locally - ";
 if [[ "${count_containers:-0}" -gt "0" ]]; then
   printf "Performing REMOVE on all Local Containers...\n";
-  docker rm --force $(docker ps --all --quiet) 2>/dev/null;
+  docker rm --force $(docker ps --all --quiet) 2>'/dev/null';
   # docker rm --force $(docker stop $(docker ps --all --quiet)); 
   printf "\n";
 else
@@ -39,9 +39,9 @@ count_prunable_skipOS_images=$(docker images --all | grep -v 'IMAGE' | grep -v '
 printf "[ ${count_prunable_images:-0} ] Dangling Images - ";
 if [[ "${count_prunable_images:-0}" -gt "0" ]]; then
   printf "Performing PRUNE on all Dangling Images...\n";
-  # docker rmi --force $(docker images --all | grep -v 'IMAGE' | grep -v 'centos' | grep -v  'openjdk' | grep -v  'postgres' | grep -v  'sonarqube' | awk '{print $3}');
-  # docker rmi --force $(docker images --all | grep -v 'IMAGE' | awk '{print $3}');
-  docker rmi --force $(docker images --all --quiet) 2>/dev/null;
+  # docker rmi --force $(docker images --all | grep -v 'IMAGE' | grep -v 'centos' | grep -v  'openjdk' | grep -v  'postgres' | grep -v  'sonarqube' | awk '{print $3}';);
+  # docker rmi --force $(docker images --all | grep -v 'IMAGE' | awk '{print $3}';);
+  docker rmi --force $(docker images --all --quiet;) 2>'/dev/null';
   printf "\n";
 else
   printf "No Action Necessary\n";

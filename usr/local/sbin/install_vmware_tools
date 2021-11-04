@@ -30,7 +30,7 @@ if [ "$(id -un)" != "root" ]; then
 else
   # ------------------------------------------------------------
   # Install VMware Tools
-  if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
+  if [ $(which vmware-toolbox-cmd 1>'/dev/null' 2>&1; echo $?) -eq 0 ]; then
     # Command IS found locally
     echo "Info:  Package already installed - VMware Tools v$(vmware-toolbox-cmd -v)";
   else
@@ -39,7 +39,7 @@ else
     echo "Info:  Installing VMware Tools package \"open-vm-tools\"";
     yum -y check-update;
     yum -y install open-vm-tools;
-    if [ $(which vmware-toolbox-cmd 1>/dev/null 2>&1; echo $?) -eq 0 ]; then
+    if [ $(which vmware-toolbox-cmd 1>'/dev/null' 2>&1; echo $?) -eq 0 ]; then
       echo "";
       echo "Info:  Successfully installed VMware Tools v$(vmware-toolbox-cmd -v)";
       echo "  |";

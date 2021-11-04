@@ -737,8 +737,8 @@ fi;
   
   echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
     # Verify each path exists before excluding it (otherwise it doesn't matter)
-    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
-    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>/dev/null;); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
+    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
+    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
     if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
       EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
       DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
@@ -825,7 +825,7 @@ fi;
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>'/dev/null';);
         echo "SSH_KEY_SYNTAX=\"${SSH_KEY_SYNTAX}\"";
         echo "TEST_SSH_KEY=\"${TEST_SSH_KEY}\"";
         if [ -z "${TEST_SSH_KEY}" ]; then
@@ -861,7 +861,7 @@ fi;
       TEST_FULLNAME=$(echo "${GIT_SYNC_FULLNAMES[${TEST_EMAIL}]}");
       if [ -n "${TEST_EMAIL}" ] && [ -n "${TEST_FULLNAME}" ]; then
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
-        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>/dev/null;);
+        TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>'/dev/null';);
         if [ -z "${TEST_SSH_KEY}" ]; then
           echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else

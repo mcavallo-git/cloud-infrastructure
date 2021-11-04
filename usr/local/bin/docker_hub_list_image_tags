@@ -19,7 +19,7 @@ function listAllTags() {
   local tag_count=$(echo ${res} | jq '.count';);
   ((page_count=(${tag_count}+${page_size}-1)/${page_size}))  # ceil(tag_count / page_size);
   for page in $(seq 2 $page_count); do
-    tags=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>/dev/null | jq --raw-output '.results[].name';);
+    tags=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>'/dev/null' | jq --raw-output '.results[].name';);
     all_tags="${all_tags}${tags}";
   done;
   echo "${all_tags}" | sort;

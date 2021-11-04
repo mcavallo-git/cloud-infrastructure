@@ -55,7 +55,7 @@ else
     RELOAD_SYSCTL="1";
   fi;
 
-  SYSCTL_ALL="$(/sbin/sysctl --all 2>/dev/null;)";
+  SYSCTL_ALL="$(/sbin/sysctl --all 2>'/dev/null';)";
   SYSCTL_IPV6="$(/sbin/sysctl --system --pattern '^net.ipv6' 2>'/dev/null';)";
 
   # Rules to ensure get applied to sysctl in current environment & on every boot henceforth

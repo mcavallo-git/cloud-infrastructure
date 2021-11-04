@@ -86,8 +86,8 @@ else
       if [ ${RETURN_CODE_READ} -gt 128 ]; then
         echo "Error:  Response timed out after ${READ_TIMEOUT}s";
       elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Info:  Confirmed - Calling [ umount -f \"${EACH_DISK_DEVICE}\" 2>/dev/null; fsck -a \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
-        umount -f "${EACH_DISK_DEVICE}" 2>/dev/null; fsck -a "${EACH_DISK_DEVICE}"; mkfs "${EACH_DISK_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
+        echo "Info:  Confirmed - Calling [ umount -f \"${EACH_DISK_DEVICE}\" 2>'/dev/null'; fsck -a \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ] ...";
+        umount -f "${EACH_DISK_DEVICE}" 2>'/dev/null'; fsck -a "${EACH_DISK_DEVICE}"; mkfs "${EACH_DISK_DEVICE}"; parted -s "${EACH_DISK_DEVICE}" mklabel 'msdos'; fdisk -l "${EACH_DISK_DEVICE}";
       else
         echo "Info:  Denied - Skipping call  [ fsck -a \"${EACH_DISK_DEVICE}\"; mkfs \"${EACH_DISK_DEVICE}\"; parted -s \"${EACH_DISK_DEVICE}\" mklabel 'msdos'; fdisk -l \"${EACH_DISK_DEVICE}\"; ]";
       fi;
@@ -102,7 +102,7 @@ else
     EACH_DISK_PARTITIONS=$(lsblk -p -n -o KNAME,TYPE,MOUNTPOINT | grep -E '[part|disk] $' | awk '{print $1}';);
     ROLLBACK_IFS="${IFS}"; IFS=$'\n';
     for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
-      EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>/dev/null | grep "^${EACH_SUB_DEVICE} " 2>/dev/null | wc -l);
+      EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>'/dev/null' | grep "^${EACH_SUB_DEVICE} " 2>'/dev/null' | wc -l);
       if [ ${EACH_CHILD_DEPENDENCY_COUNT} -eq 0 ]; then
         EACH_DISK_MOUNT_POINTS=$(cat "${KERNEL_DISK_MOUNTS}" | grep "^${EACH_SUB_DEVICE}" 2>'/dev/null' | wc -l;);
         if [ "${EACH_DISK_MOUNT_POINTS}" == "0" ]; then
@@ -117,9 +117,9 @@ else
           if [ ${RETURN_CODE_READ} -gt 128 ]; then
             echo "Error:  Response timed out after ${READ_TIMEOUT}s";
           elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-            echo "Info:  Confirmed - Calling [ umount -f \"${EACH_SUB_DEVICE}\" 2>/dev/null; fsck -a \"${EACH_SUB_DEVICE}\"; mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
+            echo "Info:  Confirmed - Calling [ umount -f \"${EACH_SUB_DEVICE}\" 2>'/dev/null'; fsck -a \"${EACH_SUB_DEVICE}\"; mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ] ...";
             # clear Superblock of disk
-            umount -f "${EACH_SUB_DEVICE}" 2>/dev/null; fsck -a "${EACH_SUB_DEVICE}"; mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
+            umount -f "${EACH_SUB_DEVICE}" 2>'/dev/null'; fsck -a "${EACH_SUB_DEVICE}"; mkdir -p "${EACH_NEW_MOUNT}"; mount -t xfs "${EACH_SUB_DEVICE}" "${EACH_NEW_MOUNT}";
           else
             echo "Info:  Denied - Skipping call [ mkdir -p \"${EACH_NEW_MOUNT}\"; mount -t xfs \"${EACH_SUB_DEVICE}\" \"${EACH_NEW_MOUNT}\"; ]";
           fi;

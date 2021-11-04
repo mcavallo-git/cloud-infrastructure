@@ -2,11 +2,7 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
-# Option 1:  Sync basic + utility methods (only)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
-
-# Option 2:  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/docker_hub_list_image_tags?t=$(date +'%s.%N')" | bash -s -- "nginx";
 
 fi;
 # ------------------------------------------------------------
@@ -30,7 +26,7 @@ function listAllTags() {
 }
 
 # Example call
-listAllTags nginx;
+listAllTags "${1}";
 
 
 # ------------------------------------------------------------

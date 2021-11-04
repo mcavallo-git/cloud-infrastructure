@@ -6,19 +6,20 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 
 fi;
 # ------------------------------------------------------------
+
 if [ -n "$0" ]; then
-  
+
   if [ -z "$(which docker 2>'/dev/null')" ]; then
+
     echo "Error: command \"docker\" not found";
 
   else
 
     unset ARR_CONTAINER_IDS; declare -A ARR_CONTAINER_IDS; # [Re-]Instantiate bash array
     unset ARR_DOCKER_IMAGES; declare -A ARR_DOCKER_IMAGES; # [Re-]Instantiate bash array
-
     DOCKER_CONTAINER_IDS=$(docker ps --format "{{.ID}}");
-
     CHOICE_KEY=0;
+
     for EACH_CONTAINER_ID in ${DOCKER_CONTAINER_IDS[@]}; do
       CHOICE_KEY=$((CHOICE_KEY+1));
       EACH_DOCKER_IMAGE=$(docker ps --format "{{.Image}}" --filter "id=${EACH_CONTAINER_ID}");
@@ -27,9 +28,11 @@ if [ -n "$0" ]; then
     done;
 
     if [ ${CHOICE_KEY} -le 0 ]; then
+
       echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
-      
+
     else
+
       echo "";
       echo "Found the following dockers, locally:";
       echo "------------------------------------------------------------";
@@ -38,37 +41,51 @@ if [ -n "$0" ]; then
         EACH_DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${EACH_KEY}]}";
         echo "   ${EACH_KEY}  |  ${EACH_DOCKER_IMAGE}  (${EACH_CONTAINER_ID})";
       done;
+
       echo "------------------------------------------------------------";
       echo "";
-
       MAX_READ_WAIT=20; read -p "Select: " -t ${MAX_READ_WAIT} -r;
       if [ -z "${REPLY}" ]; then
         echo "";
         echo "Error: Response timed out after ${MAX_READ_WAIT}s";
+
       elif [[ ${REPLY} =~ ^-?[0-9]+$ ]]; then
+
         USER_SELECTION_KEY=$((0+${REPLY}));
+
         if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
           echo "Error: Invalid selection of \"${REPLY}\"";
         else
+
           LINES="${LINES:-$(tput lines;)}";
           COLUMNS="${COLUMNS:-$(tput cols;)}";
           CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
           DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
+
           echo "        |----> ID: \"${CONTAINER_ID}\"";
           echo "        |-> Image: \"${DOCKER_IMAGE}\"";
           echo "";
+
           if [ -n "$(command -v PowerShell;)" ] && [ -n "$(command -v mintty 2>'/dev/null';)" ]; then
+
             # Running on Mintty (Git Bash) in Windows
             PowerShell -Command "docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash'; if (-not \${?}) { docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; };";
+
           else
+
             # Running on a non-Windows device and/or on a distro other than Mintty (e.g. on a distro other than Git Bash)
             docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/bash' 2>'/dev/null' \
               || docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/sh';
+
           fi;
+
         fi;
+
       else
+
         echo "";
         echo "Error: Malformed user-input (must be an integer selection from the table, above)";
+
       fi;
 
     fi;
@@ -76,10 +93,11 @@ if [ -n "$0" ]; then
   fi;
 
 else 
+
   echo "\n\n$ 0: Variable is either unset or contains a null value\n\n";
   exit 1;
-  
-fi;fi;
+
+fi;
 
 
 # ------------------------------------------------------------

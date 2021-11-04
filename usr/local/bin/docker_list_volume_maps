@@ -26,7 +26,7 @@ docker inspect \
 $(docker ps --quiet) \
 | while read EACH_VOLMAP; do
   echo "\$EACH_VOLMAP = \"${EACH_VOLMAP}\"";
-  test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>/dev/null;)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
+  test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>'/dev/null';)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
 done;
 
 IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
@@ -52,5 +52,3 @@ echo "";
 #  misc.flogisoft.com  |  "Bash tips: Colors and formatting (ANSI/VT100 Control sequences)"  |  https://misc.flogisoft.com/bash/tip_colors_and_formatting
 #
 # ------------------------------------------------------------
-
-# "$(echo ${EACH_VOLMAP} | grep '^.*Destination.*$' 2>/dev/null;)"

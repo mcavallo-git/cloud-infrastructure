@@ -1,12 +1,11 @@
 #!/bin/bash
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then
-# Run this script remotely
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X?t=$(date +'%s.%N')" | bash;
 
-
 fi;
+# ------------------------------------------------------------
 if [ -n "$0" ]; then
   
   if [ -z "$(which docker 2>'/dev/null')" ]; then
@@ -51,17 +50,21 @@ if [ -n "$0" ]; then
         if [ -z "${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}" ]; then
           echo "Error: Invalid selection of \"${REPLY}\"";
         else
-          E1="LINES=$(tput lines)";
-          E2="COLUMNS=$(tput cols)";
+          LINES="${LINES:-$(tput lines;)}";
+          COLUMNS="${COLUMNS:-$(tput cols;)}";
           CONTAINER_ID="${ARR_CONTAINER_IDS[${USER_SELECTION_KEY}]}";
           DOCKER_IMAGE="${ARR_DOCKER_IMAGES[${USER_SELECTION_KEY}]}";
           echo "        |----> ID: \"${CONTAINER_ID}\"";
           echo "        |-> Image: \"${DOCKER_IMAGE}\"";
           echo "";
-          # docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" script -q -c "/bin/bash" "/dev/null";
-          # docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash";
-          docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/bash" 2>'/dev/null' || \
-          docker exec -e "${E1}" -e "${E2}" -it "${CONTAINER_ID}" "/bin/sh";
+          if [ -n "$(command -v PowerShell;)" ] && [ -n "$(command -v mintty 2>'/dev/null';)" ]; then
+            # Running on Mintty (Git Bash) in Windows
+            PowerShell -Command "docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash'; if (-not \${?}) { docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; };";
+          else
+            # Running on a non-Windows device and/or on a distro other than Mintty (e.g. on a distro other than Git Bash)
+            docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/bash' 2>'/dev/null' \
+              || docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/sh';
+          fi;
         fi;
       else
         echo "";
@@ -76,4 +79,17 @@ else
   echo "\n\n$ 0: Variable is either unset or contains a null value\n\n";
   exit 1;
   
-fi;
+fi;fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.docker.com  |  "docker exec | Docker Documentation"  |  https://docs.docker.com/engine/reference/commandline/exec/
+#
+#   docs.docker.com  |  "docker ps | Docker Documentation"  |  https://docs.docker.com/engine/reference/commandline/ps/
+#
+#   stackoverflow.com  |  "What are the PowerShell equivalents of Bash's && and || operators? - Stack Overflow"  |  https://stackoverflow.com/a/41816341
+#
+# ------------------------------------------------------------

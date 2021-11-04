@@ -316,7 +316,7 @@ else
       if [ -n "${EACH_REQUIRED_PKG}" ]; then
         if [ -n "$(command -v dpkg 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
           # Query Debian's Package-Manager for each package
-          if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+          if [ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         elif [ -n "$(command -v rpm 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -376,7 +376,7 @@ else
       for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
         if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
           # Query Debian's Package-Manager for each package
-          if [ $(dpkg -l "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
+          if [ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]; then
             FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
           fi;
         elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.

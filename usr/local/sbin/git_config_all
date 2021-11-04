@@ -54,7 +54,7 @@ else
     find "${EACH_DIR_REALPATH}" \
     -name 'git.exe' \
     -print0 \
-    2>"/dev/null" \
+    2>'/dev/null' \
     | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
       EACH_GIT_WIN32=$(realpath "${EACH_GIT_EXE}");

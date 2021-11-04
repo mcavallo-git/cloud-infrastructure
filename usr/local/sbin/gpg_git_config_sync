@@ -137,7 +137,7 @@ fi;
 
 
 if [ -z "$(which powershell)" ]; then
-  POWERSHELL_EXE_PATH=$(find "${DISK_ROOT}/Windows/System32" -type f -name "powershell.exe" 2>"/dev/null" | head -n 1;);
+  POWERSHELL_EXE_PATH=$(find "${DISK_ROOT}/Windows/System32" -type f -name "powershell.exe" 2>'/dev/null' | head -n 1;);
   ln -sf "${POWERSHELL_EXE_PATH}" "/usr/local/bin/powershell";
 fi;
 
@@ -344,7 +344,7 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
   -type f \
   -name "${NEEDLE}" \
   -print0 \
-  2>"/dev/null" \
+  2>'/dev/null' \
   | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
     echo "------------------------------";
@@ -773,7 +773,7 @@ fi;
       -maxdepth 4 \
       -type d \
       -name ".git" \
-      -print0 2>"/dev/null" \
+      -print0 2>'/dev/null' \
       | while IFS= read -r -d $'\0' EACH_GIT_CONFIG_PATH; do
         EACH_REPO_FULLPATH=$(dirname "${EACH_GIT_CONFIG_PATH}";);
         REPO_FULLPATHS+=(["${EACH_REPO_FULLPATH}"]="");

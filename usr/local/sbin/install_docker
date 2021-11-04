@@ -32,7 +32,7 @@ else
   BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
 
   # ------------------------------------------------------------
-  if [ -n "$(which get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
+  if [ -n "$(command -v get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
     #
     # WSL Docker Installation
     #
@@ -74,7 +74,7 @@ else
 
     if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
 
-      if [ -n "$(which apk 2>/dev/null)" ]; then
+      if [ -n "$(command -v apk 2>'/dev/null';)" ]; then
         # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
         apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
       fi;

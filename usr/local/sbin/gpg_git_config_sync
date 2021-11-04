@@ -136,7 +136,7 @@ if [ ! -v USERPROFILE ]; then
 fi;
 
 
-if [ -z "$(which powershell)" ]; then
+if [ -z "$(command -v PowerShell)" ]; then
   POWERSHELL_EXE_PATH=$(find "${DISK_ROOT}/Windows/System32" -type f -name "powershell.exe" 2>'/dev/null' | head -n 1;);
   ln -sf "${POWERSHELL_EXE_PATH}" "/usr/local/bin/powershell";
 fi;
@@ -277,7 +277,7 @@ GPG4WIN_EXE_DIR_WIN32="${PROG_FILES_X86_WIN32}\GnuPG\bin";
 GPG4WIN_GPG_EXE_LINUX="${GPG4WIN_EXE_DIR_LINUX}/gpg.exe";
 GPG4WIN_GPG_EXE_WIN32="${GPG4WIN_EXE_DIR_WIN32}\gpg.exe";
 
-GPG_CONFIG_DIR=$("${GPG4WIN_GPG_EXE_LINUX}" --version | grep 'Home:' | sed --regexp-extended --quiet --expression='s/^Home\:\ ?(.+)$/\1/p');
+GPG_CONFIG_DIR=$("${GPG4WIN_GPG_EXE_LINUX}" --version | grep 'Home:' | sed --regexp-extended --quiet --expression='s/^Home\:\ ?(.+)$/\1/p';);
 
 # ------------------------------------------------------------
 
@@ -312,11 +312,11 @@ fi;
 ROLLBACK_IFS="${IFS}";
 IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
 
-GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>/dev/null);
-GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/etc/gitconfig" 2>/dev/null);
+GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>'/dev/null';);
+GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/etc/gitconfig" 2>'/dev/null';);
 
-GIT_CONF_GLOBAL_FILE_1=$(realpath "${USERPROFILE}/.gitconfig" 2>/dev/null);
-GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${USERPROFILE}}/git/config" 2>/dev/null);
+GIT_CONF_GLOBAL_FILE_1=$(realpath "${USERPROFILE}/.gitconfig" 2>'/dev/null';);
+GIT_CONF_GLOBAL_FILE_2=$(realpath "${XDG_CONFIG_HOME:-${USERPROFILE}}/git/config" 2>'/dev/null';);
 
 echo -n "" > "${GIT_CONF_SYSTEM_PATHS_LINUX}";
 if [ -f "${GIT_CONF_SYSTEM_FILE_1}" ]; then echo "${GIT_CONF_SYSTEM_FILE_1}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}"; fi;
@@ -356,14 +356,14 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
     echo "EACH_GIT_LINUX=\"${EACH_GIT_LINUX}\"";
     echo "EACH_GIT_WIN32=\"${EACH_GIT_WIN32}\"";
 
-    SYSTEM_CONF_WIN32=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    SYSTEM_CONF_WIN32=$("${EACH_GIT_LINUX}" config --system --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
     SYSTEM_CONF_LINUX=""; MM="${SYSTEM_CONF_WIN32}"; MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; SYSTEM_CONF_LINUX=$(realpath "${MM}");
     SYSTEM_ALREADY_NOTED=$(cat "${GIT_CONF_SYSTEM_PATHS_LINUX}" | grep "${SYSTEM_CONF_LINUX}");
     if [ ! -n "${SYSTEM_ALREADY_NOTED}" ]; then
       echo "${SYSTEM_CONF_LINUX}" >> "${GIT_CONF_SYSTEM_PATHS_LINUX}";
     fi;
 
-    GLOBAL_CONF_WIN32=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+    GLOBAL_CONF_WIN32=$("${EACH_GIT_LINUX}" config --global --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
     GLOBAL_CONF_LINUX=""; MM="${GLOBAL_CONF_WIN32}"; MM="${MM/C:/${DISK_ROOT}}"; MM="${MM//\\/\/}"; GLOBAL_CONF_LINUX=$(realpath "${MM}");
     GLOBAL_ALREADY_NOTED=$(cat "${GIT_CONF_GLOBAL_PATHS_LINUX}" | grep "${GLOBAL_CONF_LINUX}");
     if [ ! -n "${GLOBAL_ALREADY_NOTED}" ]; then
@@ -901,7 +901,7 @@ fi;
 
       cd "${EACH_REPO_FULLPATH}";
 
-      GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+      GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
       GET_PATH_WIN32=""; MM=$(realpath "${GET_PATH}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GET_PATH_WIN32="${MM}";
       GET_PATH_LINUX=""; MM=$(realpath "${GET_PATH}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GET_PATH_LINUX="${MM}";
       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
@@ -975,7 +975,7 @@ exit 0;
 # for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
-#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
 #     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
@@ -1016,7 +1016,7 @@ exit 0;
 #   for REPO in "${PERSONAL_PRIVATE_REPOS_NO_DUPES[@]}"; do
 #     if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #       cd "${REPOS_DIR}/${REPO}";
-#       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+#       GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
 #       GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #       GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #       echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
@@ -1077,7 +1077,7 @@ exit 0;
 # for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
-#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
 #     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";
@@ -1117,7 +1117,7 @@ exit 0;
 # for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
-#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p');
+#     GET_PATH=$(git config --local --list --show-origin | head -n 1 | sed --regexp-extended --quiet --expression='s/^file\:(.+)\s+(.+)=(.+)$/\1/p';);
 #     GET_PATH="${GET_PATH/C:/${DISK_ROOT}}"; GET_PATH="${GET_PATH//\\/\/}"; GET_PATH=$(realpath "${GET_PATH}");
 #     GIT_CONFIGFILE_LOCAL="${GET_PATH}"; # [ LOCAL ] git config filepath
 #     echo "Updated:  ${REPO}   (\"${GIT_CONFIGFILE_LOCAL}\")";

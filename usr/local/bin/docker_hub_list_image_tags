@@ -13,13 +13,13 @@ function listAllTags() {
   [ -z "${image_name}" ] && echo "Usage: listAllTags <repoName> [page_size]" 1>&2 && return 1;
   local base_url="https://registry.hub.docker.com/api/content/v1/repositories/public/${image_name}/tags";
   local page=1;
-  local res=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>/dev/null);
-  local tags=$(echo ${res} | jq --raw-output '.results[].name');
+  local res=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>'/dev/null';);
+  local tags=$(echo ${res} | jq --raw-output '.results[].name';);
   local all_tags="${tags}";
-  local tag_count=$(echo ${res} | jq '.count');
+  local tag_count=$(echo ${res} | jq '.count';);
   ((page_count=(${tag_count}+${page_size}-1)/${page_size}))  # ceil(tag_count / page_size);
   for page in $(seq 2 $page_count); do
-    tags=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>/dev/null | jq --raw-output '.results[].name');
+    tags=$(curl "${base_url}?page_size=${page_size}&page=${page}" 2>/dev/null | jq --raw-output '.results[].name';);
     all_tags="${all_tags}${tags}";
   done;
   echo "${all_tags}" | sort;

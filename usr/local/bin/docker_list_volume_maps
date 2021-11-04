@@ -6,7 +6,7 @@
 # Expanded using variable replacement:
 #
 
-test -n "$(docker --version | grep 'Docker version' 2>/dev/null)" && is_docker_installed=1 || is_docker_installed=0;
+test -n "$(docker --version | grep 'Docker version' 2>'/dev/null')" && is_docker_installed=1 || is_docker_installed=0;
 if [ "${is_docker_installed}" -eq 1 ]; then
 
 clear;

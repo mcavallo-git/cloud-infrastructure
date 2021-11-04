@@ -20,7 +20,7 @@ fi;
 # Log all shell output & error output to logfile
 #
 LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
-mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>/dev/null; chmod 0770 "${LOGDIR}" 2>/dev/null;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>/dev/null; chmod 0770 "${LOGDIR}" 2>'/dev/null'
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;

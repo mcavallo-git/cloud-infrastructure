@@ -38,9 +38,9 @@ else
 
   # Combine the PVK and SPC into PFX:
   echo -e "\n\n";
-  read -s -p "Enter OLD certificate encryption passphase:  " -n 1 -t 60 -r; OLD_PASS="${REPLY}"; REPLY="";
+  read -s -p "Enter OLD certificate encryption passphase:  " -n 1 -t 60 <'/dev/tty'; OLD_PASS="${REPLY}"; REPLY="";
   echo -e "\n\n";
-  read -s -p "Enter NEW certificate encryption passphase:  " -n 1 -t 60 -r; NEW_PASS="${REPLY}"; REPLY="";
+  read -s -p "Enter NEW certificate encryption passphase:  " -n 1 -t 60 <'/dev/tty'; NEW_PASS="${REPLY}"; REPLY="";
   echo -e "\n\n";
   CERT_PASS="${REPLY}"; REPLY="";
   mv -f "$1" "$1.$(date +'%Y%m%d_%H%M%S').old";

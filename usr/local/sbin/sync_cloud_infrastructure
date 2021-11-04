@@ -877,7 +877,7 @@ else
               if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
                 # Require user-confirmation to proceed with config-update
                 echo -e "${ECHO_SSH_WARNING}";
-                read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 -r; # Await single keypress
+                read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "  |";
                 if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
                   # User declined the config-update
@@ -929,7 +929,8 @@ else
                 if [ "${CHECKSUM_SOURCE}" != "${CHECKSUM_UPDATED}" ]; then
                   # Require user-confirmation to proceed with config-update
                   echo -e "${ECHO_SSH_WARNING}";
-                  read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 -r; # Await single keypress
+                  read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+
                   echo "  |";
                   if [ -z "${REPLY}" ] || [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" != "Y" ]; then
                     # User declined the config-update
@@ -956,7 +957,7 @@ else
         TZ="America/New_York";
         if [ ${ARGS_SYNC_TIMEZONE} -eq 1 ] && [ "$(cat /etc/timezone;)" != "${TZ}" ]; then
             echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
-            read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+            read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             echo "";
             if [[ $REPLY =~ ^[Yy]$ ]]; then
               ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
@@ -1004,7 +1005,7 @@ else
                 # echo "  |";
                 # echo "  |--> UFW sync requested, however UFW is currently disabled";
                 # echo "  |";
-                # read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 -r; # Await single keypress
+                # read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 # if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 #   ufw enable;
                 #   # Re-check UFW Enabled/Disabled Status
@@ -1077,7 +1078,7 @@ else
               if [ -f "${DESTINATION_PATH}" ]; then
                 REPLY="y";
               else
-                echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
+                echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
               fi;
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1106,7 +1107,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
+              echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1134,7 +1135,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
+              echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1162,7 +1163,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM) (y/n)  " -n 1 -t 60 -r; # Await single keypress
+              echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
 
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
@@ -1526,7 +1527,7 @@ else
             echo -e "\nInfo:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
             for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
               echo "  |";
-              read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now? (y/n)  " -n 1 -t 60 -r; # Await single keypress
+              read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now? (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";
                 rm -f "${EACH_CRON_TRIGGER}";

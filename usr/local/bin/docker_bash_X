@@ -45,7 +45,6 @@ if [ -n "$0" ]; then
       echo "------------------------------------------------------------";
       echo "";
       MAX_READ_WAIT=20;
-      # read -p "Select: " -t ${MAX_READ_WAIT} -r USER_INPUT;
       read -p "Select: " -t ${MAX_READ_WAIT} USER_INPUT <'/dev/tty';
 
       if [ -z "${USER_INPUT}" ]; then

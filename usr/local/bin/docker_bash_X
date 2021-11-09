@@ -70,10 +70,10 @@ if [ -n "$0" ]; then
           echo "        |-> Image: \"${DOCKER_IMAGE}\"";
           echo "";
 
-          if [ -n "$(command -v PowerShell;)" ] && [ -n "$(command -v mintty 2>'/dev/null';)" ]; then
+          if [ -n "$(command -v powershell;)" ] && [ -n "$(command -v mintty 2>'/dev/null';)" ]; then
 
             # Running on Mintty (Git Bash) in Windows
-            PowerShell -Command "docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash'; if (-not \${?}) { docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; };";
+            powershell -Command "docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash'; if (-not \${?}) { docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; };";
 
           else
 

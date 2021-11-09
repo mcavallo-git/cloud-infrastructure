@@ -32,9 +32,13 @@ else
   BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
 
   # ------------------------------------------------------------
-  if [ -n "$(command -v get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
+  if [ 0 -eq 1 ] && [ -n "$(command -v get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
     #
-    # WSL Docker Installation
+    # DEPRECATED
+    #  WSL --> Windows (docker forwarding)
+    #   |
+    #   |--> Forward docker cli calls back to the Docker Desktop (Windows Docker) install exe's
+    #   |--> Deprecated 2021-Q4 as Docker Desktop will be a paid software service around 2022-Q1
     #
 
     # Redirect Bash calls to Windows docker-host

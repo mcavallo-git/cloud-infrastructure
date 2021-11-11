@@ -19,7 +19,7 @@ if [ "$(id -un)" != "root" ]; then
 else
   # ------------------------------------------------------------
   #
-  # Install/setup Az CLI (Azure CLI)
+  # Install the Azure CLI (e.g. Az CLI)
   #
 
   if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
@@ -41,7 +41,7 @@ else
   else  # Distros:  Anything non-Debian && non-Fedora
 
     # Both installing and updating the CLI requires re-running the install script. Install the CLI by running curl.
-    curl -L "https://aka.ms/InstallAzureCli" | bash;
+    curl -L "https://aka.ms/InstallAzureCli" | sudo bash;
     # ------------------------------
 
   fi;
@@ -50,7 +50,7 @@ else
 
   if [ -n "$(command -v az 2>'/dev/null';)" ]; then
     # Install kubectl (for Azure AKS Clusters)
-    az aks install-cli;
+    sudo az aks install-cli;
     # ------------------------------
   fi;
 

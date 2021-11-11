@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_az_cli" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_az_cli?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Install/setup Az CLI (Azure CLI)
+  #
+
+  if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
+    # The Azure CLI team maintains a script to run all installation commands in one step. This script is downloaded via curl and piped directly to bash to install the CLI.
+    curl -sL "https://aka.ms/InstallAzureCLIDeb" | sudo bash
+
+
+  elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    # Import the Microsoft repository key
+    sudo rpm --import "https://packages.microsoft.com/keys/microsoft.asc";
+    # Create local azure-cli repository information
+    echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "/etc/yum.repos.d/azure-cli.repo";
+    # Install with the dnf install command
+    sudo dnf install azure-cli;
+
+
+  else  # Distros:  Anything non-Debian && non-Fedora
+    # Both installing and updating the CLI requires re-running the install script. Install the CLI by running curl.
+    curl -L "https://aka.ms/InstallAzureCli" | bash;
+
+
+  fi;
+
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.microsoft.com  |  "How to install the Azure CLI | Microsoft Docs"  |  https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+#
+# ------------------------------------------------------------

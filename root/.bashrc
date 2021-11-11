@@ -166,35 +166,15 @@ bash_prompt() {
   # extra backslash in front of \$ to make bash colorize the prompt
 }
 
-# WSL - Docker Desktop redirection
-WINDOWS_DOCKER_FULLPATH="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
-if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
-  WHICH_DOCKER="$(which docker;)";
-  LINUX_DEFAULT_DOCKER_FULLPATH="/usr/bin/docker";
-  FULLPATH_DOCKER="${WHICH_DOCKER:-${LINUX_DEFAULT_DOCKER_FULLPATH}}";
-  if [ -f "${FULLPATH_DOCKER}" ]; then
-    if [[ ${StringToTest} =~ ^/usr/local/.+$ ]]; then
-      if [ -h "${FULLPATH_DOCKER}" ]; then
-        if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
-          # WSL Docker command exists but links to something other than WSL
-          ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
-        fi;
-      else
-        # WSL Docker command exists as a file
-        mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
-        ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
-      fi;
-    else
-      # WSL Docker command directly references windows docker executable (usually without '.exe' appended to it) --> update it to propertly reference the Windows docker executable
-      ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${LINUX_DEFAULT_DOCKER_FULLPATH}";
-    fi;
-  else
-    # WSL Docker command doesn't, yet exist
-    ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
-  fi;
+# env:REPOS_DIR
+if [ ! -v REPOS_DIR ] && [ -n "$(command -v powershell 2>'/dev/null';)" ]; then
+REPOS_DIR=$(powershell Write-Output \${env:REPOS_DIR} 2>'/dev/null';);
+if [ -n "${REPOS_DIR}" ]; then
+export REPOS_DIR="${REPOS_DIR}";
+fi;
 fi;
 
-# PATH Appends (Directories/Executables)
+# env:PATH Appends (Directories/Executables)
 unset PATH_APPENDS_ARR; declare -a PATH_APPENDS_ARR; # [Re-]Instantiate bash array
 PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/bin");
 PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
@@ -218,16 +198,16 @@ for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
   fi;
 done;
 
-#  PROMPT_COMMAND (environment-variable)
-#   |--> Holds one or more commands which run prior-to every command-line command
-#   |--> Check if it already contains a value before attempting to set it
+# env:PROMPT_COMMAND (environment-variable)
+#      |--> Holds one or more commands which run prior-to every command-line command
+#      |--> Check if it already contains a value before attempting to set it
 APPEND_CMD="bash_prompt_command;";
 if [ -n "${PROMPT_COMMAND}" ]; then
-  # PROMPT_COMMAND is set, already
+  # env:PROMPT_COMMAND is already set
   PERSISTENT_CMD="${PROMPT_COMMAND}; "; # Add a command-delimiter (;) to end the previous command
   PERSISTENT_CMD="${PERSISTENT_CMD//;;/;}"; # Remove and double command-delimiters (;;)
 else
-  PERSISTENT_CMD=""; # PROMPT_COMMAND not set, already
+  PERSISTENT_CMD=""; # env:PROMPT_COMMAND not already set
 fi;
 
 export PROMPT_COMMAND="${PERSISTENT_CMD}${APPEND_CMD}";

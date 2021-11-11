@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/docker_desktop_redirection" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+
+# !!! THIS SCRIPT IS DEPRECATED (AS OF Q4-2021) --> USE WSL-2 (WITH DOCKER AS A LINUX SERVICE) INSTEAD OF DOCKER DESKTOP FOR WINDOWS !!!
+
+# WSL - Docker Desktop redirection
+WINDOWS_DOCKER_FULLPATH="/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe";
+if [ -f "${WINDOWS_DOCKER_FULLPATH}" ]; then
+  WHICH_DOCKER="$(which docker;)";
+  LINUX_DEFAULT_DOCKER_FULLPATH="/usr/bin/docker";
+  FULLPATH_DOCKER="${WHICH_DOCKER:-${LINUX_DEFAULT_DOCKER_FULLPATH}}";
+  if [ -f "${FULLPATH_DOCKER}" ]; then
+    if [[ ${StringToTest} =~ ^/usr/local/.+$ ]]; then
+      if [ -h "${FULLPATH_DOCKER}" ]; then
+        if [ "$(realpath "${FULLPATH_DOCKER}";)" != "${WINDOWS_DOCKER_FULLPATH}" ]; then
+          # WSL Docker command exists but links to something other than WSL
+          ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+        fi;
+      else
+        # WSL Docker command exists as a file
+        mv -f "${FULLPATH_DOCKER}" "${FULLPATH_DOCKER}.old";
+        ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+      fi;
+    else
+      # WSL Docker command directly references windows docker executable (usually without '.exe' appended to it) --> update it to propertly reference the Windows docker executable
+      ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${LINUX_DEFAULT_DOCKER_FULLPATH}";
+    fi;
+  else
+    # WSL Docker command doesn't, yet exist
+    ln -sf "${WINDOWS_DOCKER_FULLPATH}" "${FULLPATH_DOCKER}";
+  fi;
+fi;
+
+
+# ------------------------------------------------------------

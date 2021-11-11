@@ -23,24 +23,35 @@ else
   #
 
   if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
-    # The Azure CLI team maintains a script to run all installation commands in one step. This script is downloaded via curl and piped directly to bash to install the CLI.
-    curl -sL "https://aka.ms/InstallAzureCLIDeb" | sudo bash
 
+    # The Azure CLI team maintains a script to run all installation commands in one step. This script is downloaded via curl and piped directly to bash to install the CLI.
+    curl -sL "https://aka.ms/InstallAzureCLIDeb" | sudo bash;
+    # ------------------------------
 
   elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+
     # Import the Microsoft repository key
     sudo rpm --import "https://packages.microsoft.com/keys/microsoft.asc";
     # Create local azure-cli repository information
     echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "/etc/yum.repos.d/azure-cli.repo";
     # Install with the dnf install command
     sudo dnf install azure-cli;
-
+    # ------------------------------
 
   else  # Distros:  Anything non-Debian && non-Fedora
+
     # Both installing and updating the CLI requires re-running the install script. Install the CLI by running curl.
     curl -L "https://aka.ms/InstallAzureCli" | bash;
+    # ------------------------------
 
+  fi;
 
+  # ------------------------------------------------------------
+
+  if [ -n "$(command -v az 2>'/dev/null';)" ]; then
+    # Install kubectl (for Azure AKS Clusters)
+    az aks install-cli;
+    # ------------------------------
   fi;
 
 

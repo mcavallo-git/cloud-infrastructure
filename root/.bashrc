@@ -170,6 +170,8 @@ bash_prompt() {
 if [ ! -v REPOS_DIR ] && [ -n "$(command -v powershell 2>'/dev/null';)" ]; then
 REPOS_DIR=$(powershell Write-Output \${env:REPOS_DIR} 2>'/dev/null';);
 if [ -n "${REPOS_DIR}" ]; then
+REPOS_DIR="${REPOS_DIR//\\/\/}";
+REPOS_DIR="${REPOS_DIR//C:\//\/mnt\/c\/}";
 export REPOS_DIR="${REPOS_DIR}";
 fi;
 fi;

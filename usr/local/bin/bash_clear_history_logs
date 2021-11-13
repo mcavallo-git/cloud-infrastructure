@@ -1,0 +1,32 @@
+#!/bin/bash
+# ------------------------------------------------------------
+#
+# LOCAL_BIN="/usr/local/bin/bash_clear_history_logs" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bash_clear_history_logs?t=$(date +'%s.%N')" | bash;
+
+
+fi;
+# ------------------------------------------------------------
+
+# Linux - Clear the cached/saved terminal history
+#    Distros: Debian, Ubuntu, etc.
+
+history -c;
+
+if [ -f "${HOME}/.bash_history" ]; then
+  rm --verbose "${HOME}/.bash_history";
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   www.cyberciti.biz |  “How To Clear Shell History In Ubuntu Linux - nixCraft”  |  https://www.cyberciti.biz/faq/clear-the-shell-history-in-ubuntu-linux/
+#
+# ------------------------------------------------------------

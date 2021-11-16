@@ -316,7 +316,7 @@ server {
 #
 ### Check ALL sites' expiration dates:
 #
-#   echo ""; for DN in amyrazavi.com cavalol.com cava.lol cava.sh centos.sh mcavallo.com mcavallo.work rhel.sh; do echo -n "DN=[ $(printf '%-15s' "${DN}";) ]   "; echo | openssl s_client -servername "${DN}" -connect "${DN}:443" 2>'/dev/null' | openssl x509 -noout -dates | grep 'notAfter'; done; echo "";
+#   echo ""; for DN in amyrazavi.com cavalol.com cava.lol cava.sh centos.sh curl.rest mcavallo.com mcavallo.work rhel.sh; do echo -n "DN=[ $(printf '%-15s' "${DN}";) ]   "; echo | openssl s_client -servername "${DN}" -connect "${DN}:443" 2>'/dev/null' | openssl x509 -noout -dates | grep 'notAfter'; done; echo "";
 #
 ### Check SINGLE site's expiration date:
 #

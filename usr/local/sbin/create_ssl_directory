@@ -5,14 +5,17 @@
 # ------------------------------------------------------------
 if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 
-# wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/create_ssl_directory" -O "/usr/local/sbin/create_ssl_directory" -q && chmod 0755 "/usr/local/sbin/create_ssl_directory" && /usr/local/sbin/create_ssl_directory;
+
+# SCRIPT="/usr/local/sbin/create_ssl_directory" && wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${SCRIPT}" -O "${SCRIPT}" -q && chmod 0755 "${SCRIPT}" && ${SCRIPT};
+
 
 ### EXAMPLE CALL:
 CERT_CA="letsencrypt"; \
 CERT_DOMAIN="example.com"; \
 CERT_NICKNAME="wildcard.example.com_exp-2039-01-01"; \
-wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/create_ssl_directory" -O "/usr/local/sbin/create_ssl_directory" -q; chmod 0755 "/usr/local/sbin/create_ssl_directory";
+SCRIPT="/usr/local/sbin/create_ssl_directory" && wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${SCRIPT}" -O "${SCRIPT}" -q && chmod 0755 "${SCRIPT}";
 create_ssl_directory "${CERT_CA}" "${CERT_DOMAIN}" "${CERT_NICKNAME}";
+
 
 fi;
 #

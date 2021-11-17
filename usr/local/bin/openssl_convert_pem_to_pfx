@@ -51,7 +51,7 @@ else
   echo "";
   echo "BASENAME_OUTPUT_CERT = [ ${BASENAME_OUTPUT_CERT} ]";
   echo "FULLPATH_OUTPUT_CERT = [ ${FULLPATH_OUTPUT_CERT} ]";
-  # Convert the certificate(s)
+  # Convert SSL/TLS (HTTPS) Certificates from [ Privacy-Enhanced Mail (PEM) certificate format ] to [ PFX (pkcs12) certificate format ]
   echo "";
   echo "Calling [ openssl pkcs12 -export -in \"${FULLPATH_FULLCHAIN}\" -inkey \"${FULLPATH_PRIVKEY}\" -out \"${FULLPATH_OUTPUT_CERT}\" ]";
   openssl pkcs12 -export -in "${FULLPATH_FULLCHAIN}" -inkey "${FULLPATH_PRIVKEY}" -out "${FULLPATH_OUTPUT_CERT}";

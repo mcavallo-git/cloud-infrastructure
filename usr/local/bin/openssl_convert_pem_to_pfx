@@ -33,7 +33,10 @@ elif [ ! -v FULLPATH_PRIVKEY ] || [ -z "${FULLPATH_PRIVKEY}" ] || [ ! -e "${FULL
   echo "";
 else
   # Output Filepath - Absolute (e.g. "Full") Filepath
-  BASENAME_OUTPUT_CERT="certificate_$(date +'%Y%m%d_%H%M%S').pfx";
+  CERT_EXP_DATE="$(openssl x509 -in "${FULLPATH_FULLCHAIN}" -text -noout | sed -rne 's/^\s*[Nn]ot\s*[Aa]fter\s*(:|=)\s*(.+)$/\2/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+  CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
+  BASENAME_OUTPUT_CERT="certificate.expires-${CERT_EXP_DATE_FILENAME}.pfx";
+  # Output Directory - Determine dynamically
   if [ -v FULLPATH_OUTPUT_DIR ] && [ -n "${FULLPATH_OUTPUT_DIR}" ] && [ -d "${FULLPATH_OUTPUT_DIR}" ] && [ -w "${FULLPATH_OUTPUT_DIR}" ]; then
     FULLPATH_OUTPUT_CERT="${FULLPATH_OUTPUT_DIR}/${BASENAME_OUTPUT_CERT}";
   elif [ -w "$(pwd;)" ]; then
@@ -41,11 +44,14 @@ else
   else
     FULLPATH_OUTPUT_CERT="${HOME}/${BASENAME_OUTPUT_CERT}";
   fi;
-  # Convert the certificate(s)
+  # Show variable status
   echo "";
   echo "FULLPATH_PRIVKEY = [ ${FULLPATH_PRIVKEY} ]";
   echo "FULLPATH_FULLCHAIN = [ ${FULLPATH_FULLCHAIN} ]";
+  echo "";
+  echo "BASENAME_OUTPUT_CERT = [ ${BASENAME_OUTPUT_CERT} ]";
   echo "FULLPATH_OUTPUT_CERT = [ ${FULLPATH_OUTPUT_CERT} ]";
+  # Convert the certificate(s)
   echo "";
   echo "Calling [ openssl pkcs12 -export -in \"${FULLPATH_FULLCHAIN}\" -inkey \"${FULLPATH_PRIVKEY}\" -out \"${FULLPATH_OUTPUT_CERT}\" ]";
   openssl pkcs12 -export -in "${FULLPATH_FULLCHAIN}" -inkey "${FULLPATH_PRIVKEY}" -out "${FULLPATH_OUTPUT_CERT}";

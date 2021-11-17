@@ -12,15 +12,17 @@ fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
-  # Convert SSL/TLS (HTTPS) Certificates from [ PFX (pkcs12) certificate format ] to [ Privacy-Enhanced Mail (PEM) certificate format ]
+  read -p "Enter certificate password for file \"${1}\" (or hit enter for no password):  " -s -a CERT_PASS -t 60 <'/dev/tty'; fi;
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.crt.pem";
+  # Convert from [ PFX (pkcs12) certificate format ] to [ Privacy-Enhanced Mail (PEM) certificate format ]
+
+  openssl pkcs12 -in "${1}" -password "pass:${CERT_PASS}" -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.crt.pem";
       echo "Certificate output path:    ${1}.crt.pem";
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > "${1}.key.pem";
+  openssl pkcs12 -in "${1}" -password "pass:${CERT_PASS}" -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > "${1}.key.pem";
       echo "Private key output path:    ${1}.key.pem";
 
-  openssl pkcs12 -in "${1}" -password "pass:${2}" -cacerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.chain.pem";
+  openssl pkcs12 -in "${1}" -password "pass:${CERT_PASS}" -cacerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.chain.pem";
       echo "CA Bundle output path:      ${1}.chain.pem";
 
   cat "${1}.crt.pem" "${1}.chain.pem" > "${1}.fullchain.pem";

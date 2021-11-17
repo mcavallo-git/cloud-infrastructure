@@ -17,7 +17,7 @@ server {
   location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
-      return 302 https://mcavallo.com/sh;  # curl -ssL https://rhel.sh | bash -s -- --all;
+      return 302 https://mcavallo.com/sh;  # curl -sL https://rhel.sh | bash -s -- --all;
     }
     #                    !~* [inversed regex, case-insensitive]
     if ($http_user_agent !~* "^curl") {

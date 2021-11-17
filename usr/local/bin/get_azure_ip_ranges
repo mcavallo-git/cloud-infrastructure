@@ -14,9 +14,9 @@ fi;
 URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210816.json";
 URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210823.json";
 
-CIDRv4_EASTUS2=$(curl -ssL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep -v ':';); echo -e "CIDRv4_EASTUS2=[\n${CIDRv4_EASTUS2}\n]";
+CIDRv4_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep -v ':';); echo -e "CIDRv4_EASTUS2=[\n${CIDRv4_EASTUS2}\n]";
 
-CIDRv6_EASTUS2=$(curl -ssL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep ':';);    echo -e "CIDRv6_EASTUS2=[\n${CIDRv6_EASTUS2}\n]";
+CIDRv6_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep ':';);    echo -e "CIDRv6_EASTUS2=[\n${CIDRv6_EASTUS2}\n]";
 
 
 # ------------------------------------------------------------

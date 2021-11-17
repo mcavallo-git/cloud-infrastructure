@@ -209,7 +209,7 @@ server {
   # ------------------------------------------------------------
   # Shellscript Requests (commonly Linux-based bash scripts)
   #
-  #   curl -ssL https://mcavallo.com/sh | bash -s -- --all;
+  #   curl -sL https://mcavallo.com/sh | bash -s -- --all;
   #
   #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^sh.$") {
@@ -267,7 +267,7 @@ server {
   location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -ssL https://mcavallo.com | bash -s -- --all;
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -sL https://mcavallo.com | bash -s -- --all;
     }
     #                    !~* [inversed regex, case-insensitive]
     if ($http_user_agent !~* "^curl") {

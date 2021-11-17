@@ -76,7 +76,7 @@ if [ 1 -eq 1 ]; then
       echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
       sleep 30;
 
-      curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
+      curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
 
       if [ 1 -eq 1 ]; then
         env \

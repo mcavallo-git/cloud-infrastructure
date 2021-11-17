@@ -67,7 +67,7 @@ else
     #
 
     if [ ! -f "${BIN_DOCKER}" ]; then
-      curl -ssL "https://get.docker.com/" | sh;
+      curl -sL "https://get.docker.com/" | sh;
     fi;
 
     SERVICE_NAME="docker";
@@ -87,8 +87,8 @@ else
         # Docker-Compose Installer --> x86_64 CPUs
         #  |--> Reference: [ https://docs.docker.com/compose/install ]
         #
-        curl -ssL "https://github.com/docker/compose/releases/download/v2.1.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
-        # curl -ssL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
+        curl -sL "https://github.com/docker/compose/releases/download/v2.1.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+        # curl -sL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
       else
         #
         # Docker-Compose Installer --> Non-x86_64 CPUs (namely Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs)

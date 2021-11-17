@@ -97,8 +97,8 @@ else
         mkdir -p "/var/lib/docker-compose/unifi";
 
         echo "";
-        echo "Info:  Calling  [ curl -ssL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
-        curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
+        echo "Info:  Calling  [ curl -sL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
+        curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
 
         echo "";
         echo "Info:  Calling  [ docker-compose -f \"/var/lib/docker-compose/unifi/docker-compose.yml\" up -d; ]...";

@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 # SYNC LOCAL USER CONFIGS
 #
-# HOME_CONFIGS=( .bashrc .profile .vimrc ); for EACH_CONFIG in "${HOME_CONFIGS[@]}"; do curl -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/root/${EACH_CONFIG}?t=$(date +'%s.%N')" -o "${HOME}/${EACH_CONFIG}"; chmod 0600 "${HOME}/${EACH_CONFIG}"; done;
+# HOME_CONFIGS=( .bashrc .profile .vimrc ); for EACH_CONFIG in "${HOME_CONFIGS[@]}"; do curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/root/${EACH_CONFIG}?t=$(date +'%s.%N')" -o "${HOME}/${EACH_CONFIG}"; chmod 0600 "${HOME}/${EACH_CONFIG}"; done;
 #
 # ------------------------------------------------------------
 

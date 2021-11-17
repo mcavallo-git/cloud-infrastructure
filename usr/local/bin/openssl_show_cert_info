@@ -18,6 +18,16 @@ else
 
   EXIT_CODE=$?;
 
+  if [ ${EXIT_CODE} -eq 0 ]; then
+    CERT_EXP_DATE="$(openssl x509 -in "${1}" -text -noout | sed -rne 's/^\s*not\s*after\s*:\s*(.+)$/\1/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+    CERT_EXP_DATE_SHORTHAND="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H:%M:%SZ';)";
+    CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
+    echo "";
+    echo "CERT_EXP_DATE_SHORTHAND = [ ${CERT_EXP_DATE_SHORTHAND} ]";
+    echo "CERT_EXP_DATE_FILENAME = [ ${CERT_EXP_DATE_FILENAME} ]";
+    echo "";
+  fi;
+
 fi;
 
 echo -e "\n\n";

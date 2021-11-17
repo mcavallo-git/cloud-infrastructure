@@ -12,7 +12,7 @@ fi;
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
 
-  # Decrypt pkcs12/pfx certificate
+  # Convert SSL/TLS (HTTPS) Certificates from [ PFX (pkcs12) certificate format ] to [ Privacy-Enhanced Mail (PEM) certificate format ]
 
   openssl pkcs12 -in "${1}" -password "pass:${2}" -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${1}.crt.pem";
       echo "Certificate output path:    ${1}.crt.pem";
@@ -36,5 +36,7 @@ fi;
 #   superuser.com  |  "linux - How to use password argument in via command line to openssl for decryption - Super User"  |  https://superuser.com/a/724987
 #
 #   unix.stackexchange.com  |  "openssl - How to export CA certificate chain from PFX in PEM format without bag attributes - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/393484
+#
+#   www.paessler.com  |  "Using Your Own SSL Certificate with the PRTG Web Server | PRTG Manual"  |  https://www.paessler.com/manuals/prtg/using_your_own_ssl_certificate
 #
 # ------------------------------------------------------------

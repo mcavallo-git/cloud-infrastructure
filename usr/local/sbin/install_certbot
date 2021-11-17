@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_certbot" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_certbot?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Install certbot - EFF's (Electronic Frontier Foundation's) Linux tool to obtain Let's Ecnrypt SSL/TLS (HTTPS) certificates
+  #
+
+  apt-get -y update; apt-get -y install letsencrypt;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   certbot.eff.org  |  "Certbot Instructions | Certbot"  |  https://certbot.eff.org/instructions?ws=nginx&os=ubuntu-20
+#
+# ------------------------------------------------------------

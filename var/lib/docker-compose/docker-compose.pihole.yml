@@ -10,7 +10,11 @@ version: "3"
 
 services:
   pihole:
+    container_name: pihole
     image: pihole/pihole:latest
+    restart: always
+    env_file:
+      - ./.env
     ports:  # [Host]:[Docker] Port maps
       - "53:53/tcp"
       - "53:53/udp"
@@ -19,11 +23,9 @@ services:
       - "443:443/tcp"
     volumes:  # [Host]:[Docker] Filepath maps
       - '/etc/hosts:/etc/hosts:ro'
-    environment:
-      WEBUIBOXEDLAYOUT: 'boxed'
-    cap_add:
-      - NET_ADMIN  # Recommended but not required (required if pihole will host DHCP server)  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    restart: always
+    # cap_add:
+    #   - NET_ADMIN
+    #   ### Only add the 'NET_ADMIN' docker capability if [ DHCP ] or [ IPv6 Router Advertisements ] pihole feature(s) are in use  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
 
 
 # ------------------------------------------------------------

@@ -81,17 +81,18 @@ if [ 1 -eq 1 ]; then
 
       curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
 
+      # Spin up the pihole docker instance
       if [ 1 -eq 1 ]; then
-        echo -e "\n\nCalling [ env CONFIG_DIR=\"${CONFIG_DIR}\" DOMAIN_PIHOLE=\"${DOMAIN_PIHOLE}\" HOSTNAME_PIHOLE=\"${HOSTNAME_PIHOLE}\" WEBPASSWORD=\"***\" SERVER_IP=\"${SERVER_IP}\" VIRTUAL_HOST=\"${VIRTUAL_HOST}\" docker-compose --file \"${CONFIG_DIR}/docker-compose.pihole.yml\" up --detach ; ]...\n\n";
-        env \
-          CONFIG_DIR="${CONFIG_DIR}" \
-          DOMAIN_PIHOLE="${DOMAIN_PIHOLE}" \
-          HOSTNAME_PIHOLE="${HOSTNAME_PIHOLE}" \
-          WEBPASSWORD="${WEBPASSWORD}" \
-          SERVER_IP="${SERVER_IP}" \
-          VIRTUAL_HOST="${VIRTUAL_HOST}" \
-          docker-compose --file "${CONFIG_DIR}/docker-compose.pihole.yml" up --detach \
-        ;
+
+        echo -e "\n\nCalling [ export CONFIG_DIR=\"${CONFIG_DIR}\" DOMAIN_PIHOLE=\"${DOMAIN_PIHOLE}\" HOSTNAME_PIHOLE=\"${HOSTNAME_PIHOLE}\" WEBPASSWORD=\"***\" SERVER_IP=\"${SERVER_IP}\" VIRTUAL_HOST=\"${VIRTUAL_HOST}\"; ]...\n\n";
+        export CONFIG_DIR="${CONFIG_DIR}" DOMAIN_PIHOLE="${DOMAIN_PIHOLE}" HOSTNAME_PIHOLE="${HOSTNAME_PIHOLE}" WEBPASSWORD="${WEBPASSWORD}" SERVER_IP="${SERVER_IP}" VIRTUAL_HOST="${VIRTUAL_HOST}";
+
+        echo -e "\n\nCalling [ docker-compose --file \"${CONFIG_DIR}/docker-compose.pihole.yml\" up --detach; ]...\n\n";
+        docker-compose --file "${CONFIG_DIR}/docker-compose.pihole.yml" up --detach;
+
+        echo -e "\n\nCalling [ export CONFIG_DIR=\"\" DOMAIN_PIHOLE=\"\" HOSTNAME_PIHOLE=\"\" WEBPASSWORD=\"\" SERVER_IP=\"\" VIRTUAL_HOST=\"\"; ]...\n\n";
+        export CONFIG_DIR="" DOMAIN_PIHOLE="" HOSTNAME_PIHOLE="" WEBPASSWORD="" SERVER_IP="" VIRTUAL_HOST="";
+
       fi;
 
       docker stop pihole;

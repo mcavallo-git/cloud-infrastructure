@@ -10,29 +10,19 @@ version: "3"
 
 services:
   pihole:
-    # hostname: '${HOSTNAME_PIHOLE:-pihole}${DOMAIN_PIHOLE}'
-    # container_name: '${HOSTNAME_PIHOLE:-pihole}'
     image: pihole/pihole:latest
-    ports:
+    ports:  # [Host]:[Docker] Port-Maps
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
       - "80:80/tcp"
       - "443:443/tcp"
+    volumes:  # [Host]:[Docker] Filepath-Maps
+      - /etc/hosts:/etc/hosts:ro
     environment:
       WEBUIBOXEDLAYOUT: 'boxed'
-    volumes:  # Volume maps allow you to persist your container's data between container upgrades by storing parts of it within the host's file system
-      - /etc/hosts:/etc/hosts:ro
-      # - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
-      # - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
-      # - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
-      # - '${CONFIG_DIR:-.}/etc/lighttpd/external.conf:/etc/lighttpd/external.conf:ro'
-      # - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/privkey.pem:/etc/letsencrypt/live/pihole/privkey.pem:ro'
-      # - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/fullchain.pem:/etc/letsencrypt/live/pihole/fullchain.pem:ro'
-    # Recommended but not required (DHCP needs NET_ADMIN)
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:
-      - NET_ADMIN
+      - NET_ADMIN  # NET_ADMIN is recommended, but not required (DHCP needs NET_ADMIN)  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     restart: always
 
 

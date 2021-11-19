@@ -53,14 +53,17 @@ if [ 1 -eq 1 ]; then
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
       CONFIG_DIR="/root/docker-configs/pihole";
-      HOSTNAME="$(cat ${CONFIG_DIR}/HOSTNAME;)";
-      DOMAIN="$(cat ${CONFIG_DIR}/DOMAIN;)";
-      WEBPASSWORD="$(cat ${CONFIG_DIR}/WEBPASSWORD;)";
-      SERVER_IP="$(cat ${CONFIG_DIR}/SERVER_IP;)";
 
       mkdir -p "${CONFIG_DIR}";
       mkdir -p "${CONFIG_DIR}/etc/pihole";
       mkdir -p "${CONFIG_DIR}/etc/dnsmasq.d";
+
+      HOSTNAME_PIHOLE="$(cat ${CONFIG_DIR}/HOSTNAME_PIHOLE;)";
+      DOMAIN_PIHOLE="$(cat ${CONFIG_DIR}/DOMAIN_PIHOLE;)";
+      WEBPASSWORD="$(cat ${CONFIG_DIR}/WEBPASSWORD;)";
+      SERVER_IP="$(cat ${CONFIG_DIR}/SERVER_IP;)";
+
+      VIRTUAL_HOST="${HOSTNAME_PIHOLE}${DOMAIN_PIHOLE})";
 
       cd "${CONFIG_DIR}";
 
@@ -80,12 +83,14 @@ if [ 1 -eq 1 ]; then
 
       if [ 1 -eq 1 ]; then
         env \
-        CONFIG_DIR="${CONFIG_DIR}" \
-        DOMAIN="${DOMAIN}" \
-        HOSTNAME="${HOSTNAME}" \
-        WEBPASSWORD="${WEBPASSWORD}" \
-        SERVER_IP="${SERVER_IP}" \
-        docker-compose --file "${CONFIG_DIR}/docker-compose.pihole.yml" up --detach;
+          CONFIG_DIR="${CONFIG_DIR}" \
+          DOMAIN_PIHOLE="${DOMAIN_PIHOLE}" \
+          HOSTNAME_PIHOLE="${HOSTNAME_PIHOLE}" \
+          WEBPASSWORD="${WEBPASSWORD}" \
+          SERVER_IP="${SERVER_IP}" \
+          VIRTUAL_HOST="${VIRTUAL_HOST}" \
+          docker-compose --file "${CONFIG_DIR}/docker-compose.pihole.yml" up --detach \
+        ;
       fi;
 
       docker stop pihole;

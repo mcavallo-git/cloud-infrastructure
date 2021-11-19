@@ -92,26 +92,26 @@ if [ 1 -eq 1 ]; then
 
       # container_name: ...
       if [ -n "${HOSTNAME_PIHOLE}" ]; then
-        sed -i -re "s/^(\s+)(image:.*)\$/\1container_name: '${HOSTNAME_PIHOLE}'\n\1\2/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(image:.*)\$/\1container_name: '${HOSTNAME_PIHOLE//\//\\\/}'\n\1\2/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
       # hostname: ...
       if [ -n "${VIRTUAL_HOST}" ]; then
-        sed -i -re "s/^(\s+)(image:.*)\$/\1hostname: '${VIRTUAL_HOST}'\n\1\2/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(image:.*)\$/\1hostname: '${VIRTUAL_HOST//\//\\\/}'\n\1\2/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
       # environment: ...
       if [ -n "${SERVER_IP}" ]; then
-        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  ServerIP: '${SERVER_IP}'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  ServerIP: '${SERVER_IP//\//\\\/}'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
       if [ -n "${TZ}" ]; then
-        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  TZ: '${TZ}'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  TZ: '${TZ//\//\\\/}'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
       if [ -n "${VIRTUAL_HOST}" ]; then
-        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  VIRTUAL_HOST: '${VIRTUAL_HOST}'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  VIRTUAL_HOST: '${VIRTUAL_HOST//\//\\\/}'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
       if [ -n "${WEBPASSWORD}" ]; then
-        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  WEBPASSWORD: '${WEBPASSWORD}'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  WEBPASSWORD: '${WEBPASSWORD//\//\\\/}'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
       # volumes: ...

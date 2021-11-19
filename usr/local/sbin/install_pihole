@@ -119,6 +119,9 @@ if [ 1 -eq 1 ]; then
         sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/pihole\/:\/etc\/pihole\/'/" "${LOCAL_DOCKER_COMPOSE}";
         sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/dnsmasq.d\/:\/etc\/dnsmasq.d\/'/" "${LOCAL_DOCKER_COMPOSE}";
         sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/resolv.conf:\/etc\/resolv.conf:ro'/" "${LOCAL_DOCKER_COMPOSE}";
+        # sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/lighttpd\/external.conf:\/etc\/lighttpd\/external.conf:ro'/" "${LOCAL_DOCKER_COMPOSE}";
+        # sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/privkey.pem:\/etc\/letsencrypt\/live\/pihole\/privkey.pem:ro'/" "${LOCAL_DOCKER_COMPOSE}";
+        # sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:ro'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
 

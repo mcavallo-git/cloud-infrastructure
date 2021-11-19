@@ -37,6 +37,8 @@ if [ 1 -eq 1 ]; then
   # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
   FIRST_REINSTALL_CONFIRMATION="";
   SECOND_REINSTALL_CONFIRMATION="";
+  RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter "name=pihole" | wc -l;);
+  if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
     # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
     echo -e "";
     echo -e " ! !        ! !                                                   ! !        ! ! ";

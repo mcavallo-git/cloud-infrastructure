@@ -22,10 +22,16 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     volumes:  # [Host]:[Docker] Filepath maps
+      - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
+      - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
+      - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
       - '/etc/hosts:/etc/hosts:ro'
+    #   - '${CONFIG_DIR:-.}/etc/lighttpd/external.conf:/etc/lighttpd/external.conf:ro'
+    #   - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/privkey.pem:/etc/letsencrypt/live/pihole/privkey.pem:ro'
+    #   - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/fullchain.pem:/etc/letsencrypt/live/pihole/fullchain.pem:ro'
     # cap_add:
     #   - NET_ADMIN
-    #   ### Only add the 'NET_ADMIN' docker capability if [ DHCP ] or [ IPv6 Router Advertisements ] pihole feature(s) are in use  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    #   ### Only add the 'NET_ADMIN' docker capability if [ DHCP ] or [ IPv6 Router Advertisements ] pihole feature(s) are enabled  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
 
 
 # ------------------------------------------------------------

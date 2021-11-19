@@ -10,8 +10,8 @@ version: "3"
 
 services:
   pihole:
-    hostname: '${HOSTNAME:-pihole}${DOMAIN}'
-    container_name: '${HOSTNAME}'
+    hostname: '${HOSTNAME_PIHOLE:-pihole}${DOMAIN_PIHOLE}'
+    container_name: '${HOSTNAME_PIHOLE:-pihole}'
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
@@ -22,7 +22,7 @@ services:
     environment:
       ServerIP: ${SERVER_IP}
       TZ: '${TZ:-America/New_York}'
-      VIRTUAL_HOST: '${HOSTNAME:-${SERVER_IP:-pihole}}'
+      VIRTUAL_HOST: '${VIRTUAL_HOST:-${HOSTNAME_PIHOLE:-${SERVER_IP:-pihole}}}'
       WEBPASSWORD: ${WEBPASSWORD}
     # Volumes store your data between container upgrades
     volumes:

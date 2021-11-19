@@ -88,20 +88,20 @@ if [ 1 -eq 1 ]; then
       if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
         if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
           # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
-          echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
+          echo -e "\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n";
           sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
           REVERT_RESOLV_CONF=1;
         fi;
         # Remove existing pihole dockers
         docker_sniper "pihole";
         # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
-        echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
+        echo -e "\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n";
         sleep 30;
       fi;
 
       # ------------------------------
       # Spin up the pihole docker container
-      echo -e "\n\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n\n";
+      echo -e "\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n";
       cd "${CONFIG_DIR}";
       docker-compose up --detach;
 
@@ -117,12 +117,12 @@ if [ 1 -eq 1 ]; then
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
       if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
-        echo -e "\n\nDisabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"\n\n";
+        echo -e "\nDisabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"\n";
         sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
       fi;
 
       # Update pihole's gravity database
-      echo -e "\n\nUpdating pihole's gravity database...\n\n"
+      echo -e "\nUpdating pihole's gravity database...\n"
       docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 
     fi;

@@ -11,13 +11,13 @@ version: "3"
 services:
   pihole:
     image: pihole/pihole:latest
-    ports:  # [Host]:[Docker] Port-Maps
+    ports:  # [Host]:[Docker] Port maps
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
       - "80:80/tcp"
       - "443:443/tcp"
-    volumes:  # [Host]:[Docker] Filepath-Maps
+    volumes:  # [Host]:[Docker] Filepath maps
       - /etc/hosts:/etc/hosts:ro
     environment:
       WEBUIBOXEDLAYOUT: 'boxed'

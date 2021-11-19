@@ -101,13 +101,11 @@ if [ 1 -eq 1 ]; then
 
       # ------------------------------
       # Spin up the pihole docker container
-      if [ 1 -eq 1 ]; then
-        echo -e "\n\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n\n";
-        cd "${CONFIG_DIR}";
-        docker-compose up --detach;
-      fi;
+      echo -e "\n\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n\n";
+      cd "${CONFIG_DIR}";
+      docker-compose up --detach;
 
-      # Stop pihole before freeing up port 53
+      # Stop pihole & attempt to free-up port 53
       docker stop pihole;
 
       # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally

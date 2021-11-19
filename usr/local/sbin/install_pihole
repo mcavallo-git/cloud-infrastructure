@@ -126,16 +126,14 @@ if [ 1 -eq 1 ]; then
       # Spin up the pihole docker container
       if [ 1 -eq 1 ]; then
 
-
-
-        echo -e "\n\nCalling [ export CONFIG_DIR=\"${CONFIG_DIR}\" DOMAIN_PIHOLE=\"${DOMAIN_PIHOLE}\" HOSTNAME_PIHOLE=\"${HOSTNAME_PIHOLE}\" WEBPASSWORD=\"***\" SERVER_IP=\"${SERVER_IP}\" VIRTUAL_HOST=\"${VIRTUAL_HOST}\"; ]...\n\n";
-        export CONFIG_DIR="${CONFIG_DIR}" DOMAIN_PIHOLE="${DOMAIN_PIHOLE}" HOSTNAME_PIHOLE="${HOSTNAME_PIHOLE}" WEBPASSWORD="${WEBPASSWORD}" SERVER_IP="${SERVER_IP}" VIRTUAL_HOST="${VIRTUAL_HOST}";
+        # echo -e "\n\nCalling [ export CONFIG_DIR=\"${CONFIG_DIR}\" DOMAIN_PIHOLE=\"${DOMAIN_PIHOLE}\" HOSTNAME_PIHOLE=\"${HOSTNAME_PIHOLE}\" WEBPASSWORD=\"***\" SERVER_IP=\"${SERVER_IP}\" VIRTUAL_HOST=\"${VIRTUAL_HOST}\"; ]...\n\n";
+        # export CONFIG_DIR="${CONFIG_DIR}" DOMAIN_PIHOLE="${DOMAIN_PIHOLE}" HOSTNAME_PIHOLE="${HOSTNAME_PIHOLE}" WEBPASSWORD="${WEBPASSWORD}" SERVER_IP="${SERVER_IP}" VIRTUAL_HOST="${VIRTUAL_HOST}";
 
         echo -e "\n\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n\n";
         cd "${CONFIG_DIR}"; docker-compose up --detach;
 
-        echo -e "\n\nCalling [ export CONFIG_DIR=\"\" DOMAIN_PIHOLE=\"\" HOSTNAME_PIHOLE=\"\" WEBPASSWORD=\"\" SERVER_IP=\"\" VIRTUAL_HOST=\"\"; ]...\n\n";
-        export CONFIG_DIR="" DOMAIN_PIHOLE="" HOSTNAME_PIHOLE="" WEBPASSWORD="" SERVER_IP="" VIRTUAL_HOST="";
+        # echo -e "\n\nCalling [ export CONFIG_DIR=\"\" DOMAIN_PIHOLE=\"\" HOSTNAME_PIHOLE=\"\" WEBPASSWORD=\"\" SERVER_IP=\"\" VIRTUAL_HOST=\"\"; ]...\n\n";
+        # export CONFIG_DIR="" DOMAIN_PIHOLE="" HOSTNAME_PIHOLE="" WEBPASSWORD="" SERVER_IP="" VIRTUAL_HOST="";
 
       fi;
 

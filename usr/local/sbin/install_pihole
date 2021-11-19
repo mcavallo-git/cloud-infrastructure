@@ -112,7 +112,7 @@ if [ 1 -eq 1 ]; then
       systemctl stop systemd-resolved.service;
       systemctl disable systemd-resolved.service;
 
-      # Start pihole back up once port 53 is available
+      # Start pihole again once port 53 has been made available
       docker start pihole;
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)

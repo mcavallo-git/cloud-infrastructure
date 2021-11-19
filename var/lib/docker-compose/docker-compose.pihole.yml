@@ -22,7 +22,7 @@ services:
     environment:
       WEBUIBOXEDLAYOUT: 'boxed'
     cap_add:
-      - NET_ADMIN  # NET_ADMIN is recommended, but not required (DHCP needs NET_ADMIN)  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+      - NET_ADMIN  # Recommended but not required (required if pihole will host DHCP server)  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     restart: always
 
 

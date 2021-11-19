@@ -48,7 +48,7 @@ if [ 1 -eq 1 ]; then
 
     echo -e "       |  ";
     read -p "       |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
-    echo -e "";
+    echo -e "\n";
 
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 

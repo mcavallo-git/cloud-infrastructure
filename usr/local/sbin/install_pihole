@@ -172,18 +172,18 @@ if [ 1 -eq 1 ]; then
       fi;
 
       # environment: ...
-      if [ -n "${SERVER_IP}" ]; then
-        sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  ServerIP: '${SERVER_IP//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      fi;
-      if [ -n "${TZ}" ]; then
-        sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  TZ: '${TZ//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      fi;
-      if [ -n "${VIRTUAL_HOST}" ]; then
-        sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  VIRTUAL_HOST: '${VIRTUAL_HOST//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      fi;
-      if [ -n "${WEBPASSWORD}" ]; then
-        sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  WEBPASSWORD: '${WEBPASSWORD//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      fi;
+      # if [ -n "${SERVER_IP}" ]; then
+      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  ServerIP: '${SERVER_IP//\//\\\/}'/" -i "${COMPOSE_FILE}";
+      # fi;
+      # if [ -n "${TZ}" ]; then
+      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  TZ: '${TZ//\//\\\/}'/" -i "${COMPOSE_FILE}";
+      # fi;
+      # if [ -n "${VIRTUAL_HOST}" ]; then
+      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  VIRTUAL_HOST: '${VIRTUAL_HOST//\//\\\/}'/" -i "${COMPOSE_FILE}";
+      # fi;
+      # if [ -n "${WEBPASSWORD}" ]; then
+      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  WEBPASSWORD: '${WEBPASSWORD//\//\\\/}'/" -i "${COMPOSE_FILE}";
+      # fi;
 
       # volumes: ...
       if [ -d "${CONFIG_DIR}" ]; then

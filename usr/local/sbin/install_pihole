@@ -117,12 +117,14 @@ if [ 1 -eq 1 ]; then
 
       # volumes: ...
       if [ -d "${CONFIG_DIR}" ]; then
-        sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/pihole\/:\/etc\/pihole\/'/" -i "${LOCAL_DOCKER_COMPOSE}";
-        sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/dnsmasq.d\/:\/etc\/dnsmasq.d\/'/" -i "${LOCAL_DOCKER_COMPOSE}";
-        sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/resolv.conf:\/etc\/resolv.conf:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
-        # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/lighttpd\/external.conf:\/etc\/lighttpd\/external.conf:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
-        # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/privkey.pem:\/etc\/letsencrypt\/live\/pihole\/privkey.pem:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
-        # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
+        # Networking config dirs
+          sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/pihole\/:\/etc\/pihole\/'/" -i "${LOCAL_DOCKER_COMPOSE}";
+          sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/dnsmasq.d\/:\/etc\/dnsmasq.d\/'/" -i "${LOCAL_DOCKER_COMPOSE}";
+          sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/resolv.conf:\/etc\/resolv.conf:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
+          # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/lighttpd\/external.conf:\/etc\/lighttpd\/external.conf:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
+        # SSL/TLS (HTTPS) certificate dirs
+          # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/privkey.pem:\/etc\/letsencrypt\/live\/pihole\/privkey.pem:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
+          # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:ro'/" -i "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
 
@@ -189,6 +191,8 @@ fi;
 # Citation(s)
 #
 #   discourse.pi-hole.net  |  "[Solved] While executing: attempt to write a readonly database error - Help / Community Help - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/solved-while-executing-attempt-to-write-a-readonly-database-error/33003/4
+#
+#   discourse.pi-hole.net  |  "Enabling HTTPS for your Pi-hole Web Interface - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/enabling-https-for-your-pi-hole-web-interface/5771
 #
 #   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
 #

@@ -25,8 +25,7 @@ services:
       VIRTUAL_HOST: '${VIRTUAL_HOST:-${HOSTNAME_PIHOLE:-${SERVER_IP:-pihole}}}'
       WEBPASSWORD: '${WEBPASSWORD}'
       WEBUIBOXEDLAYOUT: 'boxed'
-    # Volumes store your data between container upgrades
-    volumes:
+    volumes:  # Volumes store your data between container upgrades
       - /etc/hosts:/etc/hosts:ro
       - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
       - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'

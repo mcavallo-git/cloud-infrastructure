@@ -10,8 +10,8 @@ version: "3"
 
 services:
   pihole:
-    hostname: '${HOSTNAME_PIHOLE:-pihole}${DOMAIN_PIHOLE}'
-    container_name: '${HOSTNAME_PIHOLE:-pihole}'
+    # hostname: '${HOSTNAME_PIHOLE:-pihole}${DOMAIN_PIHOLE}'
+    # container_name: '${HOSTNAME_PIHOLE:-pihole}'
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
@@ -20,16 +20,12 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     environment:
-      ServerIP: '${SERVER_IP}'
-      TZ: '${TZ:-America/New_York}'
-      VIRTUAL_HOST: '${VIRTUAL_HOST:-${HOSTNAME_PIHOLE:-${SERVER_IP:-pihole}}}'
-      WEBPASSWORD: '${WEBPASSWORD}'
       WEBUIBOXEDLAYOUT: 'boxed'
     volumes:  # Volume maps allow you to persist your container's data between container upgrades by storing parts of it within the host's file system
       - /etc/hosts:/etc/hosts:ro
-      - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
-      - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
-      - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
+      # - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
+      # - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
+      # - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
       # - '${CONFIG_DIR:-.}/etc/lighttpd/external.conf:/etc/lighttpd/external.conf:ro'
       # - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/privkey.pem:/etc/letsencrypt/live/pihole/privkey.pem:ro'
       # - '${CONFIG_DIR:-.}/etc/letsencrypt/live/pihole/fullchain.pem:/etc/letsencrypt/live/pihole/fullchain.pem:ro'

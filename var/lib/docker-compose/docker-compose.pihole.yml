@@ -20,10 +20,11 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     environment:
-      ServerIP: ${SERVER_IP}
+      ServerIP: '${SERVER_IP}'
       TZ: '${TZ:-America/New_York}'
       VIRTUAL_HOST: '${VIRTUAL_HOST:-${HOSTNAME_PIHOLE:-${SERVER_IP:-pihole}}}'
-      WEBPASSWORD: ${WEBPASSWORD}
+      WEBPASSWORD: '${WEBPASSWORD}'
+      WEBUIBOXEDLAYOUT: 'boxed'
     # Volumes store your data between container upgrades
     volumes:
       - /etc/hosts:/etc/hosts:ro

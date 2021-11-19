@@ -64,7 +64,7 @@ if [ 1 -eq 1 ]; then
       cd "${CONFIG_DIR}";
 
       # ------------------------------
-      # Download a base docker-compose.yml file (intended to be used for spinning up customized pihole containers)
+      # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
       REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
       COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
       curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
@@ -72,8 +72,8 @@ if [ 1 -eq 1 ]; then
 
       # ------------------------------
 
-      # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
       REVERT_RESOLV_CONF=0;
+      # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
       if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
         echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
         sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
@@ -86,42 +86,6 @@ if [ 1 -eq 1 ]; then
       # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
       echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
       sleep 30;
-
-      # ------------------------------
-      #
-      # docker-compose.yml --> variable injection via 'sed'
-      #
-
-      # hostname: ...
-      # if [ -n "${VIRTUAL_HOST}" ]; then
-      #   sed -re "s/^(\s+)(image:.*)\$/\1hostname: '${VIRTUAL_HOST//\//\\\/}'\n\1\2/" -i "${COMPOSE_FILE}";
-      # fi;
-
-      # environment: ...
-      # if [ -n "${SERVER_IP}" ]; then
-      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  ServerIP: '${SERVER_IP//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      # fi;
-      # if [ -n "${TZ}" ]; then
-      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  TZ: '${TZ//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      # fi;
-      # if [ -n "${VIRTUAL_HOST}" ]; then
-      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  VIRTUAL_HOST: '${VIRTUAL_HOST//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      # fi;
-      # if [ -n "${WEBPASSWORD}" ]; then
-      #   sed -re "s/^(\s+)(environment:.*)\$/\1\2\n\1  WEBPASSWORD: '${WEBPASSWORD//\//\\\/}'/" -i "${COMPOSE_FILE}";
-      # fi;
-
-      # volumes: ...
-      # if [ -d "${CONFIG_DIR}" ]; then
-      #   # Networking config dirs
-      #     sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/pihole\/:\/etc\/pihole\/'/" -i "${COMPOSE_FILE}";
-      #     sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/dnsmasq.d\/:\/etc\/dnsmasq.d\/'/" -i "${COMPOSE_FILE}";
-      #     sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/resolv.conf:\/etc\/resolv.conf:ro'/" -i "${COMPOSE_FILE}";
-      #     # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/lighttpd\/external.conf:\/etc\/lighttpd\/external.conf:ro'/" -i "${COMPOSE_FILE}";
-      #   # SSL/TLS (HTTPS) certificate dirs
-      #     # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/privkey.pem:\/etc\/letsencrypt\/live\/pihole\/privkey.pem:ro'/" -i "${COMPOSE_FILE}";
-      #     # sed -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:\/etc\/letsencrypt\/live\/pihole\/fullchain.pem:ro'/" -i "${COMPOSE_FILE}";
-      # fi;
 
       # ------------------------------
       # Spin up the pihole docker container

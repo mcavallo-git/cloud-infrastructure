@@ -81,7 +81,7 @@ if [ 1 -eq 1 ]; then
 
       curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml" -o "${CONFIG_DIR}/docker-compose.pihole.yml";
 
-      # Spin up the pihole docker instance
+      # Spin up the pihole docker container
       if [ 1 -eq 1 ]; then
 
         echo -e "\n\nCalling [ export CONFIG_DIR=\"${CONFIG_DIR}\" DOMAIN_PIHOLE=\"${DOMAIN_PIHOLE}\" HOSTNAME_PIHOLE=\"${HOSTNAME_PIHOLE}\" WEBPASSWORD=\"***\" SERVER_IP=\"${SERVER_IP}\" VIRTUAL_HOST=\"${VIRTUAL_HOST}\"; ]...\n\n";

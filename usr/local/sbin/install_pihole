@@ -83,7 +83,7 @@ if [ 1 -eq 1 ]; then
       REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
       LOCAL_DOCKER_COMPOSE="${CONFIG_DIR}/docker-compose.yml";
 
-      curl -sL "${REMOTE_DOCKER_COMPOSE}" -o -i "${LOCAL_DOCKER_COMPOSE}";
+      curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${LOCAL_DOCKER_COMPOSE}";
       
       # ------------------------------
       #

@@ -116,9 +116,9 @@ if [ 1 -eq 1 ]; then
 
       # volumes: ...
       if [ -d "${CONFIG_DIR}" ]; then
-        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR}/etc/pihole/:/etc/pihole/'/" "${LOCAL_DOCKER_COMPOSE}";
-        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR}/etc/dnsmasq.d/:/etc/dnsmasq.d/'/" "${LOCAL_DOCKER_COMPOSE}";
-        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR}/etc/resolv.conf:/etc/resolv.conf:ro'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/pihole\/:\/etc\/pihole\/'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/dnsmasq.d\/:\/etc\/dnsmasq.d\/'/" "${LOCAL_DOCKER_COMPOSE}";
+        sed -i -re "s/^(\s+)(volumes:.*)\$/\1\2\n\1  - '${CONFIG_DIR//\//\\\/}\/etc\/resolv.conf:\/etc\/resolv.conf:ro'/" "${LOCAL_DOCKER_COMPOSE}";
       fi;
 
 

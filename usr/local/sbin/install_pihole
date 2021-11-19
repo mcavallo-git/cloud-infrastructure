@@ -34,23 +34,31 @@ fi;
 
 if [ 1 -eq 1 ]; then
 
-  echo -e "";
-  echo -e " ! !        ! !                                                   ! !        ! ! ";
-  echo -e " ! ! NOTICE ! !  This will reinstall any existing pihole dockers  ! ! NOTICE ! ! ";
-  echo -e " ! !   |    ! !   Make sure you've freed up port 53 on localhost  ! !        ! ! ";
-  echo -e "       |  ";
-  read -p "       |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
-  echo -e "";
-
-  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-
+  # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
+  FIRST_REINSTALL_CONFIRMATION="";
+  SECOND_REINSTALL_CONFIRMATION="";
+    # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
+    echo -e "";
+    echo -e " ! !        ! !                                                   ! !        ! ! ";
+    echo -e " ! ! NOTICE ! !  This will reinstall any existing pihole dockers  ! ! NOTICE ! ! ";
+    echo -e " ! !   |    ! !   Make sure you've freed up port 53 on localhost  ! !        ! ! ";
     echo -e "       |  ";
-    read -p "       |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
-    echo -e "\n";
+    read -p "       |--> Are you sure you want to continue? (y/n)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    echo -e "";
+  fi;
 
-    if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+  if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
-      # ------------------------------------------------------------
+    # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
+    if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+      echo -e "       |  ";
+      read -p "       |--> Are you completely positive you want to continue? (y/n)  " -a SECOND_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
+      echo -e "\n";
+    fi;
+    
+    if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+
+      # ------------------------------
       # Setup the config/networking/etc. directories to volume map to pihole
       CONFIG_DIR="/root/docker-configs/pihole";
       mkdir --parents --verbose "${CONFIG_DIR}";
@@ -64,6 +72,7 @@ if [ 1 -eq 1 ]; then
       cd "${CONFIG_DIR}";
 
       # ------------------------------
+
       # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
       REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
       COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
@@ -72,45 +81,48 @@ if [ 1 -eq 1 ]; then
 
       # ------------------------------
 
+      # If any pihole containers are already running locally
       REVERT_RESOLV_CONF=0;
-      # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
-      if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
-        echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
-        sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
-        REVERT_RESOLV_CONF=1;
+      if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
+        if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
+          # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
+          echo -e "\n\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"\n\n";
+          sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
+          REVERT_RESOLV_CONF=1;
+        fi;
+        # Remove existing pihole dockers
+        docker_sniper "pihole";
+        # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
+        echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
+        sleep 30;
       fi;
-
-      # Remove existing pihole dockers
-      docker_sniper "pihole";
-
-      # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
-      echo -e "\n\nSleeping for 30 seconds (to allow network resolution changes to propogate)...\n\n";
-      sleep 30;
 
       # ------------------------------
       # Spin up the pihole docker container
       if [ 1 -eq 1 ]; then
-
         echo -e "\n\nCalling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...\n\n";
         cd "${CONFIG_DIR}";
         docker-compose up --detach;
-
       fi;
 
+      # Stop pihole before freeing up port 53
       docker stop pihole;
 
+      # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
       systemctl stop systemd-resolved.service;
       systemctl disable systemd-resolved.service;
 
+      # Start pihole back up once port 53 is available
       docker start pihole;
 
+      # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
       if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
         echo -e "\n\nDisabling DNS nameserver \"8.8.4.4\" from \"/etc/resolv.conf\"\n\n";
         sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
       fi;
 
-      # Update PiHole's Gravity
-      echo -e "\n\nUpdating PiHole's Gravity...\n\n"
+      # Update pihole's gravity database
+      echo -e "\n\nUpdating pihole's gravity database...\n\n"
       docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 
     fi;

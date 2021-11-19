@@ -84,7 +84,8 @@ if [ 1 -eq 1 ]; then
       LOCAL_DOCKER_COMPOSE="${CONFIG_DIR}/docker-compose.yml";
 
       curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${LOCAL_DOCKER_COMPOSE}";
-      
+      chmod 0600 "${LOCAL_DOCKER_COMPOSE}";
+
       # ------------------------------
       #
       # docker-compose.yml --> variable injection via 'sed'

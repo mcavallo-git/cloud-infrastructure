@@ -64,11 +64,12 @@ fi
 
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'; # colored GCC warnings and errors
 
-if [ -d "/mnt/c/windows" ]; then
-  if [ -f "/usr/bin/docker" ]; then
-    export DOCKER_HOST="tcp://localhost:2375";
-  fi;
-fi;
+### Deprecated (Docker for Windows redirect into WSL) - Use docker for WSL2, instead
+# if [ -d "/mnt/c/windows" ]; then
+#   if [ -f "/usr/bin/docker" ]; then
+#     export DOCKER_HOST="tcp://localhost:2375";
+#   fi;
+# fi;
 
 # some more ls aliases
 alias ll='ls -alF'

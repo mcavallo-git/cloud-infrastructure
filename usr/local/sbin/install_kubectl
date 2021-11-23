@@ -33,8 +33,8 @@ else
   echo "Please refer to documentation article [ Install and Set Up kubectl on Linux | Kubernetes ] at URL [ https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/ ]";
   echo "";
 
-  # Verify that kubectl is installed by getting the installed version from it
-  if [ $(command -v kubectl 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  if [ -n "$(command -v kubectl 2>'/dev/null';)" ]; then
+    # Verify that kubectl is installed by getting the installed version from it
     echo "";
     echo "Calling [ kubectl version --short; ]...";
     kubectl version --short;

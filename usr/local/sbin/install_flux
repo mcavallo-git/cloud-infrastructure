@@ -29,21 +29,23 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 else
 
   # Ensure that flux is installed
-  if [ $(command -v flux 2>'/dev/null' | wc -l;) -eq 0 ]; then
+  if [ -n "$(command -v flux 2>'/dev/null';)" ]; then
+
+    # Flux is already installed
+    echo "";
+    echo "(Skipped) Command \"flux\" already exists with filepath \"$(command -v flux;)\"";
+
+  else
+
+    # Flux is NOT installed --> Install it
+    echo "";
 
     # Install 'flux' via convenience script  -  https://fluxcd.io/docs/installation/#install-the-flux-cli
-    echo "";
     curl -s "https://fluxcd.io/install.sh" | bash;
 
     echo "";
     echo "Calling [ command -v flux; ]...";
     command -v flux;
-
-  else
-
-    # Flux is already installed
-    echo "";
-    echo "(Skipped) Command \"flux\" already exists with filepath \"$(command -v flux;)\"";
 
   fi;
 

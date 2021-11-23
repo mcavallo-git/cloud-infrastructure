@@ -28,23 +28,23 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   exit 1;
 else
 
-  # Ensure helm is installed
+  # Ensure that helm is installed
   if [ $(command -v helm 2>'/dev/null' | wc -l;) -eq 0 ]; then
     
     # Helm is NOT installed --> Install it
     echo "";
     if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
 
-      # Reference:  https://helm.sh/docs/intro/install/#from-apt-debianubuntu
+      # Install 'helm' via package manager  -  https://helm.sh/docs/intro/install/#from-apt-debianubuntu
       curl "https://baltocdn.com/helm/signing.asc" | apt-key add -;
       apt-get -y install apt-transport-https;
       echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee "/etc/apt/sources.list.d/helm-stable-debian.list";
       apt-get -y update;
       apt-get -y install helm;
 
-    else # Distros:  Non-debian - use convenience script
-
-      # Reference:  https://helm.sh/docs/intro/install/#from-script
+    else # Distros:  Non-debian
+    
+      # Install 'helm' via convenience script  -  https://helm.sh/docs/intro/install/#from-script
       curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3" | bash;
 
     fi;

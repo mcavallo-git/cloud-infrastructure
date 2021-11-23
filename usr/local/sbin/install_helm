@@ -29,8 +29,14 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 else
 
   # Ensure that helm is installed
-  if [ $(command -v helm 2>'/dev/null' | wc -l;) -eq 0 ]; then
-    
+  if [ -n "$(command -v helm 2>'/dev/null';)" ]; then
+
+    # Helm is already installed
+    echo "";
+    echo "(Skipped) Command \"helm\" already exists with filepath \"$(command -v helm;)\"";
+
+  else
+
     # Helm is NOT installed --> Install it
     echo "";
     if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
@@ -52,12 +58,6 @@ else
     echo "";
     echo "Calling [ command -v helm; ]...";
     command -v helm;
-
-  else
-
-    # Helm is already installed
-    echo "";
-    echo "(Skipped) Command \"helm\" already exists with filepath \"$(command -v helm;)\"";
 
   fi;
 

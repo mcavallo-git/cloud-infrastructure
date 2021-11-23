@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_flux" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_flux?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+
+  # Ensure that flux is installed
+  if [ $(command -v flux 2>'/dev/null' | wc -l;) -eq 0 ]; then
+
+    # Install 'flux' via convenience script  -  https://fluxcd.io/docs/installation/#install-the-flux-cli
+    echo "";
+    curl -s "https://fluxcd.io/install.sh" | bash;
+
+    echo "";
+    echo "Calling [ command -v flux; ]...";
+    command -v flux;
+
+  else
+
+    # Flux is already installed
+    echo "";
+    echo "(Skipped) Command \"flux\" already exists with filepath \"$(command -v flux;)\"";
+
+  fi;
+
+  # Verify that flux is installed by getting the installed version from it
+  echo "";
+  echo "Calling [ flux --version; ]...";
+  flux --version;
+
+  echo "";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+# 
+#   fluxcd.io  |  "Installation | Flux"  |  https://fluxcd.io/docs/installation/#install-the-flux-cli
+#
+# ------------------------------------------------------------

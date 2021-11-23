@@ -30,13 +30,35 @@ else
 
   # Ensure helm is installed
   if [ $(command -v helm 2>'/dev/null' | wc -l;) -eq 0 ]; then
-    curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3" | bash;
+    
+    # Helm is NOT installed --> Install it
+    echo "";
+    if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
+
+      # Reference:  https://helm.sh/docs/intro/install/#from-apt-debianubuntu
+      curl "https://baltocdn.com/helm/signing.asc" | apt-key add -;
+      apt-get -y install apt-transport-https;
+      echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee "/etc/apt/sources.list.d/helm-stable-debian.list";
+      apt-get -y update;
+      apt-get -y install helm;
+
+    else # Distros:  Non-debian - use convenience script
+
+      # Reference:  https://helm.sh/docs/intro/install/#from-script
+      curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3" | bash;
+
+    fi;
+
     echo "";
     echo "Calling [ command -v helm; ]...";
     command -v helm;
+
   else
+
+    # Helm is already installed
     echo "";
     echo "(Skipped) Command \"helm\" already exists with filepath \"$(command -v helm;)\"";
+
   fi;
 
   # Verify that helm is installed by getting the installed version from it
@@ -53,6 +75,6 @@ fi;
 #
 # Citation(s)
 # 
-#   helm.sh  |  "Helm | Helm Install"  |  https://helm.sh/docs/helm/helm_install/
+#   helm.sh  |  "Helm | Installing Helm"  |  https://helm.sh/docs/intro/install
 #
 # ------------------------------------------------------------

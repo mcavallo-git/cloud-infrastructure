@@ -29,7 +29,7 @@ exec 2>&1;
 #
 # Instantiate an exit-code variable (integer) to store/sum errors found throughout this script (and to return as the final exit-code from this script)
 #
-# EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
+EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
 # ------------------------------------------------------------
 #
 # Script must run as root or via sudo
@@ -288,7 +288,7 @@ else
   fi;
 
   # If no errors are found up-until this point, continue
-  if [ ! -v EXIT_CODE ]; then
+  if [ ! -v EXIT_CODE ] || [ "${EXIT_CODE}" == "0" ]; then
     # Make sure prerequisite-packages are installed
     unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
     unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array

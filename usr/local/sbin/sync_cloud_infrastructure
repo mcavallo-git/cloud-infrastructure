@@ -27,6 +27,11 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
+# Instantiate an exit-code variable (integer) to store/sum errors found throughout this script (and to return as the exit-code from this script)
+#
+EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
+# ------------------------------------------------------------
+#
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
@@ -34,9 +39,6 @@ if [ "$(id -un)" != "root" ]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
-
-  EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
-
   # ------------------------------------------------------------
   #
   # Instantiate Static Runtime-Variables

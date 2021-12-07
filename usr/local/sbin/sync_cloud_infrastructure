@@ -544,7 +544,7 @@ else
       echo -e "\n==== Info:  Returned to parent runtime from recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
     else
-      # Update-self (recursive call) >> NOT << required  (potentially already running as a recursive call)
+      # Update-self (recursive call) >> NOT << required  (possibly already running as a recursive call)
       # ------------------------------
       if [[ -z "$(command -v git 2>'/dev/null';)" ]]; then
         # git does NOT exist (as a local command)

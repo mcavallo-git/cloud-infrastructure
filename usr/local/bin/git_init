@@ -186,6 +186,9 @@ if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT
 #
 # Setup git command(s), filepath(s), URI(s), etc.
 #
+
+GIT_SSH_OPTIONS="";
+
 GIT_HOST_DIR="${ALL_REPOS_DIR}/${REMOTE_HOST}";
 if [ ! -d "${GIT_HOST_DIR}" ]; then
   mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
@@ -219,15 +222,18 @@ GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL// /\\ }";
 GIT_SSH_USERNAME=${GIT_SSH_USERNAME:-git};  # Intended to be used for Git SSH pushes using a specific push username ( e.g. "git@..." )
 
 # TARGET REPOSITORY
-if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ] || [ "${REMOTE_HOST}" == "vs-ssh.visualstudio.com" ]; then
-  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure/VSTS Repos (no ".git" appended)
+if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (no ".git" appended)
+elif [ "${REMOTE_HOST}" == "vs-ssh.visualstudio.com" ]; then
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # VSTS Repos (no ".git" appended)
+  GIT_SSH_OPTIONS+=" -o HostKeyAlgorithms=+ssh-dss";  # OpenSSH included in 16.04 disables ssh-dss - Re-enable it for deprecated server(s)
 else
   ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;
 
 # Override SSH runtime's default/current config settings (which is what Git connects through) to force RSA key usage
-GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
-export GIT_SSH_COMMAND;
+GIT_SSH_OPTIONS+=" -o StrictHostKeyChecking=no";
+export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}'${GIT_SSH_OPTIONS} -F /dev/null";
 
 # Determine commit user's fullname
 LOCAL_GIT_FULLNAME=$(${GIT_CLI} config user.name);  # Config value specific to git directory
@@ -505,5 +511,7 @@ if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT
 # Citation(s)
 #
 #   git-scm.com  |  "Git - Environment Variables"  |  https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables
+#
+#   stackoverflow.com  |  "web hosting - Unable to negotiate with XX.XXX.XX.XX: no matching host key type found. Their offer: ssh-dss - Stack Overflow"  |  https://stackoverflow.com/a/34209177
 #
 # ------------------------------------------------------------

@@ -504,7 +504,7 @@ else
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Self-update complete";
 
-      echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
+      echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
 
       # Call the updated version of this script with the same parameters passed to the current runtime
       if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
@@ -541,7 +541,7 @@ else
 
       fi;
 
-      echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
+      echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
 
     else
       # Update-self NOT required
@@ -731,7 +731,7 @@ else
       # ------------------------------
       if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" != "1" ]]; then
 
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  No errors detected before main 'If' statement block  (ID: ${START_SECONDS_NANOSECONDS})"; fi;
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  No errors detected before main 'If' statement block  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;
 
         # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
         #  |--> Run the part of the sync job which actually performs the sync
@@ -742,7 +742,7 @@ else
         DESTINATION_PATH="/usr/local/bin";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
         FILE_PERMS="0755"; DIR_PERMS="0755";
-        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -759,7 +759,7 @@ else
         DESTINATION_PATH="/usr/local/sbin";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
         FILE_PERMS="0755"; DIR_PERMS="0755";
-        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -806,7 +806,7 @@ else
           DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
           rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
@@ -828,7 +828,7 @@ else
         DESTINATION_PATH="/etc/profile.d/required_paths.sh";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
         FILE_PERMS="0644"; DIR_PERMS="0644";
-        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -845,7 +845,7 @@ else
         DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
         FILE_PERMS="0644"; DIR_PERMS="0644";
-        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -863,7 +863,7 @@ else
         DESTINATION_PATH="/etc/whitelist.d";
         SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
         FILE_PERMS="0644"; DIR_PERMS="0755";
-        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+        echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
         chown -R "root:root" "${DESTINATION_PATH}";
@@ -1103,7 +1103,7 @@ else
           if [[ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]]; then
             # Enable a cronjob to perform scheduled updates/syncs of the UFW firewall whitelist
             CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-            echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
             wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
               && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
@@ -1126,7 +1126,7 @@ else
           DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
           rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
@@ -1151,7 +1151,7 @@ else
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+                echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
                 BENCHMARK_START=$(date +'%s.%N');
                 rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
@@ -1180,7 +1180,7 @@ else
             if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1208,7 +1208,7 @@ else
             if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1237,7 +1237,7 @@ else
             if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\n  |--> Confirmed - Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1261,7 +1261,7 @@ else
               DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1342,7 +1342,7 @@ fi;
           if [[ ${ARGS_SYNC_DDNS} -eq 1 ]]; then
             # Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
             CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
-            echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
 
             /usr/local/bin/ddns_setup \
@@ -1384,7 +1384,7 @@ fi;
             DESTINATION_PATH="/var/cache/jenkins/war";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
@@ -1406,7 +1406,7 @@ fi;
             DESTINATION_PATH="/etc/default/jenkins";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "jenkins:jenkins" "${DESTINATION_PATH}";
@@ -1424,7 +1424,7 @@ fi;
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_export_config";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1441,7 +1441,7 @@ fi;
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_log_cleanup";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1458,7 +1458,7 @@ fi;
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_sync_ci";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1475,7 +1475,7 @@ fi;
               DESTINATION_PATH="/etc/cron.d/CRON_jenkins_warfile_update";
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
               chown -R "root:root" "${DESTINATION_PATH}";
@@ -1506,7 +1506,7 @@ fi;
             DESTINATION_PATH="/etc/nginx"; if [[ ! -d  "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "root:root" "${DESTINATION_PATH}";
@@ -1521,7 +1521,7 @@ fi;
             DESTINATION_PATH="/var/www/error"; if [[ ! -d  "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0755";
-            echo -e "  |--> Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})"; fi;)";
+            echo -e "  |--> Info:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
             rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
             chown -R "root:root" "${DESTINATION_PATH}";
@@ -1763,15 +1763,15 @@ fi;
 
       elif [[ "${UPDATE_SELF_REQUIRED}" == "1" ]]; then
 
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS})"; fi;
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;
 
       elif [[ -n "${EXIT_CODE}" ]] && [[ "${EXIT_CODE}" != "0" ]]; then
 
-        echo -e "\nError:  One or more errors were found (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS})";
+        echo -e "\nError:  One or more errors were found (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
 
       else 
 
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS})"; fi;
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;
 
       fi;
 
@@ -1799,14 +1799,14 @@ if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
   echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
 fi;
 
-echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s  (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
 
 
 # ------------------------------------------------------------
 #
 # Exit & return the value of EXIT_CODE back to caller
 #
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS})"; fi;
+if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)"; fi;
 test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
 
 

@@ -540,7 +540,7 @@ else
           echo -e "\nInfo:  Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
           WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
           WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
-          if [ ! -n "${WIN32_USR_LOCAL}" ]; then
+          if [ -z "${WIN32_USR_LOCAL}" ]; then
             echo "";
             echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
             EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
@@ -556,9 +556,9 @@ else
         echo "";
         echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
         echo "Debug:  WIN32_HOMEDIR = [ ${WIN32_HOMEDIR} ]";
+        echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
         echo "Debug:  WIN32_USERNAME = [ ${WIN32_USERNAME} ]";
         echo "Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
-        echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
       fi;
       # ------------------------------
       if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then

@@ -446,6 +446,7 @@ else
       CHECKSUM_ERROR_UNSIGNED=4294967295;
 
       TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | wc -l);
+
       TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
@@ -698,6 +699,7 @@ else
         fi;
       fi;
       # ------------------------------
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nInfo:  PRE CONDITIONAL:  EXIT_CODE=[${EXIT_CODE}]"; fi;
       if [ -z "${EXIT_CODE}" ] || [ "${EXIT_CODE}" == "0" ]; then
         # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
         #  |--> Run the part of the sync job which actually performs the sync

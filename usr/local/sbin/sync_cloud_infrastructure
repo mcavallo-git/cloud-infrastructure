@@ -446,8 +446,8 @@ else
 
     else
 
-      CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);  # remove commented & whitespace-only lines from script
-      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1);  # remove commented & whitespace-only lines from script
+      CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);  # remove commented & whitespace-only lines from script
+      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1);  # remove commented & whitespace-only lines from script
 
       CHECKSUM_ERROR_UNSIGNED=4294967295;
 
@@ -498,7 +498,7 @@ else
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
       BENCHMARK_START=$(date +'%s.%N');
       # Download the latest version of this script
-      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}";  # remove commented & whitespace-only lines from script
+      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}";  # remove commented & whitespace-only lines from script
       chmod 0755 "${SYNC_CI_LOCAL}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
@@ -521,8 +521,8 @@ else
           # remove whitespace-only lines
           RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
         fi;
-        # remove commented-out lines
-        RECURSIVE_CALLBACK_COMMAND+=" | grep -v '^#'";
+        # remove comment-only lines
+        RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
         # remove comments appended to the end of lines
         RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
         # set the script to use the local bash shell
@@ -538,8 +538,8 @@ else
         # "${SYNC_CI_LOCAL}" --skip-self-update $@;
         #
         # UPDATED APPROACH - Call script directly from source (to avoid conflict updating/running the file which is already running and executing these commands)
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL \"${SYNC_CI_REMOTE}\" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | grep -v '^#' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; ]..."; fi;
-        curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL "${SYNC_CI_REMOTE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | grep -v '^#' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; # trigger the recursive callback
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL \"${SYNC_CI_REMOTE}\" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; ]..."; fi;
+        curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL "${SYNC_CI_REMOTE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; # trigger the recursive callback
 
       fi;
 

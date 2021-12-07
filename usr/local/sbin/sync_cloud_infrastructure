@@ -1728,6 +1728,11 @@ else
       fi;
       # ------------------------------
       if [ 1 -eq 1 ]; then
+        # Log the ending timestamp for the current runtime
+        END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
+        END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
           echo "";
           echo "Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
@@ -1735,11 +1740,6 @@ else
           echo "Debug:  END_DATETIME = [ ${END_DATETIME} ]";
           echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
         fi;
-        # Log the ending timestamp for the current runtime
-        END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
-        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
-        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
-        END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l);
         echo -e "\n== Info:  End of \"sync_cloud_infrastructure\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
       fi;
       # ------------------------------

@@ -27,17 +27,39 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
-# Instantiate global variables
+# Instantiate dymamic runtime variables
 #
 
 EXIT_CODE=0;  # sum of errors from specific required calls - returned as the final exit-code from this script
 
 UPDATE_SELF_REQUIRED=0;  # used to determine if a newer version of this script should be pulled or not
 
+# ------------------------------------------------------------
+#
+# Instantiate static runtime variables
+#
+
+START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
+
+DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
+DEFAULT_GIT_SOURCE_BRANCH="master";
+DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
+FULLPATH_SYNC_CLOUD_INFRASTRUCTURE="/usr/local/sbin/sync_cloud_infrastructure";
+
+WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 
 # ------------------------------------------------------------
 #
-# Script must run as root or via sudo
+# Log the starting timestamp for the current runtime
+#
+echo -e "\n-- Info:  Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+
+# ------------------------------------------------------------
+#
+# Script must run as root (or via sudo)
 #
 if [ "$(id -un)" != "root" ]; then
   echo "";
@@ -46,40 +68,8 @@ if [ "$(id -un)" != "root" ]; then
 else
   # ------------------------------------------------------------
   #
-  # Instantiate Static Runtime-Variables
+  # Calculate Dynamic Runtime-Variables
   #
-
-  START_SECONDS_NANOSECONDS=$(date +'%s.%N');
-  START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
-  START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
-  START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
-
-  DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
-
-  DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
-
-  DEFAULT_GIT_SOURCE_BRANCH="master";
-
-  THIS_SOURCECODE_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
-
-  WAN_TEST_FQDN="raw.githubusercontent.com";
-
-  # ------------------------------------------------------------
-  # Log the starting timestamp for the current runtime
-  echo -e "\n-- Info:  Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
-
-  # ------------------------------------------------------------
-  #
-  # Determine Dynamic Runtime-Variables
-  #
-
-  # Make sure the Config directory exists (create it if it doesn't)
-  if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
-    mkdir -p "${DIRNAME_LOCAL_CONFIG}";
-  fi;
-  if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
-    chmod 755 "${DIRNAME_LOCAL_CONFIG}";
-  fi;
 
   # Get the Git Source-Repo from the local device's config
   GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
@@ -93,6 +83,17 @@ else
     GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
   fi;
 
+
+  # ------------------------------------------------------------
+  #
+  # Create config (if it doesn't already exist)
+  #
+  if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
+    mkdir -pv "${DIRNAME_LOCAL_CONFIG}";
+  fi;
+  if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
+    chmod 755 "${DIRNAME_LOCAL_CONFIG}";
+  fi;
 
   # ------------------------------------------------------------
   #
@@ -287,11 +288,21 @@ else
     echo "Debug:  ARGS_SYNC_TIMEZONE = [ ${ARGS_SYNC_TIMEZONE} ]";
     echo "Debug:  ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
     echo "";
+    echo "Debug:  DIRNAME_LOCAL_CONFIG = [ ${DIRNAME_LOCAL_CONFIG} ]";
+    echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
+    echo "Debug:  DEFAULT_GIT_SOURCE_BRANCH = [ ${DEFAULT_GIT_SOURCE_BRANCH} ]";
+    echo "Debug:  FULLPATH_SYNC_CLOUD_INFRASTRUCTURE = [ ${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE} ]";
+    echo "";
     echo "Debug:  GIT_LOCAL_PARENT_PATH = [ ${GIT_LOCAL_PARENT_PATH} ]";
     echo "Debug:  GIT_LOCAL_REPO_PATH = [ ${GIT_LOCAL_REPO_PATH} ]";
     echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
     echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
+    echo "";
+    echo "Debug:  START_SECONDS_NANOSECONDS = [ ${START_SECONDS_NANOSECONDS} ]";
+    echo "Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";
+    echo "Debug:  START_DATETIME = [ ${START_DATETIME} ]";
+    echo "Debug:  START_TIMESTAMP = [ ${START_TIMESTAMP} ]";
     echo "";
     echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
     echo "Debug:  WAN_TEST_CURL_FAILED = [ ${WAN_TEST_CURL_FAILED} ]";
@@ -425,9 +436,9 @@ else
 
     else
 
-      THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${THIS_SOURCECODE_LOCAL}?t=$(date +'%s.%N')";
+      THIS_SOURCECODE_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}?t=$(date +'%s.%N')";
 
-      CHECKSUM_LOCAL=$(if [ -f "${THIS_SOURCECODE_LOCAL}" ]; then cat "${THIS_SOURCECODE_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
+      CHECKSUM_LOCAL=$(if [ -f "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}" ]; then cat "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}" | cksum | cut -d" " -f1; else echo 0; fi;);
       CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" | cksum | cut -d" " -f1);
       CHECKSUM_ERROR_UNSIGNED=4294967295;
 
@@ -469,9 +480,9 @@ else
       # Update-self IS required
 
       echo "Info:  Running self-update...";
-      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${THIS_SOURCECODE_REMOTE}\" to local path \"${THIS_SOURCECODE_LOCAL}\""; fi
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${THIS_SOURCECODE_REMOTE}\" to local path \"${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}\""; fi
       BENCHMARK_START=$(date +'%s.%N');
-      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" -o "${THIS_SOURCECODE_LOCAL}" && chmod 0755 "${THIS_SOURCECODE_LOCAL}";
+      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${THIS_SOURCECODE_REMOTE}" -o "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}" && chmod 0755 "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Self-update complete";
@@ -480,7 +491,7 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        RECURSIVE_CALLBACK_COMMAND="${THIS_SOURCECODE_LOCAL} --skip-self-update $@";
+        RECURSIVE_CALLBACK_COMMAND="${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE} --skip-self-update $@";
         if [ -n "$(command -v sed 2>'/dev/null';)" ]; then
           # Trim leading/trailing whitespace
           RECURSIVE_CALLBACK_COMMAND="$(echo "${RECURSIVE_CALLBACK_COMMAND}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
@@ -489,8 +500,8 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
         eval " ${RECURSIVE_CALLBACK_COMMAND}";
       else
-        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ \"${THIS_SOURCECODE_LOCAL}\" --skip-self-update $@; ]..."; fi;
-        "${THIS_SOURCECODE_LOCAL}" --skip-self-update $@;
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ \"${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}\" --skip-self-update $@; ]..."; fi;
+        "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}" --skip-self-update $@;
       fi;
 
       echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
@@ -1716,6 +1727,13 @@ else
       fi;
       # ------------------------------
       if [ 1 -eq 1 ]; then
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+          echo "";
+          echo "Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
+          echo "Debug:  END_EPOCHSECONDS = [ ${END_EPOCHSECONDS} ]";
+          echo "Debug:  END_DATETIME = [ ${END_DATETIME} ]";
+          echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
+        fi;
         # Log the ending timestamp for the current runtime
         END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
         END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";

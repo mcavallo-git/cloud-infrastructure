@@ -505,7 +505,6 @@ else
       echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS})";
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
-      RECURSIVE_CALLBACK_ARGS="--skip-self-update $@";
       if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
         # 'eval' DOES exist as a local command - build a recursive callback command to pass to eval
 

@@ -272,42 +272,42 @@ else
 
   if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
     echo "";
-    echo "Debug:  ARGS = [ ${ARGS[@]} ]";
-    echo "Debug:  ARGS_COUNT = [ ${ARGS_COUNT} ]";
+    echo " * Debug:  ARGS = [ ${ARGS[@]} ]";
+    echo " * Debug:  ARGS_COUNT = [ ${ARGS_COUNT} ]";
     echo "";
-    echo "Debug:  ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
-    echo "Debug:  ARGS_CRONJOB_REMOVE = [ ${ARGS_CRONJOB_REMOVE} ]";
-    echo "Debug:  ARGS_CRONJOB_SYNC = [ ${ARGS_CRONJOB_SYNC} ]";
-    echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
-    echo "Debug:  ARGS_GIT_BRANCH = [ ${ARGS_GIT_BRANCH} ]";
-    echo "Debug:  ARGS_SKIP_SELF_UPDATE = [ ${ARGS_SKIP_SELF_UPDATE} ]";
-    echo "Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
-    echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
-    echo "Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
-    echo "Debug:  ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
-    echo "Debug:  ARGS_SYNC_TIMEZONE = [ ${ARGS_SYNC_TIMEZONE} ]";
-    echo "Debug:  ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
+    echo " * Debug:  ARGS_CHECK_WSL = [ ${ARGS_CHECK_WSL} ]";
+    echo " * Debug:  ARGS_CRONJOB_REMOVE = [ ${ARGS_CRONJOB_REMOVE} ]";
+    echo " * Debug:  ARGS_CRONJOB_SYNC = [ ${ARGS_CRONJOB_SYNC} ]";
+    echo " * Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
+    echo " * Debug:  ARGS_GIT_BRANCH = [ ${ARGS_GIT_BRANCH} ]";
+    echo " * Debug:  ARGS_SKIP_SELF_UPDATE = [ ${ARGS_SKIP_SELF_UPDATE} ]";
+    echo " * Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
+    echo " * Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
+    echo " * Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
+    echo " * Debug:  ARGS_SYNC_SSH_CONFIG = [ ${ARGS_SYNC_SSH_CONFIG} ]";
+    echo " * Debug:  ARGS_SYNC_TIMEZONE = [ ${ARGS_SYNC_TIMEZONE} ]";
+    echo " * Debug:  ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
     echo "";
-    echo "Debug:  DIRNAME_LOCAL_CONFIG = [ ${DIRNAME_LOCAL_CONFIG} ]";
-    echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
-    echo "Debug:  DEFAULT_GIT_SOURCE_BRANCH = [ ${DEFAULT_GIT_SOURCE_BRANCH} ]";
-    echo "Debug:  FULLPATH_SYNC_CLOUD_INFRASTRUCTURE = [ ${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE} ]";
+    echo " * Debug:  DIRNAME_LOCAL_CONFIG = [ ${DIRNAME_LOCAL_CONFIG} ]";
+    echo " * Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
+    echo " * Debug:  DEFAULT_GIT_SOURCE_BRANCH = [ ${DEFAULT_GIT_SOURCE_BRANCH} ]";
+    echo " * Debug:  FULLPATH_SYNC_CLOUD_INFRASTRUCTURE = [ ${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE} ]";
     echo "";
-    echo "Debug:  GIT_LOCAL_PARENT_PATH = [ ${GIT_LOCAL_PARENT_PATH} ]";
-    echo "Debug:  GIT_LOCAL_REPO_PATH = [ ${GIT_LOCAL_REPO_PATH} ]";
-    echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
-    echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
-    echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
+    echo " * Debug:  GIT_LOCAL_PARENT_PATH = [ ${GIT_LOCAL_PARENT_PATH} ]";
+    echo " * Debug:  GIT_LOCAL_REPO_PATH = [ ${GIT_LOCAL_REPO_PATH} ]";
+    echo " * Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
+    echo " * Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
+    echo " * Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
     echo "";
-    echo "Debug:  START_SECONDS_NANOSECONDS = [ ${START_SECONDS_NANOSECONDS} ]";
-    echo "Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";
-    echo "Debug:  START_DATETIME = [ ${START_DATETIME} ]";
-    echo "Debug:  START_TIMESTAMP = [ ${START_TIMESTAMP} ]";
+    echo " * Debug:  START_SECONDS_NANOSECONDS = [ ${START_SECONDS_NANOSECONDS} ]";
+    echo " * Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";
+    echo " * Debug:  START_DATETIME = [ ${START_DATETIME} ]";
+    echo " * Debug:  START_TIMESTAMP = [ ${START_TIMESTAMP} ]";
     echo "";
-    echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
-    echo "Debug:  WAN_TEST_CURL_FAILED = [ ${WAN_TEST_CURL_FAILED} ]";
-    echo "Debug:  WAN_TEST_FAILED = [ ${WAN_TEST_FAILED} ]";
-    echo "Debug:  WAN_TEST_HTTP_CODE = [ ${WAN_TEST_HTTP_CODE} ]";
+    echo " * Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
+    echo " * Debug:  WAN_TEST_CURL_FAILED = [ ${WAN_TEST_CURL_FAILED} ]";
+    echo " * Debug:  WAN_TEST_FAILED = [ ${WAN_TEST_FAILED} ]";
+    echo " * Debug:  WAN_TEST_HTTP_CODE = [ ${WAN_TEST_HTTP_CODE} ]";
   fi;
 
   # If no errors are found up-until this point, continue
@@ -365,7 +365,7 @@ else
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
+        echo " * Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
       fi;
 
       if [ -n "$(command -v apt 2>'/dev/null';)" ]; then
@@ -447,13 +447,13 @@ else
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  THIS_SOURCECODE_REMOTE  = [ ${THIS_SOURCECODE_REMOTE} ]";
-        echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
-        echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
+        echo " * Debug:  THIS_SOURCECODE_REMOTE  = [ ${THIS_SOURCECODE_REMOTE} ]";
+        echo " * Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
+        echo " * Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
         echo "";
-        echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-        echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
-        echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
+        echo " * Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+        echo " * Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+        echo " * Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
       fi;
 
       if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
@@ -474,7 +474,7 @@ else
 
     if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
       echo "";
-      echo "Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
+      echo " * Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
     fi;
 
     if [ ${UPDATE_SELF_REQUIRED} -eq 1 ]; then
@@ -584,11 +584,11 @@ else
       # ------------------------------
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
-        echo "Debug:  WIN32_HOMEDIR = [ ${WIN32_HOMEDIR} ]";
-        echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
-        echo "Debug:  WIN32_USERNAME = [ ${WIN32_USERNAME} ]";
-        echo "Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
+        echo " * Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
+        echo " * Debug:  WIN32_HOMEDIR = [ ${WIN32_HOMEDIR} ]";
+        echo " * Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
+        echo " * Debug:  WIN32_USERNAME = [ ${WIN32_USERNAME} ]";
+        echo " * Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
       fi;
       # ------------------------------
       if [ ! -v WIN32_HOMEDIR ] || [ -z "${WIN32_HOMEDIR}" ]; then
@@ -669,11 +669,11 @@ else
       # ------------------------------
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
-        echo "Debug:  DIR_REPO_USR = [ ${DIR_REPO_USR} ]";
-        echo "Debug:  SUDO_USER = [ ${SUDO_USER} ]";
-        echo "Debug:  SUDOER_HOMEDIR = [ ${SUDOER_HOMEDIR} ]";
-        echo "Debug:  WSL_DIR = [ ${WSL_DIR} ]";
+        echo " * Debug:  DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
+        echo " * Debug:  DIR_REPO_USR = [ ${DIR_REPO_USR} ]";
+        echo " * Debug:  SUDO_USER = [ ${SUDO_USER} ]";
+        echo " * Debug:  SUDOER_HOMEDIR = [ ${SUDOER_HOMEDIR} ]";
+        echo " * Debug:  WSL_DIR = [ ${WSL_DIR} ]";
       fi;
       # ------------------------------
       if [ -z "${DIR_REPO_BASE}" ]; then
@@ -1007,7 +1007,7 @@ else
               UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
               if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
                 echo "";
-                echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+                echo " * Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
               fi;
 
               if [ ${UFW_ENABLED} -eq 0 ]; then
@@ -1042,7 +1042,7 @@ else
                 #   UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
                 #   if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
                 #     echo "";
-                #     echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+                #     echo " * Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                 #   fi;
                 # fi;
               fi;
@@ -1735,10 +1735,10 @@ else
         END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l);
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
           echo "";
-          echo "Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
-          echo "Debug:  END_EPOCHSECONDS = [ ${END_EPOCHSECONDS} ]";
-          echo "Debug:  END_DATETIME = [ ${END_DATETIME} ]";
-          echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
+          echo " * Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
+          echo " * Debug:  END_EPOCHSECONDS = [ ${END_EPOCHSECONDS} ]";
+          echo " * Debug:  END_DATETIME = [ ${END_DATETIME} ]";
+          echo " * Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
         fi;
         echo -e "\n== Info:  End of \"sync_cloud_infrastructure\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
       fi;

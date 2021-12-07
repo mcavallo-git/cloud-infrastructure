@@ -541,7 +541,7 @@ else
 
       fi;
 
-      echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "  -  recursive call"; fi;))";
+      echo -e "\n==== Info:  Returned to parent runtime from recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "  -  recursive call"; fi;))";
 
     else
       # Update-self NOT required

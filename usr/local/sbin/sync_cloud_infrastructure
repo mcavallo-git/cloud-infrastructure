@@ -175,6 +175,10 @@ else
         fi;
       fi;
 
+      if [ "${EACH_ARG}" == "--force-self-update" ]; then
+        ARGS_FORCE_SELF_UPDATE=1; # Parse force-self-update calls
+      fi;
+
       if [ "${EACH_ARG}" == "--skip-self-update" ]; then
         ARGS_SKIP_SELF_UPDATE=1; # Parse skip-self-update calls
       fi;
@@ -208,17 +212,18 @@ else
   done;
 
   # Integer arguments
-  ARGS_CHECK_WSL=${ARGS_CHECK_WSL:-0};                # Parsed from $@
-  ARGS_CRONJOB_REMOVE=${ARGS_CRONJOB_REMOVE:-0};      # Parsed from $@
-  ARGS_CRONJOB_SYNC=${ARGS_CRONJOB_SYNC:-0};          # Parsed from $@
-  ARGS_DEBUG_MODE=${ARGS_DEBUG_MODE:-0};              # Parsed from $@
-  ARGS_SKIP_SELF_UPDATE=${ARGS_SKIP_SELF_UPDATE:-0};  # Parsed from $@
-  ARGS_SYNC_DDNS=${ARGS_SYNC_DDNS:-0};                # Parsed from $@
-  ARGS_SYNC_JENKINS=${ARGS_SYNC_JENKINS:-0};          # Parsed from $@
-  ARGS_SYNC_NGINX=${ARGS_SYNC_NGINX:-0};              # Parsed from $@
-  ARGS_SYNC_SSH_CONFIG=${ARGS_SYNC_SSH_CONFIG:-0};    # Parsed from $@
-  ARGS_SYNC_TIMEZONE=${ARGS_SYNC_TIMEZONE:-0};        # Parsed from $@
-  ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                  # Parsed from $@
+  ARGS_CHECK_WSL=${ARGS_CHECK_WSL:-0};                  # Parsed from $@
+  ARGS_CRONJOB_REMOVE=${ARGS_CRONJOB_REMOVE:-0};        # Parsed from $@
+  ARGS_CRONJOB_SYNC=${ARGS_CRONJOB_SYNC:-0};            # Parsed from $@
+  ARGS_DEBUG_MODE=${ARGS_DEBUG_MODE:-0};                # Parsed from $@
+  ARGS_FORCE_SELF_UPDATE=${ARGS_FORCE_SELF_UPDATE:-0};  # Parsed from $@
+  ARGS_SKIP_SELF_UPDATE=${ARGS_SKIP_SELF_UPDATE:-0};    # Parsed from $@
+  ARGS_SYNC_DDNS=${ARGS_SYNC_DDNS:-0};                  # Parsed from $@
+  ARGS_SYNC_JENKINS=${ARGS_SYNC_JENKINS:-0};            # Parsed from $@
+  ARGS_SYNC_NGINX=${ARGS_SYNC_NGINX:-0};                # Parsed from $@
+  ARGS_SYNC_SSH_CONFIG=${ARGS_SYNC_SSH_CONFIG:-0};      # Parsed from $@
+  ARGS_SYNC_TIMEZONE=${ARGS_SYNC_TIMEZONE:-0};          # Parsed from $@
+  ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                    # Parsed from $@
 
   # String arguments
   ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-""};             # Parsed from $@
@@ -274,6 +279,7 @@ else
     echo "Debug:  ARGS_CRONJOB_SYNC = [ ${ARGS_CRONJOB_SYNC} ]";
     echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
     echo "Debug:  ARGS_GIT_BRANCH = [ ${ARGS_GIT_BRANCH} ]";
+    echo "Debug:  ARGS_FORCE_SELF_UPDATE = [ ${ARGS_FORCE_SELF_UPDATE} ]";
     echo "Debug:  ARGS_SKIP_SELF_UPDATE = [ ${ARGS_SKIP_SELF_UPDATE} ]";
     echo "Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
     echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
@@ -459,8 +465,10 @@ else
         echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
         echo "Debug:  CHECKSUM_ERROR_UNSIGNED = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
       fi;
-
-      if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
+      if [ ${ARGS_FORCE_SELF_UPDATE} -eq 1 ]; then
+        UPDATE_SELF_REQUIRED=1;
+        echo -e "\nInfo:  Self-update forced (via argument '--force-self-update')";
+      elif [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
         UPDATE_SELF_REQUIRED=0;
         echo -e "\nInfo:  Self-update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${SYNC_CI_REMOTE}\")";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then

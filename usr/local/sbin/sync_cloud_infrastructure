@@ -37,7 +37,7 @@ START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
 DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 DEFAULT_GIT_SOURCE_BRANCH="master";
-LOCAL_SYNC_CI="/usr/local/sbin/sync_cloud_infrastructure";
+SYNC_CI_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
 WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 
@@ -46,7 +46,7 @@ WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 # Instantiate dymamic runtime variables
 #
 
-DIRNAME_LOCAL_CONFIG="/etc/$(basename "${LOCAL_SYNC_CI}";)"; # holds configurations (if any) specific to this script
+LOCAL_CONFIG_DIR_FULLPATH="/etc/$(basename "${SYNC_CI_LOCAL}";)"; # holds configurations (if any) specific to this script
 
 EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
 
@@ -56,7 +56,7 @@ UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script sh
 #
 # Log the starting timestamp for the current runtime
 #
-echo -e "\n-- Info:  Start of \"$(basename "${LOCAL_SYNC_CI}";)\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 # ------------------------------------------------------------
 #
@@ -73,15 +73,15 @@ else
   #
 
   # Create parent directory for script-specific config overrides
-  if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
-    mkdir -pv "${DIRNAME_LOCAL_CONFIG}";
+  if [ ! -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]; then
+    mkdir -pv "${LOCAL_CONFIG_DIR_FULLPATH}";
   fi;
-  if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
-    chmod 755 "${DIRNAME_LOCAL_CONFIG}";
+  if [ -d "${LOCAL_CONFIG_DIR_FULLPATH}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${LOCAL_CONFIG_DIR_FULLPATH})" != "755" ]; then
+    chmod 755 "${LOCAL_CONFIG_DIR_FULLPATH}";
   fi;
 
   # Git Repo URL - Allow overriding default repo URL with local filepath
-  OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
+  OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL="${LOCAL_CONFIG_DIR_FULLPATH}/git_source_repo.url";
   if [ -f "${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL}" ]; then
     OVERRIDE_GIT_SOURCE_REPO_URL="$(cat ${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL};)"; # Override the git source repo URL
   fi;
@@ -239,7 +239,7 @@ else
 
   GIT_SOURCE_BRANCH="${ARGS_GIT_BRANCH:-${DEFAULT_GIT_SOURCE_BRANCH}}";
 
-  REMOTE_SYNC_CI="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${LOCAL_SYNC_CI}?t=${START_SECONDS_NANOSECONDS}";
+  SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
   # ------------------------------------------------------------
   # Check for a valid WAN (internet) connection
@@ -282,18 +282,20 @@ else
     echo "Debug:  ARGS_SYNC_TIMEZONE = [ ${ARGS_SYNC_TIMEZONE} ]";
     echo "Debug:  ARGS_SYNC_UFW = [ ${ARGS_SYNC_UFW} ]";
     echo "";
-    echo "Debug:  DIRNAME_LOCAL_CONFIG = [ ${DIRNAME_LOCAL_CONFIG} ]";
-    echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
-    echo "Debug:  DEFAULT_GIT_SOURCE_BRANCH = [ ${DEFAULT_GIT_SOURCE_BRANCH} ]";
-    echo "Debug:  LOCAL_SYNC_CI = [ ${LOCAL_SYNC_CI} ]";
-    echo "Debug:  REMOTE_SYNC_CI = [ ${REMOTE_SYNC_CI} ]";
-    echo "";
     echo "Debug:  GIT_LOCAL_PARENT_PATH = [ ${GIT_LOCAL_PARENT_PATH} ]";
     echo "Debug:  GIT_LOCAL_REPO_PATH = [ ${GIT_LOCAL_REPO_PATH} ]";
     echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
     echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
+    echo "";
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
+    echo "Debug:  DEFAULT_GIT_SOURCE_BRANCH = [ ${DEFAULT_GIT_SOURCE_BRANCH} ]";
+    echo "";
     echo "Debug:  GIT_SOURCE_REPO_URL = [ ${GIT_SOURCE_REPO_URL} ]";
+    echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
+    echo "";
+    echo "Debug:  LOCAL_CONFIG_DIR_FULLPATH = [ ${LOCAL_CONFIG_DIR_FULLPATH} ]";
+    echo "Debug:  SYNC_CI_LOCAL = [ ${SYNC_CI_LOCAL} ]";
+    echo "Debug:  SYNC_CI_REMOTE = [ ${SYNC_CI_REMOTE} ]";
     echo "";
     echo "Debug:  LOGDIR = [ ${LOGDIR} ]";
     echo "Debug:  LOGFILE = [ ${LOGFILE} ]";
@@ -438,16 +440,16 @@ else
 
     else
 
-      CHECKSUM_LOCAL=$(if [ -f "${LOCAL_SYNC_CI}" ]; then cat "${LOCAL_SYNC_CI}" | cksum | cut -d" " -f1; else echo 0; fi;);
-      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${REMOTE_SYNC_CI}" | cksum | cut -d" " -f1);
+      CHECKSUM_LOCAL=$(if [ -f "${SYNC_CI_LOCAL}" ]; then cat "${SYNC_CI_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
+      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" | cksum | cut -d" " -f1);
       CHECKSUM_ERROR_UNSIGNED=4294967295;
 
-      TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${REMOTE_SYNC_CI}" | wc -l);
+      TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" | wc -l);
       TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  REMOTE_SYNC_CI = [ ${REMOTE_SYNC_CI} ]";
+        echo "Debug:  SYNC_CI_REMOTE = [ ${SYNC_CI_REMOTE} ]";
         echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
         echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
         echo "";
@@ -458,7 +460,7 @@ else
 
       if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Self-update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${REMOTE_SYNC_CI}\")";
+        echo -e "\nInfo:  Self-update skipped (minimum lines of code (${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED}) not met while resolving remote source code (${TOTAL_LINES_THISSCRIPT_REMOTE}) from path/url \"${SYNC_CI_REMOTE}\")";
       elif [ "${CHECKSUM_REMOTE}" == "${CHECKSUM_ERROR_UNSIGNED}" ]; then
         UPDATE_SELF_REQUIRED=0;
         echo -e "\nInfo:  Self-update skipped (checksum of remote version (${CHECKSUM_REMOTE}) is invalid (unsigned int error))";
@@ -481,9 +483,9 @@ else
       # Update-self IS required
 
       echo "Info:  Running self-update...";
-      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${REMOTE_SYNC_CI}\" to local path \"${LOCAL_SYNC_CI}\""; fi
+      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi
       BENCHMARK_START=$(date +'%s.%N');
-      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${REMOTE_SYNC_CI}" -o "${LOCAL_SYNC_CI}" && chmod 0755 "${LOCAL_SYNC_CI}";
+      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" -o "${SYNC_CI_LOCAL}" && chmod 0755 "${SYNC_CI_LOCAL}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Self-update complete";
@@ -492,7 +494,7 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [ -n "$(command -v eval 2>'/dev/null';)" ]; then
-        RECURSIVE_CALLBACK_COMMAND="${LOCAL_SYNC_CI} --skip-self-update $@";
+        RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@";
         if [ -n "$(command -v sed 2>'/dev/null';)" ]; then
           # Trim leading/trailing whitespace
           RECURSIVE_CALLBACK_COMMAND="$(echo "${RECURSIVE_CALLBACK_COMMAND}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
@@ -501,8 +503,8 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
         eval " ${RECURSIVE_CALLBACK_COMMAND}";
       else
-        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ \"${LOCAL_SYNC_CI}\" --skip-self-update $@; ]..."; fi;
-        "${LOCAL_SYNC_CI}" --skip-self-update $@;
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "      |--> Calling [ \"${SYNC_CI_LOCAL}\" --skip-self-update $@; ]..."; fi;
+        "${SYNC_CI_LOCAL}" --skip-self-update $@;
       fi;
 
       echo -e "\n==== Info:  End of recursive call  (ID: ${START_SECONDS_NANOSECONDS})";
@@ -1547,7 +1549,7 @@ else
           #
           # --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
           #
-          LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v "$(basename "${LOCAL_SYNC_CI}";)" 2>'/dev/null';);
+          LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v "$(basename "${SYNC_CI_LOCAL}";)" 2>'/dev/null';);
           COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
           if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
             echo -e "\nInfo:  Skipped removal of cron sync-triggers - No scripts found matching \"/etc/cron.d/CRON_*\"";
@@ -1707,9 +1709,9 @@ else
         #
         DIR_TO_CLEANUP="${LOGDIR}";
         if [ -z "${DIR_TO_CLEANUP}" ]; then
-          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then DIR_TO_CLEANUP="/var/log/$(basename "${LOCAL_SYNC_CI}";)"; fi;
+          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then DIR_TO_CLEANUP="/var/log/$(basename "${SYNC_CI_LOCAL}";)"; fi;
         fi;
-        if [ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${DIR_TO_CLEANUP}" == "/var/log/$(basename "${LOCAL_SYNC_CI}";)" ]; then
+        if [ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${DIR_TO_CLEANUP}" == "/var/log/$(basename "${SYNC_CI_LOCAL}";)" ]; then
           if [ -d "${DIR_TO_CLEANUP}" ]; then
             # Cleanup log files (older than the retention-policy's max-allowed-age)
             echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${DIR_TO_CLEANUP}\"";
@@ -1752,7 +1754,7 @@ if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
   echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
 fi;
 
-echo -e "\n== Info:  End of \"$(basename "${LOCAL_SYNC_CI}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
 
 
 # ------------------------------------------------------------

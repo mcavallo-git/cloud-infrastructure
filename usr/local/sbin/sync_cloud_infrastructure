@@ -538,8 +538,11 @@ else
         if [ -n "${WIN32_USERNAME}" ] && [ -n "${WIN32_USER_ERRORS}" ] && [ "${WIN32_USER_ERRORS}" == "0" ]; then
           #  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files
           echo -e "\nInfo:  Detected [ Windows Subsystem for Linux (WSL) ] Environment - Checking for local repo files";
+          BENCHMARK_START=$(date +'%s.%N');
           WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
           WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
+          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
+          if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           if [ -z "${WIN32_USR_LOCAL}" ]; then
             echo "";
             echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";

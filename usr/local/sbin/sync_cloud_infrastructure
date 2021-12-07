@@ -85,7 +85,7 @@ else
   if [ -f "${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL}" ]; then
     OVERRIDE_GIT_SOURCE_REPO_URL="$(cat ${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL};)"; # Override the git source repo URL
   fi;
-  GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-DEFAULT_GIT_SOURCE_REPO_URL}";
+  GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-${DEFAULT_GIT_SOURCE_REPO_URL}}";
 
 
   # ------------------------------------------------------------

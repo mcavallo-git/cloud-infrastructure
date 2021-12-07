@@ -491,7 +491,7 @@ else
 
     if [[ ${UPDATE_SELF_REQUIRED} -eq 1 ]]; then
       #
-      # Update-self IS required - RECURSIVE CALLBACK
+      # Update-self (recursive call) >> IS << required
       #
 
       echo "Info:  Running self-update...";
@@ -544,7 +544,7 @@ else
       echo -e "\n==== Info:  Returned to parent runtime from recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
     else
-      # Update-self NOT required
+      # Update-self (recursive call) >> NOT << required
       # ------------------------------
       if [[ -z "$(command -v git 2>'/dev/null';)" ]]; then
         # git does NOT exist (as a local command)

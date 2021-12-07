@@ -27,15 +27,6 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
-# Instantiate dymamic runtime variables
-#
-
-EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
-
-UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script should be pulled or not
-
-# ------------------------------------------------------------
-#
 # Instantiate static runtime variables
 #
 
@@ -53,9 +44,18 @@ WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 
 # ------------------------------------------------------------
 #
+# Instantiate dymamic runtime variables
+#
+
+EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
+
+UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script should be pulled or not
+
+# ------------------------------------------------------------
+#
 # Log the starting timestamp for the current runtime
 #
-echo -e "\n-- Info:  Script started at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n-- Info:  Start of \"sync_cloud_infrastructure\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 # ------------------------------------------------------------
 #
@@ -298,6 +298,9 @@ else
     echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
     echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
+    echo "";
+    echo "Debug:  LOGDIR = [ ${LOGDIR} ]";
+    echo "Debug:  LOGFILE = [ ${LOGFILE} ]";
     echo "";
     echo "Debug:  START_SECONDS_NANOSECONDS = [ ${START_SECONDS_NANOSECONDS} ]";
     echo "Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";
@@ -1705,14 +1708,15 @@ else
         #
         # Logfile cleanup
         #
-        if [ -z "${LOGDIR}" ]; then
-          LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
+        DIR_TO_CLEANUP="${LOGDIR}";
+        if [ -z "${DIR_TO_CLEANUP}" ]; then
+          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then DIR_TO_CLEANUP="/var/log/sync_cloud_infrastructure"; fi;
         fi;
-        if [ "${LOGDIR}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${LOGDIR}" == "/var/log/sync_cloud_infrastructure" ]; then
-          if [ -d "${LOGDIR}" ]; then
+        if [ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${DIR_TO_CLEANUP}" == "/var/log/sync_cloud_infrastructure" ]; then
+          if [ -d "${DIR_TO_CLEANUP}" ]; then
             # Cleanup log files (older than the retention-policy's max-allowed-age)
-            echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${LOGDIR}\"";
-            find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
+            echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${DIR_TO_CLEANUP}\"";
+            find "${DIR_TO_CLEANUP}" -type f -mtime +3 -exec rm -- '{}' \;;
           fi;
         fi;
         echo "";

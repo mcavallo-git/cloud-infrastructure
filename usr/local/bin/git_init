@@ -219,10 +219,8 @@ GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL// /\\ }";
 GIT_SSH_USERNAME=${GIT_SSH_USERNAME:-git};  # Intended to be used for Git SSH pushes using a specific push username ( e.g. "git@..." )
 
 # TARGET REPOSITORY
-if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
-  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (no ".git" appended)
-elif [[ "${REMOTE_HOST}" =~ ^([a-zA-Z0-9-]+)\.(visualstudio)\.(com)$ ]]; then echo 1; else echo 0; fi;
-  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # VSTS Repos (no ".git" appended)
+if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ] || [ "${REMOTE_HOST}" == "vs-ssh.visualstudio.com" ]; then
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure/VSTS Repos (no ".git" appended)
 else
   ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;

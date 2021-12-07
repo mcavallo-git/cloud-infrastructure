@@ -251,7 +251,15 @@ else
   WAN_TEST_FAILED=$(if [ ${WAN_TEST_CURL_FAILED} -eq 0 ] && [ ${WAN_TEST_HTTP_CODE} -ge 200 ] && [ ${WAN_TEST_HTTP_CODE} -le 400 ]; then echo 0; else echo 1; fi;);
   if [ "${WAN_TEST_FAILED}" == "1" ]; then
     echo "";
-    echo "Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified - Exiting...";
+    echo "Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  elif [ -z "${GIT_REPO_NAME}" ]; then
+    echo "";
+    echo "Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  elif [ -z "${GIT_REPO_OWNER}" ]; then
+    echo "";
+    echo "Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 

@@ -447,12 +447,13 @@ else
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
         echo "";
-        echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
-        echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
-        echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
         echo "Debug:  THIS_SOURCECODE_REMOTE  = [ ${THIS_SOURCECODE_REMOTE} ]";
         echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE  = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
         echo "Debug:  TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED  = [ ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]";
+        echo "";
+        echo "Debug:  CHECKSUM_LOCAL  = [ ${CHECKSUM_LOCAL} ]";
+        echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
+        echo "Debug:  CHECKSUM_ERROR_UNSIGNED  = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
       fi;
 
       if [ ${TOTAL_LINES_THISSCRIPT_REMOTE} -lt ${TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED} ]; then

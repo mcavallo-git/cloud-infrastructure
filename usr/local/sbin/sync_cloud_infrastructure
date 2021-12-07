@@ -1768,15 +1768,14 @@ if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
   echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
 fi;
 
-echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s  (ID: ${START_SECONDS_NANOSECONDS})";
 
 
 # ------------------------------------------------------------
 #
 # Exit & return the value of EXIT_CODE back to caller
 #
-if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nDebug:  EXIT_CODE = [ ${EXIT_CODE} ]"; fi;
-
+if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS})"; fi;
 test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
 
 

@@ -226,9 +226,9 @@ if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
   ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (no ".git" appended)
 elif [ "${REMOTE_HOST}" == "vs-ssh.visualstudio.com" ]; then
   ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # VSTS Repos (no ".git" appended)
-  GIT_SSH_OPTIONS+=" -o HostKeyAlgorithms=+ssh-dss";  # OpenSSH included in 16.04 disables ssh-dss - Re-enable it for deprecated server(s)
-  GIT_SSH_OPTIONS+=" -o KexAlgorithms=diffie-hellman-group14-sha1";
-  GIT_SSH_OPTIONS+=" -v";
+  # GIT_SSH_OPTIONS+=" -o HostKeyAlgorithms=+ssh-dss";  # OpenSSH included in 16.04 disables ssh-dss - Re-enable it for deprecated server(s)
+  # GIT_SSH_OPTIONS+=" -o KexAlgorithms=diffie-hellman-group14-sha1";
+  # GIT_SSH_OPTIONS+=" -v";
 else
   ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;

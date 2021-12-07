@@ -30,9 +30,9 @@ exec 2>&1;
 # Instantiate dymamic runtime variables
 #
 
-EXIT_CODE=0;  # sum of errors from specific required calls - returned as the final exit-code from this script
+EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
 
-UPDATE_SELF_REQUIRED=0;  # used to determine if a newer version of this script should be pulled or not
+UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script should be pulled or not
 
 # ------------------------------------------------------------
 #
@@ -130,7 +130,7 @@ else
 
       # Use "--all" inline-arg. to sync all modules
       if [ "${EACH_ARG}" == "--all" ]; then
-        ARGS_CRONJOB_REMOVE=0;  # Do not delete cronjobs since we're going to sync all of them
+        ARGS_CRONJOB_REMOVE=0; # Do not delete cronjobs since we're going to sync all of them
         ARGS_CRONJOB_SYNC=1;
         # ARGS_DEBUG_MODE=1;
         # ARGS_SYNC_DDNS=1;
@@ -781,7 +781,7 @@ else
 
           ## Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
           update-ca-trust force-enable;
-          update-ca-trust extract; ## Update for Rhel/Centos
+          update-ca-trust extract; # Update for Rhel/Centos
         fi;
         # ------------------------------------------------------------
         #
@@ -862,7 +862,7 @@ else
 
             if [ -d "/etc/ssh/authorized_keys" ] && [ "$(find /etc/ssh/authorized_keys -type f | wc -l;)" != "0" ]; then
               # Set ownership of "/etc/ssh/authorized_keys" directory as-intended
-              ### chmod 0755 "/etc/ssh/authorized_keys";  # Keep for reference on intended permissions for "/etc/ssh/authorized_keys" (chmod 0755 as-of 20200310-063820)
+              ### chmod 0755 "/etc/ssh/authorized_keys"; # Keep for reference on intended permissions for "/etc/ssh/authorized_keys" (chmod 0755 as-of 20200310-063820)
               # At least one SSH-Key exists in the standard keyfile directory (/etc/ssh/authorized_keys)
               MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
               MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
@@ -1571,12 +1571,12 @@ else
         DELDIR="/usr/local/bin/";
         TO_DEL="${DELDIR}/docker_check_installation_status"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/docker_list_volume_maps.sh"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-        TO_DEL="${DELDIR}/get_enabled_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_enabled_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-12
         TO_DEL="${DELDIR}/get_lan_ipv4"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_open_ports"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-        TO_DEL="${DELDIR}/get_port_available_on_localhost"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
-        TO_DEL="${DELDIR}/get_ports_open_on_host"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
-        TO_DEL="${DELDIR}/get_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_port_available_on_localhost"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_ports_open_on_host"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-12
+        TO_DEL="${DELDIR}/get_services"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-12
         TO_DEL="${DELDIR}/get_unused_local_port"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_wan_ip"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/get_wan_ipv4"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
@@ -1595,7 +1595,7 @@ else
         TO_DEL="${DELDIR}/sudoer_edit"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/sync_Cloud_infrastructure"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2020-01-06
         TO_DEL="${DELDIR}/sync_config_gpg_git"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
-        TO_DEL="${DELDIR}/sync_gpg_git_config"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;  # Added 2019-12-12
+        TO_DEL="${DELDIR}/sync_gpg_git_config"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 2019-12-12
         TO_DEL="${DELDIR}/sync_upd"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/update_bins_from_sftp"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi;
         TO_DEL="${DELDIR}/wsl_reboot"; if [ -h "${TO_DEL}" ]; then unlink "${TO_DEL}"; elif [ -f "${TO_DEL}" ]; then rm -f "${TO_DEL}"; fi; # Added 20191220-164752
@@ -1754,6 +1754,7 @@ fi;
 #
 # Exit & return the value of EXIT_CODE back to caller
 #
+if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nDebug:  EXIT_CODE = [ ${EXIT_CODE} ]"; fi;
 
 test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
 

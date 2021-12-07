@@ -327,8 +327,9 @@ fi;
 
 # [config]  core.sshcommand
 # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
-${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no";
+# ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no";
 # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
+${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}'${GIT_SSH_OPTIONS}";
 
 # [config]  core.compression  (UNSET)
 if [ -n "$(${GIT_CLI} config core.compression)" ]; then

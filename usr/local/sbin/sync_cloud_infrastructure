@@ -34,6 +34,9 @@ if [ "$(id -un)" != "root" ]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
+
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
+
   # ------------------------------------------------------------
   #
   # Instantiate Static Runtime-Variables

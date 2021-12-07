@@ -489,7 +489,7 @@ else
       echo "Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
     fi;
 
-    if [[ ${UPDATE_SELF_REQUIRED} -eq 1 ]]; then
+    if [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
       #
       # Update-self (recursive call) >> IS << required
       #
@@ -729,7 +729,7 @@ else
         fi;
       fi;
       # ------------------------------
-      if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" != "1" ]]; then
+      if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" -ne 1 ]]; then; then
 
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  No errors detected before main 'If' statement block  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 
@@ -1754,7 +1754,7 @@ else
         fi;
         echo "";
 
-      elif [[ "${UPDATE_SELF_REQUIRED}" == "1" ]]; then
+      elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 

@@ -903,7 +903,7 @@ else
               ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
               ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
               ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
-              ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (y/n)  ";
+              ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\" (press 'y' to confirm)  ";
 
               if [ -n "$(command -v apt 2>'/dev/null';)" ]; then # Distros: Debian, Ubuntu, etc.
                 # Require user-confirmation to proceed with config-update
@@ -1036,7 +1036,7 @@ else
                 # echo "  |";
                 # echo "  |--> UFW sync requested, however UFW is currently disabled";
                 # echo "  |";
-                # read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"  (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                # read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"   (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 # if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 #   ufw enable;
                 #   # Re-check UFW Enabled/Disabled Status
@@ -1109,7 +1109,7 @@ else
               if [ -f "${DESTINATION_PATH}" ]; then
                 REPLY="y";
               else
-                echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
               fi;
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1138,7 +1138,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+              echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1166,7 +1166,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+              echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"$(if [ -d "${DIR_REPO_BASE}${DESTINATION_PATH}" ]; then echo "/"; fi;);
@@ -1194,7 +1194,7 @@ else
             if [ -f "${DESTINATION_PATH}" ]; then
               REPLY="y";
             else
-              echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM) (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+              echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             fi;
 
             if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then

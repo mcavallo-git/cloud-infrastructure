@@ -30,11 +30,10 @@ exec 2>&1;
 # Instantiate global variables
 #
 
-# EXIT_CODE - stores the sum of specific errors found throughout this script (value returned as the final exit-code from this script)
-EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
+EXIT_CODE=0;  # sum of errors from specific required calls - returned as the final exit-code from this script
 
-# UPDATE_SELF_REQUIRED - used to determine if a newer version of this script should be pulled or not
-UPDATE_SELF_REQUIRED=$(( ${UPDATE_SELF_REQUIRED:-0} + 0 ));
+UPDATE_SELF_REQUIRED=0;  # used to determine if a newer version of this script should be pulled or not
+
 
 # ------------------------------------------------------------
 #
@@ -96,23 +95,14 @@ else
 
 
   # ------------------------------------------------------------
+  #
   # Parse inline arguments (passed to current script)
+  #
 
   ARGS=("$@");
   ARGS_COUNT=${#ARGS[@]};
 
   ARGS_CHECK_WSL=$(if [ -z "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then echo 0; else echo 1; fi;);
-  ARGS_CRONJOB_REMOVE=0;
-  ARGS_CRONJOB_SYNC=0;
-  ARGS_DEBUG_MODE=0;
-  ARGS_GIT_BRANCH="";
-  ARGS_SKIP_SELF_UPDATE=0;
-  ARGS_SYNC_DDNS=0;
-  ARGS_SYNC_JENKINS=0;
-  ARGS_SYNC_NGINX=0;
-  ARGS_SYNC_SSH_CONFIG=0;
-  ARGS_SYNC_TIMEZONE=0;
-  ARGS_SYNC_UFW=0;
 
   RESTART_SERVICE_CRON=0;
   RESTART_SERVICE_JENKINS=0;
@@ -137,43 +127,9 @@ else
 
     if [ -n "${EACH_ARG}" ]; then # Parse each non-empty inline argument
 
-      # Parse cronjob calls
-      if [ "${EACH_ARG}" == "--cron" ]; then
-        if [ "${NEXT_ARG}" == "remove" ] && [ ${ARGS_CRONJOB_SYNC} -eq 0 ]; then
-          # Remove cronjobs
-          ARGS_CRONJOB_REMOVE=1;
-        elif [ "${NEXT_ARG}" == "sync" ] && [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
-          # Sync cronjobs
-          ARGS_CRONJOB_SYNC=1;
-        else
-          # Error - Show user an example of valid argument syntax
-          echo "Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
-          echo "                        |";
-          echo "                        |--> Sync cron-job(s) via '--cron sync' argument";
-          echo "                        |--> Remove synced cron-job(s) via '--cron remove' argument";
-          echo "";
-          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-        fi;
-      fi;
-
-      # Parse repo branch changes
-      if [ "${EACH_ARG}" == "--git-branch" ]; then
-        if [ -n "${NEXT_ARG}" ]; then
-          ARGS_GIT_BRANCH="${NEXT_ARG}";
-        else
-          # Error - Show user an example of valid argument syntax
-          echo "Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
-          echo "                        |";
-          echo "                        |--> Change repository branch via '--git-branch BRANCH_NAME_HERE' argument";
-          echo "";
-          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-        fi;
-      fi;
-
       # Use "--all" inline-arg. to sync all modules
       if [ "${EACH_ARG}" == "--all" ]; then
-        ARGS_CHECK_WSL=1;
-        ARGS_CRONJOB_REMOVE=0;
+        ARGS_CRONJOB_REMOVE=0;  # Do not delete cronjobs since we're going to sync all of them
         ARGS_CRONJOB_SYNC=1;
         # ARGS_DEBUG_MODE=1;
         # ARGS_SYNC_DDNS=1;
@@ -184,49 +140,91 @@ else
         ARGS_SYNC_UFW=1;
       fi;
 
+      if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
+        ARGS_CHECK_WSL=1; # Parse WSL check calls
+      fi;
+
+      if [ "${EACH_ARG}" == "--remove-cronjobs" ] || [ "${EACH_ARG}" == "--remove" ]; then
+        ARGS_CRONJOB_REMOVE=1; # Parse cronjobs removal calls
+      fi;
+
+      if [ "${EACH_ARG}" == "--cron" ]; then
+        if [ "${NEXT_ARG}" == "remove" ] && [ ${ARGS_CRONJOB_SYNC} -eq 0 ]; then
+          ARGS_CRONJOB_REMOVE=1; # Parse cronjob removal calls
+        elif [ "${NEXT_ARG}" == "sync" ] && [ ${ARGS_CRONJOB_REMOVE} -eq 0 ]; then
+          ARGS_CRONJOB_SYNC=1; # Parse cronjob sync calls
+        else
+          # Error - Invalid argument syntax (but also show user an example of valid argument syntax)
+          echo "Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
+          echo "                        |";
+          echo "                        |--> Sync cron-job(s) via '--cron sync' argument";
+          echo "                        |--> Remove synced cron-job(s) via '--cron remove' argument";
+          echo "";
+          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+        fi;
+      fi;
+
+      if [ "${EACH_ARG}" == "--debug" ] || [ "${EACH_ARG}" == "--verbose" ]; then
+        ARGS_DEBUG_MODE=1; # Parse debug/verbose calls
+      fi;
+
+      if [ "${EACH_ARG}" == "--git-branch" ]; then
+        if [ -n "${NEXT_ARG}" ]; then
+          ARGS_GIT_BRANCH="${NEXT_ARG}"; # Parse git repo branch calls
+        else
+          # Error - Invalid argument syntax (but also show user an example of valid argument syntax)
+          echo "Error:  Invalid inline argument:  ${EACH_ARG} ${NEXT_ARG}";
+          echo "                        |";
+          echo "                        |--> Change repository branch via '--git-branch BRANCH_NAME_HERE' argument";
+          echo "";
+          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+        fi;
+      fi;
+
       if [ "${EACH_ARG}" == "--skip-self-update" ]; then
         ARGS_SKIP_SELF_UPDATE=1; # Parse skip-self-update calls
       fi;
 
-      if [ "${EACH_ARG}" == "--remove-cronjobs" ] || [ "${EACH_ARG}" == "--remove" ]; then
-        ARGS_CRONJOB_REMOVE=1; # Parse remove-cronjobs calls
-      fi;
-
-      if [ "${EACH_ARG}" == "--wsl" ] || [ "${EACH_ARG}" == "--windows" ]; then
-        ARGS_CHECK_WSL=1; # Parse WSL-Check calls
-      fi;
-
-      if [ "${EACH_ARG}" == "--debug" ] || [ "${EACH_ARG}" == "--verbose" ]; then
-        ARGS_DEBUG_MODE=1; # Parse Debug/Verbose Calls
-      fi;
-
       if [ "${EACH_ARG}" == "--ddns" ]; then
-        ARGS_SYNC_DDNS=1; # Parse DDNS-Sync Calls
+        ARGS_SYNC_DDNS=1; # Parse DDNS sync Calls
       fi;
 
       if [ "${EACH_ARG}" == "--jenkins" ]; then
-        ARGS_SYNC_JENKINS=1; # Parse JENKINS-Sync Calls
+        ARGS_SYNC_JENKINS=1; # Parse Jenkins sync calls
       fi;
 
       if [ "${EACH_ARG}" == "--nginx" ]; then
-        ARGS_SYNC_NGINX=1; # Parse NGINX-Sync Calls
+        ARGS_SYNC_NGINX=1; # Parse NGINX sync calls
       fi;
 
       if [ "${EACH_ARG}" == "--ssh" ] || [ "${EACH_ARG}" == "--sshd" ]; then
-        ARGS_SYNC_SSH_CONFIG=1; # Parse SSH-Config calls
+        ARGS_SYNC_SSH_CONFIG=1; # Parse SSH config calls
       fi;
 
       if [ "${EACH_ARG}" == "-z" ] || [ "${EACH_ARG}" == "--timezone" ]; then
-        ARGS_SYNC_TIMEZONE=1; # Parse Timezone-Config calls
+        ARGS_SYNC_TIMEZONE=1; # Parse Timezone config calls
       fi;
 
       if [ "${EACH_ARG}" == "--ufw" ]; then
-        ARGS_SYNC_UFW=1; # Parse UFW-Sync Calls
+        ARGS_SYNC_UFW=1; # Parse UFW sync calls
       fi;
 
     fi;
 
   done;
+
+  ARGS_CHECK_WSL=${ARGS_CHECK_WSL:-0};                # Parsed from $@
+  ARGS_CRONJOB_REMOVE=${ARGS_CRONJOB_REMOVE:-0};      # Parsed from $@
+  ARGS_CRONJOB_SYNC=${ARGS_CRONJOB_SYNC:-0};          # Parsed from $@
+  ARGS_DEBUG_MODE=${ARGS_DEBUG_MODE:-0};              # Parsed from $@
+  ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-0};              # Parsed from $@
+  ARGS_SKIP_SELF_UPDATE=${ARGS_SKIP_SELF_UPDATE:-0};  # Parsed from $@
+  ARGS_SYNC_DDNS=${ARGS_SYNC_DDNS:-0};                # Parsed from $@
+  ARGS_SYNC_JENKINS=${ARGS_SYNC_JENKINS:-0};          # Parsed from $@
+  ARGS_SYNC_NGINX=${ARGS_SYNC_NGINX:-0};              # Parsed from $@
+  ARGS_SYNC_SSH_CONFIG=${ARGS_SYNC_SSH_CONFIG:-0};    # Parsed from $@
+  ARGS_SYNC_TIMEZONE=${ARGS_SYNC_TIMEZONE:-0};        # Parsed from $@
+  ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                  # Parsed from $@
 
   # ------------------------------------------------------------
 

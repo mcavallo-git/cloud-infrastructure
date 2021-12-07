@@ -81,9 +81,9 @@ else
   fi;
 
   # Git Repo URL - Allow overriding default repo URL with local filepath
-  FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
-  if [ -f "${FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL}" ]; then
-    OVERRIDE_GIT_SOURCE_REPO_URL="$(cat ${FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL};)"; # Override the git source repo URL
+  OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
+  if [ -f "${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL}" ]; then
+    OVERRIDE_GIT_SOURCE_REPO_URL="$(cat ${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL};)"; # Override the git source repo URL
   fi;
   GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-DEFAULT_GIT_SOURCE_REPO_URL}";
 
@@ -291,9 +291,13 @@ else
     echo "Debug:  GIT_REPO_NAME = [ ${GIT_REPO_NAME} ]";
     echo "Debug:  GIT_REPO_OWNER = [ ${GIT_REPO_OWNER} ]";
     echo "Debug:  GIT_SOURCE_BRANCH = [ ${GIT_SOURCE_BRANCH} ]";
+    echo "Debug:  GIT_SOURCE_REPO_URL = [ ${GIT_SOURCE_REPO_URL} ]";
     echo "";
     echo "Debug:  LOGDIR = [ ${LOGDIR} ]";
     echo "Debug:  LOGFILE = [ ${LOGFILE} ]";
+    echo "";
+    echo "Debug:  OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL = [ ${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL} ]";
+    echo "Debug:  OVERRIDE_GIT_SOURCE_REPO_URL = [ ${OVERRIDE_GIT_SOURCE_REPO_URL} ]";
     echo "";
     echo "Debug:  START_SECONDS_NANOSECONDS = [ ${START_SECONDS_NANOSECONDS} ]";
     echo "Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";

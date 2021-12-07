@@ -3,10 +3,10 @@
 if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
 # Option 1:  Sync basic + utility methods (only)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
 
 # Option 2 (--all):  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
 
 fi;
 # ------------------------------------------------------------
@@ -339,7 +339,7 @@ else
       REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");
       # Install the "jq" (JSON Parser) package manually for RHEL distros
       if [ ! -f "/usr/bin/jq" ] || [[ -f "/usr/bin/jq" && $(stat --printf="%s" "/usr/bin/jq";) -le 1000 ]]; then # stat command is for hotfix on invalid downloads
-        curl -o "/usr/bin/jq" -ssL "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" && chmod 0755 "/usr/bin/jq";
+        curl -o "/usr/bin/jq" -sL "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" && chmod 0755 "/usr/bin/jq";
       fi;
     fi;
 
@@ -440,11 +440,15 @@ else
 
     else
 
-      CHECKSUM_LOCAL=$(if [ -f "${SYNC_CI_LOCAL}" ]; then cat "${SYNC_CI_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
-      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" | cksum | cut -d" " -f1);
+      # CHECKSUM_LOCAL=$(if [ -f "${SYNC_CI_LOCAL}" ]; then cat "${SYNC_CI_LOCAL}" | cksum | cut -d" " -f1; else echo 0; fi;);
+      CHECKSUM_LOCAL=$(if [ -f "${SYNC_CI_LOCAL}" ]; then cat "${SYNC_CI_LOCAL}" | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | cksum | cut -d" " -f1; else echo 0; fi;);
+
+      # CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | cksum | cut -d" " -f1);
+      CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | cksum | cut -d" " -f1);
+
       CHECKSUM_ERROR_UNSIGNED=4294967295;
 
-      TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" | wc -l);
+      TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | wc -l);
       TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
 
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
@@ -485,7 +489,10 @@ else
       echo "Info:  Running self-update...";
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi
       BENCHMARK_START=$(date +'%s.%N');
-      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "${SYNC_CI_REMOTE}" -o "${SYNC_CI_LOCAL}" && chmod 0755 "${SYNC_CI_LOCAL}";
+      # curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" -o "${SYNC_CI_LOCAL}";
+      # Download the latest version of this script - remove commented & whitespace-only lines
+      curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' > "${SYNC_CI_LOCAL}";
+      chmod 0755 "${SYNC_CI_LOCAL}";
       BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l);
       if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
       echo "Info:  Self-update complete";

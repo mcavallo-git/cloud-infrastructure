@@ -215,11 +215,16 @@ GIT_CLI="git";
 GIT_CLI="${GIT_CLI} --work-tree=${GIT_WORK_TREE_REL// /\\ }";
 GIT_CLI="${GIT_CLI} --git-dir=${GIT_GITDIR_REL// /\\ }";
 
+# Determine commit user's username
+GIT_SSH_USERNAME=${GIT_SSH_USERNAME:-git};  # Intended to be used for Git SSH pushes using a specific push username ( e.g. "git@..." )
+
 # TARGET REPOSITORY
 if [ "${REMOTE_HOST}" == "ssh.dev.azure.com" ]; then
-  ORIGIN_GIT="git@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (No ".git" appended)
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # Azure Repos (no ".git" appended)
+elif [[ "${REMOTE_HOST}" =~ ^([a-zA-Z0-9-]+)\.(visualstudio)\.(com)$ ]]; then echo 1; else echo 0; fi;
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:v3/${REMOTE_OWNER}/${REMOTE_REPOSITORY}"; # VSTS Repos (no ".git" appended)
 else
-  ORIGIN_GIT="git@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
+  ORIGIN_GIT="${GIT_SSH_USERNAME}@${REMOTE_HOST}:${REMOTE_OWNER}/${REMOTE_REPOSITORY}.git"; # Target Repository
 fi;
 
 # Override SSH runtime's default/current config settings (which is what Git connects through) to force RSA key usage

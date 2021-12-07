@@ -27,9 +27,15 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
-# Instantiate an exit-code variable (integer) to store/sum errors found throughout this script (and to return as the final exit-code from this script)
+# Instantiate global variables
 #
+
+# EXIT_CODE - stores the sum of specific errors found throughout this script (value returned as the final exit-code from this script)
 EXIT_CODE=$(( ${EXIT_CODE:-0} + 0 ));
+
+# UPDATE_SELF_REQUIRED - used to determine if a newer version of this script should be pulled or not
+UPDATE_SELF_REQUIRED=$(( ${UPDATE_SELF_REQUIRED:-0} + 0 ));
+
 # ------------------------------------------------------------
 #
 # Script must run as root or via sudo
@@ -415,9 +421,6 @@ else
     #
     # Self-update - If changes exist between the local & the remote (source) runtime versions of this script, then update it and recursively call it
     #
-
-    UPDATE_SELF_REQUIRED=0;
-
     if [ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]; then
       UPDATE_SELF_REQUIRED=0;
       echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')";
@@ -1735,9 +1738,7 @@ fi;
 # Exit & return the value of EXIT_CODE back to caller
 #
 
-if [ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]; then
-  exit ${EXIT_CODE:-0};
-fi;
+test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
 
 
 # ------------------------------------------------------------

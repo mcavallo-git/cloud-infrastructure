@@ -56,7 +56,7 @@ UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script sh
 #
 # Log the starting timestamp for the current runtime
 #
-echo -e "\n-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME} ]  (ID: ${START_SECONDS_NANOSECONDS})";
 
 # ------------------------------------------------------------
 #
@@ -1799,7 +1799,7 @@ if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
   echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
 fi;
 
-echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
+echo -e "\n== Info:  End of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${END_DATETIME} ] after [ ${END_BENCHMARK_DELTA}s ]  (ID: ${START_SECONDS_NANOSECONDS})$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " (Recursive Call)"; fi;)";
 
 
 # ------------------------------------------------------------

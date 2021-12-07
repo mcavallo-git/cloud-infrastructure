@@ -507,7 +507,7 @@ else
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
         # RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@";
-        RECURSIVE_CALLBACK_COMMAND="curl -H \"Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0\" -sL \"${SYNC_CI_REMOTE}\" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | bash -s -- --skip-self-update $@";
+        RECURSIVE_CALLBACK_COMMAND="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v '^#' | bash -s -- --skip-self-update $@";
         if [[ -n "$(command -v sed 2>'/dev/null';)" ]]; then
           # Trim leading/trailing whitespace
           RECURSIVE_CALLBACK_COMMAND="$(echo "${RECURSIVE_CALLBACK_COMMAND}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";

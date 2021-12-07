@@ -207,11 +207,11 @@ else
 
   done;
 
+  # Integer arguments
   ARGS_CHECK_WSL=${ARGS_CHECK_WSL:-0};                # Parsed from $@
   ARGS_CRONJOB_REMOVE=${ARGS_CRONJOB_REMOVE:-0};      # Parsed from $@
   ARGS_CRONJOB_SYNC=${ARGS_CRONJOB_SYNC:-0};          # Parsed from $@
   ARGS_DEBUG_MODE=${ARGS_DEBUG_MODE:-0};              # Parsed from $@
-  ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-};               # Parsed from $@
   ARGS_SKIP_SELF_UPDATE=${ARGS_SKIP_SELF_UPDATE:-0};  # Parsed from $@
   ARGS_SYNC_DDNS=${ARGS_SYNC_DDNS:-0};                # Parsed from $@
   ARGS_SYNC_JENKINS=${ARGS_SYNC_JENKINS:-0};          # Parsed from $@
@@ -219,6 +219,9 @@ else
   ARGS_SYNC_SSH_CONFIG=${ARGS_SYNC_SSH_CONFIG:-0};    # Parsed from $@
   ARGS_SYNC_TIMEZONE=${ARGS_SYNC_TIMEZONE:-0};        # Parsed from $@
   ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                  # Parsed from $@
+
+  # String arguments
+  ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-""};             # Parsed from $@
 
   # ------------------------------------------------------------
 

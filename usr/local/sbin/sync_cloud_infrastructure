@@ -699,8 +699,10 @@ else
         fi;
       fi;
       # ------------------------------
-      if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nInfo:  PRE CONDITIONAL:  EXIT_CODE=[${EXIT_CODE}]"; fi;
       if [ -z "${EXIT_CODE}" ] || [ "${EXIT_CODE}" == "0" ]; then
+
+        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nInfo:  NO ERRORS UP UNTIL THIS POINT:  EXIT_CODE=[${EXIT_CODE}]"; fi;
+
         # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
         #  |--> Run the part of the sync job which actually performs the sync
         # ------------------------------------------------------------

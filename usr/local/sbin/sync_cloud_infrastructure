@@ -1708,9 +1708,9 @@ else
       # ------------------------------
       if [ 1 -eq 1 ]; then
         # Log the ending timestamp for the current runtime
-        END_SECONDS_NANOSECONDS="$(date +'%s.%N')";
-        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1)";
-        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+        END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
         echo -e "\n== Info:  Script ended at ${END_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
       fi;
       # ------------------------------

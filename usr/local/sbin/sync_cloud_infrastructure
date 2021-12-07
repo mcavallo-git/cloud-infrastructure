@@ -1292,7 +1292,7 @@ else
             USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
           fi;
         done;
-        echo -e "\nInfo:  Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...";
+        echo -e "\nInfo:  Syncing Bash-Config & Terminal-Formatting files for SSH-Enabled users...$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "  -  Recursive Call"; fi;))"; fi;)";
         BENCHMARK_START=$(date +'%s.%N');
         # Begin copying files to SSH-Enabled User-Home Directories
         for EACH_FILE in ${FILES_TO_COPY}; do

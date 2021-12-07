@@ -506,7 +506,11 @@ else
 
       # Call the updated version of this script with the same parameters given to this (current) runtime
       if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
+
+        # Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
         # RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@";
+
+        # set recursive callback script to pull the remote source code for this script
         RECURSIVE_CALLBACK_COMMAND="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
         if [[ -n "$(command -v sed 2>'/dev/null';)" ]]; then
           # trim leading/trailing whitespace (from all lines)

@@ -1465,8 +1465,6 @@ fi;
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
             RESTART_SERVICE_JENKINS=1;
-            BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
         # ------------------------------------------------------------

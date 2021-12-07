@@ -40,10 +40,10 @@ else
   # Require user-confirmation to perform this action
   #
   echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
-  read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "     |--> Are you sure you want to continue?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo "";
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-    read -p "     |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    read -p "     |--> Are you completely positive you want to continue?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 

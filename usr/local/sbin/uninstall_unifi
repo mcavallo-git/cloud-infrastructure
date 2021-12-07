@@ -40,30 +40,32 @@ else
   # Require user-confirmation to perform this action
   #
   echo -e "\n""!! WARNING !! This will completely uninstall service \"${SERVICE_NAME}\" (including associated runtime user, usergroup, service(s), etc.)";
-  read -p "     |--> Are you sure you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "     |--> Are you sure you want to continue?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo "";
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
-    read -p "     |--> Are you completely positive you want to continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    REPLY="";
+    read -p "     |--> Are you completely positive you want to continue?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
-
-    # ------------------------------------------------------------
-    #
-    # Remove service's dependent package(s)
-    #
-    echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
-    if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-      echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
-      dpkg -P "${SERVICE_NAME}";
-    elif [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
-      echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
-      apt-get remove -y "${SERVICE_NAME}";
-    elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-      echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
-      yum remove -y "${SERVICE_NAME}";
-    else
-      echo "  |--> Unable to determine package installer. Manual uninstallation of service \"${SERVICE_NAME}\" required";
+    if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+      # ------------------------------------------------------------
+      #
+      # Remove service's dependent package(s)
+      #
+      echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
+      if [ $(which dpkg 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+        echo "  |--> Calling [ dpkg -P \"${SERVICE_NAME}\"; ]...";
+        dpkg -P "${SERVICE_NAME}";
+      elif [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+        echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
+        apt-get remove -y "${SERVICE_NAME}";
+      elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+        echo "  |--> Calling [ yum remove -y \"${SERVICE_NAME}\"; ]...";
+        yum remove -y "${SERVICE_NAME}";
+      else
+        echo "  |--> Unable to determine package installer. Manual uninstallation of service \"${SERVICE_NAME}\" required";
+      fi;
+      echo "";
     fi;
-    echo "";
   fi;
 fi;
 

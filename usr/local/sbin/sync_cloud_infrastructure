@@ -988,7 +988,7 @@ else
         TZ="America/New_York";
         if [ ${ARGS_SYNC_TIMEZONE} -eq 1 ] && [ "$(cat /etc/timezone;)" != "${TZ}" ]; then
             echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
-            read -p "  |--> Set Timezone, now? (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+            read -p "  |--> Set Timezone, now?  (press 'y' to confirm)" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
             echo "";
             if [[ $REPLY =~ ^[Yy]$ ]]; then
               ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
@@ -1556,7 +1556,7 @@ else
             echo -e "\nInfo:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
             for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
               echo "  |";
-              read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now? (y/n)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+              read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now?  (press 'y' to confirm)" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
               if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
                 echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";
                 rm -f "${EACH_CRON_TRIGGER}";

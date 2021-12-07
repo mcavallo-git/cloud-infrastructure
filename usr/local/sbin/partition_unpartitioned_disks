@@ -62,7 +62,7 @@ else
     if [ "${EACH_PARTITION_TABLE}" == "unknown" ]; then
       echo "";
       READ_TIMEOUT=60;
-      read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+      read -p "CONFIRM:  Do you want to partition device [ ${EACH_DISK_DEVICE} ] (currently unpartitioned), now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
       echo "";
       if [ ${RETURN_CODE_READ} -gt 128 ]; then
         echo "Error:  Response timed out after ${READ_TIMEOUT}s";
@@ -81,7 +81,7 @@ else
     if [ "${EACH_DISK_VOLUME_COUNT}" == "0" ]; then
       echo "";
       READ_TIMEOUT=60;
-      read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+      read -p "CONFIRM:  Do you want to add a new volume on device [ ${EACH_DISK_DEVICE} ] of size [ ${EACH_DISK_SIZE} ], now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
       echo "";
       if [ ${RETURN_CODE_READ} -gt 128 ]; then
         echo "Error:  Response timed out after ${READ_TIMEOUT}s";
@@ -112,7 +112,7 @@ else
           fi;
           echo "";
           READ_TIMEOUT=60;
-          read -p "CONFIRM:  Do you want to mount [ ${EACH_SUB_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+          read -p "CONFIRM:  Do you want to mount [ ${EACH_SUB_DEVICE} ] to filepath [ ${EACH_NEW_MOUNT} ], now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
           echo "";
           if [ ${RETURN_CODE_READ} -gt 128 ]; then
             echo "Error:  Response timed out after ${READ_TIMEOUT}s";

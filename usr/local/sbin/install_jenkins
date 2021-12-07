@@ -103,7 +103,7 @@ else
     echo "Info:  This will install the Jenkins CI/CD service";
     # echo "Info:  This will install the Jenkins service and open firewall port 8080 (outgoing)";
     echo "";
-    READ_TIMEOUT=60; read -p "Continue? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+    READ_TIMEOUT=60; read -p "Continue?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
     echo "";
     if [ ${RETURN_CODE_READ} -gt 128 ]; then
       echo -e "Response timed out after ${READ_TIMEOUT}s";
@@ -281,7 +281,7 @@ else
     if [ ${ARGS_FORCE_AGREE} -eq 0 ]; then
       # Not Forced
       echo "";
-      READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now? (y/n)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+      READ_TIMEOUT=60; read -p "Sync Jenkins config-file \"${JENKINS_CONFIG_PATH}\" to \"cloud-infrastructure\" repo, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
       echo "";
     else
       # Forced (Skipped)

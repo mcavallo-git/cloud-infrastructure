@@ -899,7 +899,7 @@ else
             if [[ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
               # SSH-Config file already fully up-to-date
               echo -e "\nInfo:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
-              echo "  |--> Checksum already up-to-date with \"$(basename ${SSHD_CONFIG_REPLACEMENT})\"";
+              echo "  |--> Checksum already up-to-date with \"$(basename "${SSHD_CONFIG_REPLACEMENT}";)\"";
 
             elif [[ ! -d "/home/" ]] || [[ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
               # Need another user other than root to SSH into this machine --> No user directories found in /home/.
@@ -1531,18 +1531,18 @@ fi;
               Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
               if [[ "$(dig +short ${Each_FQDN};)" == "$(hostname -i | awk '{print $1}';)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]]; then
                 # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device - Set this FQDN to "Enabled" for the current NGINX server
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN})\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
               elif [[ "${Each_FQDN}" == "$(hostname --fqdn;)" ]]; then
                 # The FQDN is equal to the hostname (as a FQDN) for the current device
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the target FQDN \"${Each_FQDN})\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                 ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
               else
                 # Skipped - The FQDN doesnt match the hostname or IPv4 address of the current device
                 rm -f "${Each_SitesAvailable}";
                 if [[ -h "${Each_SitesEnabled}" ]] || [[ -f "${Each_SitesEnabled}" ]]; then
                   # If this NGINX site (FQDN) is enabled (but should be disabled as no matches were found between it and the current device), then disable it
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n        |--> No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN})\" ] and [ the resolved WAN IPv4 address of the current device ]\n        |--> No match found between [ the target FQDN \"${Each_FQDN})\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n        |--> No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]\n        |--> No match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                   if [[ -h "${Each_SitesEnabled}" ]]; then
                     unlink "${Each_SitesEnabled}";
                   elif [[ -f "${Each_SitesEnabled}" ]]; then

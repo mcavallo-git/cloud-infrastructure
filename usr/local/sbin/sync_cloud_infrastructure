@@ -37,7 +37,6 @@ START_TIMESTAMP="$(date --date=@${START_EPOCHSECONDS} +'%Y%m%d_%H%M%S')";
 
 DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
 DEFAULT_GIT_SOURCE_BRANCH="master";
-DIRNAME_LOCAL_CONFIG="/etc/sync_cloud_infrastructure";
 FULLPATH_SYNC_CLOUD_INFRASTRUCTURE="/usr/local/sbin/sync_cloud_infrastructure";
 
 WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
@@ -47,6 +46,8 @@ WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 # Instantiate dymamic runtime variables
 #
 
+DIRNAME_LOCAL_CONFIG="/etc/$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)"; # holds configurations (if any) specific to this script
+
 EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
 
 UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script should be pulled or not
@@ -55,7 +56,7 @@ UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script sh
 #
 # Log the starting timestamp for the current runtime
 #
-echo -e "\n-- Info:  Start of \"sync_cloud_infrastructure\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
+echo -e "\n-- Info:  Start of \"$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)\" runtime at ${START_DATETIME}  (ID: ${START_SECONDS_NANOSECONDS})";
 
 # ------------------------------------------------------------
 #
@@ -68,32 +69,24 @@ if [ "$(id -un)" != "root" ]; then
 else
   # ------------------------------------------------------------
   #
-  # Calculate Dynamic Runtime-Variables
+  # Script-specific config overrides
   #
 
-  # Get the Git Source-Repo from the local device's config
-  GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
-  FILEPATH_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
-  if [ -f "${FILEPATH_GIT_SOURCE_REPO_URL}" ]; then
-    GIT_SOURCE_REPO_URL="$(cat ${FILEPATH_GIT_SOURCE_REPO_URL};)";
-  fi;
-
-  # Fall-back to the default Git-Repo if none is defined, locally
-  if [ -z "${GIT_SOURCE_REPO_URL}" ]; then
-    GIT_SOURCE_REPO_URL="${DEFAULT_GIT_SOURCE_REPO_URL}";
-  fi;
-
-
-  # ------------------------------------------------------------
-  #
-  # Create config (if it doesn't already exist)
-  #
+  # Create parent directory for script-specific config overrides
   if [ ! -d "${DIRNAME_LOCAL_CONFIG}" ]; then
     mkdir -pv "${DIRNAME_LOCAL_CONFIG}";
   fi;
   if [ -d "${DIRNAME_LOCAL_CONFIG}" ] && [ -n "$(command -v stat 2>'/dev/null';)" ] && [ "$(stat --format '%a' ${DIRNAME_LOCAL_CONFIG})" != "755" ]; then
     chmod 755 "${DIRNAME_LOCAL_CONFIG}";
   fi;
+
+  # Git Repo URL - Allow overriding default repo URL with local filepath
+  FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL="${DIRNAME_LOCAL_CONFIG}/git_source_repo.url";
+  if [ -f "${FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL}" ]; then
+    OVERRIDE_GIT_SOURCE_REPO_URL="$(cat ${FULLPATH_OVERRIDE_GIT_SOURCE_REPO_URL};)"; # Override the git source repo URL
+  fi;
+  GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-DEFAULT_GIT_SOURCE_REPO_URL}";
+
 
   # ------------------------------------------------------------
   #
@@ -1550,7 +1543,7 @@ else
           #
           # --remove-cronjobs  -->  Removes all scripts matching /etc/cron.d/CRON_*  (other than CRON_sync_cloud_infrastructure, which triggers this, current script)
           #
-          LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v 'sync_cloud_infrastructure' 2>'/dev/null';);
+          LOCAL_CRON_D_SCRIPTS=$(ls /etc/cron.d/CRON_* | grep -v "$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)" 2>'/dev/null';);
           COUNT_CRON_D_SCRIPTS=$(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l;);
           if [ $(echo "${LOCAL_CRON_D_SCRIPTS}" | wc -l) -eq 0 ]; then
             echo -e "\nInfo:  Skipped removal of cron sync-triggers - No scripts found matching \"/etc/cron.d/CRON_*\"";
@@ -1710,9 +1703,9 @@ else
         #
         DIR_TO_CLEANUP="${LOGDIR}";
         if [ -z "${DIR_TO_CLEANUP}" ]; then
-          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then DIR_TO_CLEANUP="/var/log/sync_cloud_infrastructure"; fi;
+          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [ -w "/var/log/" ]; then DIR_TO_CLEANUP="/var/log/$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)"; fi;
         fi;
-        if [ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${DIR_TO_CLEANUP}" == "/var/log/sync_cloud_infrastructure" ]; then
+        if [ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ] || [ "${DIR_TO_CLEANUP}" == "/var/log/$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)" ]; then
           if [ -d "${DIR_TO_CLEANUP}" ]; then
             # Cleanup log files (older than the retention-policy's max-allowed-age)
             echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${DIR_TO_CLEANUP}\"";
@@ -1730,28 +1723,32 @@ else
         if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then echo -e "\nInfo:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])"; fi;
 
       fi;
-      # ------------------------------
-      if [ 1 -eq 1 ]; then
-        # Log the ending timestamp for the current runtime
-        END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
-        END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
-        END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
-        END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l);
-        if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
-          echo "";
-          echo "Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
-          echo "Debug:  END_EPOCHSECONDS = [ ${END_EPOCHSECONDS} ]";
-          echo "Debug:  END_DATETIME = [ ${END_DATETIME} ]";
-          echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
-        fi;
-        echo -e "\n== Info:  End of \"sync_cloud_infrastructure\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
-      fi;
-      # ------------------------------
+
     fi;
 
   fi;
 
 fi;
+
+
+# ------------------------------------------------------------
+#
+# Log the ending timestamp for the current runtime
+#
+
+END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
+END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l);
+if [ ${ARGS_DEBUG_MODE} -eq 1 ]; then
+  echo "";
+  echo "Debug:  END_SECONDS_NANOSECONDS = [ ${END_SECONDS_NANOSECONDS} ]";
+  echo "Debug:  END_EPOCHSECONDS = [ ${END_EPOCHSECONDS} ]";
+  echo "Debug:  END_DATETIME = [ ${END_DATETIME} ]";
+  echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
+fi;
+
+echo -e "\n== Info:  End of \"$(basename "${FULLPATH_SYNC_CLOUD_INFRASTRUCTURE}";)\" runtime at ${END_DATETIME} after ${END_BENCHMARK_DELTA}s (ID: ${START_SECONDS_NANOSECONDS})";
 
 
 # ------------------------------------------------------------

@@ -1754,7 +1754,11 @@ fi;
         #
         DIR_TO_CLEANUP="${LOGDIR}";
         if [[ -z "${DIR_TO_CLEANUP}" ]]; then
-          DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs"; if [[ -w "/var/log/" ]]; then DIR_TO_CLEANUP="/var/log/$(basename "${SYNC_CI_LOCAL}";)"; fi;
+          if [[ -w "/var/log/" ]]; then
+            DIR_TO_CLEANUP="/var/log/$(basename "${SYNC_CI_LOCAL}";)";
+          else
+            DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs";
+          fi;
         fi;
         if [[ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ]] || [[ "${DIR_TO_CLEANUP}" == "/var/log/$(basename "${SYNC_CI_LOCAL}";)" ]]; then
           if [[ -d "${DIR_TO_CLEANUP}" ]]; then

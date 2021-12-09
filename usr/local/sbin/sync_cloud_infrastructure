@@ -651,10 +651,12 @@ else
           BENCHMARK_START=$(date +'%s.%N');
           # Clone the repo if it hasn't been synced, yet
           if [[ ! -d "${GIT_LOCAL_REPO_PATH}" ]]; then
+            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_PARENT_PATH}\" && git clone --quiet \"${GIT_SOURCE_REPO_URL}\"; ]..."; fi;
             cd "${GIT_LOCAL_PARENT_PATH}" && \
             git clone --quiet "${GIT_SOURCE_REPO_URL}";
           fi;
           # Sync local workstation's commands with the repo's commands
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\" && git fetch --quiet && git reset --quiet --hard \"origin/${GIT_SOURCE_BRANCH}\" && git pull --quiet; ]..."; fi;
           cd "${GIT_LOCAL_REPO_PATH}" && \
           git fetch --quiet && \
           git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && \

@@ -50,7 +50,7 @@ LOCAL_CONFIG_DIR_FULLPATH="/etc/$(basename "${SYNC_CI_LOCAL}";)"; # holds config
 
 EXIT_CODE=0; # sum of errors from specific required calls - returned as the final exit-code from this script
 
-UPDATE_SELF_REQUIRED=0; # used to determine if a newer version of this script should be pulled or not
+UPDATE_SELF_REQUIRED=0; # Flag variable which determines if the self-update will run or not
 
 # ------------------------------------------------------------
 #
@@ -274,27 +274,6 @@ else
     SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
     # ------------------------------------------------------------
-    # Check for a valid WAN (internet) connection
-
-    WAN_TEST_CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";);
-    WAN_TEST_CURL_FAILED=${?};
-    WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
-    WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);
-    if [[ "${WAN_TEST_FAILED}" == "1" ]]; then
-      echo "";
-      echo "Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    elif [[ -z "${GIT_REPO_NAME}" ]]; then
-      echo "";
-      echo "Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    elif [[ -z "${GIT_REPO_OWNER}" ]]; then
-      echo "";
-      echo "Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    fi;
-
-    # ------------------------------------------------------------
 
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
       echo "";
@@ -340,6 +319,45 @@ else
       echo "Debug:  START_EPOCHSECONDS = [ ${START_EPOCHSECONDS} ]";
       echo "Debug:  START_DATETIME = [ ${START_DATETIME} ]";
       echo "Debug:  START_TIMESTAMP = [ ${START_TIMESTAMP} ]";
+    fi;
+
+    # ------------------------------------------------------------
+    #
+    # Check for a valid WAN (internet) connection
+    #
+    echo -e "\nInfo:  Checking for a valid WAN (internet) network connection...";
+    BENCHMARK_START=$(date +'%s.%N');
+    WAN_TEST_CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";);
+    WAN_TEST_CURL_FAILED=${?};
+    WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
+    WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);
+    if [[ "${WAN_TEST_FAILED}" == "1" ]]; then
+      echo "";
+      echo "Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    elif [[ -z "${GIT_REPO_NAME}" ]]; then
+      echo "";
+      echo "Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    elif [[ -z "${GIT_REPO_OWNER}" ]]; then
+      echo "";
+      echo "Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    else
+      echo "  |--> Verified WAN (internet) network connection";
+    fi;
+
+    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+      # Handle benchmarking differently (e.g. 'more compatibly') before we've ensured that the command 'bc' has been installed
+      if [ -n "$(command -v bc 2>'/dev/null';)" ]; then
+        BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l;);
+      else
+        BENCHMARK_DELTA=$(perl -le "print($(date +'%s.%N') - ${BENCHMARK_START})");
+      fi;
+      echo "  |--> Finished after ${BENCHMARK_DELTA}s";
+    fi;
+
+    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
       echo "";
       echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
       echo "Debug:  WAN_TEST_CURL_FAILED = [ ${WAN_TEST_CURL_FAILED} ]";
@@ -347,9 +365,18 @@ else
       echo "Debug:  WAN_TEST_HTTP_CODE = [ ${WAN_TEST_HTTP_CODE} ]";
     fi;
 
+    # ------------------------------------------------------------
+
     # If no errors are found up-until this point, continue
     if [[ -z "${EXIT_CODE}" ]] || [[ "${EXIT_CODE}" == "0" ]]; then
-      # Make sure prerequisite-packages are installed
+
+      # ------------------------------------------------------------
+      #
+      # Packages / Prereqs  -  Make sure prerequisite-packages are installed
+      #
+      echo -e "\nInfo:  Checking for required/prerequite packages...";
+      BENCHMARK_START=$(date +'%s.%N');
+
       unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
       unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array
       REQUIRED_PKGS_ARRAY=();
@@ -461,6 +488,8 @@ else
           EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
         fi;
 
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+
       fi;
 
       # ------------------------------------------------------------
@@ -492,6 +521,8 @@ else
           echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
           echo "Debug:  CHECKSUM_ERROR_UNSIGNED = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
         fi;
+
+        # Conditional logic determining whether the self-update will run or not
         if [[ ${ARGS_FORCE_SELF_UPDATE} -eq 1 ]]; then
           UPDATE_SELF_REQUIRED=1;
           echo -e "\nInfo:  Self-update forced (via argument '--force-self-update')";
@@ -517,36 +548,31 @@ else
       fi;
 
       if [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
+        # ------------------------------
         #
-        # Update-self (recursive call) >> IS << required
+        # Self-update >> IS << required  (recursive call)
         #
-
-
-  # !!! DISABLED WHILE DEBUGGING !!!
-  if [ 0 -eq 1 ]; then
-        echo "Info:  Running self-update...";
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
-        BENCHMARK_START=$(date +'%s.%N');
-        # Download the latest version of this script
-        curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}";  # remove commented & whitespace-only lines from script
-        chmod 0755 "${SYNC_CI_LOCAL}";
-        BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-        echo "Info:  Self-update complete";
-  fi;
-  # !!! DISABLED WHILE DEBUGGING !!!
-
+        if [ 0 -eq 1 ]; then
+          # DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
+          echo "Info:  Running self-update...";
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
+          BENCHMARK_START=$(date +'%s.%N');
+          # Download the latest version of this script
+          curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}";  # remove commented & whitespace-only lines from script
+          chmod 0755 "${SYNC_CI_LOCAL}";
+          RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@}";
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+          eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+        fi;
 
         echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
         # Call the updated version of this script with the same parameters passed to the current runtime
         if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
-          # 'eval' DOES exist as a local command - build a recursive callback command to pass to eval
-          #
-          # DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
-          # RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@}";
-          #
-          # UPDATED APPROACH - Call script directly from source (to avoid conflict updating/running the file which is already running and executing these commands)
+          # 'eval' DOES exist as a local command - build a recursive callback command to pass to it
+
+          # Call script directly from source as a remote URL (to avoid conflict updating/running the file which is already running and executing these commands)
           RECURSIVE_CALLBACK_COMMAND="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
           if [[ -n "$(command -v sed 2>'/dev/null';)" ]]; then
             # trim leading/trailing whitespace (from all lines)
@@ -565,11 +591,7 @@ else
 
         else
           # 'eval' does NOT exist as a local command - call the recursive callback command directly (via curL) without eval
-          #
-          # DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
-          # if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ \"${SYNC_CI_LOCAL}\" --skip-self-update $@; ]..."; fi;
-          # "${SYNC_CI_LOCAL}" --skip-self-update $@;
-          #
+
           # UPDATED APPROACH - Call script directly from source (to avoid conflict updating/running the file which is already running and executing these commands)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL \"${SYNC_CI_REMOTE}\" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; ]..."; fi;
           curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL "${SYNC_CI_REMOTE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; # trigger the recursive callback
@@ -579,13 +601,15 @@ else
         echo -e "\n==== Info:  Returned to parent runtime from recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
       else
-        # Update-self (recursive call) >> NOT << required  (possiblyz already running as a recursive call)
         # ------------------------------
+        #
+        # Self-update >> NOT << required  (possibly already running as a recursive call)
+        #
         if [[ -z "$(command -v git 2>'/dev/null';)" ]]; then
-          # git does NOT exist (as a local command)
+          # 'git' does NOT exist as a local command
           echo -e "\nWarning:  Unable to pull/update repository codebase - Pre-requisite command \"git\" not found";
         else
-          # git DOES exist (as a local command)
+          # 'git' DOES exist as a local command
           if [[ ! -d "${GIT_LOCAL_PARENT_PATH}" ]]; then
             # Ensure that the directory designated to contain git repos exists (locally)
             mkdir -p "${GIT_LOCAL_PARENT_PATH}";
@@ -605,22 +629,19 @@ else
           git fetch --quiet && \
           git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && \
           git pull --quiet;
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo files as-intended
           echo -e "\nInfo:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo directories as-intended
           echo -e "\nInfo:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         fi;
         # ------------------------------
         if [[ ${ARGS_CHECK_WSL} -eq 1 ]]; then
@@ -639,8 +660,7 @@ else
             WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
             # WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
             WIN32_USR_LOCAL=$(find "${WIN32_HOMEDIR}/Documents/"**"/${GIT_REPO_NAME}/usr/local" -maxdepth 0 -type d | head -n 1;);
-            BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             if [[ -z "${WIN32_USR_LOCAL}" ]]; then
               echo "";
               echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
@@ -679,20 +699,17 @@ else
               #  Linux OS - Locate source directory from amongst Non-Sudo User's files
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Repository not found within [ $(whoami) ] user's home-directory"; fi;
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Checking for local repository files within [ ${SUDO_USER} ] user's home-directory"; fi;
-              BENCHMARK_START=$(date +'%s.%N');
               SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
               SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
               DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
               DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
               RET_CODE=$?;
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
               if [[ ${RET_CODE} -eq 0 ]]; then
                 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
               fi;
             fi;
           fi;
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         else
           # Running in WSL environment/terminal on Windows-based OS
           WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/Coding/man";
@@ -785,8 +802,7 @@ else
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /usr/local/sbin
@@ -802,8 +818,7 @@ else
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /etc/inputrc
@@ -814,8 +829,7 @@ else
               BENCHMARK_START=$(date +'%s.%N');
               echo -e "\nInfo:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
               sed -i".${START_TIMESTAMP}.bak" -r -e 's/^#\s*(set\s+bell-style\s+none\s*)$/\1/' '/etc/inputrc'; # Uncomment lines starting with  [ # set bell-style none ]
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------------------------------------
@@ -829,8 +843,7 @@ else
               echo -e "\nInfo:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
               sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
               sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------------------------------------
@@ -849,8 +862,7 @@ else
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
             if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-            BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             # Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
             update-ca-trust force-enable;
             update-ca-trust extract; # Update for Rhel/Centos
@@ -870,8 +882,7 @@ else
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /etc/profile.d/bash_history_logging.sh
@@ -887,8 +898,7 @@ else
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /etc/whitelist.d
@@ -904,8 +914,7 @@ else
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /etc/ssh/sshd_config
@@ -998,8 +1007,7 @@ else
                       && chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
                       && cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
                       && RESTART_SERVICE_SSH=1;
-                    BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                   fi;
 
                 elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -1051,8 +1059,7 @@ else
                   else
                     echo -e "\nInfo:  Skipped SSH Config-Update - Already running the latest revision";
                   fi;
-                  BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 fi;
               fi;
               # ------------------------------
@@ -1146,8 +1153,7 @@ else
               wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
                 && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
                 && RESTART_SERVICE_CRON=1;
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
 
           fi;
@@ -1172,8 +1178,7 @@ else
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
             if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-            BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             # ------------------------------------------------------------
             #
             # /etc/cron.d/CRON_certbot_renew_all
@@ -1197,8 +1202,7 @@ else
                   find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                   if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                   dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                  BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 else
                   echo "  |--> Denied - SSL (TLS/HTTPS) certificate auto-renewal disabled";
                 fi;
@@ -1226,8 +1230,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - Logfile Auto-Cleanup disabled";
               fi;
@@ -1254,8 +1257,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - DNS-server sync disabled";
               fi;
@@ -1283,8 +1285,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - System & package weekly updates disabled";
               fi;
@@ -1307,8 +1308,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
             fi;
           fi;
@@ -1362,9 +1362,7 @@ else
               done;
             fi;
           done;
-          BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |"; fi;
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------------------------------------
           #
           # /etc/cron.d/CRON_ddns_updater
@@ -1381,8 +1379,7 @@ else
                 && chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
                 && RESTART_SERVICE_CRON=1;
 
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------------------------------------
@@ -1423,8 +1420,7 @@ else
               find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
               if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               # /var/cache/jenkins/war - Set policies to stop Selinux from blocking access to cached Jenkins images within "/var/cache/jenkins/war/images"
               if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
                 chcon -R -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
@@ -1445,8 +1441,7 @@ else
               find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
               if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
                 # ------------------------------------------------------------
                 #
@@ -1463,8 +1458,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 # ------------------------------------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_log_cleanup
@@ -1480,8 +1474,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 # ------------------------------------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_sync_ci
@@ -1497,8 +1490,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 # ------------------------------------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_warfile_update
@@ -1514,8 +1506,7 @@ else
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
               RESTART_SERVICE_JENKINS=1;
             fi;
@@ -1609,8 +1600,7 @@ else
                 ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
               fi;
               RESTART_SERVICE_NGINX=1;
-              BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------------------------------------

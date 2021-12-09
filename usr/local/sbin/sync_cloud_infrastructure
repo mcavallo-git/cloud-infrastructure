@@ -76,17 +76,23 @@ else
   SYNC_CONFIRMED=0;
   if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then
     # Active Terminal --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
-    echo ""; read -p "Info:  Sync cloud-infrastructure, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
-    if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-      SYNC_CONFIRMED=1;
-      echo -e "\n  |--> Confirmed";
+    if [[ -f "${SYNC_CI_LOCAL}" ]]; then
+      # The [ sync_cloud_infrastructure ] module DOES already exist (first-time sync) - Confirmation skipped
+      echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
     else
-      SYNC_CONFIRMED=0;
-      echo -e "\n  |--> Denied";
+      # The [ sync_cloud_infrastructure ] module does NOT yet exist (first-time sync) - Confirmation required
+      echo ""; read -p "Info:  Sync cloud-infrastructure modules, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+      if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
+        SYNC_CONFIRMED=1;
+        echo -e "\n  |--> Confirmed";
+      else
+        SYNC_CONFIRMED=0;
+        echo -e "\n  |--> Denied";
+      fi;
     fi;
   else
     # Backend-only mode - do not require confirmation to sync modules
-    echo -e "\nInfo:  Auto-confirming backend sync of cloud-infrastructure modules (no TTY present)";
+    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY present)";
     SYNC_CONFIRMED=1;
   fi;
 

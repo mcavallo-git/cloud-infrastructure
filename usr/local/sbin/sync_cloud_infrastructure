@@ -379,6 +379,9 @@ else
 
       unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
       unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array
+      unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
+      unset NEWLY_INSTALLED_PKGS_ARRAY; declare -a NEWLY_INSTALLED_PKGS_ARRAY; # [Re-]Instantiate bash array
+
       REQUIRED_PKGS_ARRAY=();
       REQUIRED_PKGS_ARRAY+=("bc");
       REQUIRED_PKGS_ARRAY+=("dos2unix");
@@ -427,11 +430,6 @@ else
       # If any packages were determined to be missing, attempt to install them
       if [[ ${#MISSING_PKGS_ARRAY[@]} -ne 0 ]]; then
 
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
-          echo "";
-          echo "Debug:  MISSING_PKGS_ARRAY = [ ${MISSING_PKGS_ARRAY[@]} ]";
-        fi;
-
         if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then
           if [[ 1 -eq 1 ]]; then
             # Debian distros (Ubuntu, Raspbian, etc.)
@@ -464,21 +462,26 @@ else
         fi;
 
         # Verify that all required packages (which are needed later in this script) are installed as-intended
-        unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
         for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
           if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
             # Query Debian's Package-Manager for each package
             if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+            else
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
             fi;
           elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
             if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+            else
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
             fi;
           else # Other distros
             if [[ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+            else
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
             fi;
           fi;
         done;
@@ -492,6 +495,14 @@ else
 
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
+      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+        echo "";
+        echo "Debug:  REQUIRED_PKGS_ARRAY[@] = [ ${REQUIRED_PKGS_ARRAY[@]} ]";
+        echo "Debug:  MISSING_PKGS_ARRAY[@] = [ ${MISSING_PKGS_ARRAY[@]} ]";
+        echo "Debug:  FAILED_INSTALL_PKGS_ARRAY[@] = [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
+        echo "Debug:  NEWLY_INSTALLED_PKGS_ARRAY[@] = [ ${NEWLY_INSTALLED_PKGS_ARRAY[@]} ]";
+      fi;
+
       # ------------------------------------------------------------
       #
       # Self-update - If changes exist between the local & the remote (source) runtime versions of this script, then update it and recursively call it
@@ -502,8 +513,8 @@ else
 
       else
 
-        CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);  # remove commented & whitespace-only lines from script
-        CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1);  # remove commented & whitespace-only lines from script
+        CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;); # remove commented & whitespace-only lines from script
+        CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1); # remove commented & whitespace-only lines from script
 
         CHECKSUM_ERROR_UNSIGNED=4294967295;
 
@@ -558,7 +569,7 @@ else
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
           BENCHMARK_START=$(date +'%s.%N');
           # Download the latest version of this script
-          curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}";  # remove commented & whitespace-only lines from script
+          curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}"; # remove commented & whitespace-only lines from script
           chmod 0755 "${SYNC_CI_LOCAL}";
           RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@}";
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;

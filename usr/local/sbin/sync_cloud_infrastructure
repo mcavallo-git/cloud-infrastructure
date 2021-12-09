@@ -580,19 +580,19 @@ else
         #
         # Self-update >> IS << required  (recursive call)
         #
-        if [ 0 -eq 1 ]; then
-          # DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
-          echo "Info:  Running self-update...";
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
-          BENCHMARK_START=$(date +'%s.%N');
-          # Download the latest version of this script
-          curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}"; # remove commented & whitespace-only lines from script
-          chmod 0755 "${SYNC_CI_LOCAL}";
-          RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@}";
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...\n"; fi;
-          eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-        fi;
+        # if [ 0 -eq 1 ]; then
+        #   # DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
+        #   echo "Info:  Running self-update...";
+        #   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
+        #   BENCHMARK_START=$(date +'%s.%N');
+        #   # Download the latest version of this script
+        #   curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}"; # remove commented & whitespace-only lines from script
+        #   chmod 0755 "${SYNC_CI_LOCAL}";
+        #   RECURSIVE_CALLBACK_COMMAND="${SYNC_CI_LOCAL} --skip-self-update $@}";
+        #   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...\n"; fi;
+        #   eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
+        #   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+        # fi;
 
         echo -e "\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
@@ -615,6 +615,7 @@ else
           # set the script to use the local bash shell
           RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+          echo "";
           eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
 
         else
@@ -622,6 +623,7 @@ else
 
           # UPDATED APPROACH - Call script directly from source (to avoid conflict updating/running the file which is already running and executing these commands)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL \"${SYNC_CI_REMOTE}\" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; ]..."; fi;
+          echo "";
           curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL "${SYNC_CI_REMOTE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; # trigger the recursive callback
 
         fi;

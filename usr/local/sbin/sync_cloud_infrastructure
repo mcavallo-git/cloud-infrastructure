@@ -79,6 +79,7 @@ else
     if [[ -f "${SYNC_CI_LOCAL}" ]]; then
       # The [ sync_cloud_infrastructure ] module DOES already exist (first-time sync) - Confirmation skipped
       echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
+      SYNC_CONFIRMED=1;
     else
       # The [ sync_cloud_infrastructure ] module does NOT yet exist (first-time sync) - Confirmation required
       echo ""; read -p "Info:  Sync cloud-infrastructure modules, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress

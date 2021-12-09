@@ -333,18 +333,18 @@ else
     WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);
     if [[ "${WAN_TEST_FAILED}" == "1" ]]; then
       echo "";
-      echo "Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified";
+      echo "! |--> Error:  WAN network (internet) connection is required to sync cloud-infrastructure files, but is unable to be verified";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     elif [[ -z "${GIT_REPO_NAME}" ]]; then
       echo "";
-      echo "Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
+      echo "! |--> Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     elif [[ -z "${GIT_REPO_OWNER}" ]]; then
       echo "";
-      echo "Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
+      echo "! |--> Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     else
-      echo "  |--> Verified WAN (internet) network connection";
+      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Verified WAN (internet) network connection"; fi;
     fi;
 
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
@@ -660,16 +660,16 @@ else
             WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d);
             # WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
             WIN32_USR_LOCAL=$(find "${WIN32_HOMEDIR}/Documents/"**"/${GIT_REPO_NAME}/usr/local" -maxdepth 0 -type d | head -n 1;);
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             if [[ -z "${WIN32_USR_LOCAL}" ]]; then
               echo "";
-              echo "Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
+              echo "! |--> Error:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
               EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
             else
               DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
               DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Using repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
             fi;
+            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
         # ------------------------------

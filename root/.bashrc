@@ -168,15 +168,7 @@ bash_prompt() {
 }
 
 # env:REPOS_DIR
-if [ ! -v REPOS_DIR ] && [ -n "$(command -v powershell 2>'/dev/null';)" ]; then
-REPOS_DIR=$(powershell Write-Output \${env:REPOS_DIR} 2>'/dev/null';);
-if [ -n "${REPOS_DIR}" ]; then
-REPOS_DIR="$(echo "${REPOS_DIR}" | sed -re "s/[^\/A-Z0-9a-z\-_:]//";)";
-REPOS_DIR="${REPOS_DIR//\\/\/}";
-REPOS_DIR="${REPOS_DIR//C:/\/mnt\/c}";
-export REPOS_DIR="${REPOS_DIR}";
-fi;
-fi;
+### Share from Windows by setting (or appending to) Environment Variable "WSLENV" with the value "REPOS_DIR/up"
 
 # env:PATH Appends (Directories/Executables)
 unset PATH_APPENDS_ARR; declare -a PATH_APPENDS_ARR; # [Re-]Instantiate bash array

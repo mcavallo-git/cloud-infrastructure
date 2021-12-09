@@ -466,29 +466,44 @@ else
           if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
             # Query Debian's Package-Manager for each package
             if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+              # Package install failed
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              echo -e "! |--> Error:  Failed to install package:  [ ${EACH_REQUIRED_PKG} ]";
             else
-              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
+              # Package install success
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
             if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+              # Package install failed
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              echo -e "! |--> Error:  Failed to install package:  [ ${EACH_REQUIRED_PKG} ]";
             else
-              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
+              # Package install success
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           else # Other distros
             if [[ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]]; then
-              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install failed
+              # Package install failed
+              FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              echo -e "! |--> Error:  Failed to install package:  [ ${EACH_REQUIRED_PKG} ]";
             else
-              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}"); # Package install success
+              # Package install success
+              NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           fi;
         done;
 
         if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]]; then
-          echo -e "\nError:  Unable to install package(s):  [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
           EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+        fi;
+
+        if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -eq 0 ]] && [[ ${#NEWLY_INSTALLED_PKGS_ARRAY[@]} -eq 0 ]]; then
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> No changes made - all required/prerequite packages already exist locally"; fi;
         fi;
 
       fi;

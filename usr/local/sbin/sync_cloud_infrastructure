@@ -498,14 +498,16 @@ else
           fi;
         done;
 
-        if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]]; then
-          EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-        fi;
+      fi;
 
-        if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -eq 0 ]] && [[ ${#NEWLY_INSTALLED_PKGS_ARRAY[@]} -eq 0 ]]; then
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> No changes made - all required/prerequite packages already exist locally"; fi;
-        fi;
+      if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]]; then
+        # At least one package is missing & failed to install
+        EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+      fi;
 
+      if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -eq 0 ]] && [[ ${#NEWLY_INSTALLED_PKGS_ARRAY[@]} -eq 0 ]]; then
+        # No package changes made
+        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> No changes made - all required/prerequite packages already exist locally"; fi;
       fi;
 
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;

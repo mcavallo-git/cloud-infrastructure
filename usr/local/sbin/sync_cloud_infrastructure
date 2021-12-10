@@ -413,15 +413,24 @@ else
             # Query Debian's Package-Manager for each package
             if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+            else
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           elif [[ -n "$(command -v rpm 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
             if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+            else
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           else # Other distros
             if [[ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+            else
+              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           fi;
         fi;

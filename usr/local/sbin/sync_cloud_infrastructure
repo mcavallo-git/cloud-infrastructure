@@ -110,7 +110,7 @@ else
     if [[ "${IS_TTY_TERMINAL}" -eq 1 ]]; then
       # TTY Terminal --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
       REPLY="";
-      echo ""; read -p "Info:  Sync cloud-infrastructure modules, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+      echo ""; read -p "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
       if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
         SYNC_CONFIRMED=1;
         echo -e "\n  |--> Confirmed";

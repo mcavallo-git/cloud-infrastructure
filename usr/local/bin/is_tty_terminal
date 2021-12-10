@@ -2,6 +2,12 @@
 # ------------------------------------------------------------
 #  Linux - Determine if the current shell is running-in/connected-to a tty terminal (available to user input)
 # ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
 
 IS_TTY_TERMINAL=0;
 

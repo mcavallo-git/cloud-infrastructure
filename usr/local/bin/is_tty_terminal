@@ -1,6 +1,6 @@
 #!/bin/bash
 # ------------------------------------------------------------
-#  Linux - Determine if the current shell is running-in/connected-to a tty terminal (available to user input)
+#  Linux - Determine if the current shell is running-in/connected-to a tty shell (available to user input)
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
@@ -14,7 +14,7 @@ fi;
 IS_TTY_TERMINAL=0;
 
 #
-# Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty terminal
+# Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
 #
 
 TTY_VAR_MATCHES_REQUIRED=5;
@@ -29,7 +29,7 @@ TTY_VARS_ARR+=("LESSOPEN");
 TTY_VARS_ARR+=("LS_COLORS");
 TTY_VARS_ARR+=("OLDPWD");
 TTY_VARS_ARR+=("PROMPT_COMMAND");
-TTY_VARS_ARR+=("TERM");
+TTY_VARS_ARR+=("TERM");  # may be set to "dumb" on non-tty (backend-only) shells
 TTY_VARS_ARR+=("USER");
 TTY_VARS_ARR+=("VISUAL");
 TTY_VARS_ARR+=("XDG_DATA_DIRS");
@@ -57,7 +57,7 @@ fi;
 
 if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]"; fi;
 
-echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty terminals, 0 for non-tty terminals
+echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
 
 exit ${EXIT_CODE};
 

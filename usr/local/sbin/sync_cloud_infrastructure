@@ -35,8 +35,8 @@ if [[ 1 -eq 1 ]]; then
 echo "";
 
 echo "------------------------------------------------------------";
-echo "Calling [ if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi ]...";
-if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi
+echo "Calling [ if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi; ]...";
+if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi; # https://stackoverflow.com/a/911213
 
 echo "------------------------------------------------------------";
 echo "Calling [ printenv | sort -u; ]...";

@@ -125,7 +125,11 @@ else
     fi;
   fi;
 
-  if [[ "${SYNC_CONFIRMED}" -eq 1 ]]; then
+  if [[ "${SYNC_CONFIRMED}" -eq 0 ]]; then
+    # Do not sync cllud-infrastructure modules & exit this script with an error code, instead
+    EXIT_CODE=1;
+
+  else
 
     # Create parent directory for script-specific config overrides
     if [[ ! -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]]; then

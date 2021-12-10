@@ -72,6 +72,10 @@ else
   # Script-specific config overrides
   #
 
+  echo "------------------------------------------------------------"
+  echo $@;
+  echo "------------------------------------------------------------"
+
   # Confirm Sync (y/n)
   SYNC_CONFIRMED=0;
   if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then

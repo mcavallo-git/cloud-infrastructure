@@ -3,128 +3,136 @@
 # LOCAL_BIN="/usr/local/bin/get_username_windows_wsl" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
 #
 
-if [ -z "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
-  # Non-WSL (Non Windows-based OS)
-  exit 1;
-  
-else
+WINDOWS_USERNAME="";
 
-  DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
+if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then  
 
-  if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
-    # Assumed to be a Windows based OS
+  USE_WSL_BUILT_IN_METHODS=0;  # WSL built-in methods are nearly 20x slower than manually determining the current Linux shell's associated Windows user
 
-    Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
-    if [ -f "${Invalid_UsersFile}" ]; then
-      rm -f "${Invalid_UsersFile}";
-    fi;
+  if [[ "${USE_WSL_BUILT_IN_METHODS}" -ne 0 ]] && [[ -n "$(command -v wslpath 2>'/dev/null';)" ]] && [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
 
-    Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
-    if [ -f "${Potential_UsersFile}" ]; then
-      rm -f "${Potential_UsersFile}";
-    fi;
-
-    WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
-    if [ -f "${Valid_UsersFile}" ]; then
-      rm -f "${Valid_UsersFile}";
-    fi;
-    
-    # Make sure required runtime(s) are installed
-    if [ -z "$(which bc 2>'/dev/null';)" ]; then
-      apt-get-update -y; apt-get install -y bc;
-    fi;
-
-    if [ "${1}" == "verbose" ]; then
-      echo "";
-      echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
-      echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
-      echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
-    fi;
-
-    find "${DIR_WIN32_USERS}" \
-    -mindepth 1 \
-    -maxdepth 1 \
-    -name '*' \
-    -type 'd' \
-    -not -path "${DIR_WIN32_USERS}/Default" \
-    -not -path "${DIR_WIN32_USERS}/Public" \
-    -print0 \
-    | while IFS= read -r -d $'\0' EachUserDir; do
-      LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
-      if [ "${LastExitCode}" == "0" ]; then
-        if [ "${1}" == "verbose" ]; then echo ""; echo "✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
-        echo $(basename "${EachUserDir}") >> "${Potential_UsersFile}";
-      else
-        if [ "${1}" == "verbose" ]; then echo ""; echo "× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
-        echo $(basename "${EachUserDir}") >> "${Invalid_UsersFile}";
-      fi;
-    done;
-    
-    if [ -f "${Potential_UsersFile}" ]; then
-      CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
-    else
-      CountMatchedUsers="0";
-    fi;
-    
-    if [ $(echo "${CountMatchedUsers} == 1" | bc) -eq 1 ]; then # Matched exactly 1 user
-      if [ "${1}" == "verbose" ]; then
-        echo "";
-        echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s):";
-      fi;
-      cat "${Potential_UsersFile}";
-      exit 0;
-    elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
-
-      if [ "${1}" == "verbose" ]; then
-        echo "";
-        echo "Found [ ${CountMatchedUsers} ] potential WSL hosts-user(s): ";
-        cat "${Potential_UsersFile}";
-      fi;
-
-      First_WSL_User="";
-      cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
-        DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
-        if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
-          if [ "${1}" == "verbose" ]; then
-            echo "";
-            echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
-            echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
-          fi;
-          if [ ! -f "${WSL_HostUser_File}" ]; then
-            echo -n "${EachMatchedUser}" > "${WSL_HostUser_File}"; # output the first WSL user to-be-identified
-          fi;
-        fi;
-      done;
-
-      if [ -f "${WSL_HostUser_File}" ]; then
-        cat "${WSL_HostUser_File}";
-      fi;
-      if [ "${1}" == "verbose" ]; then
-        echo "";
-      fi;
-
-      exit 0;
-
-    else
-      echo "";
-      echo "Error: No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]";
-      exit 1;
-
-    fi;
-    if [ "${1}" == "verbose" ]; then
-      echo "";
-    fi;
+    # Use WSL's built-in methods to convert the Windows user's environment variables to WSL-compatible values
+    WINDOWS_USERNAME="$(wslpath -u "$(wslvar --sys "USERNAME";)";)"; echo "${WINDOWS_USERNAME}";
+    # FULLPATH_WINDOWS_USER_DIR="$(wslpath -u "$(wslvar --sys "USERPROFILE";)";)";
+    # FULLPATH_WINDOWS_DESKTOP="$(wslpath -u "$(wslvar --shell "Desktop";)";)";
 
   else
-    # Assumed to be a NON-Windows based OS
-    echo "Info: Directory not-found/empty: \"${DIR_WIN32_USERS}\"";
-    echo "Info: Assuming that this is a Non-Windows based OS";
-    exit 1;
+
+    # Manually determining the current Linux shell's associated Windows user
+
+    DIR_WIN32_USERS=$(find /mnt/*/Users -mindepth 0 -maxdepth 0 -type d 2>'/dev/null';);
+
+    if [ -n "${DIR_WIN32_USERS}" ] && [ -d "${DIR_WIN32_USERS}" ] && [ $(echo "$(ls ${DIR_WIN32_USERS} | wc -l) > 0" | bc) -eq 1 ]; then
+      # Assumed to be a Windows based OS
+
+      Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
+      if [ -f "${Invalid_UsersFile}" ]; then
+        rm -f "${Invalid_UsersFile}";
+      fi;
+
+      Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
+      if [ -f "${Potential_UsersFile}" ]; then
+        rm -f "${Potential_UsersFile}";
+      fi;
+
+      WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
+      if [ -f "${Valid_UsersFile}" ]; then
+        rm -f "${Valid_UsersFile}";
+      fi;
+      
+      # Make sure required runtime(s) are installed
+      if [ -z "$(which bc 2>'/dev/null';)" ]; then
+        apt-get-update -y; apt-get install -y bc;
+      fi;
+
+      if [ "${1}" == "verbose" ]; then
+        echo "";
+        echo "Invalid_UsersFile=\"${Invalid_UsersFile}\"";
+        echo "Potential_UsersFile=\"${Potential_UsersFile}\"";
+        echo "WSL_HostUser_File=\"${WSL_HostUser_File}\"";
+      fi;
+
+      find "${DIR_WIN32_USERS}" \
+      -mindepth 1 \
+      -maxdepth 1 \
+      -name '*' \
+      -type 'd' \
+      -not -path "${DIR_WIN32_USERS}/Default" \
+      -not -path "${DIR_WIN32_USERS}/Public" \
+      -print0 \
+      | while IFS= read -r -d $'\0' EachUserDir; do
+        LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
+        if [ "${LastExitCode}" == "0" ]; then
+          if [ "${1}" == "verbose" ]; then echo -e "\n✓ PASS ✓ Can read \"${EachUserDir}\" - Current session has sufficient privilege(s)"; fi;
+          echo $(basename "${EachUserDir}") >> "${Potential_UsersFile}";
+        else
+          if [ "${1}" == "verbose" ]; then echo -e "\n× FAIL × Cannot read \"${EachUserDir}\" - Current session lacks sufficient privilege(s)"; fi;
+          echo $(basename "${EachUserDir}") >> "${Invalid_UsersFile}";
+        fi;
+      done;
+      
+      if [ -f "${Potential_UsersFile}" ]; then
+        CountMatchedUsers="$(cat ${Potential_UsersFile} | wc -l)";
+      else
+        CountMatchedUsers="0";
+      fi;
+      
+      if [ $(echo "${CountMatchedUsers} == 1" | bc) -eq 1 ]; then # Matched exactly 1 user
+
+        if [ "${1}" == "verbose" ]; then echo -e "\nFound [ ${CountMatchedUsers} ] potential WSL hosts-user(s):"; fi;
+
+        WINDOWS_USERNAME="$(cat "${Potential_UsersFile}" | head -n 1;)";
+
+      elif [ $(echo "${CountMatchedUsers} > 1" | bc) -eq 1 ]; then # Matched more than 1 user
+
+        if [ "${1}" == "verbose" ]; then echo -e "\nFound [ ${CountMatchedUsers} ] potential WSL hosts-user(s): ";
+          cat "${Potential_UsersFile}";
+        fi;
+
+        First_WSL_User="";
+        cat "${Potential_UsersFile}" | while read -r EachMatchedUser; do
+          DIR_WSL_UBUNTU_ROOTFS=$(find "/mnt/"*"/Users/${EachMatchedUser}/AppData/Local/Packages/"*"Ubuntu"*"/LocalState/rootfs" -mindepth 0 -maxdepth 0 -type d 2> /dev/null);
+          if [ -n "${DIR_WSL_UBUNTU_ROOTFS}" ] && [ -d "${DIR_WSL_UBUNTU_ROOTFS}" ]; then
+            if [ "${1}" == "verbose" ]; then
+              echo "";
+              echo "Host User \"${EachMatchedUser}\" has the Ubuntu WSL directory in their Home-Directory: ";
+              echo " |--> \"${DIR_WSL_UBUNTU_ROOTFS}\"";
+            fi;
+            if [ ! -f "${WSL_HostUser_File}" ]; then
+              echo -n "${EachMatchedUser}" > "${WSL_HostUser_File}"; # output the first WSL user to-be-identified
+              break;
+            fi;
+          fi;
+        done;
+
+        if [ -f "${WSL_HostUser_File}" ]; then
+          WINDOWS_USERNAME="$(cat "${WSL_HostUser_File}" | head -n 1;)";
+        fi;
+
+        if [ "${1}" == "verbose" ]; then echo ""; fi;
+
+      else
+        if [ "${1}" == "verbose" ]; then echo -e "\nError: No directories found matching [ ${DIR_WIN32_USERS}/*/Documents ]"; fi;
+      fi;
+
+      if [ "${1}" == "verbose" ]; then echo ""; fi;
+
+    fi;
 
   fi;
 
 fi;
 
+if [ -z "${WINDOWS_USERNAME}" ]; then
+  # Non-WSL environment/OS detected
+  if [ "${1}" == "verbose" ]; then echo "Error:  Non-WSL environment/OS detected  (directory not-found/empty: \"${DIR_WIN32_USERS}\")"; fi;
+fi;
+
+EXIT_CODE=$(if [ -z "${WINDOWS_USERNAME}" ]; then echo 1; else echo 0; fi;);
+
+# Return the username as the return string (along with an error code denoting whether an associated Windows user was detected or not)
+echo "${WINDOWS_USERNAME}";
+exit ${EXIT_CODE};
 
 
 # ------------------------------------------------------------
@@ -132,5 +140,7 @@ fi;
 # Citation(s)
 # 
 #   stackoverflow.com  |  "How do I use a for-each loop to iterate over file paths in bash?"  |  https://stackoverflow.com/a/15066129
+# 
+#   superuser.com  |  "windows subsystem for linux - How to get the host user home directory in WSL Bash - Super User"  |  https://superuser.com/a/1568668
 #
 # ------------------------------------------------------------

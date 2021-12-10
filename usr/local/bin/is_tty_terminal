@@ -6,6 +6,8 @@ if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash;
 
+# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash -s -- verbose;
+
 fi;
 # ------------------------------------------------------------
 
@@ -43,6 +45,8 @@ for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
     if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = ~ empty/unset ~"; fi;
   fi;
 done;
+
+if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nCalling [ printenv | sort -u; ]..."; printenv | sort -u; fi;
 
 EXIT_CODE=1;
 

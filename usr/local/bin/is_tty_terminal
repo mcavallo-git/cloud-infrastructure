@@ -1,0 +1,163 @@
+#!/bin/bash
+# ------------------------------------------------------------
+#  Linux - Determine if current shell is a connected to a tty terminal (available to user input)
+# ------------------------------------------------------------
+
+IS_TTY_TERMINAL=0;
+
+
+#
+# Check for specific environment variables that exist only when the shell is connected to a tty terminal
+#
+
+unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
+TTY_VARS_ARR+=("Val-1");
+TTY_VARS_ARR+=("Val-2");
+TTY_VARS_ARR+=("Val-3");
+TTY_VARS_ARR+=("Val-4");
+for EACH_TTY_VAR in "${TTY_VARS_ARR[@]}"; do
+
+echo "------------------------------";
+echo "${DAT_ITEM}";
+done;
+
+
+------------------------------------------------------------
+--- POSSIBLE VARS TO USE TO DETECT TTY:
+
+
+EDITOR
+GCC_COLORS
+LESSCLOSE
+LESSOPEN
+LS_COLORS
+OLDPWD
+PROMPT_COMMAND
+TERM
+USER
+VISUAL
+XDG_DATA_DIRS
+
+
+------------------------------------------------------------
+--- NON-TTY
+
+~~~
+
+     HOME
+     LANG
+     LOGNAME
+     PATH
+     PWD
+     SHELL
+     SHLVL
+     _
+
+^(HOME|LANG|LOGNAME|PATH|PWD|SHELL|SHLVL|_)$
+
+
+------------------------------------------------------------
+--- TTY - raspi-4b
+
+EDITOR
+GCC_COLORS
+LESSCLOSE
+LESSOPEN
+LS_COLORS
+MAIL
+OLDPWD
+PROMPT_COMMAND
+SUDO_COMMAND
+SUDO_GID
+SUDO_UID
+SUDO_USER
+TERM
+USER
+VISUAL
+XDG_DATA_DIRS
+
+~~~
+
+     HOME
+     LANG
+     LOGNAME
+     PATH
+     PWD
+     SHELL
+     SHLVL
+     _
+
+------------------------------------------------------------
+--- TTY - nanode-1
+
+
+EDITOR
+GCC_COLORS
+LANGUAGE
+LESSCLOSE
+LESSOPEN
+LS_COLORS
+MAIL
+OLDPWD
+PROMPT_COMMAND
+SUDO_COMMAND
+SUDO_GID
+SUDO_UID
+SUDO_USER
+TERM
+USER
+VISUAL
+XDG_DATA_DIRS
+
+~~~
+
+     HOME
+     LANG
+     LOGNAME
+     PATH
+     PWD
+     SHELL
+     SHLVL
+     _
+
+------------------------------------------------------------
+--- TTY - WSL
+
+
+EDITOR
+GCC_COLORS
+HOSTTYPE
+LESSCLOSE
+LESSOPEN
+LS_COLORS
+NAME
+OLDPWD
+PROMPT_COMMAND
+REPOS_DIR
+TEMP
+TERM
+TMP
+USER
+VISUAL
+WSLENV
+WSL_DISTRO_NAME
+WSL_INTEROP
+WT_PROFILE_ID
+WT_SESSION
+XDG_DATA_DIRS
+
+~~~
+
+     HOME
+     LANG
+     LOGNAME
+     PATH
+     PWD
+     SHELL
+     SHLVL
+     _
+
+
+------------------------------------------------------------
+
+

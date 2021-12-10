@@ -74,14 +74,42 @@ else
 
   # Confirm Sync (y/n)
   SYNC_CONFIRMED=0;
-  if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then
-    # Active Terminal --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
-    if [[ -f "${SYNC_CI_LOCAL}" ]]; then
-      # The [ sync_cloud_infrastructure ] module DOES already exist (first-time sync) - Confirmation skipped
-      echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
-      SYNC_CONFIRMED=1;
-    else
-      # The [ sync_cloud_infrastructure ] module does NOT yet exist (first-time sync) - Confirmation required
+  if [[ -f "${SYNC_CI_LOCAL}" ]]; then
+    # The [ sync_cloud_infrastructure ] module DOES already exist (not initial sync)
+    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
+    SYNC_CONFIRMED=1;
+  else
+    # The [ sync_cloud_infrastructure ] module does NOT yet exist (is initial sync)
+    # ------------------------------
+    # Determine if the current shell is running-in/connected-to a tty terminal (available to user input)
+    TTY_VAR_MATCHES_REQUIRED=5;
+    TTY_VARS_MATCHED=0;
+    # Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty terminal
+    unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
+    TTY_VARS_ARR+=("EDITOR");
+    TTY_VARS_ARR+=("GCC_COLORS");
+    TTY_VARS_ARR+=("LESSCLOSE");
+    TTY_VARS_ARR+=("LESSOPEN");
+    TTY_VARS_ARR+=("LS_COLORS");
+    TTY_VARS_ARR+=("OLDPWD");
+    TTY_VARS_ARR+=("PROMPT_COMMAND");
+    TTY_VARS_ARR+=("TERM");
+    TTY_VARS_ARR+=("USER");
+    TTY_VARS_ARR+=("VISUAL");
+    TTY_VARS_ARR+=("XDG_DATA_DIRS");
+    for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
+      EACH_TTY_VAR_VALUE="";
+      declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
+      if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
+        TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
+      fi;
+    done;
+    IS_TTY_TERMINAL=$(if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
+    # ------------------------------
+    # if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then
+    if [[ "${IS_TTY_TERMINAL}" -eq 1 ]]; then
+      # TTY Terminal --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
+      REPLY="";
       echo ""; read -p "Info:  Sync cloud-infrastructure modules, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
       if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
         SYNC_CONFIRMED=1;
@@ -90,11 +118,11 @@ else
         SYNC_CONFIRMED=0;
         echo -e "\n  |--> Denied";
       fi;
+    else
+      # Non-TTY Terminal (backend request) - Do not require confirmation to sync modules
+      echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY present)";
+      SYNC_CONFIRMED=1;
     fi;
-  else
-    # Backend-only mode - do not require confirmation to sync modules
-    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY present)";
-    SYNC_CONFIRMED=1;
   fi;
 
   if [[ "${SYNC_CONFIRMED}" -eq 1 ]]; then

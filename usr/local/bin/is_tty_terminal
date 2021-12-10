@@ -33,10 +33,14 @@ TTY_VARS_ARR+=("VISUAL");
 TTY_VARS_ARR+=("XDG_DATA_DIRS");
 
 for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
+  if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nEACH_TTY_VAR_NAME = [ ${EACH_TTY_VAR_NAME} ]"; fi;
   EACH_TTY_VAR_VALUE="";
   declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
   if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
     TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
+    if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
+  else
+    if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = ~ empty/unset ~"; fi;
   fi;
 done;
 

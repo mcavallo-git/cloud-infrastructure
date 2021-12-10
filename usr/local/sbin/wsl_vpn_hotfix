@@ -1,0 +1,22 @@
+#!/bin/bash
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/wsl_vpn_hotfix?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+if [ 1 -eq 1 ]; then
+  ### WSL-2 VPN Hotfix
+  WAN_NETWORK_EXIT_CODE=$(dig +short +timeout=1 +tries=1 google.com 1>/dev/null 2>&1; echo ${?};);
+  if [ ${WAN_NETWORK_EXIT_CODE} -ne 0 ]; then
+    echo "No internet connection - Attempting WSL-2 VPN hotfix...";
+    HYPERV_IF_MAC=$(ipconfig.exe /all | grep -B0 -a5 "(WSL)" | grep -Po " : \K[0-9A-F-]{17}" | awk "{gsub ( \"-\",\" \" ) ; print tolower(\$0)}";);
+    HYPERV_IF_LINE=$(route.exe print | grep "$HYPERV_IF_MAC";);
+    HYPERV_IF_NUM=$(echo "$HYPERV_IF_LINE" | grep -Po "[^0-9]*\K[0-9]+" | head -n 1;);
+    HYPERV_IP=$(ip addr | grep eth0 -B0 -a3 | grep -Po "inet \K[0-9\\.]*";);
+    echo "Applying on-link route to ${HYPERV_IP} on interface ${HYPERV_IF_LINE}";
+    powershell.exe -NoProfile -Command "Start-Process route.exe \"add ${HYPERV_IP} mask 255.255.255.255 ${HYPERV_IP} metric 256 if ${HYPERV_IF_NUM}\" -Verb RunAs";
+  fi;
+fi;
+# ------------------------------------------------------------

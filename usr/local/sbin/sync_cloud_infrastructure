@@ -35,6 +35,10 @@ if [[ 1 -eq 1 ]]; then
 echo "";
 
 echo "------------------------------------------------------------";
+echo "Calling [ if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi ]...";
+if [ -t 1 ]; then echo 'terminal'; else echo 'not a terminal'; fi
+
+echo "------------------------------------------------------------";
 echo "Calling [ printenv | sort -u; ]...";
 printenv | sort -u;
 

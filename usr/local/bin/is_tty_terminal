@@ -55,6 +55,8 @@ if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
   EXIT_CODE=0;
 fi;
 
+if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]"; fi;
+
 echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty terminals, 0 for non-tty terminals
 
 exit ${EXIT_CODE};

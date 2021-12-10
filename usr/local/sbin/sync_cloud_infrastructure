@@ -35,8 +35,8 @@ if [[ 1 -eq 1 ]]; then
 echo "";
 
 echo "------------------------------------------------------------";
-echo "Calling [ printenv; ]...";
-printenv;
+echo "Calling [ printenv | sort -u; ]...";
+printenv | sort -u;
 
 echo "------------------------------------------------------------";
 echo "Calling [ ps -hp \$\$; ]...";

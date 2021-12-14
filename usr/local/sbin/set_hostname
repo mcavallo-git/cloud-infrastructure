@@ -374,7 +374,6 @@ else
         # Hostname + FQDN (hostname.domainname)
         LOOPBACK_IPV6="::1 ${SET_FQDN} ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";
         sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_FQDN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
-
       else
         # Hostname only (no FQDN)
         LOOPBACK_IPV6="::1 ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";

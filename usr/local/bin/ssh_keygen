@@ -27,12 +27,17 @@ KEY_COMMENT="created_${START_TIMESTAMP}_by_$(whoami)_on_$(hostname)";
 
 
 # Select user to associate with ssh-key
-USER_NAME="$(id -un)";
-
-if [ "$(id -un)" == "root" ]; then
+if [ -n "${USER_NAME}" ]; then
+  # Environment variable override of [ USER_NAME ] is set --> Use its value the username to create SSH keys for
+  USER_NAME="${USER_NAME}";
+elif [ "$(id -un)" == "root" ]; then
+  # Running as root --> Ask user which username to create SSH keys for
   echo "";
   read -p "  Create SSH-Key for which User?:  " -t 60 <'/dev/tty';
   USER_NAME="${REPLY}";
+else
+  # Not running as root --> Create SSH keys for current user
+  USER_NAME="$(id -un)";
 fi;
 
 

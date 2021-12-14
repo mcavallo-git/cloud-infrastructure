@@ -290,9 +290,9 @@ else
       echo "";
       echo ""; read -p "Update hostname, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  - Confirmed by user - Proceeding with changes to hostname & domain-name...";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
       else
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  - Cancelled by user - Exiting...";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Exiting...";
         exit 1;
       fi;
     fi;
@@ -319,7 +319,7 @@ else
           echo "------------------------------------------------------------";
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\" (already matches desired hostname)";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\"  (already matches desired hostname)";
         fi;
       fi;
     fi;
@@ -424,10 +424,10 @@ else
       else # Dry run
         if [ -n "${SET_DOMAIN}" ]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
         fi;
       fi;
     fi;
@@ -442,7 +442,7 @@ else
         /etc/init.d/hostname.sh;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping call  [ /etc/init.d/hostname.sh; ]";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call  [ /etc/init.d/hostname.sh; ]  (Dry run enabled)";
       fi;
     fi;
 
@@ -456,15 +456,8 @@ else
         hostnamectl set-hostname "${SET_HOSTNAME}";
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]  (Dry run enabled)";
       fi;
-    fi;
-
-    if [[ "${DRY_RUN}" -eq 1 ]]; then
-      echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) No changes will be made to existing network settings or stored configurations";
-      echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --dry-run 0; ]  or  [ set_hostname --force; ]";
     fi;
 
     # ------------------------------------------------------------
@@ -478,16 +471,16 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Restarting Network Manager - Calling [ /etc/init.d/network restart; ]...";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Restarting Network Manager - Calling [ /etc/init.d/network restart; ]...";
           /etc/init.d/network restart;
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') Postponing Network Manager restart";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Postponing Network Manager restart";
           exit 1;
         fi;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping network manager restart";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping Network Manager restart call [ /etc/init.d/network restart; ]  (Dry run enabled)";
       fi;
     else # [other] distros
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
@@ -497,7 +490,7 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Rebooting - Calling [ shutdown --reboot now; ]...";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Rebooting - Calling [ shutdown --reboot now; ]...";
           shutdown --reboot now;
         else
           echo "";
@@ -506,11 +499,18 @@ else
         fi;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) Skipping call [ shutdown --reboot now; ]";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping Reboot call [ shutdown --reboot now; ]  (Dry run enabled)";
       fi;
     fi;
     echo "";
 
+  fi;
+
+  if [[ "${DRY_RUN}" -eq 1 ]]; then
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  No changes made to existing network settings or stored configurations  (Dry run enabled)";
+    echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  To apply changes, disable Dry run mode using argument [ --dry-run 0 ] or [ --force ]";
   fi;
 
 fi;

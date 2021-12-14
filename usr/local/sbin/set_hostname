@@ -233,6 +233,10 @@ else
     fi;
     THIS_LAN_IPV6=$(ip addr show ${THIS_LAN_NIC} | grep 'inet' | grep 'scope global' | awk '{ print $2; }' | sed 's/\/.*$//' | grep '\:' 2>'/dev/null';);
 
+    THIS_LOOPBACK_IPV4="127.0.1.1";
+    THIS_LOCALHOST_IPV4="127.0.0.1";
+    THIS_LOCALHOST_IPV6="::1";
+
     if [ ${USE_WAN_IPV4} -ne 0 ]; then
       ### Show Resolved WAN IPv4
       if [ -n "${THIS_WAN_IPV4}" ]; then
@@ -242,7 +246,7 @@ else
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Unable to resolve outgoing WAN IPv4 Address";
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"127.0.0.1\" set_hostname ]  (replacing 127.0.0.1 with machine's WAN IPv4)";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"${THIS_LOCALHOST_IPV4}\" set_hostname ]  (replacing ${THIS_LOCALHOST_IPV4} with machine's WAN IPv4)";
         exit 1;
       fi;
     else
@@ -356,28 +360,28 @@ else
 
       sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -i "${TEMP_HOSTS}";  # Trim leading/trailing whitespace off of each line
 
-      sed -e "/^${THIS_LAN_IPV4} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # LAN IPV4 line(s) - Comment out
-      # sed -e "/^${THIS_LAN_IPV4} /c\\" -i "${TEMP_HOSTS}";          # LAN IPV4 line(s) - Remove
+      # sed -re "/^${THIS_LAN_IPV4//./\\.} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # LAN IPV4 line(s) - Comment out
+      sed -e "/^${THIS_LAN_IPV4} /c\\" -i "${TEMP_HOSTS}";                    # LAN IPV4 line(s) - Remove
 
-      if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -e "/^${THIS_WAN_IPV4} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}"; fi;  # WAN IPV4 line(s) - Comment out
-      # if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -e "/^${THIS_WAN_IPV4} /c\\" -i "${TEMP_HOSTS}"; fi;          # WAN IPV4 line(s) - Remove
+      # if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -re "/^${THIS_WAN_IPV4//./\\.} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}"; fi;  # WAN IPV4 line(s) - Comment out
+      if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -e "/^${THIS_WAN_IPV4} /c\\" -i "${TEMP_HOSTS}"; fi;                    # WAN IPV4 line(s) - Remove
 
-      sed -e "/^127\.0\.1\.1 .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Loopback IPv4 line(s) - Comment out
-      # sed -e "/^127.0.1.1 /c\\" -i "${TEMP_HOSTS}";             # Loopback IPv4 line(s) - Remove
+      # sed -re "/^${THIS_LOOPBACK_IPV4//./\\.} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Loopback IPv4 line(s) - Comment out
+      sed -e "/^${THIS_LOOPBACK_IPV4} /c\\" -i "${TEMP_HOSTS}";                    # Loopback IPv4 line(s) - Remove
 
-      sed -e "/^::1 .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Loopback IPv6 line(s) - Comment out
-      # sed -e "/^::1 /c\\" -i "${TEMP_HOSTS}";          # Loopback IPv6 line(s) - Remove
+      # sed -re "/^${THIS_LOCALHOST_IPV6//./\\.} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Localhost IPv6 line(s) - Comment out
+      sed -e "/^${THIS_LOCALHOST_IPV6} /c\\" -i "${TEMP_HOSTS}";            # Localhost IPv6 line(s) - Remove
 
       # Update hostname resolution
-      LOOPBACK_IPV4="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4";
+      LOOPBACK_IPV4_HOSTS_LINE="${THIS_LOCALHOST_IPV4} localhost localhost.localdomain localhost4 localhost4.localdomain4";
       if [ -n "${SET_DOMAIN}" ]; then
         # Hostname + FQDN (hostname.domainname)
-        LOOPBACK_IPV6="::1 ${SET_FQDN} ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";
-        sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_FQDN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
+        LOOPBACK_IPV6_HOSTS_LINE="${THIS_LOCALHOST_IPV6} ${SET_FQDN} ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";
+        sed -i -e "/^${THIS_LOCALHOST_IPV4}/{" -e "i\\${SET_HOSTS_IPV4} ${SET_FQDN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6_HOSTS_LINE}" -e "c\\${LOOPBACK_IPV4_HOSTS_LINE}" -e "}" "${TEMP_HOSTS}";
       else
         # Hostname only (no FQDN)
-        LOOPBACK_IPV6="::1 ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";
-        sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
+        LOOPBACK_IPV6_HOSTS_LINE="${THIS_LOCALHOST_IPV6} ${SET_HOSTNAME} localhost localhost.localdomain localhost6 localhost6.localdomain6";
+        sed -i -e "/^${THIS_LOCALHOST_IPV4}/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6_HOSTS_LINE}" -e "c\\${LOOPBACK_IPV4_HOSTS_LINE}" -e "}" "${TEMP_HOSTS}";
       fi;
 
       sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -i "${TEMP_HOSTS}";  # Trim leading/trailing whitespace off of each line

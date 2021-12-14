@@ -288,7 +288,7 @@ else
 
     if [[ "${DRY_RUN}" -eq 0 ]]; then
       echo "";
-      echo ""; read -p "Update hostname, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
+      echo ""; read -p "Update hostname to \"${SET_FQDN}\", now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
       else

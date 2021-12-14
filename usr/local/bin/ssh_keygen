@@ -38,7 +38,7 @@ if [ -n "${USER_NAME}" ]; then
 elif [ "$(id -un)" == "root" ]; then
   # Running as root --> Ask user which username to create SSH keys for
   echo "";
-  read -p "  Create SSH-Key for which User?:  " -t 60 <'/dev/tty';
+  read -p "Create SSH-Key for which User?:  " -t 60 <'/dev/tty';
   USER_NAME="${REPLY}";
 else
   # Not running as root --> Create SSH keys for current user
@@ -48,7 +48,7 @@ fi;
 # Check for valid data-entry
 if [ -z "${USER_NAME}" ]; then
   echo "";
-  echo "  Error: Received empty or null username - exiting ...";
+  echo "Error:  Received empty or null username - Exiting ...";
   echo "";
   exit 1;
 fi;
@@ -57,7 +57,7 @@ fi;
 USER_PASSWD_INFO="$(getent passwd ${USER_NAME})";
 if [ -z "${USER_PASSWD_INFO}" ]; then
   echo "";
-  echo "  Error: User \"${USER_NAME}\" not found - exiting ...";
+  echo "Error:  User \"${USER_NAME}\" not found - Exiting ...";
   echo "";
   exit 1;
 fi;
@@ -66,7 +66,7 @@ fi;
 USER_HOME="$(echo ${USER_PASSWD_INFO} | cut -d: -f6)";
 if [ ! -d "${USER_HOME}" ]; then
   echo "";
-  echo "  Error: Home-Directory not found for user \"${USER_NAME}\" - exiting ...";
+  echo "Error:  Home-Directory not found for user \"${USER_NAME}\" - Exiting ...";
   echo "";
   exit 1;
 fi;
@@ -150,76 +150,76 @@ echo "Info:  Created Private Key: ${PRIVATE_KEY_PATH}";
 
 # ADD TO:  /etc/ssh/authorized_keys/${USER_NAME}  ??
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
+APPEND_TO_ETC_SSH_AUTHKEYS="";
 ETC_SSH_AUTHKEYS="/etc/ssh/authorized_keys";
 ETC_SSH_AUTHKEYS_USERNAME="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
 if [ "$(id -un)" == "root" ]; then
   echo "";
-  read -p "  Append Public Key onto \"${ETC_SSH_AUTHKEYS_USERNAME}\" ?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
-  APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
-else # Non-root users --> block etc-authkey editing
-  APPEND_TO_ETC_SSH_AUTHKEYS="N";
+  read -p "Append Public Key onto Etc-Authkey \"${ETC_SSH_AUTHKEYS_USERNAME}\" ?  (press 'y' to confirm)  " -a APPEND_TO_ETC_SSH_AUTHKEYS -n 1 -t 60 <'/dev/tty'; # Await single keypress
 fi;
 
+if [[ ${APPEND_TO_ETC_SSH_AUTHKEYS} =~ ^[Yy]$ ]]; then
 
-if [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "y" ]] || [[ "${APPEND_TO_ETC_SSH_AUTHKEYS}" == "Y" ]]; then
-  
   # Append the newly created key's public-file onto [ /etc/ssh/authorized_keys/$USER_NAME ]
   #   Note 1: The public-key matches with client-passed private-key at time of ssh-connection
   #   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
   echo "";
-  echo "    Appending Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
+  echo "Info:  Appending Public Key onto Etc-Authkey \"${ETC_SSH_AUTHKEYS_USERNAME}\" ...";
   mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
   cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USERNAME}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USERNAME}" && chmod 400 "${ETC_SSH_AUTHKEYS_USERNAME}";
-  
+
 else
-  
+
   if [ "$(id -un)" == "root" ]; then
     echo "";
-    echo "    Skipped Etc-Authkey";
+    echo "Info:  Skipped Etc-Authkey \"${ETC_SSH_AUTHKEYS_USERNAME}\"";
   fi;
-    
+
   # Setup filepaths for [ ${USER_HOME}/.ssh/authorized_keys ]
   #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
   USERHOME_SSH="${USER_HOME}/.ssh";
-  USERHOME_SSH_AUTHKEY="${USERHOME_SSH}/authorized_keys";
+  USERHOME_SSH_PUBLIC_KEY="${USERHOME_SSH}/authorized_keys";
 
   # Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
   #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
+  APPEND_TO_USERHOME_SSH_PUBLIC_KEY="";
   echo "";
-  read -p "  Append Private Key onto \"${USERHOME_SSH_AUTHKEY}\" ?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
-  APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
-  
-  if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then
+  read -p "Append Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ?  (press 'y' to confirm)  " -a APPEND_TO_USERHOME_SSH_PUBLIC_KEY -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  if [[ ${APPEND_TO_USERHOME_SSH_PUBLIC_KEY} =~ ^[Yy]$ ]]; then
     echo "";
-    echo "    Appending Private Key onto  \"${USERHOME_SSH_AUTHKEY}\" ...";
+    echo "Info:  Appending Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ...";
     mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
-    cat "${PRIVATE_KEY_PATH}" >> "${USERHOME_SSH_AUTHKEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_AUTHKEY}" && chmod 400 "${USERHOME_SSH_AUTHKEY}";
-
+    cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_PUBLIC_KEY}" && chmod 400 "${USERHOME_SSH_PUBLIC_KEY}";
   else
     echo "";
-    echo "    Skipped Userhome-Authkey";
+    echo "Info:  Skipped UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\"";
   fi;
-  
+
 fi;
 
 
 # Exported Keys - [chmod] and [chown] as-intended
-#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
+#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP OF THIS SCRIPT)
 chmod 400 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_KEY_PATH}";
 chmod 400 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
 
-echo ""
-echo "  Results  -  ssh_keygen  (${START_TIMESTAMP}):";
-echo ""
-echo "     Linux-User:    ${USER_NAME}";
-echo "     IPs Allowed:   ${IP_RESTRICTION_MSG}";
-echo ""
-echo "     Public Key:    ${PUBLIC_KEY_PATH}";
-echo "     Private Key:   ${PRIVATE_KEY_PATH}";
 echo "";
-echo "     Output Dir:    $(dirname ${PRIVATE_KEY_PATH})";
+echo "------------------------------";
 echo "";
-echo "  Script Complete - exiting ...";
+echo "Results:  ssh_keygen  (${START_TIMESTAMP}):";
+echo "  |";
+echo "  |-->  Linux user:    ${USER_NAME}";
+echo "  |";
+echo "  |-->  IPs allowed:   ${IP_RESTRICTION_MSG}";
+echo "  |";
+echo "  |-->  Public key:    ${PUBLIC_KEY_PATH}";
+echo "  |-->  Private key:   ${PRIVATE_KEY_PATH}";
+echo "  |";
+echo "  |-->  Output dir.:   $(dirname ${PRIVATE_KEY_PATH})";
+echo "";
+echo "------------------------------";
+echo "";
+echo "Info:  Script Complete - Exiting ...";
 echo "";
 
 exit;

@@ -7,6 +7,9 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ssh_keygen?t=$(date +'%s.%N')" | bash;
 
+# Create SSH Key(s) for the current sudoer (sudo user behind the 'root' user)
+test -n "${SUDO_USER}" && curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ssh_keygen?t=$(date +'%s.%N')" | env USER_NAME="${SUDO_USER}" bash;
+
 fi;
 # ------------------------------------------------------------
 

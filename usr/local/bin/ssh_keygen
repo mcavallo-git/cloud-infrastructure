@@ -18,14 +18,20 @@ fi;
 START_TIMESTAMP="$(date +'%Y%m%d_%H%M%S')";
 
 
-IP_WHITELIST="";
 
+IP_WHITELIST_DEFAULT="";
+IP_WHITELIST="${IP_WHITELIST:-${IP_WHITELIST_DEFAULT}}";
 
-KEY_PASSPHRASE="";
+KEY_PASSPHRASE_DEFAULT="";
+KEY_PASSPHRASE="${KEY_PASSPHRASE:-${KEY_PASSPHRASE_DEFAULT}}";
 
+KEY_COMMENT_DEFAULT="created_${START_TIMESTAMP}_by_$(whoami)_on_$(hostname)";
+KEY_COMMENT="${KEY_COMMENT:-${KEY_COMMENT_DEFAULT}}";
 
-KEY_COMMENT="created_${START_TIMESTAMP}_by_$(whoami)_on_$(hostname)";
-
+# ------------------------------------------------------------
+#
+# SETUP & VERIFICATION
+#
 
 # Select user to associate with ssh-key
 if [ -n "${USER_NAME}" ]; then
@@ -41,7 +47,6 @@ else
   USER_NAME="$(id -un)";
 fi;
 
-
 # Check for valid data-entry
 if [ -z "${USER_NAME}" ]; then
   echo "";
@@ -49,7 +54,6 @@ if [ -z "${USER_NAME}" ]; then
   echo "";
   exit 1;
 fi;
-
 
 # Check if selected user exists
 USER_PASSWD_INFO="$(getent passwd ${USER_NAME})";
@@ -96,6 +100,11 @@ KEY_FULLPATH_NOEXT="${KEY_DIRNAME}/${KEY_BASENAME}";
 PRIVATE_KEY_PATH="${KEY_FULLPATH_NOEXT}.pem";
 PUBLIC_KEY_PATH="${KEY_FULLPATH_NOEXT}.pub";
 
+# ------------------------------------------------------------
+#
+# SSH-KEY CREATION
+#
+
 # Create the output directory
 mkdir -p "${KEY_DIRNAME}";
 
@@ -130,19 +139,21 @@ mv "${KEY_FULLPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
 # cat "${KEY_FULLPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_FULLPATH_NOEXT}.pub";
 
 
+# ------------------------------------------------------------
+#
+# SSH-KEY APPLICATION
+#
+
 # ADD TO:  /etc/ssh/authorized_keys/${USER_NAME}  ??
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 ETC_SSH_AUTHKEYS="/etc/ssh/authorized_keys";
 ETC_SSH_AUTHKEYS_USERNAME="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
-
 if [ "$(id -un)" == "root" ]; then
   echo "";
-  read -p "  Append Public Key onto  \"${ETC_SSH_AUTHKEYS_USERNAME}\"  ? ( y/n ) " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "  Append Public Key onto \"${ETC_SSH_AUTHKEYS_USERNAME}\" ?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
   APPEND_TO_ETC_SSH_AUTHKEYS="${REPLY}";
-
 else # Non-root users --> block etc-authkey editing
   APPEND_TO_ETC_SSH_AUTHKEYS="N";
-
 fi;
 
 
@@ -171,7 +182,7 @@ else
   # Check if user wants to append the new public-key onto "${USER_HOME}/.ssh/authorized_keys"
   #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
   echo "";
-  read -p "  Append Private Key onto  \"${USERHOME_SSH_AUTHKEY}\"  ? ( y/n ) " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "  Append Private Key onto \"${USERHOME_SSH_AUTHKEY}\" ?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
   APPEND_TO_USERHOME_SSH_AUTHKEY="${REPLY}";
   
   if [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "y" ]] || [[ "${APPEND_TO_USERHOME_SSH_AUTHKEY}" == "Y" ]]; then

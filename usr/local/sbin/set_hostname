@@ -283,6 +283,7 @@ else
     #
 
     if [[ "${DRY_RUN}" -eq 0 ]]; then
+      echo "";
       echo ""; read -p "Update hostname, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  - Confirmed by user - Proceeding with changes to hostname & domain-name...";
@@ -291,7 +292,6 @@ else
         exit 1;
       fi;
     fi;
-    echo "";
 
     # ------------------------------------------------------------
     # /etc/hostname
@@ -300,7 +300,7 @@ else
     if [[ -f "${HOSTNAME_FILE}" ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
         echo "------------------------------------------------------------";
         cat "${HOSTNAME_FILE}";
         echo "------------------------------------------------------------";
@@ -309,7 +309,7 @@ else
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";
           echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
           echo "------------------------------------------------------------";
           cat "${HOSTNAME_FILE}";
           echo "------------------------------------------------------------";
@@ -331,13 +331,14 @@ else
     HOSTS_FILE="/etc/hosts";
     if [[ -f "${HOSTS_FILE}" ]]; then
 
-      echo "";
       if [ ${USE_WAN_IPV4} -ne 0 ]; then
         SET_HOSTS_IPV4="${THIS_WAN_IPV4}";
+        echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Resolving hostname \"${SET_HOSTNAME}\" to WAN IPv4 address \"${THIS_LAN_IPV4}\"";
       else
         # Resolve hostname to LAN IPv4
         SET_HOSTS_IPV4="${THIS_LAN_IPV4}";
+        echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Resolving hostname \"${SET_HOSTNAME}\" to LAN IPv4 address \"${THIS_LAN_IPV4}\"";
         # Alert user the hostname will NOT be resolved to the WAN IPv4 (but how to do so)
         echo "";
@@ -345,7 +346,7 @@ else
       fi;
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTS_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTS_FILE}\"; ]...  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
       echo "------------------------------------------------------------";
       cat "${HOSTS_FILE}";
       echo "------------------------------------------------------------";
@@ -353,10 +354,10 @@ else
       TEMP_HOSTS="${HOSTS_FILE}.$(date +'%s.%N').tmp";
       cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
 
-      # Remove pre-existing LAN-IPV4 hostsfile lines (leave loopback IPv5 line unaffected)
+      # Remove pre-existing LAN-IPV4 hosts file lines (leave loopback IPv5 line unaffected)
       sed -i -e "/^${THIS_LAN_IPV4} /c\\" "${TEMP_HOSTS}";
 
-      if [ ${USE_WAN_IPV4} -ne 0 ]; then # Remove pre-existing WAN-IPV4 hostsfile lines
+      if [ ${USE_WAN_IPV4} -ne 0 ]; then # Remove pre-existing WAN-IPV4 hosts file lines
         sed -i -e "/^${THIS_WAN_IPV4} /c\\" "${TEMP_HOSTS}";
       fi;
 
@@ -380,18 +381,21 @@ else
       sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ cat \"${TEMP_HOSTS}\"; ]  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]...  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
       echo "------------------------------------------------------------";
       cat "${TEMP_HOSTS}";
       echo "------------------------------------------------------------";
 
 
       if [[ "${DRY_RUN}" -eq 0 ]]; then
-        # NOT a dry-run -> Overwrite hosts-file
-        cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}";
-
+        # NOT a dry-run -> Overwrite hosts file
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Updating Hosts file - Calling [ cp --force \"${TEMP_HOSTS}\" \"${HOSTS_FILE}\"; ]...";
+        cp --force "${TEMP_HOSTS}" "${HOSTS_FILE}";
       fi;
-      rm -f "${TEMP_HOSTS}";
+      echo "";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Removing temporary Hosts file - Calling [ rm --force "${TEMP_HOSTS}"; ]...";
+      rm --force "${TEMP_HOSTS}";
       
     fi;
 
@@ -401,16 +405,21 @@ else
     if [[ -f "/etc/sysconfig/network" ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         if [ -n "${SET_DOMAIN}" ]; then
+          echo "";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]...";
           sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}" "/etc/sysconfig/network";
         else
+          echo "";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]...";
           sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}" "/etc/sysconfig/network";
         fi;
       else # dry-run
-        echo "";
         if [ -n "${SET_DOMAIN}" ]; then
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]";
+          echo "";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]";
         else
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
+          echo "";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
         fi;
       fi;
     fi;
@@ -420,6 +429,8 @@ else
     #
     if [[ -f "/etc/init.d/hostname.sh" ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ /etc/init.d/hostname.sh; ]...";
         /etc/init.d/hostname.sh;
       else # dry-run
         echo "";
@@ -432,6 +443,8 @@ else
     #
     if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]...";
         hostnamectl set-hostname "${SET_HOSTNAME}";
       else # dry-run
         echo "";
@@ -457,7 +470,7 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') Restarting Network Manager via command  [ /etc/init.d/network restart ]";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Restarting Network Manager - Calling [ /etc/init.d/network restart; ]...";
           /etc/init.d/network restart;
         else
           echo "";
@@ -476,7 +489,7 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "Rebooting...";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Rebooting - Calling [ shutdown --reboot now; ]...";
           shutdown --reboot now;
         else
           echo "";

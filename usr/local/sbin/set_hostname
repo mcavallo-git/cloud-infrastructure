@@ -140,6 +140,10 @@ else
     fi;
   fi;
 
+  if [ -n "${INPUT_HOSTNAME}" ]; then
+    # Trim any whitespace off the beginning & end of the given hostname
+    INPUT_HOSTNAME="$(echo "${INPUT_HOSTNAME}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+  fi;
 
   # ------------------------------------------------------------
   if [ -z "${INPUT_HOSTNAME}" ]; then

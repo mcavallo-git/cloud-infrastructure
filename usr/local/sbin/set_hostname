@@ -8,10 +8,10 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash;
 
 # Test updating the hostname
-SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --dry-run "1";
+SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}";
 
 # Actually update the hostname
-SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --dry-run "0";
+SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --force;
 
 fi;
 # ------------------------------------------------------------
@@ -123,17 +123,17 @@ else
   if [ -z "${INPUT_HOSTNAME}" ]; then
     # Error - Required variable empty: INPUT_HOSTNAME
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with empty hostname";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"set_hostname\" called with empty hostname";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname FQDN ]";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ set_hostname --hostname FQDN ]";
     exit 1;
 
   elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
     # Error - Hostname contains one or more invalid characters
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"$(realpath ${0};)\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Command \"set_hostname\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --hostname VALID-HOSTNAME ]";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ set_hostname --hostname VALID-HOSTNAME ]";
     exit 1;
 
   else
@@ -203,12 +203,12 @@ else
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') Error:  Unable to resolve outgoing WAN IPv4 Address";
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"127.0.0.1\" ${0} ]  (replacing 127.0.0.1 with machine's WAN IPv4)";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"127.0.0.1\" set_hostname ]  (replacing 127.0.0.1 with machine's WAN IPv4)";
         exit 1;
       fi;
     else
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Optional) Resolve hostname requests to WAN IPv4 (instead of LAN) using syntax  [ ${0} --wan ]";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  (Optional) Resolve hostname requests to WAN IPv4 (instead of LAN) using syntax  [ set_hostname --wan ]";
     fi;
 
     ### Show Resolved Gateway IPv4
@@ -406,7 +406,7 @@ else
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Dry-Run mode is ON - No changes will be made to existing network settings or stored configurations";
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ ${0} --dry-run 0 ]  or  [ ${0} --force ]";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') Info:  Please call again using syntax  [ set_hostname --dry-run 0 ]  or  [ set_hostname --force ]";
     fi;
 
     # ------------------------------------------------------------

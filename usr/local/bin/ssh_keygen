@@ -108,11 +108,11 @@ mkdir -p "${KEY_DIRNAME}";
 
 # Set permissions on output directory
 chown "${USER_NAME}:${USER_NAME}" "${KEY_DIRNAME}";
-chmod 700 "${KEY_DIRNAME}";
+chmod 0700 "${KEY_DIRNAME}";
 
 # Set permissions on output directory's parent-directory
 chown "${USER_NAME}:${USER_NAME}" "$(dirname ${KEY_DIRNAME})";
-chmod 700 "$(dirname ${KEY_DIRNAME})";
+chmod 0700 "$(dirname ${KEY_DIRNAME})";
 
 
 # Create the SSH-keypair
@@ -135,6 +135,12 @@ fi;
 mv "${KEY_FULLPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
 # mv "${KEY_FULLPATH_NOEXT}.pub" "${PUBLIC_KEY_PATH}";
 # cat "${KEY_FULLPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_FULLPATH_NOEXT}.pub";
+
+
+# Exported Keys - [chmod] and [chown] as-intended
+#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP OF THIS SCRIPT)
+chmod 0400 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_KEY_PATH}";
+chmod 0400 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
 
 
 # Show the output public & private keys' paths (as we create them)
@@ -165,8 +171,8 @@ if [[ ${APPEND_TO_ETC_SSH_USER_PUBLIC_KEY} =~ ^[Yy]$ ]]; then
   #   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
   echo "";
   echo "Info:  Appending Public Key onto Etc-Authkey \"${ETC_SSH_USER_PUBLIC_KEY}\" ...";
-  mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
-  cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_USER_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_USER_PUBLIC_KEY}" && chmod 400 "${ETC_SSH_USER_PUBLIC_KEY}";
+  mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 0755 "${ETC_SSH_AUTHKEYS}";
+  cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_USER_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_USER_PUBLIC_KEY}" && chmod 0400 "${ETC_SSH_USER_PUBLIC_KEY}";
 
 else
 
@@ -188,20 +194,14 @@ else
   if [[ ${APPEND_TO_USERHOME_SSH_PUBLIC_KEY} =~ ^[Yy]$ ]]; then
     echo "";
     echo "Info:  Appending Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ...";
-    mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 700 "${USERHOME_SSH}";
-    cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_PUBLIC_KEY}" && chmod 400 "${USERHOME_SSH_PUBLIC_KEY}";
+    mkdir -p "${USERHOME_SSH}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH}" && chmod 0700 "${USERHOME_SSH}";
+    cat "${PUBLIC_KEY_PATH}" >> "${USERHOME_SSH_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${USERHOME_SSH_PUBLIC_KEY}" && chmod 0400 "${USERHOME_SSH_PUBLIC_KEY}";
   else
     echo "";
     echo "Info:  Skipped UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\"";
   fi;
 
 fi;
-
-
-# Exported Keys - [chmod] and [chown] as-intended
-#  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP OF THIS SCRIPT)
-chmod 400 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_KEY_PATH}";
-chmod 400 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
 
 
 #

@@ -86,6 +86,7 @@ else
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Inline parameters contain more than one value for hostname";
           echo "";
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using one, single value";
+          echo "";
           exit 1;
         else
           ARGS_HOSTNAME_DEFINED=1;
@@ -133,9 +134,11 @@ else
     read -p "${HOSTNAME_INPUT_PROMPT}" -t ${READ_TIMEOUT} -a INPUT_HOSTNAME <'/dev/tty'; EXIT_CODE=${?};
     if [ ${EXIT_CODE} -gt 128 ]; then
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Response timed out after ${READ_TIMEOUT}s - Exiting...";
+      echo "";
       exit 1;
     elif [ ${#USER_RESPONSE} -eq 0 ]; then
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Response's string length is zero (empty) - Exiting...";
+      echo "";
       exit 1;
     else
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Response received: \"${USER_RESPONSE}\"";
@@ -154,6 +157,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command \"set_hostname\" called with empty hostname";
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --hostname FQDN ]";
+    echo "";
     exit 1;
 
   elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
@@ -162,6 +166,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command \"set_hostname\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
     echo "";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --hostname \"valid-hostname\" ]";
+    echo "";
     exit 1;
 
   else
@@ -247,6 +252,7 @@ else
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Unable to resolve outgoing WAN IPv4 Address";
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"${THIS_LOCALHOST_IPV4}\" set_hostname ]  (replacing ${THIS_LOCALHOST_IPV4} with machine's WAN IPv4)";
+        echo "";
         exit 1;
       fi;
     else
@@ -270,6 +276,7 @@ else
     else 
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Unable to resolve LAN Local IPv4 Address  - If you want to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
+      echo "";
       exit 1;
     fi;
 

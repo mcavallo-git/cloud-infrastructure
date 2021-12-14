@@ -150,29 +150,29 @@ echo "Info:  Created Private Key: ${PRIVATE_KEY_PATH}";
 
 # ADD TO:  /etc/ssh/authorized_keys/${USER_NAME}  ??
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-APPEND_TO_ETC_SSH_AUTHKEYS="";
+APPEND_TO_ETC_SSH_USER_PUBLIC_KEY="";
 ETC_SSH_AUTHKEYS="/etc/ssh/authorized_keys";
-ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
+ETC_SSH_USER_PUBLIC_KEY="${ETC_SSH_AUTHKEYS}/${USER_NAME}";
 if [ "$(id -un)" == "root" ]; then
   echo "";
-  read -p "Append Public Key onto Etc-Authkey \"${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}\" ?  (press 'y' to confirm)  " -a APPEND_TO_ETC_SSH_AUTHKEYS -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "Append Public Key onto Etc-Authkey \"${ETC_SSH_USER_PUBLIC_KEY}\" ?  (press 'y' to confirm)  " -n 1 -t 60 -a APPEND_TO_ETC_SSH_USER_PUBLIC_KEY <'/dev/tty'; # Await single keypress
 fi;
 
-if [[ ${APPEND_TO_ETC_SSH_AUTHKEYS} =~ ^[Yy]$ ]]; then
+if [[ ${APPEND_TO_ETC_SSH_USER_PUBLIC_KEY} =~ ^[Yy]$ ]]; then
 
   # Append the newly created key's public-file onto [ /etc/ssh/authorized_keys/$USER_NAME ]
   #   Note 1: The public-key matches with client-passed private-key at time of ssh-connection
   #   Note 2: [cat ... >> ...] adds a newline before the command (no need to add extra \n's)
   echo "";
-  echo "Info:  Appending Public Key onto Etc-Authkey \"${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}\" ...";
+  echo "Info:  Appending Public Key onto Etc-Authkey \"${ETC_SSH_USER_PUBLIC_KEY}\" ...";
   mkdir -p "${ETC_SSH_AUTHKEYS}" && chown "root:root" "${ETC_SSH_AUTHKEYS}" && chmod 755 "${ETC_SSH_AUTHKEYS}";
-  cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}" && chmod 400 "${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}";
+  cat "${PUBLIC_KEY_PATH}" >> "${ETC_SSH_USER_PUBLIC_KEY}" && chown "${USER_NAME}:${USER_NAME}" "${ETC_SSH_USER_PUBLIC_KEY}" && chmod 400 "${ETC_SSH_USER_PUBLIC_KEY}";
 
 else
 
   if [ "$(id -un)" == "root" ]; then
     echo "";
-    echo "Info:  Skipped Etc-Authkey \"${ETC_SSH_AUTHKEYS_USER_PUBLIC_KEY}\"";
+    echo "Info:  Skipped Etc-Authkey \"${ETC_SSH_USER_PUBLIC_KEY}\"";
   fi;
 
   # Setup filepaths for [ ${USER_HOME}/.ssh/authorized_keys ]
@@ -184,7 +184,7 @@ else
   #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
   APPEND_TO_USERHOME_SSH_PUBLIC_KEY="";
   echo "";
-  read -p "Append Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ?  (press 'y' to confirm)  " -a APPEND_TO_USERHOME_SSH_PUBLIC_KEY -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  read -p "Append Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ?  (press 'y' to confirm)  " -n 1 -t 60 -a APPEND_TO_USERHOME_SSH_PUBLIC_KEY <'/dev/tty'; # Await single keypress
   if [[ ${APPEND_TO_USERHOME_SSH_PUBLIC_KEY} =~ ^[Yy]$ ]]; then
     echo "";
     echo "Info:  Appending Public Key onto UserHome-PublicKey \"${USERHOME_SSH_PUBLIC_KEY}\" ...";

@@ -8,10 +8,10 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash;
 
 # Test updating the hostname
-SET_FQDN="$(hostname --all-fqdns;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}";
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)";
 
 # Actually update the hostname
-SET_FQDN="$(hostname --all-fqdns;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)" --force;
 
 fi;
 # ------------------------------------------------------------
@@ -99,11 +99,11 @@ else
 
       # Parse dry-run / non-dry-run calls
       if [ "${EACH_ARG}" == "--force" ]; then # --force
-        DRY_RUN="0";
+        DRY_RUN=0;
       elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
-        DRY_RUN="0";
+        DRY_RUN=0;
       elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
-        DRY_RUN="0";
+        DRY_RUN=0;
       fi;
 
     fi;
@@ -164,24 +164,31 @@ else
 
   else
 
-    SUBSTRING_ONLY_PERIODS="${INPUT_HOSTNAME//[^.]}";
-    FQDN_COUNT_PERIODS="${#SUBSTRING_ONLY_PERIODS}";
-    if [ "${FQDN_COUNT_PERIODS}" == "0" ]; then
+    if [ "$(echo -n "${INPUT_HOSTNAME//[^.]}" | wc -c;)" -gt 0 ]; then
+      # Hostname has at least one period in it --> parse the domain name out from the hostname
+      SET_HOSTNAME=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --only-delimited;);
+      SET_DOMAIN=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --complement --only-delimited;);
+    else
       # Hostname includes no periods - use it as-is
       SET_HOSTNAME="${INPUT_HOSTNAME}";
       if [ -v CURRENT_DOMAIN ] && [ -n "${CURRENT_DOMAIN}" ]; then
         SET_DOMAIN="${CURRENT_DOMAIN}";
       fi;
+    fi;
+
+    # Set the FQDN to 'hostname.domainname' (if domain exists), otherwise set it to just 'hostname'
+    if [ -n "${SET_DOMAIN}" ]; then
+      SET_FQDN="${SET_HOSTNAME}.${SET_DOMAIN}";
     else
-      # Hostname has at least one period in it --> parse the domain name out from the hostname
-      SET_HOSTNAME=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --only-delimited;);
-      SET_DOMAIN=$(echo "${INPUT_HOSTNAME}" | cut --delimiter="." --fields=1 --complement --only-delimited;);
+      SET_FQDN="${SET_HOSTNAME}";
     fi;
 
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_FQDN:   \"${SET_FQDN}\"";
     echo "";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
+    echo "";
 
     # ------------------------------------------------------------
     # Determine Linux distro
@@ -269,7 +276,7 @@ else
     # If Dry-Run mode is off, require user to confirm changes
     #
 
-    if [[ "${DRY_RUN}" == "0" ]]; then
+    if [[ "${DRY_RUN}" -eq 0 ]]; then
       echo ""; read -p "Update hostname, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  - Confirmed by user - Proceeding with changes to hostname & domain-name...";
@@ -285,7 +292,7 @@ else
     #
     HOSTNAME_FILE="/etc/hostname";
     if [[ -f "${HOSTNAME_FILE}" ]]; then
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         echo "";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
         echo "------------------------------------------------------------";
@@ -353,7 +360,7 @@ else
       LOOPBACK_IPV4="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4";
       LOOPBACK_IPV6="::1 localhost localhost.localdomain localhost6 localhost6.localdomain6";
       if [ -n "${SET_DOMAIN}" ]; then # Hostname + FQDN (hostname.domainname)
-        sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}.${SET_DOMAIN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
+        sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_FQDN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
 
       else # Hostname only (no FQDN)
         sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
@@ -373,7 +380,7 @@ else
       echo "------------------------------------------------------------";
 
 
-      if [[ "${DRY_RUN}" == "0" ]]; then
+      if [[ "${DRY_RUN}" -eq 0 ]]; then
         # NOT a dry-run -> Overwrite hosts-file
         cp -f "${TEMP_HOSTS}" "${HOSTS_FILE}";
 
@@ -386,18 +393,16 @@ else
     # centos 6
     #
     if [[ -f "/etc/sysconfig/network" ]]; then
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
-
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         if [ -n "${SET_DOMAIN}" ]; then
-          sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}" "/etc/sysconfig/network";
+          sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}" "/etc/sysconfig/network";
         else
           sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}" "/etc/sysconfig/network";
         fi;
-
       else # dry-run
         echo "";
         if [ -n "${SET_DOMAIN}" ]; then
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}.${SET_DOMAIN}\" \"/etc/sysconfig/network\"; ]";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]";
         else
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]";
         fi;
@@ -408,7 +413,7 @@ else
     # debian 7 / slackware / ubuntu 14.04
     #
     if [[ -f "/etc/init.d/hostname.sh" ]]; then
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         /etc/init.d/hostname.sh;
       else # dry-run
         echo "";
@@ -420,26 +425,26 @@ else
     # arch / centos 7 / debian 8 / fedora / ubuntu 16.04 and above
     #
     if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         hostnamectl set-hostname "${SET_HOSTNAME}";
       else # dry-run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\" ]";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]";
       fi;
     fi;
 
-    if [ ${DRY_RUN} -eq 1 ]; then
+    if [[ "${DRY_RUN}" -eq 1 ]]; then
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Dry-Run mode is ON - No changes will be made to existing network settings or stored configurations";
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --dry-run 0 ]  or  [ set_hostname --force ]";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --dry-run 0; ]  or  [ set_hostname --force; ]";
     fi;
 
     # ------------------------------------------------------------
     # Apply Changes
     #
     if [[ -f "/etc/init.d/network" ]]; then # CentOS-RHEL distros
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         echo "";
         echo "Network Manager must be restarted to apply changes ( required command  [ /etc/init.d/network restart ]  )";
         read -p "   |--> Restart Network Manager, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
@@ -458,7 +463,7 @@ else
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping network manager restart";
       fi;
     else # [other] distros
-      if [[ "${DRY_RUN}" == "0" ]]; then # NOT a dry-run
+      if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a dry-run
         echo "";
         echo "System restart required to apply changes to hostname";
         read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
@@ -466,15 +471,15 @@ else
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
           echo "Rebooting...";
-          shutdown -r now;
+          shutdown --reboot now;
         else
           echo "";
           echo "System restart postponed";
           exit 1;
         fi;
-      # else # dry-run
-      #   echo "";
-      #   echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping restart";
+      else # dry-run
+        echo "";
+        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry-Run Enabled) Skipping call [ shutdown --reboot now; ]";
       fi;
     fi;
     echo "";

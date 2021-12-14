@@ -3,6 +3,18 @@
 # LOCAL_SBIN="/usr/local/sbin/set_hostname" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash;
+
+# Test updating the hostname
+SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --dry-run "1";
+
+# Actually update the hostname
+SET_FQDN="$(hostname;).$(hostname -d;)"; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "${SET_FQDN}" --dry-run "0";
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -100,9 +112,9 @@ else
   # ------------------------------------------------------------
   # Get status of hostname/domainname before edits
   #
-  CURRENT_HOSTNAME="$(hostname)";
-  CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}')";
-  if [ "$(hostname -d;)" != "(none)" ]; then
+  CURRENT_HOSTNAME="$(hostname;)";
+  CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}';)";
+  if [ -n "$(hostname -d;)" ] && [ "$(hostname -d;)" != "(none)" ]; then
     CURRENT_DOMAIN="$(hostname -d;)";
   fi;
 

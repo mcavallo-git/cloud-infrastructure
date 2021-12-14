@@ -13,8 +13,12 @@ fi;
 echo "";
 echo "Warning:  This runtime has been deprecated";
 echo "";
-echo "Info:  Please refer to updated partitioning methods by visiting URL:";
+echo "Info:  Please refer to lvm (Logical Volume) methodology by visiting URL:";
+vgdisplay | grep '^  Free';
+lvextend --size +31.5G /dev/mapper/ubuntu--vg-ubuntu--lv;
+
 echo "";
+echo "Info:  Please refer to parted methodology by visiting URL:";
 echo "  https://github.com/mcavallo-git/Coding/search?q=linux+partition&unscoped_q=linux+partition  ";
 echo "";
 exit 1;

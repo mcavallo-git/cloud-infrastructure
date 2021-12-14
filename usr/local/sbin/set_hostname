@@ -112,12 +112,25 @@ else
   # ------------------------------------------------------------
   # Get status of hostname/domainname before edits
   #
-  CURRENT_HOSTNAME="$(hostname;)";
-  CURRENT_LAN_IPV4="$(hostname -i | awk '{print $1}';)";
-  if [ -n "$(hostname -d;)" ] && [ "$(hostname -d;)" != "(none)" ]; then
-    CURRENT_DOMAIN="$(hostname -d;)";
-  fi;
+  CURRENT_HOSTNAME="$(hostname --short;)";
+  CURRENT_DOMAIN="$(hostname --domain;)";
 
+  CURRENT_FQDN="$(hostname --domain;)";
+  CURRENT_ALL_FQDNS="$(hostname --all-fqdns;)";
+
+  CURRENT_LAN_IPV4="$(hostname --ip-address | awk '{print $1}';)";
+  CURRENT_ALL_IPV4S="$(hostname --all-ip-addresses | awk '{print $1}';)";
+
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_HOSTNAME:   \"${CURRENT_HOSTNAME}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_DOMAIN:     \"${CURRENT_DOMAIN}\"";
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_FQDN:       \"${CURRENT_FQDN}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_ALL_FQDNS:  \"${CURRENT_ALL_FQDNS}\"";
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_LAN_IPV4:   \"${CURRENT_LAN_IPV4}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_ALL_IPV4S:  \"${CURRENT_ALL_IPV4S}\"";
+  echo "";
 
   # ------------------------------------------------------------
   #
@@ -171,7 +184,7 @@ else
     else
       # Hostname includes no periods - use it as-is
       SET_HOSTNAME="${INPUT_HOSTNAME}";
-      if [ -v CURRENT_DOMAIN ] && [ -n "${CURRENT_DOMAIN}" ]; then
+      if [ -n "${CURRENT_DOMAIN}" ] && [ "${CURRENT_DOMAIN}" != "(none)" ]; then
         SET_DOMAIN="${CURRENT_DOMAIN}";
       fi;
     fi;

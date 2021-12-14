@@ -8,10 +8,10 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash;
 
 # Test updating the hostname
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)";
+clear; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)";
 
 # Actually update the hostname
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)" --force;
+clear; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns;)" --force;
 
 fi;
 # ------------------------------------------------------------
@@ -122,14 +122,12 @@ else
   CURRENT_ALL_IPV4S="$(hostname --all-ip-addresses | awk '{print $1}';)";
 
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_HOSTNAME:   \"${CURRENT_HOSTNAME}\"";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_DOMAIN:     \"${CURRENT_DOMAIN}\"";
-  echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_FQDN:       \"${CURRENT_FQDN}\"";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_ALL_FQDNS:  \"${CURRENT_ALL_FQDNS}\"";
-  echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_LAN_IPV4:   \"${CURRENT_LAN_IPV4}\"";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  CURRENT_ALL_IPV4S:  \"${CURRENT_ALL_IPV4S}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_HOSTNAME:   \"${CURRENT_HOSTNAME}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_DOMAIN:     \"${CURRENT_DOMAIN}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_FQDN:       \"${CURRENT_FQDN}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_ALL_FQDNS:  \"${CURRENT_ALL_FQDNS}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_LAN_IPV4:   \"${CURRENT_LAN_IPV4}\"";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_ALL_IPV4S:  \"${CURRENT_ALL_IPV4S}\"";
   echo "";
 
   # ------------------------------------------------------------
@@ -197,10 +195,9 @@ else
     fi;
 
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_FQDN:   \"${SET_FQDN}\"";
-    echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_HOSTNAME:   \"${SET_HOSTNAME}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_DOMAIN:   \"${SET_DOMAIN}\"";
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_FQDN:   \"${SET_FQDN}\"";
     echo "";
 
     # ------------------------------------------------------------

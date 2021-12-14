@@ -123,7 +123,7 @@ ssh-keygen -q -t rsa -b 2048 -f "${KEY_FULLPATH_NOEXT}" -N "${KEY_PASSPHRASE}" -
 # Add an IP whitelist to the public key (if variable is not blank)
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
 if [ -n "${IP_WHITELIST}" ]; then # var is not empty
-  printf 'from="'${IP_WHITELIST}'" ' >> "${PUBLIC_KEY_PATH}"
+  printf 'from="'${IP_WHITELIST}'" ' >> "${PUBLIC_KEY_PATH}";
   IP_RESTRICTION_MSG="${IP_WHITELIST}";
 else # var is empty
   IP_RESTRICTION_MSG="ANY IP";
@@ -135,6 +135,12 @@ fi;
 mv "${KEY_FULLPATH_NOEXT}" "${PRIVATE_KEY_PATH}";
 # mv "${KEY_FULLPATH_NOEXT}.pub" "${PUBLIC_KEY_PATH}";
 # cat "${KEY_FULLPATH_NOEXT}.pub" >> "${PUBLIC_KEY_PATH}" && rm "${KEY_FULLPATH_NOEXT}.pub";
+
+
+# Show the output public & private keys' paths (as we create them)
+echo "";
+echo "Info:  Created Public Key @  \"${PUBLIC_KEY_PATH}\"";
+echo "Info:  Created Private Key @ \"${PRIVATE_KEY_PATH}\"";
 
 
 # ------------------------------------------------------------
@@ -203,7 +209,7 @@ chmod 400 "${PRIVATE_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PRIVATE_
 chmod 400 "${PUBLIC_KEY_PATH}" && chown "${USER_NAME}:${USER_NAME}" "${PUBLIC_KEY_PATH}";
 
 echo ""
-echo "  SSH-Keypair created!";
+echo "  Results - ssh_keygen (${START_TIMESTAMP}):";
 echo ""
 echo "     Linux-User:    ${USER_NAME}";
 echo "     IPs Allowed:   ${IP_RESTRICTION_MSG}";

@@ -42,17 +42,17 @@ else
   SUDO_REQUIRES_USERPASS="1";
   EXAMPLE_VALID_CALL="Info --> Please specify a valid local user via:  >  sudoer_status --user \"\${SUDO_USER}\" --allow --nopass;""\n";
 
-  # Walk through any inline-arguments passed to this function
+  # Walk through any inline arguments passed to this function
   for (( i=0;i<$COUNT_ARGS;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
 
-    # Check if this is the last inline-argument or if there are more to follow
+    # Check if this is the last inline argument or if there are more to follow
     if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
       NEXT_ARG="";
     else
       NEXT_ARG=${ARGS[$((${i}+1))]};
-      if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline-arguments starting with "--..." to use the next bash-argument as an associated value if it, also, starts with "--..."
+      if [[ "${NEXT_ARG}" == "--"* ]]; then # Do not allow inline arguments starting with "--..." to use the next bash argument as an associated value if it, also, starts with "--..."
         NEXT_ARG="";
       fi;
     fi;
@@ -83,7 +83,7 @@ else
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
 
         elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
-          # Error: Non-existent target-user
+          # Error: Nonexistent target user
           echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found as a local user: \"${NEXT_ARG}\"";
           echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
 
@@ -93,7 +93,7 @@ else
       fi;
 
       # ------------------------------------------------------------
-      # Skip requiring user-pass when they call the 'sudo' command
+      # Skip requiring user pass when they call the 'sudo' command
       if [ "${EACH_ARG}" == "--nopass" ]; then
         SUDO_REQUIRES_USERPASS="0";
       fi;
@@ -108,8 +108,8 @@ else
   # Verify validity of argument(s) passed to script
   if [ -z "${TARGET_USER}" ]; then 
 
-    # Error: Empty/Unset target-user
-    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
+    # Error: Empty/Unset target user
+    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target user empty / unset";
     echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
 
   elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
@@ -144,7 +144,7 @@ else
           SUDOER_FILE_CONTENTS="${TARGET_USER} ALL=(ALL) NOPASSWD:ALL";
         fi;
 
-        # Add the user-specific 'sudo' config-file
+        # Add the user-specific 'sudo' config file
         SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
         echo "${SUDOER_FILE_CONTENTS}" > "${SUDOER_FILE_FULLPATH}" && \
         chmod 400 "${SUDOER_FILE_FULLPATH}" && \
@@ -163,7 +163,7 @@ else
       elif [ "${EDIT_ACTION}" == "REVOKE" ]; then
         # Deny user from masquerading as the root user (via the 'sudo' command)
 
-        # Remove the user-specific 'sudo' config-file
+        # Remove the user-specific 'sudo' config file
         SUDOER_FILE_FULLPATH="${SUDOERS_D}/${TARGET_USER}";
         if [ -f "${SUDOER_FILE_FULLPATH}" ]; then
           rm -f "${SUDOER_FILE_FULLPATH}";
@@ -174,7 +174,7 @@ else
         gpasswd -d "${TARGET_USER}" "${GROUP_SUDOERS}";
 
       else
-        # Check whether-or-not a user can masquerade as the root user (via the 'sudo' command)
+        # Check whether or not a user can masquerade as the root user (via the 'sudo' command)
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 

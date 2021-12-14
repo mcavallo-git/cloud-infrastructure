@@ -169,6 +169,18 @@ bash_prompt() {
 
 
 #
+# env:HELM_EXPERIMENTAL_OCI
+#
+export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";
+
+
+#
+# env:NG_CLI_ANALYTICS
+#
+export NG_CLI_ANALYTICS="${NG_CLI_ANALYTICS:-false}";
+
+
+#
 # env:REPOS_DIR
 #
 if [ -z "${REPOS_DIR}" ]; then

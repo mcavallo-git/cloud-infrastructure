@@ -293,6 +293,7 @@ else
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
       else
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Exiting...";
+        echo "";
         exit 1;
       fi;
     fi;
@@ -476,6 +477,7 @@ else
         else
           echo "";
           echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Postponing Network Manager restart";
+          echo "";
           exit 1;
         fi;
       else # Dry run
@@ -485,7 +487,7 @@ else
     else # [other] distros
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
-        echo "System restart required to apply changes to hostname";
+        echo "System restart (reboot) is required to apply changes to hostname";
         read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty';  # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -494,7 +496,8 @@ else
           shutdown --reboot now;
         else
           echo "";
-          echo "System restart postponed";
+          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Reboot postponed";
+          echo "";
           exit 1;
         fi;
       else # Dry run

@@ -3,15 +3,12 @@
 # LOCAL_SBIN="/usr/local/sbin/sudoer_status" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-# Sync 1-Liner
-#
-if [ 0 -eq 1 ]; then
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status?t=$(date +'%s.%N')" | bash;
 
-test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow;
-
-test -v SUDO_USER && sudoer_status --user $SUDO_USER --allow --nopass;
+# Set the current user behind 'root' as a sudoer & do not require their password when using the 'sudo' command
+test -n "${SUDO_USER}" && curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status?t=$(date +'%s.%N')" | bash -s -- --user "${SUDO_USER}" --allow --nopass;
 
 fi;
 #
@@ -43,7 +40,7 @@ else
   EDIT_ACTION="";
   TARGET_USER="";
   SUDO_REQUIRES_USERPASS="1";
-  EXAMPLE_VALID_CALL="\n$(date +'%Y-%m-%d %H:%M:%S') | Info --> Please specify a valid local user via:  >  sudoer_status --user USERNAME""\n";
+  EXAMPLE_VALID_CALL="Info --> Please specify a valid local user via:  >  sudoer_status --user \"\${SUDO_USER}\" --allow --nopass;""\n";
 
   # Walk through any inline-arguments passed to this function
   for (( i=0;i<$COUNT_ARGS;i++ )); do
@@ -87,8 +84,8 @@ else
 
         elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
           # Error: Non-existent target-user
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found as a local user: \"${NEXT_ARG}\"";
-          echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
+          echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found as a local user: \"${NEXT_ARG}\"";
+          echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
 
         else
           TARGET_USER="${NEXT_ARG}";
@@ -112,14 +109,14 @@ else
   if [ -z "${TARGET_USER}" ]; then 
 
     # Error: Empty/Unset target-user
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
-    echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
+    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target-user empty / unset";
+    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
 
   elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
     # Error: User not found
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
-    echo -e "${EXAMPLE_VALID_CALL}"; exit 1;
+    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
+    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
 
   else
 

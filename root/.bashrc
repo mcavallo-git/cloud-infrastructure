@@ -167,13 +167,32 @@ bash_prompt() {
   # extra backslash in front of \$ to make bash colorize the prompt
 }
 
-# env:REPOS_DIR
-### Share from Windows by setting (or appending to) Environment Variable "WSLENV" with the value "REPOS_DIR/up"
 
+#
+# env:REPOS_DIR
+#
+if [ -z "${REPOS_DIR}" ]; then
+  if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
+    # If running a WSL Linux distro
+    #  |--> Share REPOS_DIR environment variable down from from Windows environment variables (and convert it to linux filepathing syntax)
+    #  |--> Do this by setting "WSLENV" env var (in Windows) to "REPOS_DIR/up" (or append the value to WSLENV with a colon before it)
+    :;  # Do nothing (Bash no-op command) -  https://stackoverflow.com/a/17583599
+  else
+    # Ensure OS is a non-WSL Linux distro
+    if [ -z "$(command -v wslpath 2>'/dev/null';)" ] && [ -z "$(command -v wslvar 2>'/dev/null';)" ]; then
+      # If running a non-WSL Linux distro, set "REPOS_DIR" to the local user's git directory, located relative to Windows' git directory for GitHub Desktop from the user's HOME directory
+      export REPOS_DIR="${HOME}/Documents/GitHub";
+    fi;
+  fi;
+fi;
+
+
+#
 # env:PATH Appends (Directories/Executables)
+#
 unset PATH_APPENDS_ARR; declare -a PATH_APPENDS_ARR; # [Re-]Instantiate bash array
-PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/bin");
-PATH_APPENDS_ARR+=("$(realpath ~)/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
+PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/bin");
+PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubectl");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubelogin");
 for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
@@ -194,9 +213,11 @@ for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
   fi;
 done;
 
+#
 # env:PROMPT_COMMAND (environment-variable)
 #      |--> Holds one or more commands which run prior-to every command-line command
 #      |--> Check if it already contains a value before attempting to set it
+#
 APPEND_CMD="bash_prompt_command;";
 if [ -n "${PROMPT_COMMAND}" ]; then
   # env:PROMPT_COMMAND is already set

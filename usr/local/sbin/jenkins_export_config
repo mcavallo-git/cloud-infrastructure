@@ -6,7 +6,7 @@
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+LOGDIR="${HOME}/jenkins_export_config_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/jenkins_export_config"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
@@ -80,7 +80,7 @@ else
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
         git add "${GIT_WORK_TREE}/"**/* && \
-        git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Full Config Export/Upload (via script \"jenkins_export_config\" on host \"$(hostname)\")" -a && \
         git push;
       fi;
 
@@ -125,7 +125,7 @@ else
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
         git add "${GIT_WORK_TREE}/"**/* && \
-        git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Config Export/Upload (via script \"jenkins_export_config\" on host \"$(hostname)\")" -a && \
         git push;
 
 
@@ -158,7 +158,7 @@ else
           GIT_COMMITTER_EMAIL="${REMOTE_EMAIL}" \
           EMAIL="${REMOTE_EMAIL}" \
         git add "${GIT_WORK_TREE}/"**/* && \
-        git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"$(basename ${0})\" on host \"$(hostname)\")" -a && \
+        git commit -m"${START_TIMESTAMP} | Jenkins Plugins Export/Upload (via script \"jenkins_export_config\" on host \"$(hostname)\")" -a && \
         git push;
 
       fi;

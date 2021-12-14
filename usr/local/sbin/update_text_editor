@@ -6,7 +6,7 @@
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+LOGDIR="${HOME}/update_text_editor_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/update_text_editor"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
@@ -79,7 +79,7 @@ else
 
     # Exit Gracefully
     echo "";
-    echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Finished \"$(basename ${0})\"";
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Info: Finished \"update_text_editor\"";
     echo "";
     exit 0;
 

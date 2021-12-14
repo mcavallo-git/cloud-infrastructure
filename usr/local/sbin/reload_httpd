@@ -6,7 +6,7 @@
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/$(basename ${0})_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/$(basename ${0})"; fi;
+LOGDIR="${HOME}/reload_httpd_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/reload_httpd"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
@@ -34,10 +34,10 @@ else
   else
     # Service EXISTS locally
     if [ -f "/etc/init.d/apache2" ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | reload_httpd: Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
       /etc/init.d/apache2 reload;
     elif [ -n "$(which httpd 2>'/dev/null';)" ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | $(basename ${0}): Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | reload_httpd: Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
       httpd -t && httpd -k restart;
     else
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";

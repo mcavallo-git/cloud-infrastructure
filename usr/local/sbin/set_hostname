@@ -41,10 +41,10 @@ else
   # >   vi "/usr/local/sbin/set_hostname"; chmod 0755 "/usr/local/sbin/set_hostname";
   #
   ### Run using "DRY-RUN" mode:
-  # >   set_hostname "localhost.localdomain" --Dry run "1";
+  # >   set_hostname "localhost.localdomain" --dry-run "1";
   #
   ### Run using "LIVE" mode:
-  # >   set_hostname "localhost.localdomain" --Dry run "0";
+  # >   set_hostname "localhost.localdomain" --dry-run "0";
   #
   #
   # ------------------------------------------------------------
@@ -100,9 +100,9 @@ else
       # Parse Dry run / non-Dry run calls
       if [ "${EACH_ARG}" == "--force" ]; then # --force
         DRY_RUN=0;
-      elif [ "${EACH_ARG}" == "--Dry run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --Dry run 0
+      elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "0" ]; then # --dry-run 0
         DRY_RUN=0;
-      elif [ "${EACH_ARG}" == "--Dry run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --Dry run false
+      elif [ "${EACH_ARG}" == "--dry-run" ] && [ -n "${NEXT_ARG}" ] && [ "${NEXT_ARG}" == "false" ]; then # --dry-run false
         DRY_RUN=0;
       fi;
 
@@ -460,7 +460,7 @@ else
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Dry run enabled) No changes will be made to existing network settings or stored configurations";
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --Dry run 0; ]  or  [ set_hostname --force; ]";
+      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --dry-run 0; ]  or  [ set_hostname --force; ]";
     fi;
 
     # ------------------------------------------------------------

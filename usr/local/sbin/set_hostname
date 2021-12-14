@@ -60,7 +60,7 @@ else
   for (( i=0;i<$COUNT_ARGS;i++ )); do
 
     EACH_ARG=${ARGS[${i}]};
-    # BASH_ARG_NUMBER=$((${i}+1)); # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
+    # BASH_ARG_NUMBER=$((${i}+1));  # Bash arg-number is one greater than the ARGS arg-number -> this is due-to bash's ${0} arg, which contains the base-command
 
     # Check if this is the last inline-argument or if there are more to follow
     if [ $((${i}+1)) -eq ${COUNT_ARGS} ]; then # if this is the last argument
@@ -354,37 +354,34 @@ else
       TEMP_HOSTS="${HOSTS_FILE}.$(date +'%s.%N').tmp";
       cp -f "${HOSTS_FILE}" "${TEMP_HOSTS}";
 
-      # Trim spaces/tabs off the start of each line
-      sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
+      sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -i "${TEMP_HOSTS}";  # Trim leading/trailing whitespace off of each line
 
-      # Remove pre-existing LAN IPV4 hosts file lines (leave loopback IPv5 line unaffected)
-      sed -i -e "/^${THIS_LAN_IPV4} /c\\" "${TEMP_HOSTS}";
+      sed -e "/^${THIS_LAN_IPV4} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Comment out LAN IPV4 line(s)
+      # sed -e "/^${THIS_LAN_IPV4} /c\\" -i "${TEMP_HOSTS}";  # Remove LAN IPV4 line(s)
 
-      # Remove pre-existing WAN IPV4 hosts file lines
-      if [ ${USE_WAN_IPV4} -ne 0 ]; then
-        sed -i -e "/^${THIS_WAN_IPV4} /c\\" "${TEMP_HOSTS}";
-      fi;
+      if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -e "/^${THIS_WAN_IPV4} .*$/ s/^#*/# /" -i "${TEMP_HOSTS}"; fi;  # Comment out WAN IPV4 line(s)
+      # if [ ${USE_WAN_IPV4} -ne 0 ]; then sed -e "/^${THIS_WAN_IPV4} /c\\" -i "${TEMP_HOSTS}"; fi;  # Remove WAN IPV4 line(s)
 
-      # Remove pre-existing Loopback IPv4 line(s)
-      sed -i -e "/^127.0.1.1 /c\\" "${TEMP_HOSTS}";
+      sed -e "/^127\.0\.1\.1 .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Comment out Loopback IPv4 line(s)
+      # sed -e "/^127.0.1.1 /c\\" -i "${TEMP_HOSTS}";  # Remove Loopback IPv4 line(s)
 
-      # Remove pre-existing Loopback IPv6 line(s)
-      sed -i -e "/^::1 /c\\" "${TEMP_HOSTS}";
+      sed -e "/^::1 .*$/ s/^#*/# /" -i "${TEMP_HOSTS}";  # Comment out Loopback IPv6 line(s)
+      # sed -e "/^::1 /c\\" -i "${TEMP_HOSTS}";  # Remove Loopback IPv6 line(s)
 
       # Update hostname resolution
       LOOPBACK_IPV4="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4";
       LOOPBACK_IPV6="::1 localhost localhost.localdomain localhost6 localhost6.localdomain6";
-      if [ -n "${SET_DOMAIN}" ]; then # Hostname + FQDN (hostname.domainname)
+      if [ -n "${SET_DOMAIN}" ]; then
+        # Hostname + FQDN (hostname.domainname)
         sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_FQDN} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
-      else # Hostname only (no FQDN)
+      else
+        # Hostname only (no FQDN)
         sed -i -e "/^127.0.0.1/{" -e "i\\${SET_HOSTS_IPV4} ${SET_HOSTNAME}" -e "a\\${LOOPBACK_IPV6}" -e "c\\${LOOPBACK_IPV4}" -e "}" "${TEMP_HOSTS}";
       fi;
 
-      # Trim spaces/tabs off the start of each line
-      sed -i -e 's/^\s*//g' "${TEMP_HOSTS}";
+      sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -i "${TEMP_HOSTS}";  # Trim leading/trailing whitespace off of each line
 
-      # Remove empty/blank/whitespace-only lines
-      sed -i -e '/^\s*$/d' "${TEMP_HOSTS}";
+      sed -i -e "/^\s*$/d" "${TEMP_HOSTS}";  # Remove empty/blank/whitespace-only lines
 
       echo "";
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]...  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
@@ -472,7 +469,7 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
         echo "Network Manager must be restarted to apply changes ( required command  [ /etc/init.d/network restart ]  )";
-        read -p "   |--> Restart Network Manager, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
+        read -p "   |--> Restart Network Manager, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty';  # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
@@ -491,7 +488,7 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
         echo "System restart required to apply changes to hostname";
-        read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; # Await single keypress
+        read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty';  # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";

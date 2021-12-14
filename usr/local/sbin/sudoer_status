@@ -7,7 +7,7 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status?t=$(date +'%s.%N')" | bash;
 
-# Set the current user behind 'root' as a sudoer & do not require their password when using the 'sudo' command
+# Set the current sudoer (sudo user behind the 'root' user) as a sudoer & do not require their password when using the 'sudo' command
 test -n "${SUDO_USER}" && curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sudoer_status?t=$(date +'%s.%N')" | bash -s -- --user "${SUDO_USER}" --allow --nopass;
 
 fi;

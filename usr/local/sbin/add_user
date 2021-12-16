@@ -3,14 +3,14 @@
 # LOCAL_SBIN="/usr/local/sbin/add_user" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then
-#
-# Example Call
-#
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; curl -H 'Cache-Control: no-cache' -o "/usr/local/sbin/add_user" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user" chmod 0755 "/usr/local/sbin/add_user"; \
 
-env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" SUDO_REQUIRES_PASS="0" SET_USER_PASSWORD="1" "/usr/local/sbin/add_user";
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user?t=$(date +'%s.%N')" | env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" SUDO_REQUIRES_PASS="0" SET_USER_PASSWORD="1" bash;  # Call this script with env var arguments
+
+
+# if [ -d "/usr/local/sbin" ]; then mkdir -p "/usr/local/sbin"; fi; curl -H 'Cache-Control: no-cache' -o "/usr/local/sbin/add_user" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/add_user"; chmod 0755 "/usr/local/sbin/add_user"; \
+# env USER_NAME="example_user" USER_GNAME="example_user" USER_UID="1200" USER_GID="1200" ADD_USER_TO_SUDOERS="1" SUDO_REQUIRES_PASS="0" SET_USER_PASSWORD="1" "/usr/local/sbin/add_user";
 
 
 fi;

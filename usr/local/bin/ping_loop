@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/ping_loop" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+#
+if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ping_loop?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+
+
+# Allow environment variable(s) to override hardcoded runtime variables
+PING_TARGET="${PING_TARGET}";
+
+
+# If no target is defined, request that the user enter the target hostname / ip address to ping continously (until more than an empty string is entered)
+while [ -z "${PING_TARGET}" ]; do
+  echo "";
+  read -p "Enter hostname or ip address to ping:  " -t 300 -a PING_TARGET <'/dev/tty';
+done;
+
+
+# Run a while loop to continuously check device online-offline status via ICMP-8 echo (ping) requests
+while [ 1 -eq 1 ]; do
+  echo -n "Pinging \"${PING_TARGET}\":   ";
+  ping -w 1 -c 1 "${PING_TARGET}" | grep ms | head -n 1;
+  sleep 1;
+done;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "web hosting - Unable to negotiate with XX.XXX.XX.XX: no matching host key type found. Their offer: ssh-dss - Stack Overflow"  |  https://stackoverflow.com/a/34209177
+#
+# ------------------------------------------------------------

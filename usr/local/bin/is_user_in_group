@@ -50,7 +50,7 @@ for GROUP_ROW in $(cat "/etc/group"); do
 
   # Walk through each group's list of usernames
 
-  THIS_USERLIST_NO_DUPES=($(echo "${THIS_USERLIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  THIS_USERLIST_NO_DUPES=($(echo "${THIS_USERLIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
   for EACH_MEMBER in "${THIS_USERLIST_NO_DUPES[@]}"; do
   {
     if [ "${EACH_MEMBER}" == "${TARGET_USER_UNAME}" ]; then
@@ -117,8 +117,8 @@ for GROUP_ROW in $(cat "/etc/group"); do
 # ------------------------------------------------------------
 
 # Remove duplicates from both arrays
-USER_LIST_GNAMES=($(echo "${USER_LIST_GNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
-GROUP_LIST_UNAMES=($(echo "${GROUP_LIST_UNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+USER_LIST_GNAMES=($(echo "${USER_LIST_GNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
+GROUP_LIST_UNAMES=($(echo "${GROUP_LIST_UNAMES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 
 # ------------------------------------------------------------
 

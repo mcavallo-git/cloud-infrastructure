@@ -513,7 +513,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   #   EACH_RESOLVED_IPv4="$(echo "${EACH_RESOLVED_CIDRv4}" | cut -d'/' -f1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
   #   EACH_PORT_PROTO_W_COMMAS="${RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}]}";
   #   RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES=($(echo "${EACH_PORT_PROTO_W_COMMAS}" | tr ',' ' '));
-  #   RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  #   RESOLVED_PORT_PROTO_KEYS_NO_DUPES=($(echo "${RESOLVED_PORT_PROTO_KEYS_COMMAS_TO_SPACES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
   #   if [ ${DEBUG_MODE} -eq 1 ]; then
   #     echo "** Debug:  RESOLVED_CIDRv4_ARR[${EACH_RESOLVED_CIDRv4}] = [ ${EACH_PORT_PROTO_W_COMMAS} ]";
   #     echo "Debug:  EACH_RESOLVED_CIDRv4 = [ ${EACH_RESOLVED_CIDRv4} ]";

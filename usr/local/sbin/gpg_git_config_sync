@@ -748,7 +748,7 @@ fi;
     fi;
   done;
 
-  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 
   unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
@@ -971,7 +971,7 @@ exit 0;
 # #   GIT REPOS
 # #    |--> PERSONAL, PUBLIC
 # #
-# PERSONAL_PUBLIC_REPOS_NO_DUPES=($(echo "${PERSONAL_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+# PERSONAL_PUBLIC_REPOS_NO_DUPES=($(echo "${PERSONAL_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 # for REPO in "${PERSONAL_PUBLIC_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
@@ -1012,7 +1012,7 @@ exit 0;
 # #    |--> PERSONAL, PRIVATE
 # #
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
-#   PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+#   PERSONAL_PRIVATE_REPOS_NO_DUPES=($(echo "${PERSONAL_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 #   for REPO in "${PERSONAL_PRIVATE_REPOS_NO_DUPES[@]}"; do
 #     if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #       cd "${REPOS_DIR}/${REPO}";
@@ -1073,7 +1073,7 @@ exit 0;
 # #   GIT REPOS
 # #    |--> WORK, PUBLIC
 # #
-# WORK_PUBLIC_REPOS_NO_DUPES=($(echo "${WORK_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+# WORK_PUBLIC_REPOS_NO_DUPES=($(echo "${WORK_PUBLIC_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 # for REPO in "${WORK_PUBLIC_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";
@@ -1113,7 +1113,7 @@ exit 0;
 # #   GIT REPOS
 # #    |--> WORK, PRIVATE
 # #
-# WORK_PRIVATE_REPOS_NO_DUPES=($(echo "${WORK_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '));
+# WORK_PRIVATE_REPOS_NO_DUPES=($(echo "${WORK_PRIVATE_REPOS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 # for REPO in "${WORK_PRIVATE_REPOS_NO_DUPES[@]}"; do
 #   if [ -d "${REPOS_DIR}/${REPO}" ]; then
 #     cd "${REPOS_DIR}/${REPO}";

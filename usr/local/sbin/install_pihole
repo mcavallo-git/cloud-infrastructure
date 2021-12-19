@@ -140,14 +140,15 @@ if [ 1 -eq 1 ]; then
 fi;
 
 
-# 
-# Set pihole file permissions as-intended
-#
-if [ 0 -eq 1 ]; then #   !!!  PERFORM THESE STEPS MANUALLY (for the time being)  !!!
+#   !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)  !!!
+if [ 0 -eq 1 ]; then
 
 # Bash into the docker
 docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]
 
+# 
+# Set pihole file permissions as-intended
+#
 chown -R "pihole:pihole" "/etc/pihole/";
 chown -R "pihole:pihole" "/etc/pihole/dhcp.leases";
 chown -R "pihole:pihole" "/etc/pihole/gravity.db";

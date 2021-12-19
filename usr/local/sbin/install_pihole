@@ -131,6 +131,19 @@ if [ 1 -eq 1 ]; then
 
       # Update pihole's gravity
       echo -e "\nUpdating pihole's gravity...\n"
+      if [ 0 -eq 1 ]; then
+
+        # # Search 'adlists.list' for urls to pull from
+        # ADLISTS_ARR="$(cat "/etc/pihole/adlists.list";)";
+        # ADLISTS_ARR_NO_DUPES=($(echo "${ADLISTS_ARR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';)); \
+        # for EACH_CONFIG_FILE in "${GIT_GLOBAL_CONFIG_NO_DUPES[@]}"; do \
+        # echo "${EACH_CONFIG_FILE}"; \
+        # done;
+
+        # sudo sqlite3 /etc/pihole/gravity.db "SELECT * FROM adlist;"
+        # sudo sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('https://domain.com/blocklist.txt', 1, 'comment');"
+
+      fi;
       docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 
     fi;
@@ -143,25 +156,27 @@ fi;
 #   !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)  !!!
 if [ 0 -eq 1 ]; then
 
-# Bash into the docker
-docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]
+  # Bash into the docker
+  docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]
 
-# 
-# Set pihole file permissions as-intended
-#
-chown -R "pihole:pihole" "/etc/pihole/";
-chown -R "pihole:pihole" "/etc/pihole/dhcp.leases";
-chown -R "pihole:pihole" "/etc/pihole/gravity.db";
-chown -R "pihole:pihole" "/etc/pihole/macvendor.db";
-chown -R "pihole:root"   "/etc/pihole/pihole-FTL.conf";
-chown -R "pihole:pihole" "/etc/pihole/pihole-FTL.db";
+  # 
+  # Set pihole file permissions as-intended
+  #
+  chown -R "pihole:pihole" "/etc/pihole/";
+  chown -R "pihole:pihole" "/etc/pihole/dhcp.leases";
+  chown -R "pihole:pihole" "/etc/pihole/gravity.db";
+  chown -R "pihole:pihole" "/etc/pihole/macvendor.db";
+  chown -R "pihole:root"   "/etc/pihole/pihole-FTL.conf";
+  chown -R "pihole:pihole" "/etc/pihole/pihole-FTL.db";
+
+  #
+  # Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and adlist updating via [ pihole -g ]
+  #  |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
+  #
 
 fi;
 
-#
-# Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and adlist updating via [ pihole -g ]
-#  |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
-#
+
 
 
 # ------------------------------------------------------------
@@ -171,6 +186,8 @@ fi;
 #   discourse.pi-hole.net  |  "[Solved] While executing: attempt to write a readonly database error - Help / Community Help - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/solved-while-executing-attempt-to-write-a-readonly-database-error/33003/4
 #
 #   discourse.pi-hole.net  |  "Enabling HTTPS for your Pi-hole Web Interface - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/enabling-https-for-your-pi-hole-web-interface/5771
+#
+#   discourse.pi-hole.net  |  "How do I add list via cli - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/how-do-i-add-list-via-cli/43733/2
 #
 #   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
 #

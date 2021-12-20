@@ -53,6 +53,8 @@ else
     #
     # Determine if docker-compose is already installed
     if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
+      # Install prerequisite package(s)
+      apt-get -y update; apt-get -y "jq";
       # Determine the latest version of docker-compose
       DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
       # Download the latest version of the docker-compose binary

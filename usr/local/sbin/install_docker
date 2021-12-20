@@ -176,11 +176,18 @@ else
     systemctl enable docker --now;
   fi;
   # Show installed versions of docker & docker-compose
-  echo "";
-  "${BIN_DOCKER}" --version;
-  echo "";
-  "${BIN_DOCKER_COMPOSE}" --version;
-  echo "";
+  if [ -f "${BIN_DOCKER}" ]; then
+    echo "";
+    echo "Local package found:   $("${BIN_DOCKER}" --version;)";
+  fi;
+  if [ -f "${BIN_DOCKER_COMPOSE}" ]; then
+    echo "";
+    echo "Local package found:   $("${BIN_DOCKER_COMPOSE}" --version;)";
+  fi;
+  if [ -f "${BIN_DOCKER_WINCRED}" ]; then
+    echo "";
+    echo "Local package found:   Docker Credential Wincred $("${BIN_DOCKER_WINCRED}" version;)";
+  fi;
 fi;
 
 

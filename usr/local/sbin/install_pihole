@@ -197,7 +197,7 @@ if [ 1 -eq 1 ]; then
             echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
           fi;
           if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
-            echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
+            # echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
             docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
           fi;
         done;

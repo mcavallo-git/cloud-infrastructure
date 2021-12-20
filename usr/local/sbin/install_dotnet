@@ -26,8 +26,7 @@ else
   if [ -n "$(command -v dotnet 2>'/dev/null';)" ]; then
     echo "";
     echo "Info:  dotnet already installed - listing installed SDKs...";
-      if [ -z "$(command -v dotnet 2>'/dev/null';)" ]; then
-
+    dotnet --list-sdks;
   else
     if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
       #

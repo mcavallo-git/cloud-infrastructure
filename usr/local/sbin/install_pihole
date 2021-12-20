@@ -98,7 +98,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
     COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
     echo "";
-    echo "Info:  Downloading docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
+    echo "Info:  Downloading pihole docker-compose script...";
     curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
     chmod 0600 "${COMPOSE_FILE}";
 

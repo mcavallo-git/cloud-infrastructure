@@ -72,7 +72,8 @@ if [ 1 -eq 1 ]; then
       # ------------------------------
       # Ensure any volume-map directories exist
       CONFIG_DIR="/root/docker-configs/pihole";
-      echo -e "\nCalling [ mkdir --parents --verbose \"${CONFIG_DIR}/etc/pihole/\" \"${CONFIG_DIR}/etc/dnsmasq.d/\"; ]...";
+      echo -e "\nCreating volume-map directories which don't already exist...";
+      # echo -e "\nCalling [ mkdir --parents --verbose \"${CONFIG_DIR}/etc/pihole/\" \"${CONFIG_DIR}/etc/dnsmasq.d/\"; ]...";
       mkdir --parents --verbose "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
 
       # ------------------------------
@@ -86,7 +87,8 @@ if [ 1 -eq 1 ]; then
       # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
       REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
       COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
-      echo -e "\nCalling [ curl -sL \"${REMOTE_DOCKER_COMPOSE}\" -o \"${COMPOSE_FILE}\"; chmod --verbose 0600 \"${COMPOSE_FILE}\"; ]...";
+      echo -e "\nDownloading base docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
+      # echo -e "\nCalling [ curl -sL \"${REMOTE_DOCKER_COMPOSE}\" -o \"${COMPOSE_FILE}\"; chmod --verbose 0600 \"${COMPOSE_FILE}\"; ]...";
       curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
       chmod --verbose 0600 "${COMPOSE_FILE}";
 
@@ -97,12 +99,13 @@ if [ 1 -eq 1 ]; then
       if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
         if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
           # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
-          echo -e "\nTemporarily enabling DNS nameserver \"8.8.4.4\" in \"/etc/resolv.conf\"";
+          echo -e "\nAdding Google DNS resolution to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
           sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
           REVERT_RESOLV_CONF=1;
         fi;
         # Remove existing pihole dockers
-        echo -e "\nCalling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
+        echo -e "\nRemoving existing pihole containers...";
+        # echo -e "\nCalling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
         curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
         # docker_sniper "${DOCKER_NAME}";
 
@@ -183,10 +186,8 @@ if [ 1 -eq 1 ]; then
         echo -e "\nSleeping for 15 seconds (to allow pihole container to boot up)...";
         sleep 15;
         echo -e "\nUpdating pihole's Gravity DB with latest adlist entries...";
-        echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
+        # echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
         docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
-        # echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity && echo \${?}; echo \${?}; ]...";
-        # docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity && echo ${?}; echo ${?};
 
       fi;
 

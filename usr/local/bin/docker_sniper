@@ -27,19 +27,22 @@ THIS_SCRIPT="docker_sniper";
 EXIT_CODE=0;
 
 # Header
-echo -e "\n------------------------------";
-echo -e "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
+echo "";
+echo "------------------------------";
+echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
 
 if [ "$#" -ne 1 ]; then
   # Program was called with anything other than a single parameter
-  echo -e "\nError: '${THIS_SCRIPT}' Requires [1] Parameter (Docker-Substring-Target), Received [${#}] Parameters";
+  echo "";
+  echo "Error: '${THIS_SCRIPT}' Requires [1] Parameter (Docker-Substring-Target), Received [${#}] Parameters";
   EXIT_CODE=1;
 
 else 
 
   # Correct # of parameters (just $1) - holds the name of dockers to stop
   DOCKER_NAME="${DOCKER_NAME:-${1}}";
-  echo -e "\nDocker Sniper - \"${DOCKER_NAME}\"";
+  echo "";
+  echo "Docker Sniper - \"${DOCKER_NAME}\"";
   
   docker_ps_count=$(docker ps | grep ${DOCKER_NAME} | awk '{print $1}' | wc -l);
   docker_ps_all_count=$(docker ps --all | grep ${DOCKER_NAME} | awk '{print $1}' | wc -l);
@@ -63,7 +66,7 @@ else
   # Docker Containers - Remove all Containers which match the given Search-String
   echo -n "[ ${docker_ps_all_count} ] Containers ${HEAD_TEXT}";
   if [ $docker_ps_all_count -gt 0 ]; then
-    echo -e "FORCE-REMOVING via \"docker rm --force ...\":\n";
+    echo "FORCE-REMOVING via \"docker rm --force ...\":";
     docker ps --all | grep ${DOCKER_NAME};
     docker rm --force $(docker ps --all | grep ${DOCKER_NAME} | awk '{print $1}');
     echo "";
@@ -101,6 +104,7 @@ else
 fi;
   
 # Footer
-echo -e "\nFinished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
-echo -e "------------------------------\n";
+echo "";
+echo "Finished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
+echo "------------------------------";
 exit ${EXIT_CODE};

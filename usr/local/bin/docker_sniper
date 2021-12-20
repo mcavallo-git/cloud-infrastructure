@@ -27,7 +27,8 @@ THIS_SCRIPT="docker_sniper";
 EXIT_CODE=0;
 
 # Header
-echo -e "\nStarting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
+echo -e "\n------------------------------";
+echo -e "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
 
 if [ "$#" -ne 1 ]; then
   # Program was called with anything other than a single parameter
@@ -101,5 +102,5 @@ fi;
   
 # Footer
 echo -e "\nFinished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
-echo "";
+echo "------------------------------\n";
 exit ${EXIT_CODE};

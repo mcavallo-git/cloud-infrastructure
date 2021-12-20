@@ -137,16 +137,13 @@ if [ 1 -eq 1 ]; then
         sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
       fi;
 
-      # Get the Pi-hole docker's container ID
-      PIHOLE_CONTAINER_ID="$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)";
-
-      if [ -z "${PIHOLE_CONTAINER_ID}" ]; then
+      if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
         # Pi-hole container does NOT exist
         echo -e "\nError:  Pi-hole docker not found";
 
       else
         # Pi-hole container DOES exist
-        echo -e "\nInfo:  Pi-hole docker successfully created with container ID \"${PIHOLE_CONTAINER_ID}\";";
+        echo -e "\nInfo:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
 
         # ------------------------------
         #
@@ -155,11 +152,11 @@ if [ 1 -eq 1 ]; then
         FULLPATH_ADLISTS="/etc/pihole/adlists.list";
         echo -e "\nAdlists - Pulling in updated adlist entries from \"${FULLPATH_ADLISTS}\"...";
         # Search adlists for urls to pull from
-        ADLISTS_ARR="$(docker exec "${PIHOLE_CONTAINER_ID}" cat "${FULLPATH_ADLISTS}";)";
+        ADLISTS_ARR="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";)";
         ADLISTS_ARR_NO_DUPES=($(echo "${ADLISTS_ARR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
         for EACH_ADLIST in "${ADLISTS_ARR_NO_DUPES[@]}"; do
           SQLITE_QUERY_SELECT="SELECT enabled FROM adlist WHERE address='${EACH_ADLIST}';";
-          SQLITE_RESULT_SELECT="$(docker exec "${PIHOLE_CONTAINER_ID}" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+          SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
           SQLITE_QUERY_UPDATE="";
           if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
             # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
@@ -174,8 +171,8 @@ if [ 1 -eq 1 ]; then
             echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
           fi;
           if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
-            echo "   |--> Calling [ docker exec \"${PIHOLE_CONTAINER_ID}\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
-            docker exec "${PIHOLE_CONTAINER_ID}" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+            echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
+            docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
           fi;
         done;
 
@@ -186,8 +183,8 @@ if [ 1 -eq 1 ]; then
         echo -e "\nSleeping for 15 seconds (to allow pihole container to boot up)...";
         sleep 15;
         echo -e "\nUpdating pihole's Gravity DB with latest adlist entries...";
-        echo " |--> Calling [ docker exec \"${PIHOLE_CONTAINER_ID}\" pihole updateGravity; ]...";
-        docker exec "${PIHOLE_CONTAINER_ID}" pihole updateGravity;
+        echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
+        docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
 
       fi;
 

@@ -171,13 +171,16 @@ else
       chmod 0755 "${BIN_DOCKER_COMPOSE}";
     fi;
   fi;
-  # Show installed versions of docker & docker-compose
-  "${BIN_DOCKER}" --version;
-  "${BIN_DOCKER_COMPOSE}" --version;
   # Enable docker locally
   if [[ "$(systemctl status 1>'/dev/null' 2>&1; echo ${?};)" -eq 0 ]]; then
     systemctl enable docker --now;
   fi;
+  # Show installed versions of docker & docker-compose
+  echo -e "\n";
+  "${BIN_DOCKER}" --version;
+  echo "";
+  "${BIN_DOCKER_COMPOSE}" --version;
+  echo -e "\n";
 fi;
 
 

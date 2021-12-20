@@ -145,7 +145,7 @@ if [ 1 -eq 1 ]; then
           SQLITE_QUERY_UPDATE="";
           if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
             # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
-            echo " |--> (Insert)  Adding & enabling adlist entry:  '${EACH_ADLIST}' ...";
+            echo " |--> (Insert)  Adding/Enabling adlist entry:  '${EACH_ADLIST}' ...";
             SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_ADLIST}',1,'Imported from ${FULLPATH_ADLISTS}');";
           elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
             # (Update) Record exists for this adlist entry, but it is disabled --> enable it

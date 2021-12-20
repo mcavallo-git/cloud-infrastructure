@@ -83,7 +83,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     CONFIG_DIR="/root/docker-configs/pihole";
     echo "";
     echo "Info:  Creating volume-map directories which don't already exist...";
-    mkdir --parents --verbose "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
+    mkdir --parents "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
 
     # ------------------------------
 
@@ -100,7 +100,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     echo "";
     echo "Info:  Downloading docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
     curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
-    chmod --verbose 0600 "${COMPOSE_FILE}";
+    chmod 0600 "${COMPOSE_FILE}";
 
     # ------------------------------
 

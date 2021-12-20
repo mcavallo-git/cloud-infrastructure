@@ -43,15 +43,16 @@ exec 2>&1;
 if [ 1 -eq 1 ]; then
 
   # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
+  DOCKER_NAME="pihole"; 
   FIRST_REINSTALL_CONFIRMATION="";
   SECOND_REINSTALL_CONFIRMATION="";
-  RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter 'name=pihole' | wc -l;);
+  RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" | wc -l;);
   if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
     # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
     echo -e "";
-    echo -e " ! !        ! !                                                   ! !        ! ! ";
-    echo -e " ! ! NOTICE ! !  This will reinstall any existing pihole dockers  ! ! NOTICE ! ! ";
-    echo -e " ! !   |    ! !   Make sure you've freed up port 53 on localhost  ! !        ! ! ";
+    echo -e " ! !        ! !";
+    echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} dockers  ! ! NOTICE ! ! ";
+    echo -e " ! !   |    ! !";
     echo -e "       |  ";
     read -p "       |--> Are you sure you want to continue?  (press 'y' to confirm)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo -e "";
@@ -101,8 +102,10 @@ if [ 1 -eq 1 ]; then
           REVERT_RESOLV_CONF=1;
         fi;
         # Remove existing pihole dockers
-        echo -e "\nCalling [ docker_sniper \"pihole\"; ]...";
-        docker_sniper "pihole";
+        echo -e "\nCalling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
+        curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
+        # docker_sniper "${DOCKER_NAME}";
+
         # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
         echo -e "\nSleeping for 30 seconds (to allow network resolution changes to propogate)...";
         sleep 30;
@@ -115,8 +118,8 @@ if [ 1 -eq 1 ]; then
       docker-compose up --detach;
 
       # Stop pihole & attempt to free-up port 53
-      echo -e "\nCalling [ docker stop pihole; ]...";
-      docker stop pihole;
+      echo -e "\nCalling [ docker stop \"${DOCKER_NAME}\"; ]...";
+      docker stop "${DOCKER_NAME}";
 
       # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
       echo -e "\nCalling [ systemctl disable \"systemd-resolved.service\"; ]...";
@@ -125,8 +128,8 @@ if [ 1 -eq 1 ]; then
       systemctl disable "systemd-resolved.service";
 
       # Start pihole again once port 53 has been made available
-      echo -e "\nCalling [ docker start pihole; ]...";
-      docker start pihole;
+      echo -e "\nCalling [ docker start \"${DOCKER_NAME}\"; ]...";
+      docker start "${DOCKER_NAME}";
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
       if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
@@ -135,7 +138,7 @@ if [ 1 -eq 1 ]; then
       fi;
 
       # Get the Pi-hole docker's container ID
-      PIHOLE_CONTAINER_ID="$(docker ps --all --quiet --filter 'name=pihole';)";
+      PIHOLE_CONTAINER_ID="$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)";
 
       if [ -z "${PIHOLE_CONTAINER_ID}" ]; then
         # Pi-hole container does NOT exist

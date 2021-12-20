@@ -82,8 +82,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # Ensure any volume-map directories exist
     CONFIG_DIR="/root/docker-configs/pihole";
     echo "";
-    echo "Creating volume-map directories which don't already exist...";
-    # echo "Calling [ mkdir --parents --verbose \"${CONFIG_DIR}/etc/pihole/\" \"${CONFIG_DIR}/etc/dnsmasq.d/\"; ]...";
+    echo "Info:  Creating volume-map directories which don't already exist...";
     mkdir --parents --verbose "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
 
     # ------------------------------
@@ -91,7 +90,6 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # Set the working directory
     echo "";
     echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
-    # echo "Calling [ cd \"${CONFIG_DIR}\"; ]...";
     cd "${CONFIG_DIR}";
 
     # ------------------------------
@@ -100,8 +98,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
     COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
     echo "";
-    echo "Info:  Downloading base docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
-    # echo "Calling [ curl -sL \"${REMOTE_DOCKER_COMPOSE}\" -o \"${COMPOSE_FILE}\"; chmod --verbose 0600 \"${COMPOSE_FILE}\"; ]...";
+    echo "Info:  Downloading docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
     curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
     chmod --verbose 0600 "${COMPOSE_FILE}";
 
@@ -120,7 +117,6 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       # Remove existing pihole dockers
       echo "";
       echo "Info:  Removing existing pihole containers...";
-      # echo "Calling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
       curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
       # docker_sniper "${DOCKER_NAME}";
 
@@ -134,31 +130,44 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # Spin up the pihole docker container
     echo "";
     echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container";
-    # echo "Calling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...";
     cd "${CONFIG_DIR}";
     docker-compose up --detach;
 
-    # Stop pihole & attempt to free-up port 53
-    echo "";
-    echo "Info:  Stopping docker \"${DOCKER_NAME}\"...";
-    # echo "Calling [ docker stop \"${DOCKER_NAME}\" 1>'/dev/null'; ]...";
-    docker stop "${DOCKER_NAME}" 1>'/dev/null';
+    # Verify that the docker container was created as-intended
+    DOCKER_EXISTS=0;
+    if [ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
+      # Pi-hole container DOES exist
+      DOCKER_EXISTS=1;
+      echo "";
+      echo "Info:  Pi-hole docker successfully created";
+      # echo "Info:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
+    else
+      # Pi-hole container does NOT exist
+      EXIT_CODE=1;
+      DOCKER_EXISTS=0;
+      echo "";
+      echo "Error:  Pi-hole docker not found";
+    fi;
 
-    # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
-    echo "";
-    echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it, instead";
-    echo " |--> Stopping service 'systemd-resolved'...";
-    # echo "Calling [ systemctl disable \"systemd-resolved.service\"; ]...";
-    systemctl stop "systemd-resolved.service";
-    echo " |--> Disabling service 'systemd-resolved'...";
-    # echo "Calling [ systemctl stop \"systemd-resolved.service\"; ]...";
-    systemctl disable "systemd-resolved.service";
+    # Free up port 53 for pihole --> Stop the pihole docker, then stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally, then start the pihole docker
+    if [[ "${DOCKER_EXISTS}" -eq 1 ]; then
+      echo "";
+      echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it";
 
-    # Start pihole again once port 53 has been made available
-    echo "";
-    echo "Info:  Starting docker \"${DOCKER_NAME}\"...";
-    # echo "Calling [ docker start \"${DOCKER_NAME}\" 1>'/dev/null';; ]...";
-    docker start "${DOCKER_NAME}" 1>'/dev/null';
+      echo " |--> Stopping docker \"${DOCKER_NAME}\"...";
+      docker stop "${DOCKER_NAME}" 1>'/dev/null';
+
+      echo " |--> Stopping service 'systemd-resolved'...";
+      systemctl stop "systemd-resolved.service";
+
+      echo " |--> Disabling service 'systemd-resolved'...";
+      systemctl disable "systemd-resolved.service";
+
+      echo " |--> Starting docker \"${DOCKER_NAME}\"...";
+      docker start "${DOCKER_NAME}" 1>'/dev/null';
+
+    fi;
+
 
     # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
     if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
@@ -167,17 +176,8 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
     fi;
 
-    if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
-      # Pi-hole container does NOT exist
-      echo "";
-      echo "Error:  Pi-hole docker not found";
-      EXIT_CODE=1;
 
-    else
-      # Pi-hole container DOES exist
-      # echo "";
-      # echo "Info:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
-
+    if [[ "${DOCKER_EXISTS}" -eq 1 ]; then
       # ------------------------------
       #
       # Update pihole's adlists (which gravity pulls from)
@@ -206,7 +206,6 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
           echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
         fi;
         if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
-          # echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
           docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
         fi;
       done;
@@ -216,12 +215,13 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       #
       # Update pihole's gravity (which pulls from its enabled adlists)
       #
+
       echo "";
       echo "Sleeping for 15 seconds (to allow pihole container to boot up)...";
       sleep 15;
+
       echo "";
       echo "Updating pihole's Gravity DB with latest adlist entries...";
-      # echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
       docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
 
     fi;

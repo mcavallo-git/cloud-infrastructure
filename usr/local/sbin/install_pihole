@@ -150,7 +150,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     fi;
 
     # Free up port 53 for pihole --> Stop the pihole docker, then stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally, then start the pihole docker
-    if [[ "${DOCKER_EXISTS}" -eq 1 ]; then
+    if [[ "${DOCKER_EXISTS}" -eq 1 ]]; then
       echo "";
       echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it";
 
@@ -177,7 +177,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     fi;
 
 
-    if [[ "${DOCKER_EXISTS}" -eq 1 ]; then
+    if [[ "${DOCKER_EXISTS}" -eq 1 ]]; then
       # ------------------------------
       #
       # Update pihole's adlists (which gravity pulls from)

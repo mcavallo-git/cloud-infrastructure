@@ -145,7 +145,7 @@ if [ 1 -eq 1 ]; then
                 echo "EACH_ADLIST = [ ${EACH_ADLIST} ]";
                 echo "SQLITE_QUERY_SELECT = [ ${SQLITE_QUERY_SELECT} ]";
                 echo "SQLITE_RESULT_SELECT = [ ${SQLITE_RESULT_SELECT} ]";
-            if [[ "$(echo "${SQLITE_RESULT_SELECT}" | wc -l;)" -eq 0 ]]; then
+            if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
               # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
               echo "Gravity DB --> Adding & enabling adlist entry:  '${EACH_ADLIST}' ...";
               SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_ADLIST}',1,'Imported from /etc/pihole/adlists.list');";

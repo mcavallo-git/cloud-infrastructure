@@ -185,6 +185,7 @@ if [ 1 -eq 1 ]; then
         echo -e "\nUpdating pihole's Gravity DB with latest adlist entries...";
         echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
         docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
+        # docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity && echo ${?};
 
       fi;
 

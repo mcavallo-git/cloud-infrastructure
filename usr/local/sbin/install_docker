@@ -54,12 +54,18 @@ else
     # Determine if docker-compose is already installed
     if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
       # Determine the latest version of docker-compose
-      DOCKER_COMPOSE_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/compose-switch/releases/latest | xargs basename;);
+      DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
       # Download the latest version of the docker-compose binary
-      URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose-switch/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-linux-$(dpkg --print-architecture)";
+      URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
       curl -fL -o "${BIN_DOCKER_COMPOSE}" "${URL_DOCKER_COMPOSE_LATEST}";
       # Set file permission as-intended
       chmod 0755 "${BIN_DOCKER_COMPOSE}";
+      #
+      # docker-compose-switch
+      #
+      # DOCKER_COMPOSE_SW_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/compose-switch/releases/latest | xargs basename;);
+      # URL_DOCKER_COMPOSE_SW_LATEST="https://github.com/docker/compose-switch/releases/download/${DOCKER_COMPOSE_SW_LATEST_VERSION}/docker-compose-linux-$(dpkg --print-architecture)";
+      #
     fi;
     #
     #   WSL OS  -  Install docker-wincred
@@ -139,7 +145,9 @@ else
         # Docker-Compose Installer --> x86_64 CPUs
         #  |--> Reference: [ https://docs.docker.com/compose/install ]
         #
+
         curl -sL "https://github.com/docker/compose/releases/download/v2.1.1/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
+
         # curl -sL "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o "${BIN_DOCKER_COMPOSE}";
       else
         #
@@ -179,6 +187,8 @@ fi;
 #   docs.docker.com  |  "Install Docker Compose"  |  https://docs.docker.com/compose/install/
 #
 #   github.com  |  "Release docker/compose image for armv7 / arm64v8 · Issue #6831 · docker/compose · GitHub"  |  https://github.com/docker/compose/issues/6831#issuecomment-558865087
+#
+#   stackoverflow.com  |  "debian based - How to upgrade docker-compose to latest version - Stack Overflow"  |  https://stackoverflow.com/a/49839172
 #
 #   stackoverflow.com  |  "Run Docker on Ubuntu on Windows Subsystem for Linux"  |  https://stackoverflow.com/a/48008676
 #

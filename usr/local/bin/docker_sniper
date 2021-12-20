@@ -63,7 +63,7 @@ else
   # Docker Containers - Remove all Containers which match the given Search-String
   echo -n "[ ${docker_ps_all_count} ] Containers ${HEAD_TEXT}";
   if [ $docker_ps_all_count -gt 0 ]; then
-    echo  "FORCE-REMOVING via \"docker rm --force ...\":\n";
+    echo -e "FORCE-REMOVING via \"docker rm --force ...\":\n";
     docker ps --all | grep ${DOCKER_NAME};
     docker rm --force $(docker ps --all | grep ${DOCKER_NAME} | awk '{print $1}');
     echo "";
@@ -102,5 +102,5 @@ fi;
   
 # Footer
 echo -e "\nFinished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
-echo "------------------------------\n";
+echo -e "------------------------------\n";
 exit ${EXIT_CODE};

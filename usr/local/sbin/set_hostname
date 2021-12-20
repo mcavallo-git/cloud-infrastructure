@@ -8,10 +8,10 @@ if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash;
 
 # Test updating the hostname
-clear; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns | cut --delimiter=" " --fields=1;)";
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns | cut --delimiter=" " --fields=1;)";
 
 # Actually update the hostname
-clear; curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns | cut --delimiter=" " --fields=1;)" --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/set_hostname?t=$(date +'%s.%N')" | bash -s -- --hostname "$(hostname --all-fqdns | cut --delimiter=" " --fields=1;)" --force;
 
 fi;
 # ------------------------------------------------------------

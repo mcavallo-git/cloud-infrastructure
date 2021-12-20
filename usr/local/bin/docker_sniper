@@ -22,9 +22,10 @@ fi;
 #         4.  Removes Networks
 #         5.  Performs [docker system prune]
 
-# Header
 THIS_SCRIPT="docker_sniper";
-echo -e "\n$(date +'%r, %B %d, %Y (%A)')\nStarting ${THIS_SCRIPT} as user (whoami) [$(whoami)]"
+
+# Header
+echo -e "\nStarting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] "
 
 if [ "$#" -ne 1 ]; then
   # Program was called with anything other than a single parameter
@@ -96,5 +97,5 @@ else
 fi;
   
 # Footer
-echo -e "\n$(date +'%r, %B %d, %Y (%A)')\n✓ Finished ${THIS_SCRIPT}";
+echo -e "\nFinished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] "
 exit 0;

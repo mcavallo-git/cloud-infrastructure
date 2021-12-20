@@ -37,185 +37,192 @@ exec 2>&1;
 #  |--> Restart the machine via [ reboot ]
 #
 # ------------------------------------------------------------
+
+EXIT_CODE=0;
+
+THIS_SCRIPT="install_pihole";
+
+echo "------------------------------";
+echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
+
+# ------------------------------------------------------------
 #
 # Spin-up the pihole docker (after port 53 is freed up)
 #
-if [ 1 -eq 1 ]; then
 
-  # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
-  DOCKER_NAME="pihole";
-  FIRST_REINSTALL_CONFIRMATION="";
-  SECOND_REINSTALL_CONFIRMATION="";
-  RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" | wc -l;);
-  if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
-    # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
-    echo -e "";
-    echo -e " ! !        ! !";
-    echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} dockers  ! ! NOTICE ! ! ";
-    echo -e " ! !   |    ! !";
-    echo -e "       |  ";
-    read -p "       |--> Are you sure you want to continue?  (press 'y' to confirm)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
-    echo -e "";
+# Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
+DOCKER_NAME="pihole";
+FIRST_REINSTALL_CONFIRMATION="";
+SECOND_REINSTALL_CONFIRMATION="";
+RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" | wc -l;);
+if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
+  # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
+  echo -e "";
+  echo -e " ! !        ! !";
+  echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} dockers  ! ! NOTICE ! ! ";
+  echo -e " ! !   |    ! !";
+  echo -e "       |  ";
+  read -p "       |--> Are you sure you want to continue?  (press 'y' to confirm)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  echo -e "";
+fi;
+
+if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+
+  # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
+  if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+    echo "       |  ";
+    read -p "       |--> Are you completely positive you want to continue?  (press 'y' to confirm)  " -a SECOND_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    echo "";
+    echo "";
   fi;
 
-  if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+  if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
-    # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
-    if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
-      echo "       |  ";
-      read -p "       |--> Are you completely positive you want to continue?  (press 'y' to confirm)  " -a SECOND_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    # ------------------------------
+    # Ensure any volume-map directories exist
+    CONFIG_DIR="/root/docker-configs/pihole";
+    echo "";
+    echo "Creating volume-map directories which don't already exist...";
+    # echo "Calling [ mkdir --parents --verbose \"${CONFIG_DIR}/etc/pihole/\" \"${CONFIG_DIR}/etc/dnsmasq.d/\"; ]...";
+    mkdir --parents --verbose "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
+
+    # ------------------------------
+
+    # Set the working directory
+    echo "";
+    echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
+    # echo "Calling [ cd \"${CONFIG_DIR}\"; ]...";
+    cd "${CONFIG_DIR}";
+
+    # ------------------------------
+
+    # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
+    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
+    COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
+    echo "";
+    echo "Info:  Downloading base docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
+    # echo "Calling [ curl -sL \"${REMOTE_DOCKER_COMPOSE}\" -o \"${COMPOSE_FILE}\"; chmod --verbose 0600 \"${COMPOSE_FILE}\"; ]...";
+    curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
+    chmod --verbose 0600 "${COMPOSE_FILE}";
+
+    # ------------------------------
+
+    # If any pihole containers are already running locally
+    REVERT_RESOLV_CONF=0;
+    if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
+      if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
+        # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
+        echo "";
+        echo "Info:  Adding Google DNS server to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
+        sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
+        REVERT_RESOLV_CONF=1;
+      fi;
+      # Remove existing pihole dockers
       echo "";
+      echo "Info:  Removing existing pihole containers...";
+      # echo "Calling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
+      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
+      # docker_sniper "${DOCKER_NAME}";
+
+      # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
       echo "";
+      echo "Info:  Sleeping for 30 seconds (to allow network resolution changes to propogate)...";
+      sleep 30;
     fi;
 
-    if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+    # ------------------------------
+    # Spin up the pihole docker container
+    echo "";
+    echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container";
+    # echo "Calling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...";
+    cd "${CONFIG_DIR}";
+    docker-compose up --detach;
 
-      # ------------------------------
-      # Ensure any volume-map directories exist
-      CONFIG_DIR="/root/docker-configs/pihole";
+    # Stop pihole & attempt to free-up port 53
+    echo "";
+    echo "Info:  Stopping docker \"${DOCKER_NAME}\"...";
+    # echo "Calling [ docker stop \"${DOCKER_NAME}\"; ]...";
+    docker stop "${DOCKER_NAME}";
+
+    # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
+    echo "";
+    echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it, instead";
+    echo " |--> Stopping service 'systemd-resolved'...";
+    # echo "Calling [ systemctl disable \"systemd-resolved.service\"; ]...";
+    systemctl stop "systemd-resolved.service";
+    echo " |--> Disabling service 'systemd-resolved'...";
+    # echo "Calling [ systemctl stop \"systemd-resolved.service\"; ]...";
+    systemctl disable "systemd-resolved.service";
+
+    # Start pihole again once port 53 has been made available
+    echo "";
+    echo "Info:  Starting docker \"${DOCKER_NAME}\"...";
+    # echo "Calling [ docker start \"${DOCKER_NAME}\"; ]...";
+    docker start "${DOCKER_NAME}";
+
+    # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
+    if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
       echo "";
-      echo "Creating volume-map directories which don't already exist...";
-      # echo "Calling [ mkdir --parents --verbose \"${CONFIG_DIR}/etc/pihole/\" \"${CONFIG_DIR}/etc/dnsmasq.d/\"; ]...";
-      mkdir --parents --verbose "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
+      echo "Info:  Removing Google DNS server from local DNS resolvers...";
+      sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
+    fi;
 
-      # ------------------------------
-
-      # Set the working directory
+    if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
+      # Pi-hole container does NOT exist
       echo "";
-      echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
-      # echo "Calling [ cd \"${CONFIG_DIR}\"; ]...";
-      cd "${CONFIG_DIR}";
+      echo "Error:  Pi-hole docker not found";
+      EXIT_CODE=1;
 
-      # ------------------------------
-
-      # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
-      REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
-      COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
+    else
+      # Pi-hole container DOES exist
       echo "";
-      echo "Info:  Downloading base docker-compose YAML script (intended to be used for spinning up customized pihole containers)...";
-      # echo "Calling [ curl -sL \"${REMOTE_DOCKER_COMPOSE}\" -o \"${COMPOSE_FILE}\"; chmod --verbose 0600 \"${COMPOSE_FILE}\"; ]...";
-      curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
-      chmod --verbose 0600 "${COMPOSE_FILE}";
+      echo "Info:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
 
       # ------------------------------
+      #
+      # Update pihole's adlists (which gravity pulls from)
+      #
 
-      # If any pihole containers are already running locally
-      REVERT_RESOLV_CONF=0;
-      if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
-        if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
-          # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
-          echo "";
-          echo "Info:  Adding Google DNS server to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
-          sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
-          REVERT_RESOLV_CONF=1;
+      FULLPATH_ADLISTS="/etc/pihole/adlists.list";
+      echo "";
+      echo "Info:  Updating adlist entries from \"${FULLPATH_ADLISTS}\"...";
+
+      # Search adlists for urls to pull from
+      ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
+      for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
+        SQLITE_QUERY_SELECT="SELECT enabled FROM adlist WHERE address='${EACH_ADLIST}';";
+        SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+        SQLITE_QUERY_UPDATE="";
+        if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
+          # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
+          echo " |--> (Insert)  Adding/Enabling adlist entry:  '${EACH_ADLIST}' ...";
+          SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_ADLIST}',1,'Imported from ${FULLPATH_ADLISTS}');";
+        elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
+          # (Update) Record exists for this adlist entry, but it is disabled --> enable it
+          echo " |--> (Update)  Enabling adlist entry:  '${EACH_ADLIST}' ...";
+          SQLITE_QUERY_UPDATE="UPDATE adlist ad SET ad.enabled=1 WHERE ad.address='${EACH_ADLIST}';";
+        else
+          # (Skipped) Record exists and is enabled, already
+          echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
         fi;
-        # Remove existing pihole dockers
-        echo "";
-        echo "Info:  Removing existing pihole containers...";
-        # echo "Calling [ docker_sniper \"${DOCKER_NAME}\"; ]...";
-        curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
-        # docker_sniper "${DOCKER_NAME}";
-
-        # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
-        echo "";
-        echo "Info:  Sleeping for 30 seconds (to allow network resolution changes to propogate)...";
-        sleep 30;
-      fi;
+        if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
+          # echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
+          docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+        fi;
+      done;
+      IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
       # ------------------------------
-      # Spin up the pihole docker container
+      #
+      # Update pihole's gravity (which pulls from its enabled adlists)
+      #
       echo "";
-      echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container";
-      # echo "Calling [ cd \"${CONFIG_DIR}\"; docker-compose up --detach; ]...";
-      cd "${CONFIG_DIR}";
-      docker-compose up --detach;
-
-      # Stop pihole & attempt to free-up port 53
+      echo "Sleeping for 15 seconds (to allow pihole container to boot up)...";
+      sleep 15;
       echo "";
-      echo "Info:  Stopping docker \"${DOCKER_NAME}\"...";
-      # echo "Calling [ docker stop \"${DOCKER_NAME}\"; ]...";
-      docker stop "${DOCKER_NAME}";
-
-      # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
-      echo "";
-      echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it, instead";
-      echo " |--> Stopping service 'systemd-resolved'...";
-      # echo "Calling [ systemctl disable \"systemd-resolved.service\"; ]...";
-      systemctl stop "systemd-resolved.service";
-      echo " |--> Disabling service 'systemd-resolved'...";
-      # echo "Calling [ systemctl stop \"systemd-resolved.service\"; ]...";
-      systemctl disable "systemd-resolved.service";
-
-      # Start pihole again once port 53 has been made available
-      echo "";
-      echo "Info:  Starting docker \"${DOCKER_NAME}\"...";
-      # echo "Calling [ docker start \"${DOCKER_NAME}\"; ]...";
-      docker start "${DOCKER_NAME}";
-
-      # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
-      if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
-        echo "";
-        echo "Info:  Removing Google DNS server from local DNS resolvers...";
-        sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
-      fi;
-
-      if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
-        # Pi-hole container does NOT exist
-        echo "";
-        echo "Error:  Pi-hole docker not found";
-
-      else
-        # Pi-hole container DOES exist
-        echo "";
-        echo "Info:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
-
-        # ------------------------------
-        #
-        # Update pihole's adlists (which gravity pulls from)
-        #
-
-        FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-        echo "";
-        echo "Info:  Updating adlist entries from \"${FULLPATH_ADLISTS}\"...";
-
-        # Search adlists for urls to pull from
-        ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-        for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
-          SQLITE_QUERY_SELECT="SELECT enabled FROM adlist WHERE address='${EACH_ADLIST}';";
-          SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
-          SQLITE_QUERY_UPDATE="";
-          if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
-            # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
-            echo " |--> (Insert)  Adding/Enabling adlist entry:  '${EACH_ADLIST}' ...";
-            SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_ADLIST}',1,'Imported from ${FULLPATH_ADLISTS}');";
-          elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
-            # (Update) Record exists for this adlist entry, but it is disabled --> enable it
-            echo " |--> (Update)  Enabling adlist entry:  '${EACH_ADLIST}' ...";
-            SQLITE_QUERY_UPDATE="UPDATE adlist ad SET ad.enabled=1 WHERE ad.address='${EACH_ADLIST}';";
-          else
-            # (Skipped) Record exists and is enabled, already
-            echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
-          fi;
-          if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
-            # echo "   |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" sqlite3 /etc/pihole/gravity.db \"${SQLITE_QUERY_UPDATE}\"; ]...";
-            docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
-          fi;
-        done;
-        IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
-
-        # ------------------------------
-        #
-        # Update pihole's gravity (which pulls from its enabled adlists)
-        #
-        echo "";
-        echo "Sleeping for 15 seconds (to allow pihole container to boot up)...";
-        sleep 15;
-        echo "";
-        echo "Updating pihole's Gravity DB with latest adlist entries...";
-        # echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
-        docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
-
-      fi;
+      echo "Updating pihole's Gravity DB with latest adlist entries...";
+      # echo " |--> Calling [ docker exec \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\" pihole updateGravity; ]...";
+      docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
 
     fi;
 
@@ -224,7 +231,7 @@ if [ 1 -eq 1 ]; then
 fi;
 
 
-#   !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)  !!!
+#  !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)
 if [ 0 -eq 1 ]; then
 
   # Bash into the docker
@@ -246,6 +253,12 @@ if [ 0 -eq 1 ]; then
   #
 
 fi;
+
+
+echo "";
+echo "Finished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
+echo "------------------------------";
+exit ${EXIT_CODE};
 
 
 # ------------------------------------------------------------

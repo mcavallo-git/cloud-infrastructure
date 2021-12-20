@@ -141,8 +141,8 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # Stop pihole & attempt to free-up port 53
     echo "";
     echo "Info:  Stopping docker \"${DOCKER_NAME}\"...";
-    # echo "Calling [ docker stop \"${DOCKER_NAME}\"; ]...";
-    docker stop "${DOCKER_NAME}";
+    # echo "Calling [ docker stop \"${DOCKER_NAME}\" 1>'/dev/null'; ]...";
+    docker stop "${DOCKER_NAME}" 1>'/dev/null';
 
     # Free up port 53 for pihole --> Stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally
     echo "";
@@ -157,8 +157,8 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # Start pihole again once port 53 has been made available
     echo "";
     echo "Info:  Starting docker \"${DOCKER_NAME}\"...";
-    # echo "Calling [ docker start \"${DOCKER_NAME}\"; ]...";
-    docker start "${DOCKER_NAME}";
+    # echo "Calling [ docker start \"${DOCKER_NAME}\" 1>'/dev/null';; ]...";
+    docker start "${DOCKER_NAME}" 1>'/dev/null';
 
     # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
     if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then

@@ -22,63 +22,93 @@ if [ "$(id -un)" != "root" ]; then
   exit 1;
 else
   # ------------------------------------------------------------
-  
-  if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
-    #
-    # UBUNTU Environment
-    #
-    OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p');
-    OS_VERSION_MINOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\2/p');
+  VALID_OS=0;
+  if [ -n "$(command -v dotnet 2>'/dev/null';)" ]; then
+    echo "";
+    echo "Info:  dotnet already installed - listing installed SDKs...";
+      if [ -z "$(command -v dotnet 2>'/dev/null';)" ]; then
 
-    if [[ ${OS_VERSION_MAJOR} -ge 19 ]]; then
-      # UBUNTU 19.x
-      DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb";
-      wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
-      sudo dpkg -i $(basename "${DOWNLOAD_URL}");
-      sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
-      sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
+  else
+    if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
+      #
+      #   Ubuntu Environment
+      #
 
-    elif [[ ${OS_VERSION_MAJOR} -ge 18 ]]; then
-      # UBUNTU 18.x
-      DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb";
-      wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
-      sudo dpkg -i $(basename "${DOWNLOAD_URL}");
-      sudo apt-get update -y; sudo add-apt-repository --yes --update "universe";
-      sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
-      sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
+      #
+      # Add/update the [ Microsoft's Linux Software Repository ] onto the list of known/trusted package repos
+      #
 
-    elif [[ ${OS_VERSION_MAJOR} -ge 16 ]]; then
-      # UBUNTU 16.x
-      DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb";
-      wget -q "${DOWNLOAD_URL}" -O $(basename "${DOWNLOAD_URL}");
-      sudo dpkg -i $(basename "${DOWNLOAD_URL}");
-      sudo apt-get update -y; sudo apt-get install -y "apt-transport-https";
-      sudo apt-get update -y; sudo apt-get install -y "dotnet-sdk-2.2";
-
+      # Get local distro's major version
+      OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p';);
+      # Get local distro's minor version
+      OS_VERSION_MINOR=$(LENGTH="2"; echo "$(printf "%0${LENGTH}d" "$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\2/p';)";)";);
+      # Build the package repo url based off of current distro's versioning info
+      DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/${OS_VERSION_MAJOR}.${OS_VERSION_MINOR}/packages-microsoft-prod.deb";
+      # Determine if there is a url endpoint ready to handle requests for the current OS
+      RESPONSE_HTTP_CODE="$(curl -ILs "${DOWNLOAD_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
+      if [[ "${RESPONSE_HTTP_CODE}" -eq 200 ]]; then
+        # Microsoft Hosted Package Repository EXISTS for the current distro
+        VALID_OS=1;
+        # Remove any existing instances of the package repo (to remove deprecated ones)
+        cd "${HOME}";
+        dpkg --purge "packages-microsoft-prod" 2>'/dev/null';
+        rm -fv "packages-microsoft-prod.deb" 2>'/dev/null';
+        # Download the latest reference to the package repo
+        wget -q "${DOWNLOAD_URL}" -O "$(basename "${DOWNLOAD_URL}";)";
+        # Add/Update local references to the downloaded package repo references
+        dpkg --install "$(basename "${DOWNLOAD_URL}";)";
+        # Cleanup the downloaded file
+        rm -fv "$(basename "${DOWNLOAD_URL}";)";
+        # Install the dotnet SDK package(s)
+        apt-get -y update;
+        apt-get -y install "apt-transport-https";
+        apt-get -y update;
+        apt-get -y install "dotnet-sdk-2.2";
+        apt-get -y install "dotnet-sdk-5.0";
+        apt-get -y install "dotnet-sdk-6.0";
+      fi;
+    fi;
+    if [ -n "$(command -v dotnet 2>'/dev/null';)" ]; then
+      #
+      # Verify that the dotnet SDKs have been installed successfully
+      #
+      dotnet --list-sdks;
+    fi;
+    if [[ "${VALID_OS}" -eq 0 ]]; then
+      #
+      # Error:  Unhandled Linux distribution
+      #
+      echo "";
+      echo "Error:  Unhandled Linux distribution:";
+      echo "------------------------------------------------------------";
+      cat /etc/*release;
+      echo "------------------------------------------------------------";
+      echo "";
+      echo "Info:  Please refer Microsoft's tutorial page for installing DotNet Core @:";
+      echo " |    ";
+      echo " |--> https://docs.microsoft.com/en-us/dotnet/core/install/linux";
+      echo "";
+      echo "------------------------------------------------------------";
     fi;
 
-  fi;
-
-  if [ "$(which dotnet 2>'/dev/null')" == "" ]; then
-    # UNKNOWN/UNHANDLED OPERATING SYSTEM
-    echo "";
-    echo "Unhandled version of Linux:";
-    echo "------------------------------------------------------------";
-    cat /etc/*release;
-    echo "------------------------------------------------------------";
-    echo "";
-    echo "Please see Microsoft's tutorial page for installing DotNet Core @:";
-    echo " |    ";
-    echo " |--> https://dotnet.microsoft.com/download/linux-package-manager/ubuntu19-04/sdk-current";
   fi;
 
 fi;
 
 
+# ------------------------------------------------------------
+#
+### Ad-hoc test for Linux distro compatibility (major v. 14 thru 24 --> minor v. 00 thru 24 (for every major))
+# if [ 0 -eq 1 ]; then
+#   clear; echo -e "\n"; for OS_VERSION_MAJOR in {14..24}; do for OS_VERSION_MINOR in {00..24}; do DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/${OS_VERSION_MAJOR}.${OS_VERSION_MINOR}/packages-microsoft-prod.deb"; RESPONSE_HTTP_CODE="$(curl -ILs "${DOWNLOAD_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)"; if [ "${RESPONSE_HTTP_CODE}" == "200" ]; then echo "  Info:  URL validated for Ubuntu ${OS_VERSION_MAJOR}.${OS_VERSION_MINOR}"; fi; done; done; echo -e "\n";
+# fi;
+#
 # -------------------------------------------------------------
 #
 # Citation(s)
 #
-#   dotnet.microsoft.com  |  "Install .NET Core SDK on Linux Ubuntu 19.04 - x64"  |  https://dotnet.microsoft.com/download/linux-package-manager/ubuntu19-04/sdk-current
+#   docs.microsoft.com  |  "Linux Software Repository for Microsoft Products | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows-server/administration/linux-package-repository-for-microsoft-software
+#
+#   dotnet.microsoft.com  |  "Install .NET on Linux Distributions | Microsoft Docs"  |  https://docs.microsoft.com/en-us/dotnet/core/install/linux
 #
 # ------------------------------------------------------------

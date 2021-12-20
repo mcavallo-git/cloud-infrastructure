@@ -90,8 +90,7 @@ else
   fi;
   
   # Prune System
-  printf "[ - ] Clean-Up & Exit - ";
-  printf "Running generic sweep \"docker system prune --filter 'label=\"${DOCKER_NAME}\"' --force\":\n";
+  printf "[ - ] Clean up - Running generic sweep \"docker system prune --filter 'label=\"${DOCKER_NAME}\"' --force\":\n";
   docker system prune --force --filter 'label="'${DOCKER_NAME}'"' --force;
   
 fi;

@@ -209,8 +209,7 @@ PATH_APPENDS_ARR+=("${HOME}/.azure-kubectl");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubelogin");
 for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
   if [ -e "${EACH_PATH_APPEND}" ]; then
-    ROLLBACK_IFS="${IFS}";
-    IFS=':' read -ra PATH_CURRENT_ARR <<< "${PATH}";
+    ROLLBACK_IFS="${IFS}"; IFS=':' read -ra PATH_CURRENT_ARR <<< "${PATH}"; # Set the global for-loop delimiter
     APPEND_TO_PATH="1";
     for EACH_PATH_ITEM in "${PATH_CURRENT_ARR[@]}"; do
       if [ "${EACH_PATH_ITEM}" == "${EACH_PATH_APPEND}" ]; then
@@ -218,7 +217,7 @@ for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do
         break;
       fi;
     done;
-    IFS="${ROLLBACK_IFS}";
+    IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
     if [ "${APPEND_TO_PATH}" == "1" ]; then
       export PATH="${PATH}:${EACH_PATH_APPEND}";
     fi;

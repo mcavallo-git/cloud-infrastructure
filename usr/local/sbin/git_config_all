@@ -24,8 +24,7 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
 else
   # ------------------------------------------------------------
 
-  ROLLBACK_IFS="${IFS}";
-  IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
+  ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
 
   ALL_GIT_EXE_PATHS="${USERPROFILE}/_git_exe_paths.txt";
   ALL_SYSTEM_CONFIGS="${USERPROFILE}/_git_configs.system.txt";
@@ -188,7 +187,7 @@ else
 
   echo "";
 
-  IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
+  IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
   # ------------------------------------------------------------
 

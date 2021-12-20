@@ -19,7 +19,7 @@ TEXT_TEAL='\033[0;96m';
 TEXT_RED='\033[0;31m'; # 
 TEXT_COLORLESS='\033[0m'; # No Color
 
-ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
+ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
 
 docker inspect \
 --format='{{println}}IMG:  {{.Config.Image}}Image:   {{range .Mounts}}{{println}}Map-Src: {{.Source}}  (Host){{println}}Map-Dst: {{.Destination}}  (Container){{end}}' \
@@ -29,7 +29,7 @@ $(docker ps --quiet) \
   test -n "$(echo ${EACH_VOLMAP} | grep '^.*Container.*$' 2>'/dev/null';)" && echo -e "${TEXT_TEAL}${EACH_VOLMAP}${TEXT_RESET}" || echo "${EACH_VOLMAP}";
 done;
 
-IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter to whatever the value was at the start of this script's runtime
+IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
 echo "";
 echo "------------------------------------------------------------";

@@ -64,8 +64,7 @@ else
     done;
 
     # Sort the table by IPv4 address
-    ROLLBACK_IFS="${IFS}";
-    IFS=$'\n'; # Set the global delimiter
+    ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
     if [ "${INDEX_RESULTS_BY}" == "FQDN" ]; then
       # Group & Sort by FQDN
       ARR_SORTED_RESULTS=($(sort <<<"${!ARR_FQDN_IDX[*]}"));
@@ -73,7 +72,7 @@ else
       # Group & Sort by IPv4
       ARR_SORTED_RESULTS=($(sort <<<"${!ARR_IPV4_IDX[*]}"));
     fi;
-    IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
+    IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
     # Display the results
     echo "";

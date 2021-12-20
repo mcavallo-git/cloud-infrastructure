@@ -309,8 +309,7 @@ fi;
 # Git - Setup all known Windows git config-file locations
 # ------------------------------------------------------------
 
-ROLLBACK_IFS="${IFS}";
-IFS=$'\n'; # Set the global for-loop delimiter to newlines (ignore spaces)
+ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
 
 GIT_CONF_SYSTEM_FILE_1=$(realpath "${DISK_ROOT}/ProgramData/Git/config" 2>'/dev/null';);
 GIT_CONF_SYSTEM_FILE_2=$(realpath "${DISK_ROOT}/Program Files/Git/etc/gitconfig" 2>'/dev/null';);
@@ -374,7 +373,7 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 
 done;
 
-IFS="${ROLLBACK_IFS}";
+IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
 # ------------------------------------------------------------
 # Repositories  :::  General/Global && System Configs

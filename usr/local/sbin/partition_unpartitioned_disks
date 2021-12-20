@@ -52,7 +52,7 @@ else
   fi;
 
   # Partition un-partitioned disk(s), add volume(s) to empty disk(s), & mount unmounted volume(s)
-  ROLLBACK_IFS="${IFS}"; IFS=$'\n';
+  ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
   for EACH_LINE in $(parted -lms 2>&1 | grep -i ^/;); do
     echo "------------------------------------------------------------";
     EACH_DISK_DEVICE=$(echo "${EACH_LINE}" | cut -d':' -f1;);
@@ -102,7 +102,7 @@ else
     KERNEL_DISK_PARTITIONS="/proc/partitions";
     # EACH_DISK_PARTITIONS="$(sfdisk -l | grep "^${EACH_DISK_DEVICE}" | grep -v Empty$ | awk '{print $1}';)";
     EACH_DISK_PARTITIONS=$(lsblk -p -n -o KNAME,TYPE,MOUNTPOINT | grep -E '[part|disk] $' | awk '{print $1}';);
-    ROLLBACK_IFS="${IFS}"; IFS=$'\n';
+    # ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
     for EACH_SUB_DEVICE in ${EACH_DISK_PARTITIONS}; do
       EACH_CHILD_DEPENDENCY_COUNT=$(lsblk -p -n -o PKNAME,NAME,MOUNTPOINT "${EACH_SUB_DEVICE}" 2>'/dev/null' | grep "^${EACH_SUB_DEVICE} " 2>'/dev/null' | wc -l);
       if [ ${EACH_CHILD_DEPENDENCY_COUNT} -eq 0 ]; then
@@ -131,9 +131,9 @@ else
       else
         echo "Info:  Skipping disk-mounting for device [ ${EACH_SUB_DEVICE} ] (has [ ${EACH_CHILD_DEPENDENCY_COUNT} ] child-nodes(s))";
       fi;
-    done; # IFS="${ROLLBACK_IFS}";
+    done; # IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
-  done; IFS="${ROLLBACK_IFS}";
+  done; IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
 fi;
 

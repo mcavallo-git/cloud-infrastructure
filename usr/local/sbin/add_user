@@ -48,8 +48,7 @@ else
     fi;
   done;
 
-  ROLLBACK_IFS="${IFS}";
-  IFS=' '; # Set the global delimiter
+  ROLLBACK_IFS="${IFS}"; IFS=' '; # Set the global for-loop delimiter
 
   # USER_NAME="...";
   # USER_UID="${USER_UID:-NEXT_AVAILABLE_ID}";
@@ -240,6 +239,6 @@ else
 
   fi;
 
-  IFS="${ROLLBACK_IFS}"; # Restore the global delimiter
+  IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
 fi;

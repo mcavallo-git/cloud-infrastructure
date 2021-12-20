@@ -545,7 +545,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
   # Determine which rules to keep and which to remove from existing ruleset
   RULESET_UFW="$(ufw status | sed /^To*/d | sed /^Status*/d | sed /^--*/d | grep '\S';)";
-  ROLLBACK_IFS="${IFS}"; IFS=$'\n';
+  ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
   for EACH_UFW_LINE in ${RULESET_UFW}; do
     EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
     EACH_UFW_IPv4=$(echo ${EACH_UFW_CIDRv4} | cut -d"/" -f1);
@@ -651,7 +651,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
       fi;
     fi;
   done;
-  IFS="${ROLLBACK_IFS}";
+  IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
   # Show all undo-commands for this runtime
   echo "------------------------------------------------------------";

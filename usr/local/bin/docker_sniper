@@ -98,7 +98,7 @@ else
   fi;
   
   # Prune System
-  echo "[ - ] Pruning (removing unused) docker containers, images, networks & volumes matching filter \"label='${DOCKER_NAME}'\"";
+  echo "[ - ] Pruning (removing unused) containers, images, networks & volumes matching filter \"label='${DOCKER_NAME}'\"";
   echo "      $(docker system prune --force --filter 'label="'${DOCKER_NAME}'"' --force;)" | grep -v '0B';
   
 fi;

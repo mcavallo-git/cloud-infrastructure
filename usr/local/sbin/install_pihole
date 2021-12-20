@@ -183,6 +183,8 @@ if [ 1 -eq 1 ]; then
         #
         # Update pihole's gravity (which pulls from its enabled adlists)
         #
+        echo -e "\nSleeping for 15 seconds (to allow pihole container to boot up)...";
+        sleep 15;
         echo -e "\nUpdating pihole's Gravity DB with latest adlist entries...";
         echo " |--> Calling [ docker exec \"${PIHOLE_CONTAINER_ID}\" pihole updateGravity; ]...";
         docker exec "${PIHOLE_CONTAINER_ID}" pihole updateGravity;

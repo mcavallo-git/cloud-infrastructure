@@ -129,7 +129,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     # ------------------------------
     # Spin up the pihole docker container
     echo "";
-    echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container";
+    echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container...";
     cd "${CONFIG_DIR}";
     docker-compose up --detach;
 
@@ -190,20 +190,20 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       # Search adlists for urls to pull from
       ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
       for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
-        SQLITE_QUERY_SELECT="SELECT enabled FROM adlist WHERE address='${EACH_ADLIST}';";
+        SQLITE_QUERY_SELECT="SELECT enabled FROM adlist WHERE address='${EACH_LINE}';";
         SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
         SQLITE_QUERY_UPDATE="";
         if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
           # (Insert) Record doesn't (yet) exist for this adlist entry --> create it
-          echo " |--> (Insert)  Adding/Enabling adlist entry:  '${EACH_ADLIST}' ...";
-          SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_ADLIST}',1,'Imported from ${FULLPATH_ADLISTS}');";
+          echo " |--> (Insert)  Adding/Enabling adlist entry:  '${EACH_LINE}' ...";
+          SQLITE_QUERY_UPDATE="INSERT INTO adlist (address, enabled, comment) VALUES ('${EACH_LINE}',1,'Imported from ${FULLPATH_ADLISTS}');";
         elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
           # (Update) Record exists for this adlist entry, but it is disabled --> enable it
-          echo " |--> (Update)  Enabling adlist entry:  '${EACH_ADLIST}' ...";
-          SQLITE_QUERY_UPDATE="UPDATE adlist ad SET ad.enabled=1 WHERE ad.address='${EACH_ADLIST}';";
+          echo " |--> (Update)  Enabling adlist entry:  '${EACH_LINE}' ...";
+          SQLITE_QUERY_UPDATE="UPDATE adlist ad SET ad.enabled=1 WHERE ad.address='${EACH_LINE}';";
         else
           # (Skipped) Record exists and is enabled, already
-          echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADLIST}' ...";
+          echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_LINE}' ...";
         fi;
         if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
           docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";

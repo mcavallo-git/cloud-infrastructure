@@ -32,10 +32,9 @@ fi;
 
 # External servers to resolve WAN-IP through
 unset IP_RESOLVERS; declare -a IP_RESOLVERS; # [Re-]Instantiate bash array
-IP_RESOLVERS+=("https://icanhazip.com");
-IP_RESOLVERS+=("https://ipecho.net/plain");
-IP_RESOLVERS+=("https://ident.me");
-IP_RESOLVERS+=("https://bot.whatismyipaddress.com");
+IP_RESOLVERS+=("https://icanhazip.com"); # IPv4/IPv6
+IP_RESOLVERS+=("https://ipecho.net/plain"); # IPv4 Only
+IP_RESOLVERS+=("https://ident.me"); # IPv4/IPv6
 
 THIS_WAN_IPv4="";
 RESPONSE_SRVR="";

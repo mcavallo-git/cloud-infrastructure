@@ -9,7 +9,7 @@ if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash;
 
 # Re-Enable IPv6 (revert disable)
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash -s -- --revert;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash -s -- --enable;
 
 fi;
 #
@@ -170,10 +170,10 @@ else
   #
   if [[ "${DISABLE_IPV6_VAL}" -eq 1 ]]; then
     echo "";
-    echo "Info:  Disabling IPv6 networking (through sysctl) - Job complete";
+    echo "Info:  Job complete - Disable IPv6 networking (through sysctl)";
   else
     echo "";
-    echo "Info:  Enabling IPv6 networking (through sysctl) - Job complete";
+    echo "Info:  Job complete - Enable IPv6 networking (through sysctl)";
   fi;
 fi;
 #

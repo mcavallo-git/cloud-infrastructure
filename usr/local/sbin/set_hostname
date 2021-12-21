@@ -214,10 +214,18 @@ else
     # ------------------------------------------------------------
     # External server(s) to resolve WAN-IP through
     #
-    RESOLVER_1="https://icanhazip.com";
-    RESOLVER_2="https://ipecho.net/plain";
-    RESOLVER_3="https://ident.me";
-    RESOLVER_4="https://bot.whatismyipaddress.com";
+
+    # IPv4 Resolvers
+    RESOLVER_1 = "https://ipv4.icanhazip.com";
+    RESOLVER_2 = "https://v4.ident.me";
+    RESOLVER_3 = "https://ipinfo.io/ip";
+    RESOLVER_4 = "https://ipecho.net/plain";
+
+    # IPv6 Resolvers
+    IPv6_Resolvers="https://ipv6.icanhazip.com";
+    IPv6_Resolvers="https://v6.ident.me";
+    IPv6_Resolvers="https://bot.whatismyipaddress.com";
+    IPv6_Resolvers="https://checkip.amazonaws.com";
 
     ### Get WAN-Outgoing IPv4
     if [ -z "${THIS_WAN_IPV4}" ]; then THIS_WAN_IPV4=$(curl -4 -L -s "${RESOLVER_1}"); fi; RESOLVER_USED="${RESOLVER_1}";

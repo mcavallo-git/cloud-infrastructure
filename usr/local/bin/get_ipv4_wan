@@ -31,10 +31,18 @@ fi;
 # REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
 
 # External servers to resolve WAN-IP through
-unset IP_RESOLVERS; declare -a IP_RESOLVERS; # [Re-]Instantiate bash array
-IP_RESOLVERS+=("https://icanhazip.com"); # IPv4/IPv6
-IP_RESOLVERS+=("https://ipecho.net/plain"); # IPv4 Only
-IP_RESOLVERS+=("https://ident.me"); # IPv4/IPv6
+
+# IPv4 Resolvers
+RESOLVER_1 = "https://ipv4.icanhazip.com";
+RESOLVER_2 = "https://v4.ident.me";
+RESOLVER_3 = "https://ipinfo.io/ip";
+RESOLVER_4 = "https://ipecho.net/plain";
+
+# IPv6 Resolvers
+IPv6_Resolvers="https://ipv6.icanhazip.com";
+IPv6_Resolvers="https://v6.ident.me";
+IPv6_Resolvers="https://bot.whatismyipaddress.com";
+IPv6_Resolvers="https://checkip.amazonaws.com";
 
 THIS_WAN_IPv4="";
 RESPONSE_SRVR="";

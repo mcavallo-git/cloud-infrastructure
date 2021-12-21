@@ -9,7 +9,7 @@ if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash;
 
 # Re-Enable IPv6 (revert disable)
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash -s -- "revert";
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash -s -- --revert;
 
 fi;
 #
@@ -22,78 +22,157 @@ exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
 # ------------------------------------------------------------
+
+EXIT_CODE=0;
+THIS_SCRIPT="disable_ipv6";
+
+echo "------------------------------";
+echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
+
 #
 # Script must run as root or via sudo
 #
 if [ "$(id -un)" != "root" ]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
-  exit 1;
+  echo "Error: Script must run as user \"root\" or via \"sudo\" command";
+  EXIT_CODE=1;
 else
-  # ------------------------------------------------------------
-
+  #
+  # ------------------------------
+  #
   CONF_DISABLE_IPV6="/etc/sysctl.d/99-zero-ipv6-traffic.conf";
-
-  RELOAD_SYSCTL="";
-
+  RELOAD_SYSCTL=0;
   FORCE_RECREATE_CONFIG=0;
-
-  DISABLE_IPV6=1;
-  
+  DISABLE_IPV6_VAL=1;
+  #
+  # ------------------------------
+  #
   if [ -n "${1}" ]; then
-    if [ "${1}" == "revert" ] || [ "${1}" == "re-enable" ] || [ "${1}" == "enable" ]; then
-      DISABLE_IPV6=0;
-    fi;
-    if [ "${1}" == "force" ]; then
-      FORCE_RECREATE_CONFIG=1; # Force-recreate this runtime's unique config-file
+    if [ "${1}" == "--revert" ] || [ "${1}" == "--re-enable" ] || [ "${1}" == "--enable" ]; then
+      DISABLE_IPV6_VAL=0;
+    elif [ "${1}" == "--force" ]; then
+      FORCE_RECREATE_CONFIG=1;
     fi;
   fi;
-
-  if [ ! -f "${CONF_DISABLE_IPV6}" ]; then
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Creating sysctl file \"${CONF_DISABLE_IPV6}\"...";
-    echo -n "" > "${CONF_DISABLE_IPV6}";
-    RELOAD_SYSCTL="1";
-  elif [[ "${FORCE_RECREATE_CONFIG}" -eq 1 ]]; then
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Overwriting sysctl file \"${CONF_DISABLE_IPV6}\"...";
-    echo -n "" > "${CONF_DISABLE_IPV6}";
-    RELOAD_SYSCTL="1";
+  #
+  # ------------------------------
+  #
+  if [[ "${DISABLE_IPV6_VAL}" -eq 1 ]]; then
+    echo "";
+    echo "Info:  Disabling IPv6 networking (through sysctl) for the current device";
+  else
+    echo "";
+    echo "Info:  Enabling IPv6 networking (through sysctl) from the current device";
   fi;
-
+  #
+  # ------------------------------
+  #
+  # Force-recreate this runtime's associated sysctl config-file
+  #
+  if [[ "${FORCE_RECREATE_CONFIG}" -eq 1 ]]; then
+    if [ ! -f "${CONF_DISABLE_IPV6}" ]; then
+      echo "";
+      echo "Info:  Force-removing sysctl file \"${CONF_DISABLE_IPV6}\" (in order to recreate it)...";
+      RELOAD_SYSCTL=1;
+    fi;
+  fi;
+  #
+  # ------------------------------
+  #
   SYSCTL_ALL="$(/sbin/sysctl --all 2>'/dev/null';)";
   SYSCTL_IPV6="$(/sbin/sysctl --system --pattern '^net.ipv6' 2>'/dev/null';)";
-
-  # Rules to ensure get applied to sysctl in current environment & on every boot henceforth
   DISABLE_IPV6_ALL="net.ipv6.conf.all.disable_ipv6";
-  if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_ALL} | grep ${DISABLE_IPV6})" ]; then
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_ALL} = ${DISABLE_IPV6}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-    echo "${DISABLE_IPV6_ALL} = ${DISABLE_IPV6}" >> "${CONF_DISABLE_IPV6}";
-    /sbin/sysctl "${DISABLE_IPV6_ALL}" ${DISABLE_IPV6};
-    RELOAD_SYSCTL=1;
-  fi;
-
   DISABLE_IPV6_DEF="net.ipv6.conf.default.disable_ipv6";
-  if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_DEF} | grep ${DISABLE_IPV6})" ]; then
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_DEF} = ${DISABLE_IPV6}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-    echo "${DISABLE_IPV6_DEF} = ${DISABLE_IPV6}" >> "${CONF_DISABLE_IPV6}";
-    /sbin/sysctl "${DISABLE_IPV6_DEF}" ${DISABLE_IPV6};
-    RELOAD_SYSCTL=1;
-  fi;
-
   DISABLE_IPV6_LO="net.ipv6.conf.lo.disable_ipv6";
-  if [ -z "$(cat ${CONF_DISABLE_IPV6} | grep ${DISABLE_IPV6_LO} | grep ${DISABLE_IPV6})" ]; then
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Adding \"${DISABLE_IPV6_LO} = ${DISABLE_IPV6}\" to sysctl file \"${CONF_DISABLE_IPV6}\"...";
-    echo "${DISABLE_IPV6_LO} = ${DISABLE_IPV6}" >> "${CONF_DISABLE_IPV6}";
-    /sbin/sysctl "${DISABLE_IPV6_LO}" ${DISABLE_IPV6};
+  #
+  # Update sysctl network configuration file(s), then pull the changes in by calling sysctl directly
+  #  |
+  #  |--> Applies changes to the current session & every sesson henceforth (including after reboots)
+  #
+  echo "";
+  echo "Getting status of config rows in \"${CONF_DISABLE_IPV6}\"...";
+  #
+  # DISABLE_IPV6_ALL
+  #
+  EACH_IPV6_KEY="${DISABLE_IPV6_ALL}";
+  EACH_IPV6_VAL="$(if [ -f "${CONF_DISABLE_IPV6}" ]; then sed -rne "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\2/p" "${CONF_DISABLE_IPV6}"; fi;)";
+  if [[ -z "${EACH_IPV6_VAL}" ]]; then
+    # Create the sysctl entry
+    echo " |--> Info:  Adding sysctl entry \"${EACH_IPV6_KEY}\" with value \"${DISABLE_IPV6_VAL}\"...";
+    echo "${EACH_IPV6_KEY} = ${DISABLE_IPV6_VAL}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
     RELOAD_SYSCTL=1;
+  elif [[ "${EACH_IPV6_VAL}" != "${DISABLE_IPV6_VAL}" ]]; then
+    # Update the sysctl entry
+    echo " |--> Info:  Updating sysctl entry \"${EACH_IPV6_KEY}\" to contain value [ ${DISABLE_IPV6_VAL} ]  (currently set to [ ${EACH_IPV6_VAL} ])...";
+    sed -re "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\1${DISABLE_IPV6_VAL}/" -i "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
+    RELOAD_SYSCTL=1;
+  else
+    # Skipped - sysctl entry is already up-to-date
+    echo " |--> Info:  (Skipped) Sysctl entry \"${EACH_IPV6_KEY}\" is already set to value [ ${DISABLE_IPV6_VAL} ]";
   fi;
-
+  #
+  # DISABLE_IPV6_DEF
+  #
+  EACH_IPV6_KEY="${DISABLE_IPV6_DEF}";
+  EACH_IPV6_VAL="$(if [ -f "${CONF_DISABLE_IPV6}" ]; then sed -rne "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\2/p" "${CONF_DISABLE_IPV6}"; fi;)";
+  if [[ -z "${EACH_IPV6_VAL}" ]]; then
+    # Create the sysctl entry
+    echo " |--> Info:  Adding sysctl entry \"${EACH_IPV6_KEY}\" with value \"${DISABLE_IPV6_VAL}\"...";
+    echo "${EACH_IPV6_KEY} = ${DISABLE_IPV6_VAL}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
+    RELOAD_SYSCTL=1;
+  elif [[ "${EACH_IPV6_VAL}" != "${DISABLE_IPV6_VAL}" ]]; then
+    # Update the sysctl entry
+    echo " |--> Info:  Updating sysctl entry \"${EACH_IPV6_KEY}\" to contain value [ ${DISABLE_IPV6_VAL} ]  (currently set to [ ${EACH_IPV6_VAL} ])...";
+    sed -re "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\1${DISABLE_IPV6_VAL}/" -i "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
+    RELOAD_SYSCTL=1;
+  else
+    # Skipped - sysctl entry is already up-to-date
+    echo " |--> Info:  (Skipped) Sysctl entry \"${EACH_IPV6_KEY}\" is already set to value [ ${DISABLE_IPV6_VAL} ]";
+  fi;
+  #
+  # DISABLE_IPV6_LO
+  #
+  EACH_IPV6_KEY="${DISABLE_IPV6_LO}";
+  EACH_IPV6_VAL="$(if [ -f "${CONF_DISABLE_IPV6}" ]; then sed -rne "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\2/p" "${CONF_DISABLE_IPV6}"; fi;)";
+  if [[ -z "${EACH_IPV6_VAL}" ]]; then
+    # Create the sysctl entry
+    echo " |--> Info:  Adding sysctl entry \"${EACH_IPV6_KEY}\" with value \"${DISABLE_IPV6_VAL}\"...";
+    echo "${EACH_IPV6_KEY} = ${DISABLE_IPV6_VAL}" >> "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
+    RELOAD_SYSCTL=1;
+  elif [[ "${EACH_IPV6_VAL}" != "${DISABLE_IPV6_VAL}" ]]; then
+    # Update the sysctl entry
+    echo " |--> Info:  Updating sysctl entry \"${EACH_IPV6_KEY}\" to contain value [ ${DISABLE_IPV6_VAL} ]  (currently set to [ ${EACH_IPV6_VAL} ])...";
+    sed -re "s/^(\s*${EACH_IPV6_KEY//./\\.}\s*=\s*)([0-9])\s*$/\1${DISABLE_IPV6_VAL}/" -i "${CONF_DISABLE_IPV6}";
+    /sbin/sysctl "${EACH_IPV6_KEY}" ${DISABLE_IPV6_VAL};
+    RELOAD_SYSCTL=1;
+  else
+    # Skipped - sysctl entry is already up-to-date
+    echo " |--> Info:  (Skipped) Sysctl entry \"${EACH_IPV6_KEY}\" is already set to value [ ${DISABLE_IPV6_VAL} ]";
+  fi;
+  #
   # If we modified any files, update sysctl's config-values
-  if [ -n "${RELOAD_SYSCTL}" ]; then
+  #
+  if [[ "${RELOAD_SYSCTL}" -eq 1 ]]; then
     chmod 0644 "${CONF_DISABLE_IPV6}";
     chown root:root "${CONF_DISABLE_IPV6}";
     sysctl --system; # Load settings from all system configuration files.
   else
-    echo "$(date +'%Y-%m-%d %H:%M:%S') No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
+    echo "";
+    echo "Info:  No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
   fi;
-  
 fi;
+#
+# ------------------------------
+#
+echo "";
+echo "Finished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')]";
+echo "------------------------------";
+exit ${EXIT_CODE};
+#
+# ------------------------------
+#

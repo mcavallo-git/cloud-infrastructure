@@ -59,10 +59,10 @@ else
   #
   if [[ "${DISABLE_IPV6_VAL}" -eq 1 ]]; then
     echo "";
-    echo "Info:  Disabling IPv6 networking (through sysctl) for the current device";
+    echo "Info:  Disabling IPv6 networking (through sysctl)...";
   else
     echo "";
-    echo "Info:  Enabling IPv6 networking (through sysctl) from the current device";
+    echo "Info:  Enabling IPv6 networking (through sysctl)...";
   fi;
   #
   # ------------------------------
@@ -164,6 +164,16 @@ else
   else
     echo "";
     echo "Info:  No changes required for sysctl file \"${CONF_DISABLE_IPV6}\" (already up-to-date)";
+  fi;
+  #
+  # ------------------------------
+  #
+  if [[ "${DISABLE_IPV6_VAL}" -eq 1 ]]; then
+    echo "";
+    echo "Info:  Disabling IPv6 networking (through sysctl) - Job complete";
+  else
+    echo "";
+    echo "Info:  Enabling IPv6 networking (through sysctl) - Job complete";
   fi;
 fi;
 #

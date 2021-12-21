@@ -4,15 +4,9 @@
 #
 # ------------------------------------------------------------
 
-echo "------------------------------------------------------------";
-echo "";
-echo "THIS SCRIPT IS CONTAINED IN SCRIPT \"disable_ipv6\"";
-echo " |";
-echo " |--> CALL LOCALLY VIA:      disable_ipv6 --enable;";
-echo " |";
-echo " |--> CALL REMOTELY VIA:     curl -H 'Cache-Control: no-cache' -s \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=\$(date +'%s.%N')\" | bash -s -- --enable;";
-echo "";
-echo "";
-echo "------------------------------------------------------------";
+
+# Call  [ disable_ipv6 --enable ]
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/disable_ipv6?t=$(date +'%s.%N')" | bash -s -- --enable;
+
 
 # ------------------------------------------------------------

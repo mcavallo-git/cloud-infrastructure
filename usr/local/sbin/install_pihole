@@ -198,7 +198,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       #           status INTEGER NOT NULL DEFAULT 0
       #         );
       #
-
+  
+      # DOCKER_NAME="pihole";
       FULLPATH_ADLISTS="/etc/pihole/adlists.list";
       FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
@@ -256,6 +257,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       #         );
       #
 
+      # DOCKER_NAME="pihole";
       FULLPATH_WHITELIST="/etc/pihole/whitelist.list";
       FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)";
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then

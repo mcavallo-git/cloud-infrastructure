@@ -198,8 +198,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       #         );
       #
   
-      FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
+      FULLPATH_ADLISTS="/etc/pihole/adlists.list"; \
+      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)"; \
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
         echo "";
         echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
@@ -254,8 +254,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       #         );
       #
 
-      FULLPATH_WHITELIST="/etc/pihole/whitelist.list";
-      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)";
+      FULLPATH_WHITELIST="/etc/pihole/whitelist.list"; \
+      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)"; \
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
         echo "";
         echo "Info:  Syncing Whitelist entries from \"${FULLPATH_WHITELIST}\"...";

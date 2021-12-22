@@ -175,6 +175,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
         sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
       fi;
 
+      echo "";
+      echo "Info:  Sleeping for 15 seconds (to allow pihole container to boot up)...";
+      sleep 15;
+
       # ------------------------------
       #
       # Update pihole's adlists (list of blacklisted domains which pihole's gravity pulls from)
@@ -231,6 +235,13 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
           fi;
         done;
         IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
+        # ------------------------------
+        #
+        # Update pihole's gravity (which pulls from its enabled adlists)
+        #
+        echo "";
+        echo "Info:  Updating pihole's Gravity DB with latest Adlist entries...";
+        docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
       fi;
 
       # ------------------------------
@@ -291,17 +302,6 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       fi;
 
       # ------------------------------
-      #
-      # Update pihole's gravity (which pulls from its enabled adlists)
-      #
-
-      echo "";
-      echo "Sleeping for 15 seconds (to allow pihole container to boot up)...";
-      sleep 15;
-
-      echo "";
-      echo "Updating pihole's Gravity DB with latest Adlist entries...";
-      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 
     fi;
 

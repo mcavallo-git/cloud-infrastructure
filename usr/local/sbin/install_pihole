@@ -51,21 +51,20 @@ echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
 #
 
 # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
-DOCKER_NAME="pihole";
 FIRST_REINSTALL_CONFIRMATION="";
 SECOND_REINSTALL_CONFIRMATION="";
-if [[ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
+if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
   # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   echo -e "";
   echo -e " ! !        ! !";
-  echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} docker(s)  ! ! NOTICE ! ! ";
+  echo -e " ! ! NOTICE ! !  This will reinstall any existing pihole docker(s)  ! ! NOTICE ! ! ";
   echo -e " ! !   |    ! !";
   echo -e "       |  ";
   read -p "       |--> Are you sure you want to continue?  (press 'y' to confirm)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo -e "";
 fi;
 
-if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
   # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
@@ -75,7 +74,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
     echo "";
   fi;
 
-  if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+  if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
     # ------------------------------
     # Ensure any volume-map directories exist
@@ -105,7 +104,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
 
     # If any pihole containers are already running locally
     REVERT_RESOLV_CONF=0;
-    if [[ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
+    if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
       # At least one docker container exists
       if [[ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]]; then
         # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
@@ -117,8 +116,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       # Remove existing pihole dockers
       echo "";
       echo "Info:  Removing existing pihole containers...";
-      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "${DOCKER_NAME}";
-      # docker_sniper "${DOCKER_NAME}";
+      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
+      # docker_sniper "pihole";
 
       # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
       echo "";
@@ -129,12 +128,12 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
     # ------------------------------
     # Spin up the pihole docker container
     echo "";
-    echo "Info:  Spinning up the \"${DOCKER_NAME}\" docker container...";
+    echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
     docker-compose up --detach;
 
     # Verify that the docker container was created as-intended
-    if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
+    if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
 
@@ -157,8 +156,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       echo "";
       echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it";
 
-      echo " |--> Stopping docker \"${DOCKER_NAME}\"...";
-      docker stop "${DOCKER_NAME}" 1>'/dev/null';
+      echo " |--> Stopping docker \"pihole\"...";
+      docker stop "pihole" 1>'/dev/null';
 
       echo " |--> Stopping service 'systemd-resolved'...";
       systemctl stop "systemd-resolved.service";
@@ -166,8 +165,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       echo " |--> Disabling service 'systemd-resolved'...";
       systemctl disable "systemd-resolved.service";
 
-      echo " |--> Starting docker \"${DOCKER_NAME}\"...";
-      docker start "${DOCKER_NAME}" 1>'/dev/null';
+      echo " |--> Starting docker \"pihole\"...";
+      docker start "pihole" 1>'/dev/null';
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
       if [[ ${REVERT_RESOLV_CONF} -eq 1 ]]; then
@@ -181,7 +180,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       # Update pihole's adlists (list of blacklisted domains which pihole's gravity pulls from)
       #  |
       #  |--> DB-Schema command:
-      #  |      TABLE_NAME="adlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; DOCKER_NAME="pihole"; docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
+      #  |      TABLE_NAME="adlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
       #  |
       #  |--> DB-Schema:
       #         CREATE TABLE adlist
@@ -199,21 +198,20 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       #         );
       #
   
-      # DOCKER_NAME="pihole";
       FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
+      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
         echo "";
         echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
         SQL_TABLE="adlist";
         # Search Adlist entries for 'address|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-        for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
+        for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}";); do
           EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
           EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
           if [ -n "${EACH_ADDRESS}" ]; then
             SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
-            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
             SQLITE_QUERY_UPDATE="";
             if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
               # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
@@ -228,7 +226,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
               echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
             fi;
             if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-              docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+              docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
             fi;
           fi;
         done;
@@ -241,7 +239,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       # Update pihole's whitelisted domains  -  https://discourse.pi-hole.net/t/commonly-whitelisted-domains/212
       #  |
       #  |--> DB-Schema command:
-      #  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; DOCKER_NAME="pihole"; docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
+      #  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
       #  |
       #  |--> DB-Schema:
       #         CREATE TABLE domainlist
@@ -257,9 +255,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
       #         );
       #
 
-      # DOCKER_NAME="pihole";
       FULLPATH_WHITELIST="/etc/pihole/whitelist.list";
-      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)";
+      FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)";
       if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
         echo "";
         echo "Info:  Syncing Whitelist entries from \"${FULLPATH_WHITELIST}\"...";
@@ -267,12 +264,12 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
         DEFAULT_COMMENT="Imported from ${FULLPATH_WHITELIST}";
         # Search Whitelist entries for 'domain|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-        for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_WHITELIST}";); do
+        for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}";); do
           EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
           EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
           if [ -n "${EACH_DOMAIN}" ]; then
             SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE domain='${EACH_DOMAIN}';";
-            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
             SQLITE_QUERY_UPDATE="";
             if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
               # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
@@ -287,7 +284,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
               echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
             fi;
             if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-              docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+              docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
             fi;
           fi;
         done;
@@ -306,7 +303,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
 
       echo "";
       echo "Updating pihole's Gravity DB with latest Adlist entries...";
-      docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" pihole updateGravity;
+      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 
     fi;
 

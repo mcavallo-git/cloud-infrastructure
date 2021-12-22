@@ -54,19 +54,18 @@ echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
 DOCKER_NAME="pihole";
 FIRST_REINSTALL_CONFIRMATION="";
 SECOND_REINSTALL_CONFIRMATION="";
-RUNNING_PIHOLE_DOCKERS=$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" | wc -l;);
-if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
+if [[ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
   # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   echo -e "";
   echo -e " ! !        ! !";
-  echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} dockers  ! ! NOTICE ! ! ";
+  echo -e " ! ! NOTICE ! !  This will reinstall any existing ${DOCKER_NAME} docker(s)  ! ! NOTICE ! ! ";
   echo -e " ! !   |    ! !";
   echo -e "       |  ";
   read -p "       |--> Are you sure you want to continue?  (press 'y' to confirm)  " -a FIRST_REINSTALL_CONFIRMATION -n 1 -t 60 <'/dev/tty'; # Await single keypress
   echo -e "";
 fi;
 
-if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
   # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
@@ -76,7 +75,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     echo "";
   fi;
 
-  if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+  if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
     # ------------------------------
     # Ensure any volume-map directories exist
@@ -106,8 +105,9 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
 
     # If any pihole containers are already running locally
     REVERT_RESOLV_CONF=0;
-    if [ ${RUNNING_PIHOLE_DOCKERS} -gt 0 ]; then
-      if [ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]; then
+    if [[ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
+      # At least one docker container exists
+      if [[ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]]; then
         # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
         echo "";
         echo "Info:  Adding Google DNS server to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
@@ -134,11 +134,11 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     docker-compose up --detach;
 
     # Verify that the docker container was created as-intended
-    if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]; then # If docker container exists
+    if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]]; then
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
 
-      if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
+      if [[ ${REVERT_RESOLV_CONF} -eq 1 ]]; then
         echo "";
         echo "Info:  As pihole being offline may cause network name resolution failure, the google DNS entry has been left in local DNS resolvers";
         echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove the local Google DNS entry via:  [ sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i \"/etc/resolv.conf\"; ]";
@@ -170,7 +170,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       docker start "${DOCKER_NAME}" 1>'/dev/null';
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
-      if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
+      if [[ ${REVERT_RESOLV_CONF} -eq 1 ]]; then
         echo "";
         echo "Info:  Removing Google DNS server from local DNS resolvers...";
         sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
@@ -225,7 +225,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
             # (Skipped) Record exists and is enabled, already
             echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
           fi;
-          if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
+          if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
             docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
           fi;
         done;
@@ -281,7 +281,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
             # (Skipped) Record exists and is enabled, already
             echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
           fi;
-          if [ -n "${SQLITE_QUERY_UPDATE}" ]; then
+          if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
             docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
           fi;
         done;

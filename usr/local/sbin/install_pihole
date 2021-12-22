@@ -134,23 +134,26 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
     docker-compose up --detach;
 
     # Verify that the docker container was created as-intended
-    DOCKER_EXISTS=0;
-    if [ -n "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" ]; then
-      # Pi-hole container DOES exist
-      DOCKER_EXISTS=1;
-      echo "";
-      echo "Info:  Pi-hole docker successfully created";
-      # echo "Info:  Pi-hole docker successfully created with container ID \"$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)\";";
-    else
+    if [ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null';)" ]; then # If docker container exists
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
-      DOCKER_EXISTS=0;
+
+      if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
+        echo "";
+        echo "Info:  As pihole being offline may cause network name resolution failure, the google DNS entry has been left in local DNS resolvers";
+        echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove the local Google DNS entry via:  [ sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i \"/etc/resolv.conf\"; ]";
+      fi;
+
       echo "";
       echo "Error:  Pi-hole docker not found";
-    fi;
 
-    # Free up port 53 for pihole --> Stop the pihole docker, then stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally, then start the pihole docker
-    if [[ "${DOCKER_EXISTS}" -eq 1 ]]; then
+    else
+
+      # Pi-hole container DOES exist
+      echo "";
+      echo "Info:  Pi-hole docker successfully created";
+
+      # Free up port 53 for pihole --> Stop the pihole docker, then stop the 'systemd-resolved' service in order to free up port 53 (DNS) so that pihole may create a listening thread on port 53, effectively reserving the port for the pihole service, locally, then start the pihole docker
       echo "";
       echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it";
 
@@ -166,18 +169,12 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
       echo " |--> Starting docker \"${DOCKER_NAME}\"...";
       docker start "${DOCKER_NAME}" 1>'/dev/null';
 
-    fi;
-
-
-    # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
-    if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
-      echo "";
-      echo "Info:  Removing Google DNS server from local DNS resolvers...";
-      sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
-    fi;
-
-
-    if [[ "${DOCKER_EXISTS}" -eq 1 ]]; then
+      # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
+      if [ ${REVERT_RESOLV_CONF} -eq 1 ]; then
+        echo "";
+        echo "Info:  Removing Google DNS server from local DNS resolvers...";
+        sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
+      fi;
 
       # ------------------------------
       #

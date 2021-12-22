@@ -237,7 +237,7 @@ if [ ${RUNNING_PIHOLE_DOCKERS} -eq 0 ] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =
 
       # ------------------------------
       #
-      # Update pihole's whitelisted domains
+      # Update pihole's whitelisted domains  -  https://discourse.pi-hole.net/t/commonly-whitelisted-domains/212
       #  |
       #  |--> DB-Schema command:
       #  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; DOCKER_NAME="pihole"; docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";

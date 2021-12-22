@@ -205,28 +205,30 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
         echo "";
         echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
         SQL_TABLE="adlist";
-        # Search adlists for urls to pull from
+        # Search Adlist entries for 'address|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
         for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
           EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\1/";)";
           EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\3/";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
-          SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
-          SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
-          SQLITE_QUERY_UPDATE="";
-          if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
-            # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
-            echo " |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
-            SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (address, enabled, comment) VALUES ('${EACH_ADDRESS}',1,'${EACH_COMMENT}');";
-          elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
-            # (Update) Record exists for this Adlist entry, but it is disabled --> enable it
-            echo " |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
-            SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1,comment='${EACH_COMMENT}' WHERE address='${EACH_ADDRESS}';";
-          else
-            # (Skipped) Record exists and is enabled, already
-            echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
-          fi;
-          if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-            docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+          if [ -n "${EACH_ADDRESS}" ]; then
+            SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
+            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+            SQLITE_QUERY_UPDATE="";
+            if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
+              # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
+              echo " |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+              SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (address, enabled, comment) VALUES ('${EACH_ADDRESS}',1,'${EACH_COMMENT}');";
+            elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
+              # (Update) Record exists for this Adlist entry, but it is disabled --> enable it
+              echo " |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+              SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1,comment='${EACH_COMMENT}' WHERE address='${EACH_ADDRESS}';";
+            else
+              # (Skipped) Record exists and is enabled, already
+              echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
+            fi;
+            if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
+              docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+            fi;
           fi;
         done;
         IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
@@ -261,28 +263,30 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
         echo "Info:  Syncing Whitelist entries from \"${FULLPATH_WHITELIST}\"...";
         SQL_TABLE="domainlist";
         DEFAULT_COMMENT="Imported from ${FULLPATH_WHITELIST}";
-        # Search adlists for urls to pull from
+        # Search Whitelist entries for 'domain|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
         for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_WHITELIST}";); do
           EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\1/";)";
           EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\3/";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
-          SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE domain='${EACH_DOMAIN}';";
-          SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
-          SQLITE_QUERY_UPDATE="";
-          if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
-            # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
-            echo " |--> (Insert)  Adding/Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-            SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (domain, enabled, comment) VALUES ('${EACH_DOMAIN}',1,'Imported from ${FULLPATH_WHITELIST}');";
-          elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
-            # (Update) Record exists for this Whitelist entry, but it is disabled --> enable it
-            echo " |--> (Update)  Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-            SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1 WHERE domain='${EACH_DOMAIN}';";
-          else
-            # (Skipped) Record exists and is enabled, already
-            echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
-          fi;
-          if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-            docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+          if [ -n "${EACH_DOMAIN}" ]; then
+            SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE domain='${EACH_DOMAIN}';";
+            SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+            SQLITE_QUERY_UPDATE="";
+            if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
+              # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
+              echo " |--> (Insert)  Adding/Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
+              SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (domain, enabled, comment) VALUES ('${EACH_DOMAIN}',1,'Imported from ${FULLPATH_WHITELIST}');";
+            elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
+              # (Update) Record exists for this Whitelist entry, but it is disabled --> enable it
+              echo " |--> (Update)  Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
+              SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1 WHERE domain='${EACH_DOMAIN}';";
+            else
+              # (Skipped) Record exists and is enabled, already
+              echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
+            fi;
+            if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
+              docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+            fi;
           fi;
         done;
         IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter

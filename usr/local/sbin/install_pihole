@@ -208,8 +208,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
         # Search Adlist entries for 'address|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
         for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_ADLISTS}";); do
-          EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\1/";)";
-          EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\3/";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
+          EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
+          EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
           if [ -n "${EACH_ADDRESS}" ]; then
             SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
             SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
@@ -266,8 +266,8 @@ if [[ -z "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}" 2>'/dev/null'
         # Search Whitelist entries for 'domain|comment' formatted lines
         ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
         for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" cat "${FULLPATH_WHITELIST}";); do
-          EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\1/";)";
-          EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -re "s/^([^\|]+)(\|(.+))?\s*$/\3/";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
+          EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
+          EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
           if [ -n "${EACH_DOMAIN}" ]; then
             SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE domain='${EACH_DOMAIN}';";
             SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=${DOCKER_NAME}";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";

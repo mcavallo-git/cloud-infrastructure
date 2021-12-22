@@ -572,7 +572,7 @@ else
       else
 
         CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;); # remove commented & whitespace-only lines from script
-        CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1); # remove commented & whitespace-only lines from script
+        CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1;); # remove commented & whitespace-only lines from script
 
         CHECKSUM_ERROR_UNSIGNED=4294967295;
 

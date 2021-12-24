@@ -45,7 +45,8 @@ else
     curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_PUP_VERSIONED}";
 
     echo ""
-    echo "Creating symbolic link from \"${FULLPATH_PUP_VERSIONED}\" to \"${FULLPATH_PUP}\"";
+    echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_PUP_VERSIONED}\"";
+    ln -sf "${FULLPATH_PUP_VERSIONED}" "${FULLPATH_PUP}";
 
     # ------------------------------------------------------------
     if [ -n "$(command -v pup 2>'/dev/null';)" ]; then

@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_xmllint" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_xmllint?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  if [ -n "$(command -v xmllint 2>'/dev/null';)" ]; then
+    echo "";
+    echo "Info:  xmllint (command line XML tool) already installed - getting version...";
+    xmllint --version;
+  else
+    # ------------------------------------------------------------
+    #
+    # Install XML parsing utilities (including 'xmllint')
+    #
+    apt-get -y update;
+    apt-get -y install "libxml2-utils";
+  fi;
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "bash - Parse HTML using shell - Stack Overflow"  |  https://stackoverflow.com/a/25358845
+#
+# ------------------------------------------------------------

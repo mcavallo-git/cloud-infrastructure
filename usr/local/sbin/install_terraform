@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_terraform" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_terraform?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_terraform_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/install_terraform"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+
+  # Ensure that terraform is installed
+  if [ -n "$(command -v terraform 2>'/dev/null';)" ]; then
+
+    # Terraform is already installed
+    echo "";
+    echo "Info:  Command \"terraform\" already exists with filepath \"$(command -v terraform;)\"";
+
+  else
+
+    curl -fsSL "https://apt.releases.hashicorp.com/gpg" | apt-key add -;
+    apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main";
+    apt-get -y update;
+    apt-get -y install "terraform";
+
+    echo "";
+    echo "Calling [ command -v terraform; ]...";
+    command -v terraform;
+
+  fi;
+
+  # Verify that terraform is installed by getting the installed version from it
+  echo "";
+  echo "Calling [ terraform --version; ]...";
+  terraform --version;
+
+  echo "";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+# 
+#   www.terraform.io  |  "Downloads | Terraform by HashiCorp"  |  https://www.terraform.io/downloads
+#
+# ------------------------------------------------------------

@@ -48,12 +48,16 @@ else
 
   fi;
 
+  # Get the latest available version of terraform
+  echo "";
+  TERRAFORM_LATEST_VERSION="$(curl -sL 'https://releases.hashicorp.com/terraform/' | grep -i '<a href="/terraform/' | head -n 1 | sed -rne "s/^\s*<a href=\"\/terraform\/([0-9\.]+)(\/|\").*$/\1/pi";)";
+  echo "TERRAFORM_LATEST_VERSION = [ ${TERRAFORM_LATEST_VERSION} ]";
+
   # Verify that terraform is installed by getting the installed version from it
   echo "";
   echo "Calling [ terraform --version; ]...";
   terraform --version;
 
-  echo "";
 
 fi;
 

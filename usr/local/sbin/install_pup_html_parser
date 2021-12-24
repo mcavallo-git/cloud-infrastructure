@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_pup_html_parser" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pup_html_parser?t=$(date +'%s.%N')" | bash;
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  EXIT_CODE=1;
+  if [ -n "$(command -v pup 2>'/dev/null';)" ]; then
+    EXIT_CODE=0;
+    echo "";
+    echo "Info:  pup (command line HTML parser) already installed - getting version...";
+    pup --version;
+  else
+    # ------------------------------------------------------------
+    #
+    # Install XML parsing utilities (including 'pup')
+    #
+    apt-get -y update;
+    apt-get -y install "libxml2-utils";
+    if [ -n "$(command -v pup 2>'/dev/null';)" ]; then
+      EXIT_CODE=0;
+      echo "";
+      echo "Info:  pup (command line HTML tool) installed - getting version...";
+      pup --version;
+    else
+      EXIT_CODE=1;
+      echo "";
+      echo "Error:  Unable to install pup";
+    fi;
+  fi;
+  exit ${EXIT_CODE};
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "perl - Parsing HTML on the command line; How to capture text in <strong></strong>? - Stack Overflow"  |  https://stackoverflow.com/a/49764112
+#
+#   github.com  |  "GitHub - ericchiang/pup: Parsing HTML at the command line"  |  https://github.com/ericchiang/pup
+#
+# ------------------------------------------------------------

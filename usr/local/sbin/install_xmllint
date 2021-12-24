@@ -23,7 +23,7 @@ else
   if [ -n "$(command -v xmllint 2>'/dev/null';)" ]; then
     EXIT_CODE=0;
     echo "";
-    echo "Info:  xmllint (command line XML tool) already installed - getting version...";
+    echo "Info:  xmllint (command line XML parser) already installed - getting version...";
     xmllint --version;
   else
     # ------------------------------------------------------------
@@ -35,7 +35,7 @@ else
     if [ -n "$(command -v xmllint 2>'/dev/null';)" ]; then
       EXIT_CODE=0;
       echo "";
-      echo "Info:  xmllint (command line XML tool) installed - getting version...";
+      echo "Info:  xmllint (command line XML parser) installed - getting version...";
       xmllint --version;
     else
       EXIT_CODE=1;

@@ -28,25 +28,30 @@ else
   else
     # ------------------------------------------------------------
     #
-    # Install HTML parsing utilities (including 'pup')
+    # Install pup (command line HTML parser)
     #
-    # apt-get -y update;
-    # apt-get -y install "libxml2-utils";
 
     # Get the latest available version of pup
-    # echo "";
-    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/latest' | grep -i '.zip' | grep -i 'pup_v' | grep -i '_linux_' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
-    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/latest' | grep -i 'pup_v0.4.0_linux_' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
-    # echo "PUP_LATEST_VERSION = [ ${PUP_LATEST_VERSION} ]";
-    
-    
-    # TERRAFORM_LATEST_VERSION=$(curl -sL https://www.terraform.io/downloads.html | grep 'https://releases.hashicorp.com/terraform/' | grep -i 'linux' | head -n 1 | sed -re "s/^.+https:\/\/releases\.hashicorp\.com\/terraform\/([0-9\.]+)\/.+$/\1/";); echo "TERRAFORM_LATEST_VERSION = [ ${TERRAFORM_LATEST_VERSION} ]";
+    ARCHITECTURE="$(dpkg --print-architecture;)";
+
+    PUP_LATEST_VERSION="$(curl -sL 'https://github.com/ericchiang/pup/releases/latest' | grep '<a href=' | grep -i 'pup_v' | grep -i '_linux_' | grep -i '.zip' | grep -i "${ARCHITECTURE}" | head -n 1 | sed -rne "s/^\s*<a href=\"\/[^\"]+\/download\/v([0-9\.]+)(\/|\").*$/\1/pi";)"; echo "PUP_LATEST_VERSION = [ ${PUP_LATEST_VERSION} ]";
+
+    PUP_LATEST_URL="https://github.com$(curl -sL 'https://github.com/ericchiang/pup/releases/latest' | grep '<a href=' | grep -i 'pup_v' | grep -i '_linux_' | grep -i '.zip' | grep -i "${ARCHITECTURE}" | head -n 1 | sed -rne "s/^\s*<a href=\"([^\"]+)\".*$/\1/pi";)"; echo "PUP_LATEST_URL = [ ${PUP_LATEST_URL} ]";
+
+    FULLPATH_PUP="/usr/local/bin/pup";
+    FULLPATH_PUP_VERSIONED="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
+    echo ""
+    echo "Downloading pup v${PUP_LATEST_VERSION} to path \"${FULLPATH_PUP_VERSIONED}\"";
+    curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_PUP_VERSIONED}";
+
+    echo ""
+    echo "Creating symbolic link from \"${FULLPATH_PUP_VERSIONED}\" to \"${FULLPATH_PUP}\"";
 
     # ------------------------------------------------------------
     if [ -n "$(command -v pup 2>'/dev/null';)" ]; then
       EXIT_CODE=0;
       echo "";
-      echo "Info:  pup (command line HTML tool) installed - getting version...";
+      echo "Info:  pup (command line HTML parser) installed - getting version...";
       pup --version;
     else
       EXIT_CODE=1;

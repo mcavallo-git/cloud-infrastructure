@@ -56,11 +56,11 @@ else
     echo "";
     echo "Info:  Unpacking archive \"${FULLPATH_TMP_ZIP}\" to directory \"${FULLPATH_TMP_DIR}\"...";
     cd "${FULLPATH_TMP_DIR}";
-    gunzip --suffix ".zip" "$(basename ${FULLPATH_TMP_ZIP};)";
+    gunzip --verbose --suffix ".zip" "$(basename ${FULLPATH_TMP_ZIP};)";
 
     echo "";
-    echo "Info:  Setting file permissions to '0755' for pup binary \"${FULLPATH_TMP_PUP}\"...";
-    chmod 0755 "${FULLPATH_TMP_PUP}";
+    echo "Info:  Setting file permissions to allow execution of pup binary \"${FULLPATH_TMP_PUP}\"...";
+    chmod --verbose 0755 "${FULLPATH_TMP_PUP}";
 
     echo "";
     echo "Info:  Moving pup binary from \"${FULLPATH_TMP_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"...";
@@ -72,7 +72,7 @@ else
 
     echo "";
     echo "Info:  Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"...";
-    ln -sf "${FULLPATH_VERSIONED_PUP}" "${FULLPATH_PUP}";
+    ln --symbolic --force --verbose "${FULLPATH_VERSIONED_PUP}" "${FULLPATH_PUP}";
 
     # ------------------------------------------------------------
     if [ -n "$(command -v pup 2>'/dev/null';)" ]; then

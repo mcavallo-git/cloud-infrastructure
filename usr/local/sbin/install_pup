@@ -44,11 +44,11 @@ else
     echo "";
     mkdir --parents --verbose "${FULLPATH_PUP_ARCHIVE_DIR}";
 
-    echo ""
+    echo "";
     echo "Downloading pup v${PUP_LATEST_VERSION}'s archive to path \"${FULLPATH_PUP_ARCHIVE}\"";
     curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_PUP_ARCHIVE}";
 
-    echo ""
+    echo "";
     echo "Unpacking archive \"${FULLPATH_PUP_ARCHIVE}\"...";
     cd "${FULLPATH_PUP_ARCHIVE_DIR}";
     tar -zxf "${FULLPATH_PUP_ARCHIVE_DIR}";
@@ -56,7 +56,7 @@ else
     FULLPATH_PUP="/usr/local/bin/pup";
     FULLPATH_PUP_VERSIONED="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
 
-    echo ""
+    echo "";
     echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_PUP_VERSIONED}\"";
     ln -sf "${FULLPATH_PUP_VERSIONED}" "${FULLPATH_PUP}";
 

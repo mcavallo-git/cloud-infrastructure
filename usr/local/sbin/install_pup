@@ -42,6 +42,9 @@ else
     FULLPATH_TMP_PUP="${FULLPATH_TMP_DIR}/pup_v${PUP_LATEST_VERSION}";
     FULLPATH_TMP_ZIP="${FULLPATH_TMP_PUP}.zip";
 
+    FULLPATH_PUP="/usr/local/bin/pup";
+    FULLPATH_VERSIONED_PUP="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
+
     echo "";
     mkdir --parents --verbose "${FULLPATH_TMP_DIR}";
 
@@ -54,16 +57,17 @@ else
     cd "${FULLPATH_TMP_DIR}";
     gunzip --suffix ".zip" "$(basename ${FULLPATH_TMP_ZIP};)";
 
-    FULLPATH_PUP="/usr/local/bin/pup";
-    FULLPATH_PUP_VERSIONED="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
+    echo "";
+    echo "Setting file permissions to '0755' for pup binary \"${FULLPATH_VERSIONED_PUP}\"";
+    chmod 0755 "${FULLPATH_TMP_PUP}";
 
     echo "";
-    echo "Moving 'pup' binary from \"${FULLPATH_TMP_PUP}\" to \"${FULLPATH_PUP_VERSIONED}\"";
-    mv --force --verbose "${FULLPATH_TMP_PUP}" "${FULLPATH_PUP_VERSIONED}";
+    echo "Moving pup binary from \"${FULLPATH_TMP_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"";
+    mv --force --verbose "${FULLPATH_TMP_PUP}" "${FULLPATH_VERSIONED_PUP}";
 
     echo "";
-    echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_PUP_VERSIONED}\"";
-    ln -sf "${FULLPATH_PUP_VERSIONED}" "${FULLPATH_PUP}";
+    echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"";
+    ln -sf "${FULLPATH_VERSIONED_PUP}" "${FULLPATH_PUP}";
 
     # ------------------------------------------------------------
     if [ -n "$(command -v pup 2>'/dev/null';)" ]; then

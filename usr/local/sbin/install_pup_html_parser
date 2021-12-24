@@ -28,10 +28,20 @@ else
   else
     # ------------------------------------------------------------
     #
-    # Install XML parsing utilities (including 'pup')
+    # Install HTML parsing utilities (including 'pup')
     #
-    apt-get -y update;
-    apt-get -y install "libxml2-utils";
+    # apt-get -y update;
+    # apt-get -y install "libxml2-utils";
+
+    # Get the latest available version of pup
+    # echo "";
+    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/tag/v0.4.0' | grep -i '<a href="/pup/' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
+    # echo "PUP_LATEST_VERSION = [ ${PUP_LATEST_VERSION} ]";
+    
+    
+    # TERRAFORM_LATEST_VERSION=$(curl -sL https://www.terraform.io/downloads.html | grep 'https://releases.hashicorp.com/terraform/' | grep -i 'linux' | head -n 1 | sed -re "s/^.+https:\/\/releases\.hashicorp\.com\/terraform\/([0-9\.]+)\/.+$/\1/";); echo "TERRAFORM_LATEST_VERSION = [ ${TERRAFORM_LATEST_VERSION} ]";
+
+    # ------------------------------------------------------------
     if [ -n "$(command -v pup 2>'/dev/null';)" ]; then
       EXIT_CODE=0;
       echo "";

@@ -35,7 +35,8 @@ else
 
     # Get the latest available version of pup
     # echo "";
-    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/tag/v0.4.0' | grep -i '<a href="/pup/' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
+    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/latest' | grep -i '.zip' | grep -i 'pup_v' | grep -i '_linux_' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
+    # PUP_LATEST_VERSION="$(curl -sL 'https://github.com/EricChiang/pup/releases/latest' | grep -i 'pup_v0.4.0_linux_' | head -n 1 | sed -rne "s/^\s*<a href=\"\/pup\/([0-9\.]+)(\/|\").*$/\1/pi";)";
     # echo "PUP_LATEST_VERSION = [ ${PUP_LATEST_VERSION} ]";
     
     

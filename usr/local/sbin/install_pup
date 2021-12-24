@@ -38,11 +38,23 @@ else
 
     PUP_LATEST_URL="https://github.com$(curl -sL 'https://github.com/ericchiang/pup/releases/latest' | grep '<a href=' | grep -i 'pup_v' | grep -i '_linux_' | grep -i '.zip' | grep -i "${ARCHITECTURE}" | head -n 1 | sed -rne "s/^\s*<a href=\"([^\"]+)\".*$/\1/pi";)"; echo "PUP_LATEST_URL = [ ${PUP_LATEST_URL} ]";
 
+    FULLPATH_PUP_ARCHIVE_DIR="/tmp/install_pup_$(date +'%Y%m%d_%H%M%S')";
+    FULLPATH_PUP_ARCHIVE="${FULLPATH_PUP_ARCHIVE_DIR}/pup_v${PUP_LATEST_VERSION}.zip";
+
+    echo "";
+    mkdir --parents --verbose "${FULLPATH_PUP_ARCHIVE_DIR}";
+
+    echo ""
+    echo "Downloading pup v${PUP_LATEST_VERSION}'s archive to path \"${FULLPATH_PUP_ARCHIVE}\"";
+    curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_PUP_ARCHIVE}";
+
+    echo ""
+    echo "Unpacking archive \"${FULLPATH_PUP_ARCHIVE}\"...";
+    cd "${FULLPATH_PUP_ARCHIVE_DIR}";
+    tar -zxf "${FULLPATH_PUP_ARCHIVE_DIR}";
+
     FULLPATH_PUP="/usr/local/bin/pup";
     FULLPATH_PUP_VERSIONED="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
-    echo ""
-    echo "Downloading pup v${PUP_LATEST_VERSION} to path \"${FULLPATH_PUP_VERSIONED}\"";
-    curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_PUP_VERSIONED}";
 
     echo ""
     echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_PUP_VERSIONED}\"";

@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_architecture" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [ 0 -eq 1 ]; then # Run this script on-the-fly:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_architecture?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+if [ -n "$(command -v dpkg 2>'/dev/null';)" ]; then
+  #
+  # man dpkg:
+  # ...
+  #       --print-architecture
+  #              Print architecture of packages dpkg installs (for example, “i386”).
+  # ...
+  #
+  dpkg --print-architecture;
+
+else
+
+  echo "Error:  Required package \"dpkg\" not found";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   unix.stackexchange.com  |  "debian - Easy command line method to determine specific ARM architecture string? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/181538
+#
+# ------------------------------------------------------------

@@ -53,7 +53,6 @@ else
     echo "Unpacking archive \"${FULLPATH_TMP_ZIP}\"...";
     cd "${FULLPATH_TMP_DIR}";
     gunzip --suffix ".zip" "$(basename ${FULLPATH_TMP_ZIP};)";
-    # tar -zxf "${FULLPATH_TMP_DIR}";
 
     FULLPATH_PUP="/usr/local/bin/pup";
     FULLPATH_PUP_VERSIONED="/usr/local/bin/pup-${PUP_LATEST_VERSION}";

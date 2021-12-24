@@ -19,7 +19,9 @@ if [ "$(id -un)" != "root" ]; then
   exit 1;
 else
   # ------------------------------------------------------------
+  EXIT_CODE=1;
   if [ -n "$(command -v xmllint 2>'/dev/null';)" ]; then
+    EXIT_CODE=0;
     echo "";
     echo "Info:  xmllint (command line XML tool) already installed - getting version...";
     xmllint --version;
@@ -30,7 +32,18 @@ else
     #
     apt-get -y update;
     apt-get -y install "libxml2-utils";
+    if [ -n "$(command -v xmllint 2>'/dev/null';)" ]; then
+      EXIT_CODE=0;
+      echo "";
+      echo "Info:  xmllint (command line XML tool) installed - getting version...";
+      xmllint --version;
+    else
+      EXIT_CODE=1;
+      echo "";
+      echo "Error:  Unable to install xmllint";
+    fi;
   fi;
+  exit ${EXIT_CODE};
 fi;
 
 

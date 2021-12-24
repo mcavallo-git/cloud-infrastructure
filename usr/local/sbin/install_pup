@@ -46,27 +46,32 @@ else
     FULLPATH_VERSIONED_PUP="/usr/local/bin/pup-${PUP_LATEST_VERSION}";
 
     echo "";
+    echo "Info:  Creating working directory \"${FULLPATH_TMP_DIR}\"...";
     mkdir --parents --verbose "${FULLPATH_TMP_DIR}";
 
     echo "";
-    echo "Downloading pup v${PUP_LATEST_VERSION}'s archive to path \"${FULLPATH_TMP_ZIP}\"";
+    echo "Info:  Downloading pup v${PUP_LATEST_VERSION}'s archive to path \"${FULLPATH_TMP_ZIP}\"...";
     curl -sL "${PUP_LATEST_URL}" --output "${FULLPATH_TMP_ZIP}";
 
     echo "";
-    echo "Unpacking archive \"${FULLPATH_TMP_ZIP}\"...";
+    echo "Info:  Unpacking archive \"${FULLPATH_TMP_ZIP}\"...";
     cd "${FULLPATH_TMP_DIR}";
     gunzip --suffix ".zip" "$(basename ${FULLPATH_TMP_ZIP};)";
 
     echo "";
-    echo "Setting file permissions to '0755' for pup binary \"${FULLPATH_VERSIONED_PUP}\"";
+    echo "Info:  Setting file permissions to '0755' for pup binary \"${FULLPATH_VERSIONED_PUP}\"...";
     chmod 0755 "${FULLPATH_TMP_PUP}";
 
     echo "";
-    echo "Moving pup binary from \"${FULLPATH_TMP_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"";
+    echo "Info:  Moving pup binary from \"${FULLPATH_TMP_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"...";
     mv --force --verbose "${FULLPATH_TMP_PUP}" "${FULLPATH_VERSIONED_PUP}";
 
     echo "";
-    echo "Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"";
+    echo "Info:  Cleaning up working directory \"${FULLPATH_TMP_DIR}\"...";
+    rm --recursive --force --verbose "${FULLPATH_TMP_DIR}";
+
+    echo "";
+    echo "Info:  Creating symbolic link from \"${FULLPATH_PUP}\" to \"${FULLPATH_VERSIONED_PUP}\"...";
     ln -sf "${FULLPATH_VERSIONED_PUP}" "${FULLPATH_PUP}";
 
     # ------------------------------------------------------------

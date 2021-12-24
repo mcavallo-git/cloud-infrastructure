@@ -22,12 +22,12 @@ if [ "$(id -un)" != "root" ]; then
   exit 1;
 else
   # ------------------------------------------------------------
-  VALID_OS=0;
   if [ -n "$(command -v dotnet 2>'/dev/null';)" ]; then
     echo "";
     echo "Info:  dotnet already installed - listing installed SDKs...";
     dotnet --list-sdks;
   else
+    VALID_OS=0;
     if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
       #
       #   Ubuntu Environment
@@ -84,7 +84,7 @@ else
       cat /etc/*release;
       echo "------------------------------------------------------------";
       echo "";
-      echo "Info:  Please refer Microsoft's tutorial page for installing DotNet Core @:";
+      echo "Info:  Please refer Microsoft's tutorial page for installing DotNet Core on Linux @:";
       echo " |    ";
       echo " |--> https://docs.microsoft.com/en-us/dotnet/core/install/linux";
       echo "";

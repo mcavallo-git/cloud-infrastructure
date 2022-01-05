@@ -1012,7 +1012,7 @@ else
           #
           if [[ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]]; then
             if [[ -z "$(command -v ssh 2>'/dev/null';)" ]]; then
-              echo -e "\nInfo:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
+              echo -e "\nInfo:  Skipped SSH config update - Pre-requisite command 'ssh' not found";
             else
               # ------------------------------
               #
@@ -1063,18 +1063,26 @@ else
                 #
                 # SSH-Config file already fully up-to-date
                 #
-                echo -e "\nInfo:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
+                echo "";
+                echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
                 echo "  |--> Checksum already up-to-date with \"$(basename "${SSHD_CONFIG_REPLACEMENT}";)\"";
               elif [[ ! -d "/home/" ]] || [[ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
                 #
                 # Need another user other than root to SSH into this machine --> No user directories found in /home/.
                 #
-                echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one user other than root whose home directory is within  [ /home/. ] to access this workstation";
+                echo "";
+                echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
+                echo "  |--> There must be at least one user (other than root) who can access this workstation via SSH, and has a home directory within [ /home/ ]";
+                echo "  |--> The updated SSH config will deny the root user from accessing this device via SSH (to prevent Brute-force/Dictionary SSH Attacks on this device)";
+                echo "        |--> Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html";
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
                 #
                 # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
                 #
-                echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/${SUDO_USER} ]";
+                echo "";
+                echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
+                echo "  |--> There must be at least one SSH public key matching filepath [ /etc/ssh/authorized_keys/USERNAME_HERE ]";
+                echo "  |--> Example filepath:  [ /etc/ssh/authorized_keys/${SUDO_USER} ]";
               else
                 #
                 # Suggest to the user that they should open an additional SSH terminal to avoid being locked out of the server

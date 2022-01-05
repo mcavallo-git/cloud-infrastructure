@@ -1666,7 +1666,7 @@ else
           if [[ ${ARGS_SYNC_NGINX} -eq 1 ]]; then
             if [[ -z "$(command -v nginx 2>'/dev/null';)" ]]; then
               # NGINX does NOT exist locally
-              echo -e "\nInfo:  Skipped NGINX sync - No local 'nginx' service exists";
+              echo -e "\nInfo:  Skipped NGINX config-sync - No local 'nginx' service exists";
             else
               # NGINX exists locally
               # ------------------------------

@@ -5,4 +5,4 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### [ SYNC ] Sync cloud infrastructure repo @ https://github.com/mcavallo-git/cloud-infrastructure/blob/master/README.md
-*/2 * * * * root /usr/local/sbin/sync_cloud_infrastructure --nginx || curl -sL https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure | bash -s -- --nginx;
+*/2 * * * * root /usr/local/sbin/sync_cloud_infrastructure --nginx --cron sync || curl -sL https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure | bash -s -- --nginx --cron sync;

@@ -70,71 +70,75 @@ if [[ "$(id -un)" != "root" ]]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
-  # ------------------------------
-  #
-  # Script-specific config overrides
-  #
 
-  # Confirm Sync (y/n)
+  # ------------------------------
+  # Determine if the current shell is running-in/connected-to a tty shell (available to user input)
+  TTY_VAR_MATCHES_REQUIRED=5;
+  TTY_VARS_MATCHED=0;
+  # Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
+  unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
+  TTY_VARS_ARR+=("EDITOR");
+  TTY_VARS_ARR+=("GCC_COLORS");
+  TTY_VARS_ARR+=("LESSCLOSE");
+  TTY_VARS_ARR+=("LESSOPEN");
+  TTY_VARS_ARR+=("LS_COLORS");
+  TTY_VARS_ARR+=("OLDPWD");
+  TTY_VARS_ARR+=("PROMPT_COMMAND");
+  TTY_VARS_ARR+=("TERM");  # may be set to "dumb" on non-tty (backend-only) shells
+  TTY_VARS_ARR+=("USER");
+  TTY_VARS_ARR+=("VISUAL");
+  TTY_VARS_ARR+=("XDG_DATA_DIRS");
+  for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
+    EACH_TTY_VAR_VALUE="";
+    declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
+    if [[ -n "${EACH_TTY_VAR_VALUE}" ]]; then
+      TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
+    fi;
+  done;
+  IS_TTY_TERMINAL=$(if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
+  # ------------------------------
+  READ_TIMEOUT=$(( 60 * ${IS_TTY_TERMINAL} ));
   SYNC_CONFIRMED=0;
   if [[ -f "${SYNC_CI_LOCAL}" ]]; then
+    #
     # The [ sync_cloud_infrastructure ] module DOES already exist (not initial sync)
+    #
     echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
     SYNC_CONFIRMED=1;
+  elif [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+    #
+    # Non-TTY shell (backend request) - Do not require confirmation to sync modules
+    #
+    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)";
+    SYNC_CONFIRMED=1;
   else
-    # The [ sync_cloud_infrastructure ] module does NOT yet exist (is initial sync)
-    # ------------------------------
-    # Determine if the current shell is running-in/connected-to a tty shell (available to user input)
-    TTY_VAR_MATCHES_REQUIRED=5;
-    TTY_VARS_MATCHED=0;
-    # Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
-    unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
-    TTY_VARS_ARR+=("EDITOR");
-    TTY_VARS_ARR+=("GCC_COLORS");
-    TTY_VARS_ARR+=("LESSCLOSE");
-    TTY_VARS_ARR+=("LESSOPEN");
-    TTY_VARS_ARR+=("LS_COLORS");
-    TTY_VARS_ARR+=("OLDPWD");
-    TTY_VARS_ARR+=("PROMPT_COMMAND");
-    TTY_VARS_ARR+=("TERM");  # may be set to "dumb" on non-tty (backend-only) shells
-    TTY_VARS_ARR+=("USER");
-    TTY_VARS_ARR+=("VISUAL");
-    TTY_VARS_ARR+=("XDG_DATA_DIRS");
-    for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
-      EACH_TTY_VAR_VALUE="";
-      declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
-      if [[ -n "${EACH_TTY_VAR_VALUE}" ]]; then
-        TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
-      fi;
-    done;
-    IS_TTY_TERMINAL=$(if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
-    # ------------------------------
-    # if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then
-    if [[ "${IS_TTY_TERMINAL}" -eq 1 ]]; then
-      # TTY shell --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
-      echo "";
-      REPLY="";
-      read -p "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
-      echo "";
-      if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-        SYNC_CONFIRMED=1;
-        echo "  |--> Confirmed";
-      else
-        SYNC_CONFIRMED=0;
-        echo "  |--> Denied";
-      fi;
-    else
-      # non-TTY shell (backend request) - Do not require confirmation to sync modules
-      echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)";
+    #
+    # TTY shell + [ sync_cloud_infrastructure ] module does NOT yet exist (is initial sync)
+    #  |
+    #  |--> Request user to verify/confirm the initial sync of cloud infrastructure modules (adheres to 'opt-in' methodologies and not 'opt-out' methodologies)
+    #
+    echo "";
+    REPLY="";
+    read -p "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
+    echo "";
+    if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
       SYNC_CONFIRMED=1;
+      echo "  |--> Confirmed";
+    else
+      SYNC_CONFIRMED=0;
+      echo "  |--> Denied";
     fi;
   fi;
 
   if [[ "${SYNC_CONFIRMED}" -eq 0 ]]; then
-    # Do not sync cllud-infrastructure modules & exit this script with an error code, instead
+    # Do not sync cloud-infrastructure modules & exit this script with an error code, instead
     EXIT_CODE=1;
 
   else
+    # ------------------------------
+    #
+    # Script-specific config overrides
+    #
 
     # Create parent directory for script-specific config overrides
     if [[ ! -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]]; then
@@ -1061,7 +1065,7 @@ else
               dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
               if [[ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
                 #
-                # SSH-Config file already fully up-to-date
+                # SSH config file already fully up-to-date
                 #
                 echo "";
                 echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
@@ -1097,23 +1101,23 @@ else
                 ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press 'n'  (press 'y' to confirm)  ";
                 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
                   #
-                  # Require user-confirmation to proceed with config-update
+                  # Require user-confirmation to proceed with config update
                   #
                   echo -e "${ECHO_SSH_WARNING}";
                   REPLY="";
-                  read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
-                  echo "  |";
+                  if [[ "${IS_TTY_TERMINAL}" -eq 1 ]]; then
+                    read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
+                  fi;
                   if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
                     #
-                    # User declined the config-update
+                    # User declined the config update
                     #
-                    echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
+                    echo "  |--> Denied - Skipped SSH config update";
                   else
                     #
-                    # User accepted/confirmed the config-update
+                    # User accepted/confirmed the config update
                     #
-                    echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
-                    echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_REPLACEMENT}\"";
+                    echo "  |--> Confirmed - Updating SSH config file \"${SSHD_CONFIG_LIVE}\" with contents from file \"${SSHD_CONFIG_REPLACEMENT}\"";
                     #
                     # Backup & Update the sshd_config (SSH Server) file
                     #
@@ -1159,29 +1163,28 @@ else
                   CHECKSUM_UPDATED=$(cat "${SSHD_CONFIG_SED}" | cksum | cut -d" " -f1;);
                   if [[ "${CHECKSUM_SOURCE}" != "${CHECKSUM_UPDATED}" ]]; then
                     #
-                    # Require user-confirmation to proceed with config-update
+                    # Require user-confirmation to proceed with config update
                     #
                     echo -e "${ECHO_SSH_WARNING}";
                     REPLY="";
-                    read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                    read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                     echo "";
                     if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
                       #
-                      # User declined the config-update
+                      # User declined the config update
                       #
-                      echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
+                      echo "  |--> Denied - Skipped SSH config update";
                     else
                       #
-                      # User accepted/confirmed the config-update
+                      # User accepted/confirmed the config update
                       #
-                      echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
-                      echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_SED}\"";
+                      echo -e "  |--> Confirmed - Updating SSH config file \"${SSHD_CONFIG_LIVE}\" with contents from file \"${SSHD_CONFIG_SED}\"";
                       cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
                         && cp -f "${SSHD_CONFIG_SED}" "${SSHD_CONFIG_LIVE}" \
                         && RESTART_SERVICE_SSH=1;
                     fi;
                   else
-                    echo -e "\nInfo:  Skipped SSH Config-Update - Already running the latest revision";
+                    echo -e "\nInfo:  Skipped SSH config update - Already running the latest revision";
                   fi;
                   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 fi;
@@ -1194,7 +1197,7 @@ else
           TZ="America/New_York";
           if [[ ${ARGS_SYNC_TIMEZONE} -eq 1 ]] && [[ "$(cat /etc/timezone;)" != "${TZ}" ]]; then
               echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
-              read -p "  |--> Set Timezone, now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+              read -p "  |--> Set Timezone, now?  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
               echo "";
               if [[ $REPLY =~ ^[Yy]$ ]]; then
                 ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
@@ -1243,10 +1246,10 @@ else
                     echo "  |--> UFW sync requested, however UFW is currently disabled";
                     echo "  |";
                     REPLY="";
-                    read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                    read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                     echo "";
                     if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                      echo "  |--> Confirmed";
+                      echo "  |--> Confirmed - Enabling UFW...";
                       ufw enable;
                       # Re-check UFW Enabled/Disabled Status
                       UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
@@ -1254,7 +1257,7 @@ else
                         echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                       fi;
                     else
-                      echo "  |--> Denied";
+                      echo "  |--> Denied - UFW will remain disabled";
                     fi;
                   fi;
                 fi;
@@ -1322,7 +1325,7 @@ else
                   echo -e "\nInfo:  ${UPDATING_ECHO}";
                 else
                   echo "";
-                  read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                  read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                   echo "";
                   if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                     echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1357,7 +1360,7 @@ else
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo "";
-                read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1391,7 +1394,7 @@ else
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo "";
-                read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1425,7 +1428,7 @@ else
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo "";
-                read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1776,7 +1779,7 @@ else
               for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
                 echo "  |";
                 REPLY="";
-                read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now?  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |----> Confirmed - Removing \"${EACH_CRON_TRIGGER}\"...";

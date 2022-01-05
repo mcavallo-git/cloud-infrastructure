@@ -1,5 +1,8 @@
 #!/bin/bash
-# ------------------------------------------------------------
+#
+#   LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 # Option 1:  Sync basic + utility methods (only)
@@ -9,13 +12,7 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
 
 fi;
-# ------------------------------------------------------------
-#
-# Edit this script, locally (for use during ad-hoc updates/hotfixes)
-#
-#   LOCAL_SBIN="/usr/local/sbin/sync_cloud_infrastructure" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
-#
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -25,7 +22,7 @@ LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Instantiate static runtime variables
 #
@@ -41,7 +38,7 @@ SYNC_CI_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
 WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Instantiate dymamic runtime variables
 #
@@ -52,13 +49,13 @@ EXIT_CODE=0; # sum of errors from specific required calls - returned as the fina
 
 UPDATE_SELF_REQUIRED=0; # Flag variable which determines if the self-update will run or not
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Log the starting timestamp for the current runtime
 #
 echo -e "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME} ]  (ID: ${START_SECONDS_NANOSECONDS})";
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Script must run as root (or via sudo)
 #
@@ -67,7 +64,7 @@ if [[ "$(id -un)" != "root" ]]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Script-specific config overrides
   #
@@ -149,7 +146,7 @@ else
     GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-${DEFAULT_GIT_SOURCE_REPO_URL}}";
 
 
-    # ------------------------------------------------------------
+    # ------------------------------
     #
     # Parse inline arguments (passed to current script)
     #
@@ -289,7 +286,7 @@ else
     # String arguments
     ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-""};               # Parsed from $@
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     WIN32_HOMEDIR="";
 
@@ -307,8 +304,7 @@ else
 
     SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
-    # ------------------------------------------------------------
-
+    # ------------------------------
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
       echo "";
       echo "Debug:  ARGS = [ ${ARGS[@]} ]";
@@ -354,8 +350,7 @@ else
       echo "Debug:  START_DATETIME = [ ${START_DATETIME} ]";
       echo "Debug:  START_TIMESTAMP = [ ${START_TIMESTAMP} ]";
     fi;
-
-    # ------------------------------------------------------------
+    # ------------------------------
     #
     # Check for a valid WAN (internet) connection
     #
@@ -380,9 +375,10 @@ else
     else
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Verified WAN (internet) network connection"; fi;
     fi;
-
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
-      # Handle benchmarking differently (e.g. 'more compatibly') before we've ensured that the command 'bc' has been installed
+      #
+      # Handle benchmarking differently (e.g. more 'compatibly') before we've ensured that the command 'bc' has been installed
+      #
       if [[ -n "$(command -v bc 2>'/dev/null';)" ]]; then
         BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l;);
       else
@@ -390,7 +386,6 @@ else
       fi;
       echo "  |--> Finished after ${BENCHMARK_DELTA}s";
     fi;
-
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
       echo "";
       echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
@@ -398,24 +393,21 @@ else
       echo "Debug:  WAN_TEST_FAILED = [ ${WAN_TEST_FAILED} ]";
       echo "Debug:  WAN_TEST_HTTP_CODE = [ ${WAN_TEST_HTTP_CODE} ]";
     fi;
-
-    # ------------------------------------------------------------
-
+    # ------------------------------
+    #
     # If no errors are found up-until this point, continue
+    #
     if [[ -z "${EXIT_CODE}" ]] || [[ "${EXIT_CODE}" == "0" ]]; then
-
-      # ------------------------------------------------------------
+      # ------------------------------
       #
       # Packages / Prereqs  -  Make sure prerequisite-packages are installed
       #
       echo -e "\nInfo:  Checking for required/prerequite packages...";
       BENCHMARK_START=$(date +'%s.%N');
-
       unset REQUIRED_PKGS_ARRAY; declare -a REQUIRED_PKGS_ARRAY; # [Re-]Instantiate bash array
       unset MISSING_PKGS_ARRAY; declare -a MISSING_PKGS_ARRAY; # [Re-]Instantiate bash array
       unset FAILED_INSTALL_PKGS_ARRAY; declare -a FAILED_INSTALL_PKGS_ARRAY; # [Re-]Instantiate bash array
       unset NEWLY_INSTALLED_PKGS_ARRAY; declare -a NEWLY_INSTALLED_PKGS_ARRAY; # [Re-]Instantiate bash array
-
       REQUIRED_PKGS_ARRAY=();
       REQUIRED_PKGS_ARRAY+=("bc");
       REQUIRED_PKGS_ARRAY+=("dos2unix");
@@ -424,7 +416,6 @@ else
       REQUIRED_PKGS_ARRAY+=("rsync");
       REQUIRED_PKGS_ARRAY+=("vim-common");
       REQUIRED_PKGS_ARRAY+=("wget");
-
       # Debian-specific packages
       if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
         REQUIRED_PKGS_ARRAY+=("cron");
@@ -469,14 +460,17 @@ else
           fi;
         fi;
       done;
-
-      # If any packages were determined to be missing, attempt to install them
+      # ------------------------------
+      #
+      # Install missing packages
+      #
       if [[ ${#MISSING_PKGS_ARRAY[@]} -ne 0 ]]; then
-
         if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then
           if [[ 1 -eq 1 ]]; then
+            #
             # Debian distros (Ubuntu, Raspbian, etc.)
             #  |--> Individually install missing packages (to avoid errors from single-packages from taking-out the entire bulk-install attempt)
+            #
             echo -e "\nInfo:  Calling [ apt-get update -y; ]...";
             apt-get -y update;
             for EACH_MISSING_PKG in "${MISSING_PKGS_ARRAY[@]}"; do
@@ -484,27 +478,32 @@ else
               apt-get -y install ${EACH_MISSING_PKG};
             done;
           else
+            #
             # Debian distros (Ubuntu, Raspbian, etc.)
             #  |--> Bulk install missing packages
+            #
             echo -e "\nInfo:  Calling [ apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
             apt-get -y update; apt-get -y install ${MISSING_PKGS_ARRAY[@]};
           fi;
-
         elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then
+          #
           # RHEL, CentOS distros
           #  |--> Bulk install missing packages
+          #
           echo -e "\nInfo:  Calling [ yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]}; ]...";
           yum check-update -y; yum -y install ${MISSING_PKGS_ARRAY[@]};
-
         elif [[ -n "$(command -v apk 2>'/dev/null';)" ]]; then
+          #
           # Alpine distros
           #  |--> Bulk install missing packages
+          #
           echo -e "\nInfo:  Calling [ apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]}; ]...";
           apk update -y; apk add -y ${MISSING_PKGS_ARRAY[@]};
-
         fi;
-
-        # Verify that all required packages (which are needed later in this script) are installed as-intended
+        # ------------------------------
+        #
+        # Verify all required packages are installed as-intended
+        #
         for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
           if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
             # Query Debian's Package-Manager for each package
@@ -540,21 +539,20 @@ else
             fi;
           fi;
         done;
-
       fi;
-
       if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -ne 0 ]]; then
+        #
         # At least one package is missing & failed to install
+        #
         EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
       fi;
-
       if [[ ${#FAILED_INSTALL_PKGS_ARRAY[@]} -eq 0 ]] && [[ ${#NEWLY_INSTALLED_PKGS_ARRAY[@]} -eq 0 ]]; then
-        # No package changes made
+        #
+        # No package changes were made
+        #
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> No package changes made (all required/prerequite packages are installed locally)"; fi;
       fi;
-
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-
       if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
         echo "";
         echo "Debug:  REQUIRED_PKGS_ARRAY[@] = [ ${REQUIRED_PKGS_ARRAY[@]} ]";
@@ -562,26 +560,19 @@ else
         echo "Debug:  FAILED_INSTALL_PKGS_ARRAY[@] = [ ${FAILED_INSTALL_PKGS_ARRAY[@]} ]";
         echo "Debug:  NEWLY_INSTALLED_PKGS_ARRAY[@] = [ ${NEWLY_INSTALLED_PKGS_ARRAY[@]} ]";
       fi;
-
-      # ------------------------------------------------------------
+      # ------------------------------
       #
       # Self-update - If changes exist between the local & the remote (source) runtime versions of this script, then update it and recursively call it
       #
       if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then
         UPDATE_SELF_REQUIRED=0;
         echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')";
-
       else
-
         CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;); # remove commented & whitespace-only lines from script
         CHECKSUM_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1;); # remove commented & whitespace-only lines from script
-
         CHECKSUM_ERROR_UNSIGNED=4294967295;
-
         TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | wc -l);
-
         TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
-
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
           echo "";
           echo "Debug:  SYNC_CI_REMOTE = [ ${SYNC_CI_REMOTE} ]";
@@ -592,8 +583,10 @@ else
           echo "Debug:  CHECKSUM_REMOTE = [ ${CHECKSUM_REMOTE} ]";
           echo "Debug:  CHECKSUM_ERROR_UNSIGNED = [ ${CHECKSUM_ERROR_UNSIGNED} ]";
         fi;
-
-        # Conditional logic determining whether the self-update will run or not
+        # ------------------------------
+        #
+        # Apply conditional logic to determine whether the self-update will run or not
+        #
         if [[ ${ARGS_FORCE_SELF_UPDATE} -eq 1 ]]; then
           UPDATE_SELF_REQUIRED=1;
           echo -e "\nInfo:  Self-update forced (via argument '--force-self-update')";
@@ -761,8 +754,10 @@ else
         fi;
         # ------------------------------
         if [[ -z "${WIN32_HOMEDIR}" ]]; then
+          #
           # Windows/WSL check(s) failed (or were skipped)
           #  |--> Check for required Linux filepath(s) as a fallback
+          #
           echo -e "\nInfo:  Checking for local repository files within user [ $(whoami) ]'s home-directory";
           BENCHMARK_START=$(date +'%s.%N');
           WHOAMI_HOME_DIR="$(getent passwd $(id -un) | cut --delimiter=: --fields=6)";
@@ -789,7 +784,10 @@ else
           fi;
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         else
+          # ------------------------------
+          #
           # Running in WSL shell on a Windows-based OS
+          #
           WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/Coding/man";
           if [[ -d "${WSL_DIR}" ]]; then
             # Create link(s) to the Windows user's directory (who is masquerading as the current WSL User)
@@ -810,7 +808,10 @@ else
               fi;
             fi;
           fi;
+          # ------------------------------
+          #
           # Create link to WSL-User's local desktop
+          #
           WSL_DIR="${WIN32_HOMEDIR}/Desktop";
           if [[ -d "${WSL_DIR}" ]]; then
             # Current User
@@ -830,7 +831,6 @@ else
               fi;
             fi;
           fi;
-
         fi;
         # ------------------------------
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
@@ -860,12 +860,12 @@ else
         fi;
         # ------------------------------
         if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" -ne 1 ]]; then
-
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'If' main statement block - No errors detected thus far  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
-
+          #
           # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
           #  |--> Run the part of the sync job which actually performs the sync
-          # ------------------------------------------------------------
+          #
+          # ------------------------------
           #
           # /usr/local/bin
           #
@@ -881,7 +881,7 @@ else
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /usr/local/sbin
           #
@@ -897,7 +897,7 @@ else
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/inputrc
           #
@@ -910,7 +910,7 @@ else
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/profile
           #
@@ -924,7 +924,7 @@ else
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/pki/ca-trust/source/anchors  (Server root-certificates & CA-bundles)
           #
@@ -945,7 +945,7 @@ else
             update-ca-trust force-enable;
             update-ca-trust extract; # Update for Rhel/Centos
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/profile.d/required_paths.sh
           #
@@ -961,7 +961,7 @@ else
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/profile.d/bash_history_logging.sh
           #
@@ -977,7 +977,7 @@ else
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/whitelist.d
           #
@@ -993,70 +993,79 @@ else
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/ssh/sshd_config
           #
           if [[ ${ARGS_SYNC_SSH_CONFIG} -eq 1 ]]; then
-
             if [[ -z "$(command -v ssh 2>'/dev/null';)" ]]; then
               echo -e "\nInfo:  Skipped SSH Config-Update - Pre-requisite command 'ssh' not found";
-
             else
-
               # ------------------------------
-
+              #
               # Backup & Update the sshd_config (SSH Server) file
+              #
               SSHD_CONFIG_LIVE="/etc/ssh/sshd_config";
               SSHD_CONFIG_MFA="${SSHD_CONFIG_LIVE}.mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_MFA}" "${SSHD_CONFIG_MFA}";
               SSHD_CONFIG_NO_MFA="${SSHD_CONFIG_LIVE}.no_mfa"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_NO_MFA}" "${SSHD_CONFIG_NO_MFA}";
               SSHD_CONFIG_PASS_AUTH="${SSHD_CONFIG_LIVE}.password_auth"; cp -f "${DIR_REPO_BASE}${SSHD_CONFIG_PASS_AUTH}" "${SSHD_CONFIG_PASS_AUTH}";
               SSHD_CONFIG_SED="${SSHD_CONFIG_LIVE}.sed";
-
               if [[ ! -d "/etc/ssh/authorized_keys" ]]; then
                 echo -e "\nInfo:  Creating directory \"/etc/ssh/authorized_keys\"";
                 mkdir "/etc/ssh/authorized_keys";
                 chmod 0755 "/etc/ssh/authorized_keys";
                 chown "root:root" "/etc/ssh/authorized_keys";
               fi;
-
               if [[ -d "/etc/ssh/authorized_keys" ]] && [[ "$(find /etc/ssh/authorized_keys -type f | wc -l;)" != "0" ]]; then
+                #
                 # Set ownership of "/etc/ssh/authorized_keys" directory as-intended
+                #
                 ### chmod 0755 "/etc/ssh/authorized_keys"; # Keep for reference on intended permissions for "/etc/ssh/authorized_keys" (chmod 0755 as-of 20200310-063820)
+                #
                 # At least one SSH-Key exists in the standard keyfile directory (/etc/ssh/authorized_keys)
+                #
                 MFA_CONFIG_LOGIN_DUO="/etc/duo/login_duo.conf";
                 MFA_CONFIG_PAM_DUO="/etc/duo/pam_duo.conf";
                 if [[ -f "${MFA_CONFIG_PAM_DUO}" ]] || [[ -f "${MFA_CONFIG_LOGIN_DUO}" ]]; then
+                  #
                   # Duo MFA Installed --> Use it (through PAM) for SSH-Authentication
+                  #
                   SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_MFA}";
                 else
+                  #
                   # No MFA, but at least one SSH-Key exists
+                  #
                   SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_NO_MFA}";
                 fi;
               else
+                #
                 # No SSH Key(s) exist in the standard keyfile directory (/etc/ssh/authorized_keys) --> Allow passwords, for now
+                #
                 SSHD_CONFIG_REPLACEMENT="${SSHD_CONFIG_PASS_AUTH}";
               fi;
-
               # ------------------------------
-
               dos2unix --quiet "${SSHD_CONFIG_LIVE}";
               dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
               if [[ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
+                #
                 # SSH-Config file already fully up-to-date
+                #
                 echo -e "\nInfo:  Skipped update to SSH-Config file \"${SSHD_CONFIG_LIVE}\" - Already running the latest revision";
                 echo "  |--> Checksum already up-to-date with \"$(basename "${SSHD_CONFIG_REPLACEMENT}";)\"";
-
               elif [[ ! -d "/home/" ]] || [[ $(find '/home/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
+                #
                 # Need another user other than root to SSH into this machine --> No user directories found in /home/.
+                #
                 echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one user other than root whose home directory is within  [ /home/. ] to access this workstation";
-
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
+                #
                 # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
+                #
                 echo -e "\nInfo:  Skipped SSH Config-Update - Must create at least one private-key/public-key combo, with the public key residing @  [ /etc/ssh/authorized_keys/${SUDO_USER} ]";
-
               else
-                # At least one Tell the user to make sure and open a new SSH terminal to avoid being locked-out of the server
+                #
+                # Suggest to the user that they should open an additional SSH terminal to avoid being locked out of the server
+                #
                 ECHO_SSH_WARNING="";
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n !!! Warning !!!";
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
@@ -1065,21 +1074,28 @@ else
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
                 ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press 'n'  (press 'y' to confirm)  ";
-
                 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
+                  #
                   # Require user-confirmation to proceed with config-update
+                  #
                   echo -e "${ECHO_SSH_WARNING}";
                   REPLY="";
                   read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   echo "  |";
                   if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
+                    #
                     # User declined the config-update
+                    #
                     echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
                   else
+                    #
                     # User accepted/confirmed the config-update
+                    #
                     echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
                     echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_REPLACEMENT}\"";
+                    #
                     # Backup & Update the sshd_config (SSH Server) file
+                    #
                     BENCHMARK_START=$(date +'%s.%N');
                     cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
                       && wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${SSHD_CONFIG_REPLACEMENT}" -O "${SSHD_CONFIG_REPLACEMENT}" -q \
@@ -1088,10 +1104,10 @@ else
                       && RESTART_SERVICE_SSH=1;
                     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                   fi;
-
                 elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-
+                  #
                   # Amongst other things, disable the "root" user and require that users login with SSH private keys (deny password-based login)
+                  #
                   BENCHMARK_START=$(date +'%s.%N');
                   cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_SED}";
                   chmod 0644 "${SSHD_CONFIG_SED}";
@@ -1109,26 +1125,34 @@ else
                     -e "/^#?UseDNS/c\UseDNS no" \
                     -e "/^#?UsePAM/c\UsePAM yes" \
                     "${SSHD_CONFIG_SED}";
-
-                  # Remove duplicated lines in a target file (while keeping one copy of each line)
+                  #
+                  # Remove duplicated lines in target file (while keeping one copy of each line)
+                  #
                   echo "$(tac ${SSHD_CONFIG_SED};)" > "${SSHD_CONFIG_SED}";
                   echo "$(cat -n ${SSHD_CONFIG_SED} | sort -uk2 | sort -nk1 | cut -f2-;)" > "${SSHD_CONFIG_SED}";
                   echo "$(tac ${SSHD_CONFIG_SED};)" > "${SSHD_CONFIG_SED}";
-
+                  #
                   # Update the service's config-file only if its checksum is not the same as the updated config-file's checksum
+                  #
                   CHECKSUM_SOURCE=$(cat "${SSHD_CONFIG_LIVE}" | cksum | cut -d" " -f1;);
                   CHECKSUM_UPDATED=$(cat "${SSHD_CONFIG_SED}" | cksum | cut -d" " -f1;);
                   if [[ "${CHECKSUM_SOURCE}" != "${CHECKSUM_UPDATED}" ]]; then
+                    #
                     # Require user-confirmation to proceed with config-update
+                    #
                     echo -e "${ECHO_SSH_WARNING}";
                     REPLY="";
                     read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                     echo "";
                     if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
+                      #
                       # User declined the config-update
+                      #
                       echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
                     else
+                      #
                       # User accepted/confirmed the config-update
+                      #
                       echo -e "  |--> Info:  Updating SSH-Config file \"${SSHD_CONFIG_LIVE}\"";
                       echo -e "  |--> Info:  Replacing with contents from file \"${SSHD_CONFIG_SED}\"";
                       cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_LIVE}.${START_TIMESTAMP}.bak" \
@@ -1144,7 +1168,7 @@ else
               # ------------------------------
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           # Sync Timezone
           TZ="America/New_York";
           if [[ ${ARGS_SYNC_TIMEZONE} -eq 1 ]] && [[ "$(cat /etc/timezone;)" != "${TZ}" ]]; then
@@ -1157,7 +1181,7 @@ else
               fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           # Sync UFW ("Uncomplicated Firewall")
           ENABLE_CRON_DDNS_UPDATER=0;
           if [[ ${ARGS_SYNC_UFW} -eq 1 ]]; then
@@ -1171,7 +1195,6 @@ else
                   echo "";
                   echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                 fi;
-
                 if [[ ${UFW_ENABLED} -eq 0 ]]; then
                   # UFW DISABLED - Show recommendations for general-practice setup
                   echo -e "\nWarning:  Firewall package UFW (default Debian firewall) is installed but disabled";
@@ -1192,24 +1215,27 @@ else
                     echo "         ufw enable; # enforce all ufw rules, including aforementioned 'allow' and 'deny' rules (if applied)";
                     echo "         ## Add / remove / tweak UFW rules as-needed (based on machine's environment and designated purpose)";
                   fi;
-                  # UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
-                  # echo "  |";
-                  # echo "  |--> UFW sync requested, however UFW is currently disabled";
-                  # echo "  |";
-                  # REPLY="";
-                  # read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
-                  # echo "";
-                  # if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                  #   echo "  |--> Confirmed";
-                  #   ufw enable;
-                  #   # Re-check UFW Enabled/Disabled Status
-                  #   UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-                  #   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
-                  #     echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
-                  #   fi;
-                  # else
-                  #   echo "  |--> Denied";
-                  # fi;
+                  SUGGEST_ENABLING_UFW=0;  # DISABLED
+                  if [[ "${SUGGEST_ENABLING_UFW}" -eq 1 ]]; then
+                    # UFW DISABLED - Prompt for confirmation before auto-enabling UFW (and potentially locking user out of being able to access the machine)
+                    echo "  |";
+                    echo "  |--> UFW sync requested, however UFW is currently disabled";
+                    echo "  |";
+                    REPLY="";
+                    read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                    echo "";
+                    if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
+                      echo "  |--> Confirmed";
+                      ufw enable;
+                      # Re-check UFW Enabled/Disabled Status
+                      UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
+                      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+                        echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
+                      fi;
+                    else
+                      echo "  |--> Denied";
+                    fi;
+                  fi;
                 fi;
                 if [[ ${UFW_ENABLED} -eq 1 ]]; then
                   # UFW is enabled
@@ -1239,13 +1265,13 @@ else
             fi;
 
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/cron.d/...
           #
           if [[ ${ARGS_CRONJOB_SYNC} -eq 1 ]]; then
             RESTART_SERVICE_CRON=1;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_sync_cloud_infrastructure
             #
@@ -1261,7 +1287,7 @@ else
             if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
             if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_certbot_renew_all
             #
@@ -1297,7 +1323,7 @@ else
                 fi;
               fi;
             fi;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_journalctl_logfile_cleanup
             #
@@ -1331,7 +1357,7 @@ else
                 echo "  |--> Denied - Logfile Auto-Cleanup disabled";
               fi;
             fi;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_update_dns_config
             #
@@ -1365,7 +1391,7 @@ else
                 echo "  |--> Denied - DNS-server sync disabled";
               fi;
             fi;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_update_system
             #
@@ -1399,7 +1425,7 @@ else
                 echo "  |--> Denied - System & package weekly updates disabled";
               fi;
             fi;
-            # ------------------------------------------------------------
+            # ------------------------------
             #
             # /etc/cron.d/CRON_raspi_hw_monitor
             #
@@ -1421,7 +1447,7 @@ else
               fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # ${HOME}/.
           #
@@ -1472,7 +1498,7 @@ else
             fi;
           done;
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/cron.d/CRON_ddns_updater
           #
@@ -1491,7 +1517,7 @@ else
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # Jenkins Items
           #
@@ -1502,7 +1528,7 @@ else
               # Service not found locally
               echo -e "\nInfo:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
             else
-              # ------------------------------------------------------------
+              # ------------------------------
               #
               # Set directory permissions as-intended
               #  |--> Fix for issue where jenkins images wouldn't show-up while on "Manage Jenkins" page (or directly accessing them)
@@ -1514,7 +1540,7 @@ else
               DESTINATION_PATH="/var/cache/jenkins/war";
               DIR_PERMS="0755";
               chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
-              # ------------------------------------------------------------
+              # ------------------------------
               #
               # /var/cache/jenkins/war
               #
@@ -1535,7 +1561,7 @@ else
                 chcon -R -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
                 semanage fcontext -a -t httpd_sys_content_t "/var/cache/jenkins/war/images/";
               fi;
-              # ------------------------------------------------------------
+              # ------------------------------
               #
               # /etc/default/jenkins
               #
@@ -1552,7 +1578,7 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
-                # ------------------------------------------------------------
+                # ------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_export_config
                 #
@@ -1568,7 +1594,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-                # ------------------------------------------------------------
+                # ------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_log_cleanup
                 #
@@ -1584,7 +1610,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-                # ------------------------------------------------------------
+                # ------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_sync_ci
                 #
@@ -1600,7 +1626,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-                # ------------------------------------------------------------
+                # ------------------------------
                 #
                 # /etc/cron.d/CRON_jenkins_warfile_update
                 #
@@ -1620,7 +1646,7 @@ else
               RESTART_SERVICE_JENKINS=1;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/nginx
           #
@@ -1630,7 +1656,7 @@ else
               echo -e "\nInfo:  Skipped NGINX sync - No local 'nginx' service exists";
             else
               # NGINX exists locally
-              # ------------------------------------------------------------
+              # ------------------------------
               #
               # /etc/nginx
               #
@@ -1645,7 +1671,7 @@ else
               find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
               if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-              # ------------------------------------------------------------
+              # ------------------------------
               #
               # /var/www/error
               #
@@ -1712,7 +1738,7 @@ else
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # /etc/cron.d/CRON_*
           #
@@ -1740,9 +1766,12 @@ else
               done;
             fi;
           fi;
-          # ------------------------------------------------------------
-          # DELETE OLD FILES / UNLINK OLD SYMLINKS
-          # ------------------------------------------------------------
+
+          # ------------------------------
+          #
+          # Remove deprecated files/symlinks
+          #
+
           DELDIR="/usr/local/bin/";
           TO_DEL="${DELDIR}/docker_check_installation_status"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi;
           TO_DEL="${DELDIR}/docker_list_volume_maps.sh"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi;
@@ -1790,7 +1819,7 @@ else
           TO_DEL="${DELDIR}Jenkins Artwork (jenkins.io).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
           TO_DEL="${DELDIR}Jenkins Material Theme (GitHub).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
 
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # cron  -->  Restart service (if needed)
           #
@@ -1818,7 +1847,8 @@ else
               echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
             fi;
           fi;
-          # ------------------------------------------------------------
+
+          # ------------------------------
           #
           # jenkins  -->  Restart service (if needed)
           #
@@ -1832,7 +1862,8 @@ else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
           fi;
-          # ------------------------------------------------------------
+
+          # ------------------------------
           #
           # nginx  -->  Restart service (if needed)
           #
@@ -1846,7 +1877,7 @@ else
             fi;
           fi;
 
-          # ------------------------------------------------------------
+          # ------------------------------
           #
           # ssh  -->  Restart service (if needed)
           #
@@ -1860,7 +1891,8 @@ else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
           fi;
-          # ------------------------------------------------------------
+
+          # ------------------------------
           #
           # ufw  -->  Restart service (if needed)
           #
@@ -1877,7 +1909,8 @@ else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
           fi;
-          # ------------------------------------------------------------
+
+          # ------------------------------
           #
           # Logfile cleanup
           #
@@ -1897,6 +1930,8 @@ else
             fi;
           fi;
           echo "";
+
+          # ------------------------------
 
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
@@ -1921,7 +1956,7 @@ else
 fi;
 
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Log the ending timestamp for the current runtime
 #
@@ -1941,7 +1976,7 @@ fi;
 echo -e "\n== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime $(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "at [ ${END_DATETIME} ] after [ ${END_BENCHMARK_DELTA}s ] "; fi;) (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Exit & return the value of EXIT_CODE back to caller
 #
@@ -1949,4 +1984,4 @@ if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT
 test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
 
 
-# ------------------------------------------------------------
+# ------------------------------

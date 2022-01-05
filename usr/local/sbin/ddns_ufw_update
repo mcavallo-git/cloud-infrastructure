@@ -457,8 +457,11 @@ else
 add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
                     # ------------------------------
-                    # BEGIN NGINX ONLY
                     if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
+                      #
+                      # BEGIN NGINX ONLY
+                      #
+
                       # Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
                       if [ -n "${WHITELIST_FQDN}" ]; then
                         # DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
@@ -473,8 +476,11 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
                         # Append this IPv4 address to NGINX's 'allowed' IPv4 addresses
                         NGINX_DDNS_RESULTS+=("allow ${RESOLVED_CIDRv4};");
                       fi;
+
+                      #
+                      # END NGINX ONLY
+                      #
                     fi;
-                    # END NGINX ONLY
                     # ------------------------------
 
                   else
@@ -500,18 +506,28 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
     fi;
 
-    unset NGINX_DDNS_SORTED_UNIQUE; NGINX_DDNS_SORTED_UNIQUE="$(implode $'\n' "${NGINX_DDNS_RESULTS[@]}" | sort -u ;)";
+    # ------------------------------
+    if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
+      #
+      # BEGIN NGINX ONLY
+      #
 
-    # Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
-    if [[ "${EACH_SERVICE_NAME}" == "nginx" ]] && [[ -d "${NGINX_CONF_DDNS}" ]] && [[ -n "${NGINX_DDNS_SORTED_UNIQUE}" ]]; then
-      if [[ ${DEBUG_MODE} -eq 1 ]]; then
-        echo "Debug:  NGINX_CONF_DDNS = [ ${NGINX_CONF_DDNS} ]";
-        echo "Debug:  NGINX_DDNS_CONF = [ ${NGINX_DDNS_CONF} ]";
-        echo "Debug:  NGINX_DDNS_RESULTS[@] = [ ${NGINX_DDNS_RESULTS[@]} ]";
-        echo "Debug:  NGINX_DDNS_SORTED_UNIQUE = [ ${NGINX_DDNS_SORTED_UNIQUE} ]";
+      NGINX_DDNS_SORTED_UNIQUE="$(implode $'\n' "${NGINX_DDNS_RESULTS[@]}" | sort -u ;)";
+
+      # Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
+      if [[ -d "${NGINX_CONF_DDNS}" ]] && [[ -n "${NGINX_DDNS_SORTED_UNIQUE}" ]]; then
+        if [[ ${DEBUG_MODE} -eq 1 ]]; then
+          echo "Debug:  NGINX_CONF_DDNS = [ ${NGINX_CONF_DDNS} ]";
+          echo "Debug:  NGINX_DDNS_CONF = [ ${NGINX_DDNS_CONF} ]";
+          echo "Debug:  NGINX_DDNS_RESULTS[@] = [ ${NGINX_DDNS_RESULTS[@]} ]";
+          echo "Debug:  NGINX_DDNS_SORTED_UNIQUE = [ ${NGINX_DDNS_SORTED_UNIQUE} ]";
+        fi;
+        echo -e "Info:  Calling [ echo -e \"${NGINX_DDNS_SORTED_UNIQUE}\" > \"${NGINX_DDNS_CONF}\" ]...";
+        echo -e "${NGINX_DDNS_SORTED_UNIQUE}" > "${NGINX_DDNS_CONF}";
       fi;
-      echo -e "Info:  Calling [ echo -e \"${NGINX_DDNS_SORTED_UNIQUE}\" > \"${NGINX_DDNS_CONF}\" ]...";
-      echo -e "${NGINX_DDNS_SORTED_UNIQUE}" > "${NGINX_DDNS_CONF}";
+      #
+      # END NGINX ONLY
+      #
     fi;
   
   done;

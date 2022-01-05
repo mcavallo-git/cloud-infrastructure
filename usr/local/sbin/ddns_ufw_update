@@ -668,7 +668,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   done;
   IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
-  if [[ -n "${UFW_CHANGES_UNDO_ARR[@]}" ]]; then e
+  if [[ -n "${UFW_CHANGES_UNDO_ARR[@]}" ]]; then
     # Show all undo-commands for this runtime
     echo "------------------------------------------------------------";
     echo "----------------------  UNDO COMMANDS  ---------------------";

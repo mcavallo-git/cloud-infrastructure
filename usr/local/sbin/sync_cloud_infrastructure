@@ -661,12 +661,10 @@ else
           #   |--> Call script directly from source as a remote URL (to avoid conflict updating/running the file which is already running and executing these commands)
           #
           RECURSIVE_CALLBACK_COMMAND+="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
-          if [[ -n "$(command -v sed 2>'/dev/null';)" ]]; then
-            # trim leading/trailing whitespace (from all lines)
-            RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
-            # remove whitespace-only lines
-            RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
-          fi;
+          # remove whitespace-only lines
+          RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
+          # trim leading/trailing whitespace (from all lines)
+          RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
           # remove comment-only lines
           RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
           # remove comments appended to the end of lines

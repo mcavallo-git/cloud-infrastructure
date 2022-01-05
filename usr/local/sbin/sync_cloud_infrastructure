@@ -1958,16 +1958,6 @@ fi;
 
 # ------------------------------
 #
-# Recursive Callback - Trigger
-#
-
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
-echo "";
-eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
-
-
-# ------------------------------
-#
 # Log the ending timestamp for the current runtime
 #
 
@@ -1991,10 +1981,19 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 # Exit & return the value of EXIT_CODE back to caller
 #
 
-if [[ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]]; then
-  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
-  exit ${EXIT_CODE:-0};
-fi;
+# if [[ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]]; then
+#   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+#   exit ${EXIT_CODE:-0};
+# fi;
 
+
+# ------------------------------
+#
+# Recursive Callback - Trigger
+#
+
+if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+echo "";
+eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
 
 # ------------------------------

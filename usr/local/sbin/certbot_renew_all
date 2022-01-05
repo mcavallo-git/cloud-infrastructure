@@ -33,7 +33,7 @@ else
   # Require that certbot be installed, already
   if [ $(which certbot 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
     # ------------------------------------------------------------
-    if [ -n "$1" ] && [ "$1" == "-y" || "$1" == "--yes" || "$1" == "--force" ]; then
+    if [[ -n "$1" ]] && [[ $1 =~ ^((-y)|(--yes)|(--force))$ ]]; then
       # Allow a force-command to skip dry-run mode
       echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
       certbot renew --noninteractive --force-renewal;

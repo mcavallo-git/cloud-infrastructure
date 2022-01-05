@@ -53,7 +53,9 @@ UPDATE_SELF_REQUIRED=0; # Flag variable which determines if the self-update will
 #
 # Log the starting timestamp for the current runtime
 #
-echo -e "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME} ]  (ID: ${START_SECONDS_NANOSECONDS})";
+
+echo "------------------------------";
+echo "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME} ]  (ID: ${START_SECONDS_NANOSECONDS})";
 
 # ------------------------------
 #
@@ -1919,8 +1921,6 @@ else
 
           # ------------------------------
 
-          echo "";
-
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
@@ -1955,7 +1955,6 @@ else
 
 fi;
 
-
 # ------------------------------
 #
 # Log the ending timestamp for the current runtime
@@ -1973,8 +1972,8 @@ if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
   echo "Debug:  END_BENCHMARK_DELTA = [ ${END_BENCHMARK_DELTA} ]";
 fi;
 
-echo -e "\n== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime $(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "at [ ${END_DATETIME} ] after [ ${END_BENCHMARK_DELTA}s ] "; fi;) (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
-
+echo "";
+echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime $(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "at [ ${END_DATETIME} ] after [ ${END_BENCHMARK_DELTA}s ] "; fi;) (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
 # ------------------------------
 #

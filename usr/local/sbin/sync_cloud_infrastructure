@@ -1912,26 +1912,17 @@ else
 
           # ------------------------------
           #
-          # Logfile cleanup
+          # Cleanup log files outside of the retention policy's max-age
           #
-          DIR_TO_CLEANUP="${LOGDIR}";
-          if [[ -z "${DIR_TO_CLEANUP}" ]]; then
-            if [[ -w "/var/log/" ]]; then
-              DIR_TO_CLEANUP="/var/log/$(basename "${SYNC_CI_LOCAL}";)";
-            else
-              DIR_TO_CLEANUP="${HOME}/sync_cloud_infrastructure_logs";
-            fi;
+          LOGDIR="${LOGDIR:-/var/log/sync_cloud_infrastructure}";
+          if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +3 | wc -l;)" -gt 0 ]]; then
+            echo "";
+            echo "Info:  Cleaning logs older than [ 3 days old ] from directory \"${LOGDIR}\"";
+            find "${LOGDIR}" -type f -mtime +3 -exec rm -- '{}' \;;
           fi;
-          if [[ "${DIR_TO_CLEANUP}" == "${HOME}/sync_cloud_infrastructure_logs" ]] || [[ "${DIR_TO_CLEANUP}" == "/var/log/$(basename "${SYNC_CI_LOCAL}";)" ]]; then
-            if [[ -d "${DIR_TO_CLEANUP}" ]]; then
-              # Cleanup log files (older than the retention-policy's max-allowed-age)
-              echo -e "\nInfo:  Cleaning logs older than 3 days old from directory \"${DIR_TO_CLEANUP}\"";
-              find "${DIR_TO_CLEANUP}" -type f -mtime +3 -exec rm -- '{}' \; ;
-            fi;
-          fi;
-          echo "";
-
           # ------------------------------
+
+          echo "";
 
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 

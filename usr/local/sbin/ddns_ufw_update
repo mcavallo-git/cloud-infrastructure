@@ -170,7 +170,7 @@ else
   #
   # Sub-Function: Deletes a rule from UFW
   #
-  DELETE_RULE_SKIPPED=0;
+  DELETE_RULE_SKIPPED=1;
   delete_rule() {
     if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
       local proto=$1;
@@ -658,7 +658,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
       if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  Deleting existing rule [ \"${EACH_UFW_LINE}\" ] - not found to match any [ CIDRv4 + Port + Proto ] combinations";
       fi;
-      DELETE_RULE_SKIPPED=0;
+      DELETE_RULE_SKIPPED=1;
       # Delete the firewall rule
       delete_rule ${EACH_UFW_PROTO} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
       # Add the inverse of new rule to the undo-changes array

@@ -1439,9 +1439,9 @@ else
               USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
             fi;
           done;
-          echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH-enabled users...$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH enabled users...$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          # Begin copying files to SSH-Enabled User-Home Directories
+          # Begin copying files to SSH enabled users' home directories
           for EACH_FILE in ${FILES_TO_COPY}; do
             if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> \"~/${EACH_FILE}\""; fi;
@@ -1449,7 +1449,7 @@ else
               for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
                 EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
                 DIR_USER_HOME="$(eval echo ~${EACH_SSH_USER})";
-                # Only copy files to SSH-Enabled user home-directories (plus root)
+                # Only copy files to SSH enabled users' home directories (plus root)
                 if [[ -d "${DIR_USER_HOME}/.ssh" ]] || [[ -f "${DIR_USER_HOME}/.bash_history" ]] || [[ -f "/etc/ssh/authorized_keys/${EACH_SSH_USER}" ]] || [[ "${EACH_SSH_USER}" == "root" ]]; then
                   DEST_FULLPATH="${DIR_USER_HOME}/${EACH_FILE}";
                   if [[ -d "${SRC_FULLPATH}" ]] && [[ -f "${SRC_FULLPATH}/"* ]]; then

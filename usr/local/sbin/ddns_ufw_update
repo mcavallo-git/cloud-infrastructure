@@ -127,6 +127,7 @@ else
       local ip=$3;
       local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
       local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
+      ADD_RULE_SKIPPED=1;
       if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  IN FUNCTION [ add_rule() ]";
         echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
@@ -138,19 +139,24 @@ else
       fi;
       # If rule doesn't exist, then add (allow) it to UFW's ruleset
       if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -z "${rule}" ]; then
-        ADD_RULE_SKIPPED=0;
-        # echo "Info:  Adding Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
-        echo "            |-->  result: [ add new rule ]";
-        echo "            |-->  call:  [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
-        /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};
+        UFW_ADD_OUTPUT="$(/usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port};)";
         # Example(s):
         #   /usr/sbin/ufw allow proto tcp from 10.0.0.0/8 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
         #   /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
         #   /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
+        if [[ -n "$(echo "${UFW_ADD_OUTPUT}" | grep -v 'Skipping adding existing rule';)" ]]; then
+          ADD_RULE_SKIPPED=0;
+        fi;
+      fi;
+      if [ ${ADD_RULE_SKIPPED} -eq 0 ]; then
+        echo "            |-->  result: [ add new rule ]";
+        echo "            |-->  call:  [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
+        echo "            |-->  output:  [ ${UFW_ADD_OUTPUT} ]";
       else
-        ADD_RULE_SKIPPED=1;
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "            |-->  result: [ SKIPPED adding new rule ]";
+          echo "            |-->  call:  [ /usr/sbin/ufw allow proto ${proto} from ${ip} to any port ${port}; ]";
+          echo "            |-->  output:  [ ${UFW_ADD_OUTPUT} ]";
         fi;
       fi;
       if [ ${DEBUG_MODE} -eq 1 ]; then
@@ -172,6 +178,7 @@ else
       local ip=$3;
       local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
       local rule=$(ufw status numbered | grep ${regex});
+      DELETE_RULE_SKIPPED=1;
       if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  IN FUNCTION [ delete_rule() ]";
         echo "            |-->  time:  [ $(date +'%Y-%m-%d %H:%M:%S') ]";
@@ -183,18 +190,17 @@ else
       fi;
       # If rule exists, then remove (delete) it from UFW's ruleset
       if [ -n "${proto}" ] && [ -n "${port}" ] && [ -n "${ip}" ] && [ -n "${rule}" ]; then
-        DELETE_RULE_SKIPPED=0;
-        # echo "Info:  Deleting Firewall Rule  [ ${proto}/${port} ALLOW IN ${ip} ]";
+        ### UFW_DELETE_OUTPUT="$(/usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};)";
+        # Example(s):
+        #   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
+        # DELETE_RULE_SKIPPED=0;
+      fi;
+      if [ ${DELETE_RULE_SKIPPED} -eq 0 ]; then
         echo "            |-->  result: [ delete existing rule ]";
         echo "            |-->  call:  [ /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port}; ]";
         echo "       *** DELETE DISABLED TEMPORARILY ***";
-        
-        ### /usr/sbin/ufw delete allow proto ${proto} from ${ip} to any port ${port};
-
-        # Example(s):
-        #   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
+        # echo "            |-->  output:  [ ${UFW_DELETE_OUTPUT} ]";
       else
-        DELETE_RULE_SKIPPED=1;
         if [ ${DEBUG_MODE} -eq 1 ]; then
           echo "            |-->  result: [ SKIPPED deleting rule ]";
         fi;

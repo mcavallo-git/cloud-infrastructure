@@ -1744,12 +1744,14 @@ else
               find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
                 Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
                 Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
-                if [[ "$(dig +short ${Each_FQDN};)" == "$(hostname -i | awk '{print $1}';)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]]; then
-                  # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device - Set this FQDN to "Enabled" for the current NGINX server
+                if [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
+                  # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device
+                  #  |--> Set this FQDN to "Enabled" for the current NGINX server
                   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
-                elif [[ "${Each_FQDN}" == "$(hostname --fqdn;)" ]]; then
-                  # The FQDN is equal to the hostname (as a FQDN) for the current device
+                elif [[ "${Each_FQDN}" == "$(hostname --fqdn;)" ]] && [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
+                  # The FQDN is equal to the hostname (as a FQDN) for the current device and the WAN IPv4 address of the hostname resolved to this device's IPv4 address, as well
+                  #  |--> Set this FQDN to "Enabled" for the current NGINX server
                   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
                 else

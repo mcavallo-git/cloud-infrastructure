@@ -23,9 +23,10 @@ else
   SERVICE_NAME="nginx";
 
   if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
-    apt-get -y update; apt-get -y install "dpkg-dev";
-    add-apt-repository "ppa:nginx/stable";
-    apt-get -y update; apt-get -y install "nginx-full";
+    apt-get --yes update;
+    apt-get --yes install "dpkg-dev";
+    add-apt-repository --yes --update "ppa:nginx/stable";
+    apt-get --yes install "nginx-full";
   elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum -y check-update; yum -y install "epel-release";
     yum -y check-update; yum -y install "nginx";
@@ -107,10 +108,9 @@ else
     # (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
     if [ 0 -eq 1 ]; then
       if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
-        add-apt-repository "ppa:maxmind/ppa";
-        apt -y update;
-        apt -y install geoip-database geoip-database-extra php-geoip;
-        apt -y install geoipupdate;
+        add-apt-repository --yes --update "ppa:maxmind/ppa";
+        apt-get --yes install "geoip-database" "geoip-database-extra" "php-geoip";
+        apt-get --yes install "geoipupdate";
         # Locate the geoip database(s)
         dpkg -L geoip-database | grep '\.dat'; dpkg -L geoip-database-extra  | grep '\.dat';
       fi;

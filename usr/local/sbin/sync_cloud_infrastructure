@@ -1992,8 +1992,7 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 # Recursive Callback - Trigger
 #
 
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
-echo "";
+if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
 eval " ${RECURSIVE_CALLBACK_COMMAND}";
 
 # ------------------------------

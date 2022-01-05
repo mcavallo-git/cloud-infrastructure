@@ -109,8 +109,9 @@ else
     # if [[ "$(tty --silent; echo ${?};)" -eq 0 ]]; then
     if [[ "${IS_TTY_TERMINAL}" -eq 1 ]]; then
       # TTY shell --> Verify through the user that they confirm continuing with syncing cloud infrastructure modules
+      echo "";
       REPLY="";
-      echo ""; read -p "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+      read -p "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
       echo "";
       if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
         SYNC_CONFIRMED=1;
@@ -1068,6 +1069,7 @@ else
                 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
                   # Require user-confirmation to proceed with config-update
                   echo -e "${ECHO_SSH_WARNING}";
+                  REPLY="";
                   read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   echo "  |";
                   if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
@@ -1119,9 +1121,9 @@ else
                   if [[ "${CHECKSUM_SOURCE}" != "${CHECKSUM_UPDATED}" ]]; then
                     # Require user-confirmation to proceed with config-update
                     echo -e "${ECHO_SSH_WARNING}";
+                    REPLY="";
                     read -p "${ECHO_SSH_CONFIRMATION}" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
-
-                    echo "  |";
+                    echo "";
                     if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
                       # User declined the config-update
                       echo -e "  |--> Info:  Skipped SSH Config-Update - User opted-out";
@@ -1194,6 +1196,7 @@ else
                   # echo "  |";
                   # echo "  |--> UFW sync requested, however UFW is currently disabled";
                   # echo "  |";
+                  # REPLY="";
                   # read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   # echo "";
                   # if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
@@ -1266,11 +1269,13 @@ else
               if [[ -n "$(command -v certbot 2>'/dev/null';)" ]]; then
                 DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
                 UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+                REPLY="";
                 if [[ -f "${DESTINATION_PATH}" ]]; then
                   REPLY="y";
                   echo -e "\nInfo:  ${UPDATING_ECHO}";
                 else
-                  echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                  echo "";
+                  read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   echo "";
                   if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                     echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1301,11 +1306,13 @@ else
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_journalctl_logfile_cleanup";
               UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
-                echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                echo "";
+                read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1335,11 +1342,13 @@ else
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
               UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
-                echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                echo "";
+                read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1369,11 +1378,13 @@ else
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_system";
               UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
                 echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
-                echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                echo "";
+                read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   echo "  |--> Confirmed - ${UPDATING_ECHO}";
@@ -1725,6 +1736,7 @@ else
               echo -e "\nInfo:  Found ${COUNT_CRON_D_SCRIPTS} cron sync-triggers matching \"/etc/cron.d/CRON_*\":";
               for EACH_CRON_TRIGGER in ${LOCAL_CRON_D_SCRIPTS}; do
                 echo "  |";
+                REPLY="";
                 read -p "  |--> Are you sure you want to remove cron sync-trigger \"${EACH_CRON_TRIGGER}\", now?  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then

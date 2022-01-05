@@ -1079,7 +1079,7 @@ else
                 echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
                 echo "  |--> There must be at least one user (other than root) who can access this workstation via SSH, and has a home directory within [ /home/ ]";
                 echo "  |--> The updated SSH config will deny the root user from accessing this device via SSH (to prevent Brute-force/Dictionary SSH Attacks on this device)";
-                echo "        |--> Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html";
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "        |--> Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
                 #
                 # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.

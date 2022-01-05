@@ -85,9 +85,9 @@ else
       echo -e "{\n    \"credsStore\": \"wincred.exe\"\n}" > "${HOME}/.docker/config.json";
     fi;
     #
-    #   WSL OS  - Hotfix docker startup
+    # WSL 2 Docker Service-Start Hotfix - Apply to '/etc/profile'
     #
-    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL-2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
+    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL 2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
     #
     # ------------------------------  
     # ###

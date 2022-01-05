@@ -32,7 +32,7 @@ echo -e "-- Info:  Start of \"ddns_ufw_update\" runtime at [ ${START_DATETIME} ]
 #
 # Script must run as root or via sudo
 #
-if [ "$(id -un)" != "root" ]; then
+if [[ "$(id -un)" != "root" ]]; then
   echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
   exit 1;

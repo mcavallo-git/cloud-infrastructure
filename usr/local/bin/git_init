@@ -136,7 +136,7 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Git Setup/Config";
 
 # Set default git repos dir
-if [ "$(id -un)" != "root" ]; then
+if [[ "$(id -un)" != "root" ]]; then
   ALL_REPOS_DIR="${HOME}/git";
 else
   ALL_REPOS_DIR="/var/lib/git";

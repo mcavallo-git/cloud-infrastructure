@@ -650,7 +650,7 @@ else
           RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
           # set the script to use the local bash shell
           RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" 2>'/dev/null'; ]..."; fi;
           echo "";
           eval " ${RECURSIVE_CALLBACK_COMMAND}" 2>'/dev/null'; # trigger the recursive callback
 

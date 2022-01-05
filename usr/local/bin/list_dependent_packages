@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/list_dependent_packages" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+
+EXIT_CODE=1;
+
+echo "";
+if [ -z "$1" ]; then
+  echo "Error:  Argument #1 missing (packagename)";
+  echo " |";
+  echo " |--> Example call:  list_dependent_packages nginx";
+else
+  if [[ -n "$(command -v apt-cache 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
+    echo "";
+    echo "Info:  Calling [ apt-cache rdepends \"${1}\"; ]...";
+    EXIT_CODE=0;
+    apt-cache rdepends "${1}";
+  else
+    echo "Error:  Incompatible environment/OS (Debian required)";
+  fi;
+fi;
+
+exit ${EXIT_CODE};
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   askubuntu.com  |  "command line - How to list dependent packages (reverse dependencies)? - Ask Ubuntu"  |  https://askubuntu.com/a/128527
+#
+# ------------------------------------------------------------

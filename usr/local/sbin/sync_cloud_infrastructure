@@ -1696,7 +1696,7 @@ else
               #
               # /etc/nginx
               #
-              DESTINATION_PATH="/etc/nginx"; if [[ ! -d  "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
+              DESTINATION_PATH="/etc/nginx"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
               echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
@@ -1711,7 +1711,7 @@ else
               #
               # /var/www/error
               #
-              DESTINATION_PATH="/var/www/error"; if [[ ! -d  "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
+              DESTINATION_PATH="/var/www/error"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
               echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";

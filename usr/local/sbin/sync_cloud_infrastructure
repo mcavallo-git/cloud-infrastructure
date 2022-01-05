@@ -315,7 +315,7 @@ else
 
     GIT_SOURCE_BRANCH="${ARGS_GIT_BRANCH:-${DEFAULT_GIT_SOURCE_BRANCH}}";
 
-    SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}/${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
+    SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
     # ------------------------------
     if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then

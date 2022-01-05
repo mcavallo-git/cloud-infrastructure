@@ -177,7 +177,7 @@ else
       local port=$2;
       local ip=$3;
       local regex="${port}\/${proto}.*ALLOW.*IN.*${ip}";
-      local rule=$(ufw status numbered | grep ${regex});
+      local rule=$(/usr/sbin/ufw status numbered | grep ${regex});
       DELETE_RULE_SKIPPED=1;
       if [ ${DEBUG_MODE} -eq 1 ]; then
         echo "Debug:  IN FUNCTION [ delete_rule() ]";
@@ -314,7 +314,7 @@ else
         else
 
           echo "";
-          echo "Info:  Applying Firewall (ufw) Whitelisting for \"${EACH_SERVICE_NAME}\" Service";
+          echo "Info:  Applying UFW (uncomplicated firewall) whitelisting for service \"${EACH_SERVICE_NAME}\"";
           echo "  |-> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
 
           # Iterate-over each line in the whitelist file

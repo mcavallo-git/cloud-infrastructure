@@ -356,7 +356,7 @@ else
     #
     # Check for a valid WAN (internet) connection
     #
-    echo -e "\nInfo:  Checking for a valid WAN (internet) network connection...";
+    echo -e "\nInfo:  Checking internet connectivity...";
     BENCHMARK_START=$(date +'%s.%N');
     WAN_TEST_CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";);
     WAN_TEST_CURL_FAILED=${?};

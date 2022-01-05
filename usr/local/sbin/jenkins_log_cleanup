@@ -28,8 +28,7 @@ else
   PS_AUX_CONTAINS="jenkins.war";
   # PS_AUX_CONTAINS="^jenkins ";
 
-  # MAX_AGE_DAYS=14;
-  MAX_AGE_DAYS=90;
+  RETENTION_DAYS=60;
 
   # JENKINS_UNAME=$(ps aux | grep -v grep | grep '/usr/bin/daemon' | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
   JENKINS_UNAME=$(ps aux | grep -v grep | grep "${PS_AUX_CONTAINS}" | awk {'print $1'});
@@ -59,7 +58,7 @@ else
       FIND_REGEX="^${FIND_PARENT}.+/builds/[0-9]+$";
 
       echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
-      echo "  File hasn't been modified for at least ${MAX_AGE_DAYS} days";
+      echo "  File hasn't been modified for at least ${RETENTION_DAYS} days";
       echo "  Filepath starts with: \"${FIND_PARENT}\"";
       echo "  Filepath matches regex: \"${FIND_REGEX}\"...";
 
@@ -67,7 +66,7 @@ else
         -maxdepth 3 \
         -type d \
         -regex "${FIND_REGEX}" \
-        -mtime +${MAX_AGE_DAYS} \
+        -mtime +${RETENTION_DAYS} \
         -exec rm -rf -- '{}' \;
 
     fi;
@@ -77,13 +76,13 @@ else
   FIND_PARENT="/var/log";
   echo -e "\n\n${DASHES}\n";
   echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
-  echo "  File hasn't been modified for at least ${MAX_AGE_DAYS} days";
+  echo "  File hasn't been modified for at least ${RETENTION_DAYS} days";
   echo "  Filepath starts with: \"${FIND_PARENT}\"";
 
   find "${FIND_PARENT}" \
     -mindepth 1 \
     -maxdepth 10 \
-    -mtime +${MAX_AGE_DAYS} \
+    -mtime +${RETENTION_DAYS} \
     -exec rm -rf -- '{}' \;
 
 

@@ -194,6 +194,7 @@ else
         # Example(s):
         #   /usr/sbin/ufw delete allow proto tcp from 0.0.0.0/0 to any port 80,443
         # DELETE_RULE_SKIPPED=0;
+        DELETE_RULE_SKIPPED=1;
       fi;
       if [ ${DELETE_RULE_SKIPPED} -eq 0 ]; then
         echo "            |-->  result: [ delete existing rule ]";
@@ -663,7 +664,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
       delete_rule ${EACH_UFW_PROTO} ${EACH_UFW_PORT} ${EACH_UFW_CIDRv4};
       # Add the inverse of new rule to the undo-changes array
       if [ ${DELETE_RULE_SKIPPED} -eq 0 ]; then
-        UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw allow proto ${EACH_UFW_PROTO} from ${EACH_UFW_CIDRv4} to any port ${EACH_UFW_PORT};"]="");
+        UFW_CHANGES_UNDO_ARR+=(["/usr/sbin/ufw allow proto ${EACH_UFW_PROTO} from ${EACH_197UFW_CIDRv4} to any port ${EACH_UFW_PORT};"]="");
       fi;
     else
       # Keep the firewall rule

@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_mongo" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_mongod?t=$(date +'%s.%N')" | bash;
 
@@ -171,7 +171,7 @@ security:
 
   # ------------------------------------------------------------
   # Removing/Downgrading MongoDB
-  if [ 0 -eq 1 ]; then
+  if [[ 0 -eq 1 ]]; then
     yum -y remove mongodb-org;
     yum -y remove mongodb-org-shell;
     yum -y remove mongodb-org-tools;

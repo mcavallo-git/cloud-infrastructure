@@ -4,7 +4,7 @@
 #
 # ------------------------------------------------------------
 
-if [ 0 -eq 1 ]; then
+if [[ 0 -eq 1 ]]; then
 
 # Download & run this script on-the-fly:
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/archive_logs?$(date +'%s.%N')" | bash;

@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_nginx" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx?t=$(date +'%s.%N')" | bash;
 
@@ -106,7 +106,7 @@ else
 
     # ------------------------------------------------------------
     # (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
-    if [ 0 -eq 1 ]; then
+    if [[ 0 -eq 1 ]]; then
       if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
         add-apt-repository --yes --update "ppa:maxmind/ppa";
         apt-get --yes install "geoip-database" "geoip-database-extra" "php-geoip";

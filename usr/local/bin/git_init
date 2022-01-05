@@ -4,7 +4,7 @@
 #
 # ------------------------------------------------------------
 #
-if [ 0 -eq 1 ]; then # RUN THIS SCRIPT:
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT:
 
 # Download & run this script - Note: Windows devices require a Linux emulator to run this script (such as WSL, Git Bash (https://git-scm.com/download/win), etc.)
 LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";

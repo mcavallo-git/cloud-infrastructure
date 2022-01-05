@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/gpg_git_config_sync" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then
+if [[ 0 -eq 1 ]]; then
 
 # Download & run this script on-the-fly:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/gpg_git_config_sync?$(date +'%s.%N')" | bash;
@@ -617,7 +617,7 @@ fi;
 # mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
 # curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";
 
-# if [ 0 -eq 1 ]; then
+# if [[ 0 -eq 1 ]]; then
 
 # if [ -f "${GIT_CONFIG_ALL_LOCAL}" ]; then
 
@@ -699,7 +699,7 @@ fi;
 #   GIT REPOS
 #    |--> FIND ALL IN HOME-DIR
 
-# if [ 0 -eq 1 ]; then
+# if [[ 0 -eq 1 ]]; then
 
   echo "------------------------------------------------------------";
   echo "";

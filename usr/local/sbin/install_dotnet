@@ -99,7 +99,7 @@ fi;
 # ------------------------------------------------------------
 #
 ### Ad-hoc test for Linux distro compatibility (major v. 14 thru 24 --> minor v. 00 thru 24 (for every major))
-# if [ 0 -eq 1 ]; then
+# if [[ 0 -eq 1 ]]; then
 #   clear; echo -e "\n"; for OS_VERSION_MAJOR in {14..24}; do for OS_VERSION_MINOR in {00..24}; do DOWNLOAD_URL="https://packages.microsoft.com/config/ubuntu/${OS_VERSION_MAJOR}.${OS_VERSION_MINOR}/packages-microsoft-prod.deb"; RESPONSE_HTTP_CODE="$(curl -ILs "${DOWNLOAD_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)"; if [ "${RESPONSE_HTTP_CODE}" == "200" ]; then echo "  Info:  URL validated for Ubuntu ${OS_VERSION_MAJOR}.${OS_VERSION_MINOR}"; fi; done; done; echo -e "\n";
 # fi;
 #

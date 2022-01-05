@@ -5,7 +5,7 @@
 # LOCAL_BIN="/usr/local/bin/get_os"; sudo curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?t=$(date +'%s.%N')"; sudo chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then # Run this script on-the-fly:
+if [[ 0 -eq 1 ]]; then # Run this script on-the-fly:
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_os?t=$(date +'%s.%N')" | bash;
 

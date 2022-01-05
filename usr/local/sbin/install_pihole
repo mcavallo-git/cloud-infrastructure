@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_pihole" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pihole?t=$(date +'%s.%N')" | bash;
 
@@ -311,7 +311,7 @@ fi;
 
 
 #  !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)
-if [ 0 -eq 1 ]; then
+if [[ 0 -eq 1 ]]; then
 
   # Bash into the docker
   docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]

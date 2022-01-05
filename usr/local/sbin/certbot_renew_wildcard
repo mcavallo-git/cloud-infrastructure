@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/certbot_renew_wildcard" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then  # RUN THIS SCRIPT
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
 DN="example.com"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_renew_wildcard?t=$(date +'%s.%N')" | bash -s -- "${DN}";
 

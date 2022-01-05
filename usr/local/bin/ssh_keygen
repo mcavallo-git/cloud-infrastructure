@@ -3,7 +3,7 @@
 # LOCAL_BIN="/usr/local/bin/ssh_keygen" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then # RUN THIS SCRIPT REMOTELY:
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ssh_keygen?t=$(date +'%s.%N')" | bash;
 

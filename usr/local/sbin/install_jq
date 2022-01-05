@@ -3,7 +3,7 @@
 # LOCAL_SBIN="/usr/local/sbin/install_jq" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
-if [ 0 -eq 1 ]; then # RUN THIS SCRIPT
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jq?t=$(date +'%s.%N')" | bash;
 

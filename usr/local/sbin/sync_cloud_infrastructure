@@ -652,7 +652,7 @@ else
           RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
           echo "";
-          eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
+          eval " ${RECURSIVE_CALLBACK_COMMAND}" 2>'/dev/null'; # trigger the recursive callback
 
         else
           # 'eval' does NOT exist as a local command - call the recursive callback command directly (via curL) without eval

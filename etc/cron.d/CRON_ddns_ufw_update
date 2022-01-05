@@ -1,6 +1,8 @@
 #
 # DAT_CRON="/etc/cron.d/CRON_ddns_ufw_update" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
 #
+SHELL="/bin/bash";
+PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin";
 
 ### [ DDNS ] Update DNS server(s) with current WAN IPv4
 * * * * * root test -x "/usr/local/sbin/ddns_ufw_update" && "/usr/local/sbin/ddns_ufw_update";

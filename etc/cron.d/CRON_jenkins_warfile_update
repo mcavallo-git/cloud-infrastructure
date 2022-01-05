@@ -1,6 +1,8 @@
 #
 # DAT_CRON="/etc/cron.d/CRON_jenkins_warfile_update" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
 #
+SHELL="/bin/bash";
+PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin";
 
 ### [ JENKINS ] Update the main Jenkins executable (named a 'warfile', which has a '.war' file extension)
 # DISABLED 20200420-012538 - UNTIL HOTFIX CREATED TO AVOID WINDOWS NODES BECOMING DISCONNECTED (JAVA AGENT NEEDS TO BE RE-DOWNLOADED ON A TASK-SCHEDULER TIMER, ETC.)

@@ -1,6 +1,8 @@
 #
 # DAT_CRON="/etc/cron.d/CRON_jenkins_sync_ci" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
 #
+SHELL="/bin/bash";
+PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin";
 
 ### [ JENKINS ] Export Jenkins' Config-Files as well as Jenkins' Plugins
 05 * * * * root curl -sL https://mcavallo.com | bash -s -- --jenkins;

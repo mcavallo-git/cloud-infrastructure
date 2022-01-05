@@ -303,7 +303,7 @@ else
 
     if [[ "${DRY_RUN}" -eq 0 ]]; then
       echo "";
-      read -p "Update hostname to \"${SET_FQDN}\", now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
+      read -p "Update hostname to \"${SET_FQDN}\", now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
       else
@@ -483,7 +483,7 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
         echo "Network Manager must be restarted to apply changes ( required command  [ /etc/init.d/network restart ]  )";
-        read -p "   |--> Restart Network Manager, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty';  # Await single keypress
+        read -p "   |--> Restart Network Manager, now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty';  # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
@@ -503,7 +503,7 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
         echo "System restart (reboot) is required to apply changes to hostname";
-        read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty';  # Await single keypress
+        read -p "   |--> Reboot this workstation/server, now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty';  # Await single keypress
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";

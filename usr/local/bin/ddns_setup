@@ -22,7 +22,7 @@ fi;
 NAMECHEAP_SECRET="${HOME}/.namecheap/secret";
 if [ ! -f "${NAMECHEAP_SECRET}" ]; then
 
-  echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record?  (press 'y' to confirm)" -n 1 -t 20 <'/dev/tty'; # Await single keypress
+  echo ""; read -p "Do you want to sync this device's outgoing IPv4 to a Namecheap DDNS A-Record?  (press 'y' to confirm)  " -n 1 -t 20 <'/dev/tty'; # Await single keypress
 
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
   

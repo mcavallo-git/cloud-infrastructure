@@ -98,7 +98,7 @@ else
     else
       NEW_KEYFILE="${REPLY}";
       if [ ! -f "${NEW_KEYFILE}" ]; then
-        echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
+        echo "Warning - file not found: \"${NEW_KEYFILE}\""; read -p "Create a randomly-generated Keyfile, now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           openssl rand -base64 741 > "${NEW_KEYFILE}";
         fi;
@@ -125,7 +125,7 @@ security:
           echo "Info:  keyFile will remain unchanged at path \"${CURRENT_KEYFILE}\"";
         else
           echo "Warning:  keyFile currently set to path \"${CURRENT_KEYFILE}\"";
-          read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
+          read -p "Update keyFile to reference \"${NEW_KEYFILE}\", instead?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; echo "";
           if [[ $REPLY =~ ^[Yy]$ ]]; then
             sed --in-place=".$(date +'%Y-%m-%d_%H-%M-%S').bak" -e "/^  keyFile:/c\  keyFile: ${NEW_KEYFILE}" "/etc/mongod.conf";
             cat "/etc/mongod.conf";
@@ -150,7 +150,7 @@ security:
 #     CURRENT_REPL_SET_NAME="$(cat /etc/mongod.conf | grep replSetName | awk '{print $2}')";
 #     CURRENT_REPL_DISABLED="$(cat /etc/mongod.conf | grep '#replication:')";
 #     if [ -z "${CURRENT_REPL_SET_NAME}" ] && [ -n "${CURRENT_REPL_DISABLED}" ]; then
-#       echo ""; read -p "Enable replication for mongod?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; echo "";
+#       echo ""; read -p "Enable replication for mongod?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; echo "";
 #       if [[ $REPLY =~ ^[Yy]$ ]]; then
 #         echo ""; read -p "Enter the name of the replication set to join:  " -t 60 <'/dev/tty'; echo "";
 #         if [ -n "${REPLY}" ]; then

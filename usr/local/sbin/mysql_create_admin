@@ -61,7 +61,7 @@ else
 
   # Require user confirmation to proceed
   echo -e "\n";
-  read -p "Are you ready to create new MySQL admin-user \"${ADMIN_NAME}\"?  (press 'y' to confirm)" -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
+  read -p "Are you ready to create new MySQL admin-user \"${ADMIN_NAME}\"?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; RETURN_CODE_READ=$?;
   echo "";
   if [ ${RETURN_CODE_READ} -gt 128 ]; then
     echo -e "Response timed out";

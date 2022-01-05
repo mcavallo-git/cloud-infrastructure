@@ -21,7 +21,12 @@ LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #
-# ------------------------------------------------------------
+# ------------------------------
+
+START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+echo -e "-- Info:  Start of \"ddns_ufw_update\" runtime at [ ${START_DATETIME} ]";
+
+# ------------------------------
 #
 # Script must run as root or via sudo
 #
@@ -30,7 +35,8 @@ if [ "$(id -un)" != "root" ]; then
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
-
+  # ------------------------------
+  #
   # LAN OVERRIDE
   # add_rule "tcp" "22" "10.0.0.0/8";
   # add_rule "tcp" "22" "172.16.0.0/12";
@@ -39,13 +45,17 @@ else
   # /usr/sbin/ufw allow proto tcp from 172.16.0.0/12 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
   # /usr/sbin/ufw allow proto tcp from 192.168.0.0/16 to any port 22;  # Allow SSH (22) over LAN subnet (defined in RFC-1918)
   # exit 0;
-
-  # ------------------------------------------------------------
+  #
+  # ------------------------------
+  #
   # Declare runtime variable(s)
-  
+  #
+
   shopt -s lastpipe; # extends the current shell into sub-shells (within piped-commands), sharing variables down-into them, as well
 
+  #
   # Determine if running in debug-mode (increases verbosity-level of script's output, e.g. shows all info/notices/details/etc. and not just warnings/errors)
+  #
   if [ -n "${DEBUG_MODE}" ] && [[ "${DEBUG_MODE}" =~ ^-?[0-9]+$ ]] && (("${DEBUG_MODE}" >= "1")); then
     DEBUG_MODE=1;
   elif [ -n "${VERBOSITY}" ] && [[ "${VERBOSITY}" =~ ^-?[0-9]+$ ]] && (("${VERBOSITY}" >= "1")); then
@@ -55,13 +65,16 @@ else
   else
     DEBUG_MODE=0;
   fi;
-
+  #
+  #
   # Script's working-directory
+  #
   DIRNAME_LOCAL_CONFIG="/etc/whitelist.d"; mkdir -p "${DIRNAME_LOCAL_CONFIG}";
-
+  #
   # Config pulled-in by UFW (sets default values to block/allow/etc. and more)
+  #
   UFW_CONFIG_FILEPATH="/etc/default/ufw";
-
+  #
   # File containing hosts to allow through UFW
   #  |
   #  |--> All lines in given whitelist file must be in a specific format/syntax
@@ -93,14 +106,14 @@ else
   UFW_OUT_OF_THE_BOX_DEFAULTS="Default: deny (incoming), allow (outgoing), disabled (routed)";
 
 
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
   #
   function implode { local IFS="$1"; shift; echo "$*"; }
 
 
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Sub-Function: Adds a rule to UFW
   #
@@ -145,7 +158,7 @@ else
   }
 
 
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Sub-Function: Deletes a rule from UFW
   #
@@ -191,7 +204,7 @@ else
   }
 
 
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Main Runtime
   #
@@ -245,7 +258,7 @@ else
     rm -rf "/etc/nginx/conf.ddns/conf.ddns";
   fi;
 
-  # ------------------------------------------------------------
+  # ------------------------------
   #
   # Apply Whitelist on a per-service basis
   #
@@ -437,7 +450,7 @@ else
 #  |--> Add allowed ips & protocols, here.
 add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 
-                    # ------------------------------------------------------------
+                    # ------------------------------
                     # BEGIN NGINX ONLY
                     if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
                       # Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
@@ -461,7 +474,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
                       fi;
                     fi;
                     # END NGINX ONLY
-                    # ------------------------------------------------------------
+                    # ------------------------------
 
                   else
 
@@ -689,6 +702,9 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0660; # files
 
 fi;
+# ------------------------------
+
+echo -e "== Info:  End of \"ddns_ufw_update\" runtime";
 
 
 # ------------------------------------------------------------

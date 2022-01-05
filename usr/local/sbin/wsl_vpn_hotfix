@@ -6,17 +6,37 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 
 fi;
 # ------------------------------------------------------------
-if [ 1 -eq 1 ]; then
-  ### WSL-2 VPN Hotfix
-  WAN_NETWORK_EXIT_CODE=$(dig +short +timeout=1 +tries=1 google.com 1>/dev/null 2>&1; echo ${?};);
-  if [ ${WAN_NETWORK_EXIT_CODE} -ne 0 ]; then
-    echo "No internet connection - Attempting WSL-2 VPN hotfix...";
-    HYPERV_IF_MAC=$(ipconfig.exe /all | grep -B0 -a5 "(WSL)" | grep -Po " : \K[0-9A-F-]{17}" | awk "{gsub ( \"-\",\" \" ) ; print tolower(\$0)}";);
-    HYPERV_IF_LINE=$(route.exe print | grep "$HYPERV_IF_MAC";);
-    HYPERV_IF_NUM=$(echo "$HYPERV_IF_LINE" | grep -Po "[^0-9]*\K[0-9]+" | head -n 1;);
-    HYPERV_IP=$(ip addr | grep eth0 -B0 -a3 | grep -Po "inet \K[0-9\\.]*";);
-    echo "Applying on-link route to ${HYPERV_IP} on interface ${HYPERV_IF_LINE}";
-    powershell.exe -NoProfile -Command "Start-Process route.exe \"add ${HYPERV_IP} mask 255.255.255.255 ${HYPERV_IP} metric 256 if ${HYPERV_IF_NUM}\" -Verb RunAs";
+if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
+  # Continue - WSL Environment detected
+  ACTION_DESCRIPTION="Apply VPN Hotfix to '/etc/profile'";
+  READ_TIMEOUT=60;
+  USER_RESPONSE="";
+  read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
+  echo "";
+  if [[ "${EXIT_CODE}" -gt 128 ]]; then
+    # FAILED - USER INPUT TIMED OUT
+    echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+  elif [[ -z "${USER_RESPONSE}" ]]; then
+    # DENIED - USER INPUT IS EMPTY
+    echo "Warning:  DENIED  (empty response received)";
+  elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+    # DENIED - USER INPUT FAILED REGEX TEST
+    echo "Warning:  DENIED  (response '${USER_RESPONSE}' received)";
+  else
+    # CONFIRMED - USER INPUT IS NON-EMPTY AND PASSED REGEX TEST
+    echo "Info:  CONFIRMED  (response '${USER_RESPONSE}' received)";
+    echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
+    #
+    # WSL 2 VPN Hotfix - Apply to '/etc/profile'
+    #
+    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'route.exe' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'route.exe' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'route.exe' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'route.exe' | wc -l;)" -eq 0 ]]; then sudo echo -e "\nif [[ 1 -eq 1 ]]; then\n  ###\n  ###  WSL 2 VPN Hotfix\n  ###   |--> Ensure WSL's WAN (internet) network connection is functional whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###\n  if [[ \"\$(dig +short +timeout=1 +tries=1 example.com 1>'/dev/null' 2>&1; echo \${?};)\" -ne 0 ]]; then\n    echo \"No internet connection - Attempting WSL 2 VPN hotfix...\";\n    HYPERV_IF_MAC=\$(ipconfig.exe /all | grep -B0 -a5 \"(WSL)\" | grep -Po \" : \\K[0-9A-F-]{17}\" | awk \"{gsub ( \\\"-\\\",\\\" \\\" ) ; print tolower(\\\$0)}\";);\n    HYPERV_IF_LINE=\$(route.exe print | grep \"\$HYPERV_IF_MAC\";);\n    HYPERV_IF_NUM=\$(echo \"\$HYPERV_IF_LINE\" | grep -Po \"[^0-9]*\\K[0-9]+\" | head -n 1;);\n    HYPERV_IP=\$(ip addr | grep eth0 -B0 -a3 | grep -Po \"inet \\K[0-9\\\\.]*\";);\n    echo \"Applying on-link route to \${HYPERV_IP} on interface \${HYPERV_IF_LINE}\";\n    powershell.exe -NoProfile -Command \"Start-Process route.exe \\\"add \${HYPERV_IP} mask 255.255.255.255 \${HYPERV_IP} metric 256 if \${HYPERV_IF_NUM}\\\" -Verb RunAs\";\n    if [[ \"\$(dig +short +timeout=1 +tries=1 example.com 1>'/dev/null' 2>&1; echo \${?};)\" -ne 0 ]]; then\n      echo -e \"\\\\xE2\\\\x9D\\\\x8C Error:  Unable to hotfix WSL internet connection\";\n    else\n      echo -e \"\\\\xE2\\\\x9C\\\\x94\\\\xEF\\\\xB8\\\\x8F Successfully hotfixed WSL internet connection\";\n    fi;\n  fi;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
   fi;
+else
+  # Exit - Non-WSL Environment detected
+  echo "";
+  echo "Info:  Skipping shutdown (unable to detect WSL environment)";
+  echo "";
+  exit 1;
 fi;
+
 # ------------------------------------------------------------

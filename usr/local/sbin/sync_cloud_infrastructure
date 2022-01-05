@@ -1265,19 +1265,22 @@ else
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               if [[ -n "$(command -v certbot 2>'/dev/null';)" ]]; then
                 DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
+                UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
                 if [[ -f "${DESTINATION_PATH}" ]]; then
                   REPLY="y";
+                  echo -e "\nInfo:  ${UPDATING_ECHO}";
                 else
                   echo ""; read -p "Enable SSL (TLS/HTTPS) certificate auto-renewal, now? (Runs \"certbot_renew_all\" every Sunday at 06:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   echo "";
                   if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                    echo "  |--> Confirmed";
+                    echo "  |--> Confirmed - ${UPDATING_ECHO}";
+                  else
+                    echo "  |--> Denied";
                   fi;
                 fi;
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                   FILE_PERMS="0644"; DIR_PERMS="0644";
-                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   BENCHMARK_START=$(date +'%s.%N');
                   rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                   chown -R "root:root" "${DESTINATION_PATH}";
@@ -1297,19 +1300,22 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_journalctl_logfile_cleanup";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
+                echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo ""; read -p "Enable Logfile Auto-Cleanup, now? (Runs \"journalctl --vacuum-time=90d --vacuum-size=5G\" every day at 02:00 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                  echo "  |--> Confirmed";
+                  echo "  |--> Confirmed - ${UPDATING_ECHO}";
+                else
+                  echo "  |--> Denied";
                 fi;
               fi;
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                 BENCHMARK_START=$(date +'%s.%N');
                 rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
@@ -1328,19 +1334,22 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
+                echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo ""; read -p "Enable DNS-server sync, now? (Runs \"update_dns_config\" daily at 04:05 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                  echo "  |--> Confirmed";
+                  echo "  |--> Confirmed - ${UPDATING_ECHO}";
+                else
+                  echo "  |--> Denied";
                 fi;
               fi;
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                 BENCHMARK_START=$(date +'%s.%N');
                 rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
@@ -1359,19 +1368,22 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_system";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
+                echo -e "\nInfo:  ${UPDATING_ECHO}";
               else
                 echo ""; read -p "Enable system & package weekly updates, now? (Runs \"update_system\" every Sunday at 04:10 AM)  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                 echo "";
                 if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                  echo "  |--> Confirmed";
+                  echo "  |--> Confirmed - ${UPDATING_ECHO}";
+                else
+                  echo "  |--> Denied";
                 fi;
               fi;
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                 BENCHMARK_START=$(date +'%s.%N');
                 rsync --archive --inplace --checksum --quiet "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";

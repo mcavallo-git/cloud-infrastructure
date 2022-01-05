@@ -316,7 +316,7 @@ else
 
           echo "";
           echo "Info:  Applying UFW (uncomplicated firewall) whitelisting for service \"${EACH_SERVICE_NAME}\"";
-          echo "  |-> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
+          echo " |--> Using whitelist file \"${EACH_WHITELIST_FILE}\"";
 
           # Iterate-over each line in the whitelist file
           sed '/^[[:space:]]*$/d' ${EACH_WHITELIST_FILE} | \

@@ -67,9 +67,9 @@ else
           add-apt-repository --yes --update "ppa:git-core/ppa";
         fi;
       else
-        apt-get update --yes;
+        apt-get --yes update;
       fi;
-      apt-get install --yes "${EACH_PKG}";
+      apt-get --yes install "${EACH_PKG}";
     fi;
   done;
 

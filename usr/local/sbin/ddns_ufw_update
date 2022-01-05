@@ -683,8 +683,8 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   if [ $(id "syslog" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
     chown -R "syslog:adm" "${LOGDIR}";
   fi;
-  find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0750; # directories 
-  find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0640; # files
+  find "${LOGDIR}" -type d -print0 | xargs -0 chmod 0770; # directories 
+  find "${LOGDIR}" -type f -print0 | xargs -0 chmod 0660; # files
 
 fi;
 

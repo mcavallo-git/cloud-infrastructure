@@ -112,7 +112,7 @@ else
   #
   # Sub-Function: Takes first argument ($1) as a SINGLE-CHARACTER delimiter, combines all remaining arguments ($2,$3,...,$n) into a string delimited by aforementioned delimiter ($1)
   #
-  function implode { local IFS="$1"; shift; echo "$*"; }
+  function implode { local IFS="$1"; shift; echo "$*"; };
 
 
   # ------------------------------
@@ -282,7 +282,8 @@ else
     EACH_RUNTIME_USER="${RUNTIME_SERVICE_USERS[${EACH_SERVICE_NAME}]}";
     
     NGINX_DDNS_CONF="${NGINX_CONF_DDNS}/${EACH_SERVICE_NAME}";
-    NGINX_DDNS_RESULTS="";
+
+    unset NGINX_DDNS_RESULTS; declare -a NGINX_DDNS_RESULTS; # [Re-]Instantiate bash array
 
     EACH_WHITELIST_FILE="${DIRNAME_LOCAL_CONFIG}/${EACH_SERVICE_NAME}"; # Define the location for the whitelist config-files
 
@@ -459,7 +460,6 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
                     # BEGIN NGINX ONLY
                     if [ "${EACH_SERVICE_NAME}" == "nginx" ]; then
                       # Add resolved CIDRv4 addresses (IN NGINX COMPILE-ABLE SYNTAX) to config-directory specifically designated to contain resolved DDNS addresses
-                      NEXT_NGINX_LINE="";
                       if [ -n "${WHITELIST_FQDN}" ]; then
                         # DEPRECATED METHODOLOGY - Clean up old host whitelist files out of '/etc/nginx/conf.ddns/...'
                         #   |--> Clean up previous methodology where the nginx whitelists (allowed-rulesets) were stored using WHITELIST_HOST and their basename
@@ -467,15 +467,11 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
                         if [ -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}" ]; then
                           rm -f "${NGINX_CONF_DDNS}/${WHITELIST_FQDN}";
                         fi;
-                        NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}";
+                        # Append this IPv4 address to NGINX's 'allowed' IPv4 addresses
+                        NGINX_DDNS_RESULTS+=("allow ${RESOLVED_CIDRv4};  # ${WHITELIST_HOST}");
                       else
-                        NEXT_NGINX_LINE="allow ${RESOLVED_CIDRv4};";
-                      fi;
-                      # Append this line to the total string of lines to put into the nginx service-config-file
-                      if [ -z "${NGINX_DDNS_RESULTS}" ]; then
-                        NGINX_DDNS_RESULTS="${NEXT_NGINX_LINE}";
-                      else
-                        NGINX_DDNS_RESULTS="${NGINX_DDNS_RESULTS}\n${NEXT_NGINX_LINE}";
+                        # Append this IPv4 address to NGINX's 'allowed' IPv4 addresses
+                        NGINX_DDNS_RESULTS+=("allow ${RESOLVED_CIDRv4};");
                       fi;
                     fi;
                     # END NGINX ONLY
@@ -503,6 +499,8 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
       fi;
 
     fi;
+
+    unset NGINX_DDNS_SORTED_UNIQUE; NGINX_DDNS_SORTED_UNIQUE=($(echo "${NGINX_DDNS_RESULTS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 
     # Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
     if [ "${EACH_SERVICE_NAME}" == "nginx" ] && [ -d "${NGINX_CONF_DDNS}" ] && [ -n "${NGINX_DDNS_RESULTS}" ]; then

@@ -450,7 +450,7 @@ else
         if [[ -n "${EACH_REQUIRED_PKG}" ]]; then
           if [[ -n "$(command -v dpkg 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
             # Query Debian's Package-Manager for each package
-            if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
+            if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             else
@@ -458,7 +458,7 @@ else
             fi;
           elif [[ -n "$(command -v rpm 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
-            if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
+            if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             else
@@ -521,7 +521,7 @@ else
         for EACH_REQUIRED_PKG in "${REQUIRED_PKGS_ARRAY[@]}"; do
           if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
             # Query Debian's Package-Manager for each package
-            if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
+            if [[ $(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
               # Package install failed
               FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
               echo -e "! |--> Error:  Failed to install package:  [ ${EACH_REQUIRED_PKG} ]";
@@ -532,7 +532,7 @@ else
             fi;
           elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
-            if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo $?;) -ne 0 ]]; then
+            if [[ $(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
               # Package install failed
               FAILED_INSTALL_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
               echo -e "! |--> Error:  Failed to install package:  [ ${EACH_REQUIRED_PKG} ]";
@@ -1067,7 +1067,7 @@ else
               # ------------------------------
               dos2unix --quiet "${SSHD_CONFIG_LIVE}";
               dos2unix --quiet "${SSHD_CONFIG_REPLACEMENT}";
-              if [[ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
+              if [[ $(cmp -s "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_REPLACEMENT}" 1>'/dev/null' 2>&1; echo ${?};) -eq 0 ]]; then
                 #
                 # SSH config file already fully up-to-date
                 #
@@ -1219,7 +1219,7 @@ else
             # Ensure that the UFW module exists on the current Linux Distro before continuing to setting it up
             if [[ -n "$(command -v ufw 2>'/dev/null';)" ]]; then
               # Distros: Debian, Ubuntu, etc.
-              if [[ $(ufw status 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]]; then
+              if [[ $(ufw status 1>'/dev/null' 2>&1; echo ${?};) -eq 0 ]]; then
                 # Check if UFW is enabled or disabled
                 UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
                 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
@@ -1559,7 +1559,7 @@ else
           #
           if [[ ${ARGS_SYNC_JENKINS} -eq 1 ]] && [[ ${RESTART_SERVICE_JENKINS} -eq 0 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="jenkins";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -ne 0 ]]; then
               # Service not found locally
               echo -e "\nInfo:  Skipped Jenkins config-sync - No local 'jenkins' service exists";
@@ -1864,7 +1864,7 @@ else
             CRON_SVC_FOUND=0; CRON_SVC_NAMES="";
             # cron  -->  Restart service
             SERVICE_NAME="cron";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
@@ -1873,7 +1873,7 @@ else
             fi;
             # crond  -->  Restart service
             SERVICE_NAME="crond";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
@@ -1891,7 +1891,7 @@ else
           #
           if [[ ${RESTART_SERVICE_JENKINS} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="jenkins";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               /usr/sbin/service "${SERVICE_NAME}" restart;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
@@ -1906,7 +1906,7 @@ else
           #
           if [[ ${RESTART_SERVICE_NGINX} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="nginx";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               /usr/local/sbin/reload_nginx;
             else
@@ -1920,7 +1920,7 @@ else
           #
           if [[ ${RESTART_SERVICE_SSH} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="sshd";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               /usr/sbin/service "${SERVICE_NAME}" restart;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
@@ -1935,7 +1935,7 @@ else
           #
           if [[ ${RESTART_SERVICE_UFW} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="ufw";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]]; then

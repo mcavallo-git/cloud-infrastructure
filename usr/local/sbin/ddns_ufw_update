@@ -23,6 +23,8 @@ exec 2>&1;
 #
 # ------------------------------
 
+START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 echo -e "-- Info:  Start of \"ddns_ufw_update\" runtime at [ ${START_DATETIME} ]";
 

@@ -224,7 +224,7 @@ else
       DESIRED_DEFAULT_OUTPUT_POLICY="ACCEPT";
       if [ "${CURRENT_DEFAULT_INPUT_POLICY}" != "${DESIRED_DEFAULT_OUTPUT_POLICY}" ]; then
         if [ ${DEBUG_MODE} -eq 1 ]; then
-          echo "Debug:  Calling  [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
+          echo "Debug:  Calling [ /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY=\"ACCEPT\" ]...";
         fi;
         /usr/sbin/ufw default allow outgoing;  # DEFAULT_OUTPUT_POLICY="ACCEPT"
         # sed --in-place --regexp-extended --expression="/^DEFAULT_OUTPUT_POLICY/c\DEFAULT_OUTPUT_POLICY=\"${DESIRED_DEFAULT_OUTPUT_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
@@ -237,7 +237,7 @@ else
         # /usr/sbin/ufw default skip routed;
         sed --in-place --regexp-extended --expression="/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\"${DESIRED_DEFAULT_APPLICATION_POLICY}\"" "${UFW_CONFIG_FILEPATH}";
         if [ ${DEBUG_MODE} -eq 1 ]; then
-          echo "Debug:  Calling  [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
+          echo "Debug:  Calling [ sed --in-place --regexp-extended --expression=\"/^DEFAULT_APPLICATION_POLICY/c\DEFAULT_APPLICATION_POLICY=\\\"${DESIRED_DEFAULT_APPLICATION_POLICY}\\\"\" \"${UFW_CONFIG_FILEPATH}\"; ]...";
         fi;
       fi;
 
@@ -506,7 +506,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
         echo "Debug:  NGINX_DDNS_CONF = [ ${NGINX_DDNS_CONF} ]";
         echo "Debug:  NGINX_DDNS_RESULTS = [ ${NGINX_DDNS_RESULTS} ]";
       fi;
-      echo -e "Info:  Calling  [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
+      echo -e "Info:  Calling [ echo -e \"${NGINX_DDNS_RESULTS}\" > \"${NGINX_DDNS_CONF}\" ]...";
       echo -e "${NGINX_DDNS_RESULTS}" > "${NGINX_DDNS_CONF}";
     fi;
   
@@ -545,7 +545,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   #     fi;
   #     # !!!  ADD THE NEW IPv4 TO FIREWALL'S WHITELIST  !!!
   #     if [ ${DEBUG_MODE} -eq 1 ]; then
-  #       echo "Debug:  Calling  [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
+  #       echo "Debug:  Calling [ add_rule \"${EACH_RESOLVED_PROTO}\" \"${EACH_RESOLVED_PORT}\" \"${EACH_RESOLVED_CIDRv4}\" ]...";
   #     fi;
   #     ADD_RULE_SKIPPED=0;
   #     add_rule "${EACH_RESOLVED_PROTO}" "${EACH_RESOLVED_PORT}" "${EACH_RESOLVED_CIDRv4}";
@@ -666,19 +666,22 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   done;
   IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
 
-  # Show all undo-commands for this runtime
-  echo "------------------------------------------------------------";
-  echo "----------------------  UNDO COMMANDS  ---------------------";
-  echo " !!  To undo any of the changes-made, please see below  !!  ";
-  echo " !!    list of undo-commands created for this session   !!  ";
-  echo "";
-  for EACH_UNDO_COMMAND in "${!UFW_CHANGES_UNDO_ARR[@]}"; do
-    echo "${EACH_UNDO_COMMAND}";
-  done;
-  echo "------------------------------------------------------------";
-  echo "------------------------  UFW STATUS  ----------------------";
-  /bin/systemctl status ufw;
-  echo "------------------------------------------------------------";
+  if [[ -n "${UFW_CHANGES_UNDO_ARR[@]}" ]]; then e
+    # Show all undo-commands for this runtime
+    echo "------------------------------------------------------------";
+    echo "----------------------  UNDO COMMANDS  ---------------------";
+    echo " !!  To undo any of the changes-made, please see below  !!  ";
+    echo " !!    list of undo-commands created for this session   !!  ";
+    echo "";
+    for EACH_UNDO_COMMAND in "${!UFW_CHANGES_UNDO_ARR[@]}"; do
+      echo "${EACH_UNDO_COMMAND}";
+    done;
+  fi;
+
+  if [ ${DEBUG_MODE} -eq 1 ]; then
+    echo -e "\nDebug:  Calling [ /bin/systemctl status ufw; ]...";
+    /bin/systemctl status ufw;
+  fi;
 
   # Cleanup log files outside of the retention-policy's max-age
   if [ -z "${LOGDIR}" ]; then

@@ -284,7 +284,7 @@ else
     ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                    # Parsed from $@
 
     # String arguments
-    ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH:-""};               # Parsed from $@
+    ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH};               # Parsed from $@
 
     # ------------------------------
 
@@ -919,7 +919,7 @@ else
               ### Bash - Disable "You have mail in ..." && "You have new mail in /var/spool/mail/..." alerts
               BENCHMARK_START=$(date +'%s.%N');
               echo -e "\nInfo:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
-              sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string ("")
+              sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string
               sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
               if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;

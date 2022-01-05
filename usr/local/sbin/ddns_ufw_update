@@ -121,7 +121,7 @@ else
   #
   ADD_RULE_SKIPPED=0;
   add_rule() {
-    if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
+    if [[ -x "/usr/sbin/ufw" ]]; then
       local proto=$1;
       local port=$2;
       local ip=$3;
@@ -172,7 +172,7 @@ else
   #
   DELETE_RULE_SKIPPED=1;
   delete_rule() {
-    if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
+    if [[ -x "/usr/sbin/ufw" ]]; then
       local proto=$1;
       local port=$2;
       local ip=$3;
@@ -217,7 +217,7 @@ else
   #
   # Main Runtime
   #
-  if [ $(which ufw 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  if [[ -x "/usr/sbin/ufw" ]]; then
     if [ -f "${UFW_CONFIG_FILEPATH}" ]; then
       
       # Set UFW Defaults --> Incoming Requests
@@ -562,7 +562,7 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   # done;
 
   # Determine which rules to keep and which to remove from existing ruleset
-  RULESET_UFW="$(ufw status | sed /^To*/d | sed /^Status*/d | sed /^--*/d | grep '\S';)";
+  RULESET_UFW="$(/usr/sbin/ufw status | sed /^To*/d | sed /^Status*/d | sed /^--*/d | grep '\S';)";
   ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
   for EACH_UFW_LINE in ${RULESET_UFW}; do
     EACH_UFW_CIDRv4="$(echo "${EACH_UFW_LINE}" | awk '{print $3}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//;';)";
@@ -689,16 +689,13 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   fi;
 
   # Cleanup log files outside of the retention-policy's max-age
-  if [ -z "${LOGDIR}" ]; then
-    LOGDIR="/var/log/ddns_ufw_update";
-  fi;
-  if [ -d "${LOGDIR}" ]; then
+  LOGDIR="${LOGDIR:-/var/log/ddns_ufw_update}";
+  if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +14 | wc -l;)" -gt 0 ]]; then
     # MAX_RETENTION_DAYS=14;
     # find "${LOGDIR}" -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
     echo -e "\n""Info:  Cleaning logs older than 14 days old from directory \"${LOGDIR}\"";
     find "${LOGDIR}" -type f -mtime +14 -exec rm -- '{}' \;;
   fi;
-
 
   # Set ownership & privileges for the logging directory & its sub contents
   if [ $(id "syslog" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ] && [ $(groups "adm" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then

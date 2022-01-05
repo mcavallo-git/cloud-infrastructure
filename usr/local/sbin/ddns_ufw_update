@@ -26,7 +26,9 @@ exec 2>&1;
 START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
-echo -e "-- Info:  Start of \"ddns_ufw_update\" runtime at [ ${START_DATETIME} ]";
+
+echo "------------------------------";
+echo "-- Info:  Start of \"ddns_ufw_update\" runtime at [ ${START_DATETIME} ]";
 
 # ------------------------------
 #
@@ -727,7 +729,8 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
 fi;
 # ------------------------------
 
-echo -e "\n== Info:  End of \"ddns_ufw_update\" runtime";
+echo "";
+echo "== Info:  End of \"ddns_ufw_update\" runtime";
 
 
 # ------------------------------------------------------------

@@ -1330,42 +1330,37 @@ else
             #
             # /etc/cron.d/CRON_certbot_renew_all
             #
-            if [[ 0 -eq 1 ]]; then
-              #
-              # DISABLED (USE LETSENCRYPT WILDCARD SSL CERTS, INSTEAD)
-              #
-              if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
-                if [[ -n "$(command -v certbot 2>'/dev/null';)" ]]; then
-                  DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
-                  UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
-                  REPLY="";
-                  if [[ -f "${DESTINATION_PATH}" ]]; then
-                    REPLY="y";
-                    echo -e "\nInfo:  ${UPDATING_ECHO}";
-                  else
-                    echo "";
-                    echo -n "Enable SSL/TLS certificate auto renewal? (Runs 'certbot_renew_all' every Sunday at 06:10 AM)  (press 'y' to confirm)  ";
-                    read -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
-                    echo "";
-                    if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                      echo "  |--> Confirmed - ${UPDATING_ECHO}";
-                    fi;
-                  fi;
+            if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
+              if [[ -n "$(command -v certbot 2>'/dev/null';)" ]]; then
+                DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
+                UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+                REPLY="";
+                if [[ -f "${DESTINATION_PATH}" ]]; then
+                  REPLY="y";
+                  echo -e "\nInfo:  ${UPDATING_ECHO}";
+                else
+                  echo "";
+                  echo -n "Enable SSL/TLS certificate auto renewal? (Runs 'certbot_renew_all' every Sunday at 06:10 AM)  (press 'y' to confirm)  ";
+                  read -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
+                  echo "";
                   if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-                    SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
-                    FILE_PERMS="0644"; DIR_PERMS="0644";
-                    BENCHMARK_START=$(date +'%s.%N');
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
-                    rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
-                    chown -R "root:root" "${DESTINATION_PATH}";
-                    find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
-                    find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
-                    if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
-                    dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-                  else
-                    echo "  |--> Denied - SSL/TLS certificate auto renewal disabled";
+                    echo "  |--> Confirmed - ${UPDATING_ECHO}";
                   fi;
+                fi;
+                if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
+                  SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
+                  FILE_PERMS="0644"; DIR_PERMS="0644";
+                  BENCHMARK_START=$(date +'%s.%N');
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                  rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
+                  chown -R "root:root" "${DESTINATION_PATH}";
+                  find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
+                  find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
+                  if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
+                  dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                else
+                  echo "  |--> Denied - SSL/TLS certificate auto renewal disabled";
                 fi;
               fi;
             fi;

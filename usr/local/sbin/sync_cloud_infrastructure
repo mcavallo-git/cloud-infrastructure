@@ -1998,8 +1998,10 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 
 echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
 
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+# if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
 
 # eval " ${RECURSIVE_CALLBACK_COMMAND}"
+
+if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval ${RECURSIVE_CALLBACK_COMMAND} ]..."; fi;
 
 eval ${RECURSIVE_CALLBACK_COMMAND}

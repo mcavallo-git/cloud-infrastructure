@@ -1087,7 +1087,7 @@ else
                 echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
                 echo "  |--> There must be at least one user (other than root) who can access this workstation via SSH, and has a home directory within [ /home/ ]";
                 echo "  |--> The updated SSH config will deny the root user from accessing this device via SSH (to prevent Brute-force/Dictionary SSH Attacks on this device)";
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "        |--> Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Debug:  Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
                 #
                 # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
@@ -1766,19 +1766,19 @@ else
                 if [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device
                   #  |--> Set this FQDN to "Enabled" for the current NGINX server
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
                 elif [[ "${Each_FQDN}" == "$(hostname --fqdn;)" ]] && [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN is equal to the hostname (as a FQDN) for the current device and the WAN IPv4 address of the hostname resolved to this device's IPv4 address, as well
                   #  |--> Set this FQDN to "Enabled" for the current NGINX server
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n        |--> Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
                 else
                   # Skipped - The FQDN doesnt match the hostname or IPv4 address of the current device
                   rm -f "${Each_SitesAvailable}";
                   if [[ -h "${Each_SitesEnabled}" ]] || [[ -f "${Each_SitesEnabled}" ]]; then
                     # If this NGINX site (FQDN) is enabled (but should be disabled as no matches were found between it and the current device), then disable it
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n        |--> No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]\n        |--> No match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n  |--> Debug:  No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]\n  |--> Debug:  No match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                     if [[ -h "${Each_SitesEnabled}" ]]; then
                       unlink "${Each_SitesEnabled}";
                     elif [[ -f "${Each_SitesEnabled}" ]]; then

@@ -1,0 +1,45 @@
+#!/bin/bash
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/hotfix_wsl_cron?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+SERVICE_NAME="cron";
+ACTION_DESCRIPTION="Apply WSL 2 hotfix for Service '${SERVICE_NAME}' to '/etc/profile'";
+if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
+  # Continue - WSL Environment detected
+  READ_TIMEOUT=60;
+  USER_RESPONSE="";
+  read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
+  echo "";
+  if [[ "${EXIT_CODE}" -gt 128 ]]; then
+    # FAILED - USER INPUT TIMED OUT
+    echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+  elif [[ -z "${USER_RESPONSE}" ]]; then
+    # DENIED - USER INPUT IS EMPTY
+    echo "Warning:  DENIED  (empty response received)";
+  elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+    # DENIED - USER INPUT FAILED REGEX TEST
+    echo "Warning:  DENIED  (response '${USER_RESPONSE}' received)";
+  else
+    # CONFIRMED - USER INPUT IS NON-EMPTY AND PASSED REGEX TEST
+    echo "Info:  CONFIRMED  (response '${USER_RESPONSE}' received)";
+    echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
+    #
+    # WSL 2 hotfix - Apply to '/etc/profile'
+    #
+    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service cron start' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service cron start' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service cron start' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service cron start' | wc -l;)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ### WSL 2 hotfix - Start service \"${SERVICE_NAME}\" whenever a WSL terminal is opened\n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service cron start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
+  fi;
+else
+  # Exit - Non-WSL Environment detected
+  echo "";
+  echo "Error:  Non-WSL environment/OS detected";
+  echo " |";
+  echo " |--> Skipping action [ ${ACTION_DESCRIPTION} ]";
+  echo "";
+  exit 1;
+fi;
+
+# ------------------------------------------------------------

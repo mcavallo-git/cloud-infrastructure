@@ -36,6 +36,8 @@ DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructur
 DEFAULT_GIT_SOURCE_BRANCH="master";
 SYNC_CI_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
+ARGS_SKIP_SELF_UPDATE=1;
+
 WAN_TEST_FQDN="${WAN_TEST_FQDN:-raw.githubusercontent.com}";
 
 # ------------------------------
@@ -1980,7 +1982,9 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 # Exit & return the value of EXIT_CODE back to caller
 #
 if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
-test ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 && exit ${EXIT_CODE:-0};
+if [[ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]]; then
+exit ${EXIT_CODE:-0};
+fi;
 
 
 # ------------------------------

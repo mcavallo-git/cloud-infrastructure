@@ -523,8 +523,8 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
         #
         # Update the NGINX conf.ddns script with final string (containing all resolved hosts for this service)
         #
-        echo -e "\nInfo:  Calling [ echo \"${NGINX_DDNS_SORTED_UNIQUE}\" > \"${NGINX_DDNS_CONF}\" ]...";
-        echo "${NGINX_DDNS_SORTED_UNIQUE}" > "${NGINX_DDNS_CONF}";
+        echo -e "\nInfo:  Calling [ echo -e \"${NGINX_DDNS_SORTED_UNIQUE}\" > \"${NGINX_DDNS_CONF}\" ]...";
+        echo -e "${NGINX_DDNS_SORTED_UNIQUE}" > "${NGINX_DDNS_CONF}";
       fi;
       #
       # END NGINX ONLY

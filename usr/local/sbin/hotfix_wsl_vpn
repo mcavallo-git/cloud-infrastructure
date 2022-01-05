@@ -2,13 +2,13 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/wsl_vpn_hotfix?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/hotfix_wsl_vpn?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
 if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
   # Continue - WSL Environment detected
-  ACTION_DESCRIPTION="Apply VPN Hotfix to '/etc/profile'";
+  ACTION_DESCRIPTION="Apply WSL VPN Hotfix to '/etc/profile'";
   READ_TIMEOUT=60;
   USER_RESPONSE="";
   read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
@@ -34,7 +34,7 @@ if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
 else
   # Exit - Non-WSL Environment detected
   echo "";
-  echo "Info:  Skipping shutdown (unable to detect WSL environment)";
+  echo "Info:  Skipping WSL VPN Hotfix (unable to detect WSL environment)";
   echo "";
   exit 1;
 fi;

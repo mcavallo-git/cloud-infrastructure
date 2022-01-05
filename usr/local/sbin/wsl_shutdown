@@ -25,10 +25,10 @@ else
   # Shutdown WSL (Windows Subsystem for Linux)
   #  |--> To shutdown WSL, signal to linux that a reboot is required by manually creating file '/var/run/reboot-required', otherwise the WSL linux environment persists the background as a service (and continues to consume hardware resources as-needed)
   #
-  if [ -f "/usr/local/bin/get_os" ] && [ $("/usr/local/bin/get_os" | grep 'WSL' | wc -l;) -eq 1 ]; then
+  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
     ACTION_DESCRIPTION="Kill all WSL terminals";
     READ_TIMEOUT=60;
-    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)" -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=$?;
+    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=$?;
     echo "";
     if [ ${RETURN_CODE_READ} -gt 128 ]; then
       echo "Error:  Response timed out after ${READ_TIMEOUT}s";

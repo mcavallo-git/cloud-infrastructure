@@ -1062,7 +1062,7 @@ else
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |--> To avoid being locked-out, ensure you have a separate SSH connection open (aside from this terminal) before continuing";
                 ECHO_SSH_WARNING="${ECHO_SSH_WARNING}\n  |";
-                ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press \"n\"  (press 'y' to confirm)  ";
+                ECHO_SSH_CONFIRMATION="  |--> Update \"/etc/ssh/sshd_config\", now? - If you are unsure, press 'n'  (press 'y' to confirm)  ";
 
                 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
                   # Require user-confirmation to proceed with config-update
@@ -1193,7 +1193,7 @@ else
                   # echo "  |";
                   # echo "  |--> UFW sync requested, however UFW is currently disabled";
                   # echo "  |";
-                  # read -p "  |--> Enable UFW, now? - If you are unsure, press \"n\"   (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+                  # read -p "  |--> Enable UFW, now? - If you are unsure, press 'n'  (press 'y' to confirm)  " -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
                   # if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                   #   ufw enable;
                   #   # Re-check UFW Enabled/Disabled Status

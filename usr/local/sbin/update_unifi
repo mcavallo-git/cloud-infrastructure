@@ -32,7 +32,7 @@ else
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
     /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
-    if [ 1 -eq 1 ]; then
+    if [[ 1 -eq 1 ]]; then
 
       # Update Unifi Controller (via Bash convenience script)
       SOURCE_URL="https://get.glennr.nl/unifi/update/unifi-update.sh";

@@ -36,7 +36,7 @@ else
       echo "Info:  Confirmed - Performing Action [ ${ACTION_DESCRIPTION} ] ...";
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'
       sudo touch "/var/run/reboot-required";
-      if [ 1 -eq 1 ]; then
+      if [[ 1 -eq 1 ]]; then
         # Call Windows Subsystem for Linux's built-in method to shutdown all WSL terminals (wsl --shutdown)
         /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe "wsl --shutdown";
       else

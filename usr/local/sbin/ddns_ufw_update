@@ -710,8 +710,8 @@ add_rule "${RESOLVED_PROTO}" "${RESOLVED_PORT}" "${RESOLVED_CIDRv4}";
   # Cleanup log files outside of the retention policy's max-age
   LOGDIR="${LOGDIR:-/var/log/ddns_ufw_update}";
   if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +14 | wc -l;)" -gt 0 ]]; then
-    # MAX_RETENTION_DAYS=14;
-    # find "${LOGDIR}" -type f -mtime +${MAX_RETENTION_DAYS} -exec rm -- "{}" ";";
+    # RETENTION_DAYS=14;
+    # find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- "{}" ";";
     echo "";
     echo "Info:  Cleaning logs older than [ 14 days old ] from directory \"${LOGDIR}\"";
     find "${LOGDIR}" -type f -mtime +14 -exec rm -- '{}' \;;

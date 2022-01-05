@@ -20,7 +20,7 @@ env REMOTE_HOST="github.com" REMOTE_OWNER="GITHUB_REPO_OWNER" REMOTE_REPOSITORY=
 
 fi;
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -30,13 +30,13 @@ LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" >
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 
-# ------------------------------------------------------------
+# ------------------------------
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
   source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
 fi;
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Ensure that runtime variables are set
 #
@@ -182,7 +182,7 @@ if [ -n "${GIT_WORK_TREE}" ]; then unset GIT_WORK_TREE; fi; # export GIT_WORK_TR
 if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git";
 if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config";
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Setup git command(s), filepath(s), URI(s), etc.
 #
@@ -255,7 +255,7 @@ if [ "${LOCAL_GIT_USER_EMAIL}" == "git" ]; then LOCAL_GIT_USER_EMAIL=""; fi;
 if [ "${HOMEDIR_GIT_USER_EMAIL}" == "git" ]; then HOMEDIR_GIT_USER_EMAIL=""; fi;
 COMMIT_USER_EMAIL="${COMMIT_USER_EMAIL:-${LOCAL_GIT_USER_EMAIL:-${HOMEDIR_GIT_USER_EMAIL}}}";
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Final runtime values - echo them so that they're shown to the user & saved to the logfile (for possible future reference)
 #
@@ -284,7 +284,7 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') |  GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
 echo "$(date '+%Y-%m-%d %H:%M:%S') |";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ------------------------------------------------------------";
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 #  ! ! !   BEGIN PROCESSING COMPILED VARIABLES/VALUES   ! ! !
 #
@@ -491,7 +491,7 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ${LINE_BREAK}";
 
 
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Remove undesired variables from the environment
 if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1"; fi;
@@ -502,7 +502,20 @@ if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
 if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
 if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config"; fi;
 
-# ------------------------------------------------------------
+
+# ------------------------------
+#
+# Cleanup log files outside of the retention policy's max-age
+#
+LOGDIR="${LOGDIR:-/var/log/git_init}";
+RETENTION_DAYS=60;
+if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
+  echo "";
+  echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
+  find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
+fi;
+
+# ------------------------------
 #
 # Exit Gracefully
 #

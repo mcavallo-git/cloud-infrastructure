@@ -1,8 +1,8 @@
 #
 # DAT_CRON="/etc/cron.d/CRON_journalctl_logfile_cleanup" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
 #
-SHELL="/bin/bash";
-PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin";
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### [ JOURNALCTL ] Remove logfiles older than 90 days & make sure that, net, the logfiles don't add up to over 5 GB (otherwise trim them back until they do)
 0 2 * * * root journalctl --vacuum-time=90d --vacuum-size=5G;

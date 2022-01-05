@@ -1,8 +1,8 @@
 #
 # DAT_CRON="/etc/cron.d/CRON_certbot_renew_all" && echo "" > "${DAT_CRON}" && vi "${DAT_CRON}" && chown "root:root" "${DAT_CRON}" && chmod 0644 "${DAT_CRON}"; SERVICE_NAME="cron"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null'; SERVICE_NAME="crond"; /usr/sbin/service "${SERVICE_NAME}" restart 2>'/dev/null';
 #
-SHELL="/bin/bash";
-PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin";
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### [ System ] Update+Upgrade locally-installed firmware & packages
 10 06 * * 0 root test -x "/usr/local/sbin/certbot_renew_all" && "/usr/local/sbin/certbot_renew_all" --force;

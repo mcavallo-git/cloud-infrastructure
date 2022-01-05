@@ -2050,7 +2050,7 @@ echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
 
 # eval " ${RECURSIVE_CALLBACK_COMMAND}"
 
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
+if [[ ${ARGS_DEBUG_MODE} -ne 0 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
 
 eval " ${RECURSIVE_CALLBACK_COMMAND}" &
 

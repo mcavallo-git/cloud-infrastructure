@@ -12,7 +12,7 @@ fi;
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/install_helm_logs"; if [ -w "/var/log/" ]; then LOGDIR="/var/log/install_helm"; fi;
+LOGDIR="${HOME}/install_helm_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_helm"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );

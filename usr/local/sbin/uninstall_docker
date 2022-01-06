@@ -47,7 +47,7 @@ else
     echo "";
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
 
-      if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "  |--> Calling [ apt-get purge -y docker-ce; ]...";
         apt-get purge -y docker-ce;
         echo "  |--> Calling [ apt-get remove -y --auto-remove docker; ]...";

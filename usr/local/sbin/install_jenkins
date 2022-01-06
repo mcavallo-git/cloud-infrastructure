@@ -126,7 +126,7 @@ else
   # else
 
   # ------------------------------------------------------------
-  if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then # Distros: Debian, Ubuntu, etc.
+  if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
 
     # ------------------------------------------------------------
     # Install Java

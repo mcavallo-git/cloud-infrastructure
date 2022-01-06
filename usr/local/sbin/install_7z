@@ -31,7 +31,7 @@ else
 # Install 7-Zip Package
 
   if [ $(which 7z 2>'/dev/null' | wc -l;) -eq 0 ]; then
-    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+    if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
       apt-get -y update;
       apt-get -y install p7zip-full;
     elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.

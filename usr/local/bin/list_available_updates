@@ -2,24 +2,26 @@
 #
 # LOCAL_BIN="/usr/local/bin/list_available_updates" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
 #
-# ------------------------------------------------------------
+# ------------------------------
 if [[ 0 -eq 1 ]]; then
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/list_available_updates?t=$(date +'%s.%N')" | bash;
 
 fi;
-
-if [ -n "$(which yum 2>'/dev/null';)" ]; then
-  # ------------------------------------------------------------
-  # List Installed Packages
-  #
+# ------------------------------
+#
+# List Available Package-Updates
+#
+if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+  apt list --upgradable;
+  # apt-get -u upgrade --assume-no;
+elif [ -n "$(which yum 2>'/dev/null';)" ]; then
   YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
-  # ------------------------------------------------------------
+  #
   # List Available Package-Updates
   #
   YUM_LIST_UPDATES=$(yum list updates | grep -v '^Loaded' | grep -v '^Updated Packages';);
   #
-  # ------------------------------------------------------------
   # Table Header
   #
   if [ -z "${COLUMNS}" ]; then
@@ -30,7 +32,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
   echo "  ${HEADER}";
   printf "  %${COLUMNS}s" | tr " " "-";
   echo "";
-  # ------------------------------------------------------------
+  #
   # Table Body
   #
   echo "${YUM_LIST_UPDATES}" | while read -r -d $'\n' EACH_LINE; do
@@ -42,11 +44,7 @@ if [ -n "$(which yum 2>'/dev/null';)" ]; then
       echo "  ${PACKAGE_INFO}";
     fi;
   done;
-
-elif [ -n "$(which apt 2>'/dev/null';)" ]; then
-  apt list --upgradable;
-  # apt-get -u upgrade --assume-no;
-
+  # ------------------------------
 fi;
 
 

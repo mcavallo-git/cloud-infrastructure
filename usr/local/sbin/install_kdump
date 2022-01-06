@@ -36,7 +36,7 @@ else
     echo "";
     echo "Info:  Attempting to install the \"kdump\" package (for kernel crash dump logging) ...";
     if [ $(which kdump 2>'/dev/null' | wc -l;) -eq 0 ]; then
-      if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         apt-get -y install linux-crashdump;
       elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
         yum -y install kexec-tools;

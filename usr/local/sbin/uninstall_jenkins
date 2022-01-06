@@ -73,7 +73,7 @@ else
       # Remove service's dependent package(s)
       #
       echo -e "\n""Info:  Removing software package(s) for ${SERVICE_NAME} service";
-      if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "  |--> Calling [ apt-get remove -y \"${SERVICE_NAME}\"; ]...";
         apt-get remove -y "${SERVICE_NAME}";
       elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -105,11 +105,11 @@ else
       #
       # Remove Service
       #
-      if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "  |--> Calling [ apt-get purge \"${SERVICE_NAME}\" ]...";
         apt-get -y purge "${SERVICE_NAME}";
       fi;
-      if [ $(which update-rc.d 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v update-rc.d 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "  |--> Calling [ update-rc.d \"${SERVICE_NAME}\" remove -f; ]...";
         update-rc.d "${SERVICE_NAME}" remove -f;
       fi;

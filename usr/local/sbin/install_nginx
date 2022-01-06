@@ -22,7 +22,7 @@ else
   # Install NGINX Web Server
   SERVICE_NAME="nginx";
 
-  if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
+  if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     apt-get --yes update;
     apt-get --yes install "dpkg-dev";
     add-apt-repository --yes --update "ppa:nginx/stable";
@@ -107,7 +107,7 @@ else
     # ------------------------------------------------------------
     # (SKIPPED/DISABLED) - Install NGINX's Geo-IP Module
     if [[ 0 -eq 1 ]]; then
-      if [ $(which apt-get 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         add-apt-repository --yes --update "ppa:maxmind/ppa";
         apt-get --yes install "geoip-database" "geoip-database-extra" "php-geoip";
         apt-get --yes install "geoipupdate";

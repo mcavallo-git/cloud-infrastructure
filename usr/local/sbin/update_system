@@ -34,7 +34,7 @@ if [[ "$(id -un)" != "root" ]]; then
   exit 1;
 else
   # ------------------------------------------------------------
-  if [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
+  if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     #
     # Disabled for Fedora distros (RHEL/CentOS)
     #
@@ -55,22 +55,22 @@ else
       echo "------------------------------------------------------------";
       #
       # apt / apt-get
-      if [ $(which apt 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      if [[ -z "$(command -v apt 2>'/dev/null';)" ]]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
-      elif [ $(which apt-get 2>'/dev/null' | wc -l;) -eq 0 ]; then
+      elif [[ -z "$(command -v apt-get 2>'/dev/null';)" ]]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" not found";
       else
         echo "";
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(which apt 2>'/dev/null')";
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(command -v apt 2>'/dev/null')";
         echo "";
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(which apt-get 2>'/dev/null')";
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" resolved to $(command -v apt-get 2>'/dev/null')";
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y update";
         sudo apt-get -y update;
-        if [ $(which update_unifi 2>'/dev/null' | wc -l;) -eq 0 ]; then
-          if [ $(/bin/systemctl list-unit-files --no-legend --no-pager --full "unifi.service" | grep "^unifi.service" 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then
+        if [[ -n "$(command -v update_unifi 2>'/dev/null';)" ]]; then
+          if [[ $(/bin/systemctl list-unit-files --no-legend --no-pager --full "unifi.service" | grep "^unifi.service" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
             echo "";
             echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo update_unifi";
             sudo update_unifi;

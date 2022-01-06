@@ -219,7 +219,7 @@ else
     exit 1;
 
   elif [ "${IS_WINDOWS_WSL}" != "1" ]; then
-    if [ $(which apt 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Debian, Ubuntu, etc.
+    if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
 
       #
       # Required package:

@@ -433,11 +433,11 @@ else
       REQUIRED_PKGS_ARRAY+=("vim-common");
       REQUIRED_PKGS_ARRAY+=("wget");
       # Debian-specific packages
-      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         REQUIRED_PKGS_ARRAY+=("cron");
         REQUIRED_PKGS_ARRAY+=("jq");
         # REQUIRED_PKGS_ARRAY+=("sslscan");
-      elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+      elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
         REQUIRED_PKGS_ARRAY+=("bind-utils");
         REQUIRED_PKGS_ARRAY+=("epel-release");
         REQUIRED_PKGS_ARRAY+=("policycoreutils-devel");

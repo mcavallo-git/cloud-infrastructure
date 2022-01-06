@@ -15,7 +15,7 @@ fi;
 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
   apt list --upgradable;
   # apt-get -u upgrade --assume-no;
-elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
   YUM_LIST_INSTALLED=$(yum list installed | grep -v '^Loaded' | grep -v '^Installed Packages';);
   #
   # List Available Package-Updates

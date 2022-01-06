@@ -8,13 +8,15 @@ RET_CODE=1;
 
 if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
   INSTALLED_PACKAGES="$(apt list --installed;)";
-elif [ -n "$(which yum 2>'/dev/null';)" ]; then #
+elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
   INSTALLED_PACKAGES="$(yum list installed;)";
 fi;
 
 if [ -n "${INSTALLED_PACKAGES}" ]; then
   if [ $# -gt 0 ]; then
+    #
     # Determine if argument $1 (if given) exists/is-installed as a local package
+    #
     CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
     if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
       echo "Info:  Package \"${1}\" not found, locally";
@@ -24,8 +26,10 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
       RET_CODE=0;
     fi;
   else
-    if [ -n "$(which yum 2>'/dev/null';)" ]; then #
-      # If this is a Fedora-based OS, list all installed packages without x86_64 & noarch extension after each
+    if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+      #
+      # List all installed packages without x86_64 & noarch extension after each
+      #
       INSTALLED_PACKAGES=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
     fi;
     echo "${INSTALLED_PACKAGES}";

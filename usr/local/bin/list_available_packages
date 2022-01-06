@@ -11,7 +11,7 @@ if [ -n "$1" ]; then
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     apt-cache search "$1" | sort | grep -i "$1";
     echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep --color=auto -i "$1" | wc -l;
-  elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+  elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum list available "*$1*" | sort | grep -i "$1";
     echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep --color=auto -i "$1" | wc -l;
   else
@@ -24,7 +24,7 @@ else
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     apt-cache search '' | sort;
     echo ""; echo -n "Total Packages Found:  "; apt-cache search "$1" | sort | wc -l;
-  elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+  elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum list available | sort;
     echo ""; echo -n "Total Packages Found:  "; yum list available | sort | wc -l;
   else

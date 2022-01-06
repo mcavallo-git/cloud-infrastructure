@@ -36,7 +36,7 @@ else
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
       if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         sudo apt-get install -y "nmap";
-      elif [ -n "$(which yum 2>'/dev/null';)" ]; then
+      elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
         sudo yum install -y "nmap";
       elif [ -n "$(which apk 2>'/dev/null';)" ]; then
         sudo apk install -y "nmap";

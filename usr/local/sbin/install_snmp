@@ -37,8 +37,7 @@ else
     echo "Ubuntu SNMP installation not yet implemented";
     exit 1;
 
-  elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then
-    # RHEL, CentOS
+  elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     echo -e "\n""Info:  Calling [ yum check-update -y; yum -y install net-snmp net-snmp-utils; ]...";
     yum check-update -y; yum -y install net-snmp net-snmp-utils;
     snmpconf -g basic_setup

@@ -25,7 +25,7 @@ else
   if [ $(which sar 2>'/dev/null' | wc -l;) -eq 0 ]; then
     if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
       PACKAGE_NAME="sysstat"; apt-get -y update; apt-get -y install "${PACKAGE_NAME}";
-    elif [ $(which yum 2>'/dev/null' | wc -l;) -gt 0 ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+    elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
       PACKAGE_NAME="sysstat"; yum -y check-update; yum -y install "${PACKAGE_NAME}";
     fi;
   fi;

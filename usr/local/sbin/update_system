@@ -54,14 +54,9 @@ else
       echo "";
       echo "------------------------------------------------------------";
       #
-      # apt / apt-get
-      if [[ -z "$(command -v apt 2>'/dev/null';)" ]]; then
-        echo "";
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
-      elif [[ -z "$(command -v apt-get 2>'/dev/null';)" ]]; then
-        echo "";
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt-get\" not found";
-      else
+      # apt
+      #
+      if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" resolved to $(command -v apt 2>'/dev/null')";
         echo "";
@@ -88,16 +83,17 @@ else
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y clean";
         sudo apt-get -y clean;
+      else
+        echo "";
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"apt\" not found";
       fi;
       echo "------------------------------------------------------------";
       #
       # yum
-      if [ -z "$(which yum 2>'/dev/null')" ]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" not found";
-
-      else
+      #
+      if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
         echo "";
-        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(which yum 2>'/dev/null')";
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" resolved to $(command -v yum 2>'/dev/null';)";
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum list --upgradable";
         sudo yum check-update; RET_CODE_YUM_CHECK_UPDATE=$?;
@@ -107,10 +103,13 @@ else
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo yum -y update";
           sudo yum -y update;
         fi;
+      else
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"yum\" not found";
       fi;
       echo "------------------------------------------------------------";
       #
       # updatedb
+      #
       if [ $(which updatedb 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"updatedb\" not found";
@@ -124,6 +123,7 @@ else
       echo "------------------------------------------------------------";
       #
       # ldconfig
+      #
       if [ $(which ldconfig 2>'/dev/null' | wc -l;) -eq 0 ]; then
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Command \"ldconfig\" not found";
@@ -137,6 +137,7 @@ else
       echo "------------------------------------------------------------";
       #
       # pip
+      #
       if [ "skip pip" == "skip pip" ]; then
           echo "";
           echo "$(date '+%Y-%m-%d %H:%M:%S') | Skipping \"pip\"";
@@ -179,6 +180,7 @@ else
       echo "------------------------------------------------------------";
       #
       # Check if reboot is required
+      #
       if [ -f "/var/run/reboot-required" ]; then
         # The File '/var/run/reboot-required' is an Ubuntu native, and signifies that at least one recent update requires a reboot to fully complete their install/update.
         # If we find that ^ file on our current host (after running updates), then the system is in the reboot preparation phase -> set it just to restart after 2 minutes
@@ -199,9 +201,12 @@ else
       # WSL (Windows Subsystem for Linux)
       #  |--> To shutdown WSL, manually create above file via  [ sudo touch /var/run/reboot-required ]  when closing
       #       terminals, otherwise the linux environment persists the background as a service (essentially hidden)
+      #
       touch "/var/run/reboot-required";
     fi;
-    # Exit Gracefully
+    #
+    # Exit gracefully
+    #
     echo "";
     echo "$(date '+%Y-%m-%d %H:%M:%S') | Finished \"${THIS_SCRIPT}\"";
     echo "------------------------------------------------------------";

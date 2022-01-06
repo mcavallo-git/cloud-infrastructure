@@ -27,7 +27,7 @@ else
     apt-get --yes install "dpkg-dev";
     add-apt-repository --yes --update "ppa:nginx/stable";
     apt-get --yes install "nginx-full";
-  elif [ $(which yum 1>'/dev/null' 2>&1; echo $?;) -eq 0 ]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+  elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum -y check-update; yum -y install "epel-release";
     yum -y check-update; yum -y install "nginx";
   fi;

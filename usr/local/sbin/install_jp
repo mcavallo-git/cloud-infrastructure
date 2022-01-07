@@ -79,7 +79,7 @@ else
         INSTALL_PKG=1;
         echo "";
         echo "Warning:  Unable to obtain version from file \"${FULLPATH_LOCAL_PKG}\" - Removing...";
-        rm -rfv "${FULLPATH_LOCAL_PKG}";
+        rm -fv "${FULLPATH_LOCAL_PKG}";
       elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
         # Installed version matches latest version
         INSTALL_PKG=0;
@@ -112,7 +112,7 @@ else
         mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
       fi;
       if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
-        rm -rfv "${FULLPATH_LOCAL_PKG}";
+        rm -fv "${FULLPATH_LOCAL_PKG}";
       fi;
       # Download the package
       curl -sL -o "${FULLPATH_LOCAL_PKG}" "${RELEASE_URL}";

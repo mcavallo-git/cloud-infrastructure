@@ -5,13 +5,9 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jp?t=$(date +'%s.%N')" | env GITHUB_OWNER="jmespath" GITHUB_REPO="jp" VERSION_CLI="--version 2>'/dev/null' | rev | cut -d' ' -f1 | rev" bash;  # install jp
 
-# Call this script with env var arguments
-
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jp?t=$(date +'%s.%N')" | env GITHUB_OWNER="jmespath" GITHUB_REPO="jp" VERSION_CLI="--version 2>'/dev/null' | rev | cut -d' ' -f1 | rev" bash;  # jp
-
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="kubernetes" GITHUB_REPO="kompose" VERSION_CLI="version" bash;  # kompose
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="kubernetes" GITHUB_REPO="kompose" VERSION_CLI="version" bash;  # install kompose
 
 fi;
 # ------------------------------------------------------------

@@ -382,7 +382,7 @@ else
         mv -fv "/etc/duo/login_duo.conf" "/etc/duo/login_duo.conf.$(date +'%Y%m%d_%H%M%S').bak";
 
         # Redirect the original path of the local config file
-        ln -sf "/etc/duo/pam_duo.conf" "/etc/duo/login_duo.conf";
+        ln -sfv "/etc/duo/pam_duo.conf" "/etc/duo/login_duo.conf";
 
       fi;
 

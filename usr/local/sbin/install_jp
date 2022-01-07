@@ -78,7 +78,7 @@ else
       if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
         # Package is already installed
         # Get the locally installed package's version
-        LOCAL_VERSION="$(eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}";)";
+        LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
         if [[ -z "${LOCAL_VERSION}" ]] ; then
           # Installed package's version was unable to be obtained - remove it
           INSTALL_PKG=1;
@@ -113,27 +113,38 @@ else
   if [[ "${INSTALL_PKG}" -eq 1 ]]; then
     if [[ -n "${RELEASE_URL}" ]]; then
       RESPONSE_HTTP_CODE="$(curl -ILs "${RELEASE_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
-      if [ "${RESPONSE_HTTP_CODE}" == "200" ]; then
-      echo "";
-      echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_LOCAL_PKG}\"...";
-      if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
-        mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
+      if [ "${RESPONSE_HTTP_CODE}" != "200" ]; then
+        echo "";
+        echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${RELEASE_URL}\"";
+      else
+        echo "";
+        echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_LOCAL_PKG}\"...";
+        if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
+          mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
+        fi;
+        # If the package is already installed locally, version-stamp it and remove it
+        LOCAL_VERSION="";
+        if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
+          LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
+          if [[ -n "${LOCAL_VERSION}" ]] && [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" ]]; then
+            mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}";
+            ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" "${FULLPATH_LOCAL_PKG}";
+
+          fi;
+        fi;
+        # Download the package
+        curl -sL -o "${FULLPATH_LOCAL_PKG}" "${RELEASE_URL}";
+        # Set file permissions on the package
+        chmod 0755 "${FULLPATH_LOCAL_PKG}";
+        ln -sfv "${BIN_DIR_KOMPOSE_VERSIONED_CLI}" "${BIN_DIR_KOMPOSE_CLI}";
       fi;
-      if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
-        rm -fv "${FULLPATH_LOCAL_PKG}";
-      fi;
-      # Download the package
-      curl -sL -o "${FULLPATH_LOCAL_PKG}" "${RELEASE_URL}";
-      # Set file permissions on the package
-      chmod 0755 "${FULLPATH_LOCAL_PKG}";
     fi;
-    LOCAL_VERSION="$(eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}";)";
+    LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
     if [[ -z "${LOCAL_VERSION}" ]] ; then
-      # Package 
-      echo "";
-      echo "Info:  Installing package \"${PKG_NAME}\" (via apt)...";
+      # Fallback package installation method(s)
       if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-        # Fallback package installation --> using apt
+        echo "";
+        echo "Info:  Installing package \"${PKG_NAME}\" (via apt)...";
         apt-get -y update; apt-get -y install "jp";
       fi;
     fi;
@@ -141,7 +152,7 @@ else
   # Get the locally installed package's version
   if [[ -f "${FULLPATH_LOCAL_PKG}" ]] ; then
     # Package found locally
-    LOCAL_VERSION="$(eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}";)";
+    LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
     echo "";
     echo -n "Info:  Package \"${PKG_NAME}\" found locally w/ filepath [ ${FULLPATH_LOCAL_PKG} ]";
     if [[ -n "${LOCAL_VERSION}" ]] ; then

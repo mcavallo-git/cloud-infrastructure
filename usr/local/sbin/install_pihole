@@ -32,7 +32,7 @@ exec 2>&1;
 #  |     |--> Uncomment "DNSStubListener=" line and set to "DNSStubListener=no"
 #  |
 #  |--> Redirect "/etc/resolv.conf"
-#  |     |--> Run [ ln -sf "/run/systemd/resolve/resolv.conf" "/etc/resolv.conf"; ]
+#  |     |--> Run [ ln -sfv "/run/systemd/resolve/resolv.conf" "/etc/resolv.conf"; ]
 #  |
 #  |--> Restart the machine via [ reboot ]
 #

@@ -156,7 +156,7 @@ else
         fi;
       fi;
     fi;
-    # Get the locally installed package's version
+    # Get the locally installed package's info
     if [[ -f "${FULLPATH_LOCAL_PKG}" ]] ; then
       # Package found locally
       LOCAL_VERSION="$(if [[ -n "${VERSION_CLI}" ]] && [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";

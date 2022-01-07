@@ -147,7 +147,9 @@ else
               # Set file permissions on the downloaded package
               chmod 0755 "${FULLPATH_CURLED_PKG}";
               # Verify the downloaded package is indeed exectuable
+              echo -n " |--> ";
               mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}";
+              echo -n " |--> ";
               ln -sfv "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" "${FULLPATH_LOCAL_PKG}";
             fi;
           fi;

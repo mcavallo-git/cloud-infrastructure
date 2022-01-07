@@ -84,8 +84,7 @@ else
     else
       # ------------------------------
       # Get package's latest release version
-      OS_ARCH="${OS_NAME}-${PROCESSOR_ARCH:-amd64}";
-      LATEST_INFO=$(curl -sL "${PKG_RELEASES_URL}" | grep '<a href' | grep "${GITHUB_OWNER}/${GITHUB_REPO}/releases/download" | grep "${OS_ARCH}" | head -n 1 | sed -rne "s/^.+<a href=\"((https:\\/\\/github\.com)?\\/${GITHUB_OWNER//\//\\\/}\\/${GITHUB_REPO//\//\\\/}\/releases\/download\/([^\"\\/]+)\/([^\"-]+-${OS_ARCH}[^\"]*))\".+$/\1\n\3/pi";);
+      LATEST_INFO=$(curl -sL "${PKG_RELEASES_URL}" | grep '<a href' | grep "${GITHUB_OWNER}/${GITHUB_REPO}/releases/download" | grep "${OS_NAME}" | grep "${PROCESSOR_ARCH}" | head -n 1 | sed -rne "s/^.+<a href=\"((https:\\/\\/github\.com)?\\/${GITHUB_OWNER//\//\\\/}\\/${GITHUB_REPO//\//\\\/}\/releases\/download\/([^\"\\/]+)\/([^\"-]+-${OS_NAME}[-_]${PROCESSOR_ARCH:-amd64}[^\"]*))\".+$/\1\n\3/pi";);
       if [[ -z "${LATEST_INFO}" ]]; then
         echo "";
         echo "Error:  No data returned from URL [ ${PKG_RELEASES_URL} ] while attempting to obtain latest release info";

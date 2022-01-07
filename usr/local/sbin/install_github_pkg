@@ -152,7 +152,8 @@ else
               # Set file permissions on the downloaded package
               echo "";
               echo -n "Info:  Setting execution bit for package binary:  ";
-              chmod -v "0755" "${FULLPATH_CURLED_PKG}";
+              # chmod -v "0755" "${FULLPATH_CURLED_PKG}";
+              chmod -v +x "${FULLPATH_CURLED_PKG}";
               if [[ "${FULLPATH_CURLED_PKG}" != "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" ]]; then
                 # Version-stamp the downloaded package
                 echo "";

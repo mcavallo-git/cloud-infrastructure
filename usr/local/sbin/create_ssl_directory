@@ -27,7 +27,7 @@ fi;
 LOGDIR="${HOME}/create_ssl_directory_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/create_ssl_directory"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; chmod 0660 "${LOGFILE}";
-exec > >(tee -a "${LOGFILE}" ); echo "Script started at [ $(date +'%Y-%m-%dT%H:%M:%S.%N%z';) ]";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date +'%Y-%m-%dT%H:%M:%S.%N%z';) ]\n";
 exec 2>&1;
 #
 # ------------------------------------------------------------

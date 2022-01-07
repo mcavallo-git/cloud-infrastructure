@@ -135,13 +135,13 @@ else
     # Package found locally
     LOCAL_VERSION="$(eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}";)";
     echo "";
-    echo "Info:  Package \"${PKG_NAME}\" found locally w/ filepath [ ${FULLPATH_LOCAL_PKG} ])";
+    echo -n "Info:  Package \"${PKG_NAME}\" found locally w/ filepath [ ${FULLPATH_LOCAL_PKG} ]";
     if [[ -n "${LOCAL_VERSION}" ]] ; then
       # Package version successfully obtained
-      echo " |--> Info:  Package version:  [ ${LOCAL_VERSION} ]";
+      echo " & version [ ${LOCAL_VERSION} ]";
     else
       # Package version unable to be obtained
-      echo " |--> Warning:  Package version unable to be obtained";
+      echo " (version unable to be obtained)";
     fi;
   else
     # Package NOT found locally

@@ -40,18 +40,26 @@ else
         #
         # Call WSL's built-in shutdown method (wsl --shutdown)
         #
-        CLI_SHUTDOWN="wsl.exe --shutdown";
-        CMD_EXE="$(if [[ -n "$(command -v cmd 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "cmd";)" 2>'/dev/null';)"; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
-        if [[ -x "${CMD_EXE}" ]]; then
-          # Default to using cmd to perform the loopback call to wsl (if cmd exists)
-          LOOPBACK_EXE="${CMD_EXE}";
+        WSL_EXE="$(if [[ -n "$(command -v wsl.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
+        if [[ -x "${WSL_EXE}" ]]; then
+          # Default to shutting down WSL by calling 'wsl.exe --shutdown' directly
+          LOOPBACK_EXE="${WSL_EXE}";
+          CLI_SHUTDOWN="--shutdown";
         else
-          # Fallback to powershell if cmd is not available
-          POWERSHELL_EXE="$(if [[ -n "$(command -v powershell 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "powershell";)";)"; else echo "$(wslpath -u "$(wslvar -s "windir";)";)/System32/WindowsPowerShell/v1.0/powershell.exe"; fi;)";
-          LOOPBACK_EXE="${POWERSHELL_EXE}";
+          # Fallback to cmd.exe
+          CMD_EXE="$(if [[ -n "$(command -v cmd.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "cmd.exe";)";)"; elif [[ -f "$(find /mnt/*/Windows/System32/cmd.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/cmd.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
+          if [[ -x "${CMD_EXE}" ]]; then
+            LOOPBACK_EXE="${CMD_EXE}";
+            CLI_SHUTDOWN="wsl.exe --shutdown";
+          else
+            # Fallback to powershell.exe
+            POWERSHELL_EXE="$(if [[ -n "$(command -v powershell.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "powershell.exe";)";)"; elif [[ -f "$(find /mnt/*/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "windir";)";)/System32/WindowsPowerShell/v1.0/powershell.exe"; fi;)";
+            LOOPBACK_EXE="${POWERSHELL_EXE}";
+            CLI_SHUTDOWN="wsl.exe --shutdown";
+          fi;
         fi;
         echo "Calling [ sleep 1; \"${LOOPBACK_EXE}\" \"${CLI_SHUTDOWN}\"; ]...";
-        sleep 1; "${LOOPBACK_EXE}" "${CLI_SHUTDOWN}";
+        sleep 1; ${LOOPBACK_EXE} "${CLI_SHUTDOWN}";
       else
         # Kill all bash shells (current shell as well as any other bash shells on local device)
         PROCESSES=$(ps -e -o pid,cmd);

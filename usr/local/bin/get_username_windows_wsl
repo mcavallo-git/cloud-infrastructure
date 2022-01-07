@@ -12,9 +12,9 @@ if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
   if [[ "${USE_WSL_BUILT_IN_METHODS}" -ne 0 ]] && [[ -n "$(command -v wslpath 2>'/dev/null';)" ]] && [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
 
     # Use WSL's built-in methods to convert the Windows user's environment variables to WSL-compatible values
-    WINDOWS_USERNAME="$(wslpath -u "$(wslvar --sys "USERNAME";)";)"; echo "${WINDOWS_USERNAME}";
-    # FULLPATH_WINDOWS_USER_DIR="$(wslpath -u "$(wslvar --sys "USERPROFILE";)";)";
-    # FULLPATH_WINDOWS_DESKTOP="$(wslpath -u "$(wslvar --shell "Desktop";)";)";
+    WINDOWS_USERNAME="$(wslpath -u "$(wslvar -s "USERNAME";)";)"; echo "${WINDOWS_USERNAME}";
+    # FULLPATH_WINDOWS_USER_DIR="$(wslpath -u "$(wslvar -s "USERPROFILE";)";)";
+    # FULLPATH_WINDOWS_DESKTOP="$(wslpath -u "$(wslvar -l "Desktop";)";)";
 
   else
 

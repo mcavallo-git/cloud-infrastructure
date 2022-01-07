@@ -10,12 +10,6 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 fi;
 # ------------------------------------------------------------
 #
-# Edit this script, locally (for use during ad-hoc updates/hotfixes)
-#
-# LOCAL_SBIN="/usr/local/sbin/update_system" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
-#
-# ------------------------------------------------------------
-#
 # Log all shell output & error output to logfile
 #
 LOGDIR="${HOME}/update_system_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/update_system"; fi;

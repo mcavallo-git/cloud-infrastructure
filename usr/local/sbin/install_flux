@@ -28,40 +28,43 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   exit 1;
 else
 
-  # Ensure that flux is installed
+  EXIT_CODE=0;
+
+  # Install/Update 'flux' via convenience script  -  https://fluxcd.io/docs/installation/#install-the-flux-cli
+  echo "";
+  echo "[INFO]  Calling [ curl -s \"https://fluxcd.io/install.sh\" | bash; ]...";
+  curl -s "https://fluxcd.io/install.sh" | bash;
+
+  echo "";
+  echo "[INFO]  Calling [ command -v flux; ]...";
+  command -v flux;
+
   if [ -n "$(command -v flux 2>'/dev/null';)" ]; then
 
-    # Flux is already installed
+    # Verify that flux is installed by getting the installed version from it
     echo "";
-    echo "(Skipped) Command \"flux\" already exists with filepath \"$(command -v flux;)\"";
+    echo "Calling [ flux --version; ]...";
+    flux --version;
 
   else
 
-    # Flux is NOT installed --> Install it
     echo "";
-
-    # Install 'flux' via convenience script  -  https://fluxcd.io/docs/installation/#install-the-flux-cli
-    curl -s "https://fluxcd.io/install.sh" | bash;
-
-    echo "";
-    echo "Calling [ command -v flux; ]...";
-    command -v flux;
+    echo "Error:  Unable to install Flux";
+    EXIT_CODE=1;
 
   fi;
-
-  # Verify that flux is installed by getting the installed version from it
+  # ------------------------------
   echo "";
-  echo "Calling [ flux --version; ]...";
-  flux --version;
-
-  echo "";
-
+  exit ${EXIT_CODE};
+  # ------------------------------
 fi;
 
 
 # ------------------------------------------------------------
 #
 # Citation(s)
+# 
+#   github.com  |  "GitHub - fluxcd/flux2: Open and extensible continuous delivery solution for Kubernetes. Powered by GitOps Toolkit."  |  https://github.com/fluxcd/flux2
 # 
 #   fluxcd.io  |  "Installation | Flux"  |  https://fluxcd.io/docs/installation/#install-the-flux-cli
 #

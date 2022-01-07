@@ -108,8 +108,11 @@ else
     if [[ -n "${RELEASE_URL}" ]]; then
       echo "";
       echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_LOCAL_PKG}\"...";
-      if [[ ! -d "${FULLPATH_LOCAL_PKG}" ]]; then
+      if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
         mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
+      fi;
+      if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
+        rm -rfv "${FULLPATH_LOCAL_PKG}";
       fi;
       # Download the package
       curl -sL -o "${FULLPATH_LOCAL_PKG}" "${RELEASE_URL}";

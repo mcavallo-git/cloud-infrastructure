@@ -143,7 +143,9 @@ else
               # Download the package
               FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}";
               echo "";
-              echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_CURLED_PKG}\"...";
+              echo "Info:  Downloading & installing package \"${PKG_NAME}\"...";
+              echo " |--> remote url:  ${LATEST_URL}";
+              echo " |--> local filepath:  ${FULLPATH_CURLED_PKG}";
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
               # Set file permissions on the downloaded package
               echo -n " |--> setting file permissions:  ";

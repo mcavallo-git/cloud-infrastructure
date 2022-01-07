@@ -36,6 +36,7 @@ else
   GITHUB_REPO="${GITHUB_REPO:-jp}";  # Override with repo name owned by github repo owner
   VERSION_CLI="${VERSION_CLI:---version 2>'/dev/null' | rev | cut -d' ' -f1 | rev}";  # cli command to run to get the version out of the repo's package
   FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG}";  # local filepath to install the package onto
+  FULLPATH_EXT="";
   INSTALL_PKG=1;
   # ------------------------------
   # Determine OS and processor architecture
@@ -54,6 +55,7 @@ else
   else
     # Install pkg for Windows
     FULLPATH_LOCAL_PKG="${HOME}/bin/${GITHUB_REPO}.exe";
+    FULLPATH_EXT=".exe";
     OS_NAME="windows";
   fi;
   PKG_NAME="$(basename "${FULLPATH_LOCAL_PKG}")";
@@ -129,14 +131,19 @@ else
           if [[ -n "${LOCAL_VERSION}" ]] && [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" ]]; then
             mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}";
             ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" "${FULLPATH_LOCAL_PKG}";
-
           fi;
         fi;
         # Download the package
-        curl -sL -o "${FULLPATH_LOCAL_PKG}" "${RELEASE_URL}";
-        # Set file permissions on the package
-        chmod 0755 "${FULLPATH_LOCAL_PKG}";
-        ln -sfv "${BIN_DIR_KOMPOSE_VERSIONED_CLI}" "${BIN_DIR_KOMPOSE_CLI}";
+        FULLPATH_DOWNLOADED_PKG_VERSIONED="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${RELEASE_VERSION}${FULLPATH_EXT}";
+        curl -sL -o "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" "${RELEASE_URL}";
+        # Set file permissions on the downloaded package
+        chmod 0755 "${FULLPATH_DOWNLOADED_PKG_VERSIONED}";
+        # Verify the downloaded package is indeed exectuable
+        DOWNLOADED_VERSION="$(if [[ -x "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" ]]; then eval "${FULLPATH_DOWNLOADED_PKG_VERSIONED} ${VERSION_CLI}"; fi;)";
+        if [[ -n "${DOWNLOADED_VERSION}" ]] && [[ ! -f "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}" ]]; then
+          mv -fv "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}";
+          ln -sfv "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}" "${FULLPATH_LOCAL_PKG}";
+        fi;
       fi;
     fi;
     LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";

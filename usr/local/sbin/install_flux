@@ -27,31 +27,26 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
-
   EXIT_CODE=0;
-
   # Install/Update 'flux' via convenience script  -  https://fluxcd.io/docs/installation/#install-the-flux-cli
   echo "";
   echo "[INFO]  Calling [ curl -s \"https://fluxcd.io/install.sh\" | bash; ]...";
   curl -s "https://fluxcd.io/install.sh" | bash;
-
+  # Show the filepath to the flux binary
   echo "";
   echo "[INFO]  Calling [ command -v flux; ]...";
   command -v flux;
-
+  # Verify that flux is installed
   if [ -n "$(command -v flux 2>'/dev/null';)" ]; then
-
-    # Verify that flux is installed by getting the installed version from it
+    # Get the installed version of flux
     echo "";
     echo "Calling [ flux --version; ]...";
     flux --version;
-
   else
-
+    # Error during package installation
     echo "";
     echo "Error:  Unable to install Flux";
     EXIT_CODE=1;
-
   fi;
   # ------------------------------
   echo "";

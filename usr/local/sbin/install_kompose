@@ -15,7 +15,7 @@ fi;
 # Get the latest version of kompose
 echo "------------------------------------------------------------";
 echo "Getting the latest version of \"kompose\"...";
-KOMPOSE_LATEST_VERSION=$(curl -sL "https://github.com/kubernetes/kompose/releases" | grep 'https://github.com/kubernetes/kompose/releases/download' | grep -i 'linux' | head -n 1 | sed -re "s/^.+https:\/\/github\.com\/kubernetes\/kompose\/releases\/download\/v([0-9\.]+)\/kompose-linux-amd64\s+.+$/\1/";);
+KOMPOSE_LATEST_VERSION=$(curl -sL "https://github.com/kubernetes/kompose/releases" | grep 'https://github.com/kubernetes/kompose/releases/download' | grep -i 'linux-amd64' | head -n 1 | sed -re "s/^.+https:\/\/github\.com\/kubernetes\/kompose\/releases\/download\/v([0-9\.]+)\/kompose-linux-amd64\s+.+$/\1/";);
 echo "Latest version of \"kompose\":  [ ${KOMPOSE_LATEST_VERSION} ]";
 # Determine if latest version of kompose is installed
 if [ $(which kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null' | wc -l;) -eq 0 ]; then

@@ -119,6 +119,7 @@ else
             echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${LATEST_URL}\"";
           else
             if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
+              echo "";
               mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
             fi;
             # If the package is already installed locally, version-stamp it and remove it
@@ -145,7 +146,8 @@ else
               echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_CURLED_PKG}\"...";
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
               # Set file permissions on the downloaded package
-              chmod 0755 "${FULLPATH_CURLED_PKG}";
+              echo -n " |--> ";
+              chmod -v "0755" "${FULLPATH_CURLED_PKG}";
               # Verify the downloaded package is indeed exectuable
               echo -n " |--> ";
               mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}";

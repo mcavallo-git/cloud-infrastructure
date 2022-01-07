@@ -98,12 +98,13 @@ else
     # ###
     # if [ 0 -eq 1 ] && [ -n "$(command -v get_os 2>'/dev/null';)" ] && [[ "$(get_os)" == *"Microsoft"* ]]; then
     #   # Redirect Bash calls to Windows docker-host
-    #   ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
-    #   ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
+    #   ln -sf "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+    #   ln -sf "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+    #   ln -sf "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
     #   # Download Docker Desktop (if not found locally)
-    #   if [ ! -f "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" ]; then
+    #   if [ ! -f "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker.exe" ]; then
     #     echo -e "\n""Error: Must install Docker Desktop (for Windows), which WSL will leverage through direct-calls via WSL 2.0 CLI pass-through""\n";
-    #     "/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
+    #     "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Google/Chrome/Application/chrome.exe" "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
     #     exit 1;
     #   fi;
     #   # if [ -v SUDO_USER ]; then
@@ -111,8 +112,8 @@ else
     #   # fi;
     #   # usermod -aG docker "${USER}";
     #   # Redirect Bash calls to Windows docker-host
-    #   ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
-    #   ln -sf "/mnt/c/Program Files/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
+    #   ln -sf "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker.exe" "${BIN_DOCKER}";
+    #   ln -sf "$(wslpath -u "$(wslvar -s "ProgramFiles";)";)/Docker/Docker/resources/bin/docker-compose.exe" "${BIN_DOCKER_COMPOSE}";
     # fi;
     # ###
     # ###

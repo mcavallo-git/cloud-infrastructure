@@ -1,0 +1,180 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_github_pkg" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | bash;
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="kubernetes" GITHUB_REPO="kompose" VERSION_CLI="version" bash;  # Call this script with env var arguments
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_github_pkg_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_github_pkg"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Install GitHub Package (generic installer)
+  #
+  EXIT_CODE=0;
+  GITHUB_OWNER="${GITHUB_OWNER}";  # Override with any github repo owner
+  GITHUB_REPO="${GITHUB_REPO}";  # Override with repo name owned by github repo owner
+  VERSION_CLI="${VERSION_CLI}";  # cli command to run to get the version out of the repo's package
+  FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG}";  # local filepath to install the package onto
+  FULLPATH_EXT="";
+  # ------------------------------
+  if [[ -z "${GITHUB_OWNER}" ]]; then
+    echo "";
+    echo "Error:  Required environment variable is empty:  GITHUB_OWNER";
+    EXIT_CODE=1;
+  fi;
+  if [[ -z "${GITHUB_REPO}" ]]; then
+    echo "";
+    echo "Error:  Required environment variable is empty:  GITHUB_REPO";
+    EXIT_CODE=1;
+  fi;
+  # ------------------------------
+  if [[ "${EXIT_CODE}" -eq 0 ]]; then
+    PKG_RELEASES_URL="https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases";
+    RESPONSE_HTTP_CODE="$(curl -ILs "${PKG_RELEASES_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
+    if [ "${RESPONSE_HTTP_CODE}" != "200" ]; then
+      echo "";
+      echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${PKG_RELEASES_URL}\"";
+    else
+      INSTALL_PKG=1;
+      # ------------------------------
+      # Determine OS and processor architecture
+      OS_NAME="";
+      if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == "linux"* ]]; then
+        # Install pkg for Linux
+        FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
+        OS_NAME="linux";
+        if [[ -n "$(command -v dpkg 2>'/dev/null';)" ]]; then
+          PROCESSOR_ARCH="$(dpkg --print-architecture;)";
+        fi;
+      elif [[ "${OSTYPE}" == "darwin"* ]]; then
+        # Install pkg for MacOS
+        FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
+        OS_NAME="darwin";
+      else
+        # Install pkg for Windows
+        FULLPATH_LOCAL_PKG="${HOME}/bin/${GITHUB_REPO}.exe";
+        FULLPATH_EXT=".exe";
+        OS_NAME="windows";
+      fi;
+      PKG_NAME="$(basename "${FULLPATH_LOCAL_PKG}")";
+      # ------------------------------
+      # Get package's latest release version
+      OS_ARCH="${OS_NAME}-${PROCESSOR_ARCH:-amd64}";
+      LATEST_INFO=$(curl -sL "${PKG_RELEASES_URL}" | grep '<a href' | grep "${GITHUB_OWNER}/${GITHUB_REPO}/releases/download" | grep "${OS_ARCH}" | head -n 1 | sed -rne "s/^.+<a href=\"((https:\\/\\/github\.com)?\\/${GITHUB_OWNER//\//\\\/}\\/${GITHUB_REPO//\//\\\/}\/releases\/download\/([^\"\\/]+)\/([^\"-]+-${OS_ARCH}[^\"]*))\".+$/\1\n\3/pi";);
+      if [[ -z "${LATEST_INFO}" ]]; then
+        echo "";
+        echo "Error:  No data returned from URL [ ${PKG_RELEASES_URL} ] while attempting to obtain latest release info";
+      else
+        LATEST_URL="$(if [[ "$(echo "${LATEST_INFO}" | head -n 1 | grep 'https://github.com' | wc -l;)" -eq 0 ]]; then echo -n "https://github.com"; fi;)$(echo -n "${LATEST_INFO}" | head -n 1)";
+        LATEST_FILENAME="$(echo "${LATEST_URL}" | rev | cut -d'/' -f1 | rev;)";
+        LATEST_VERSION="$(echo "${LATEST_INFO}" | tail -n 1;)";
+        # Handle scenarios where the package is already installed
+        if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
+          # Package is already installed
+          READ_TIMEOUT=60;
+          USER_RESPONSE="";
+          echo "";
+          echo "Warning:  Package \"${PKG_NAME}\" already exists locally w/ filepath \"${FULLPATH_LOCAL_PKG}\"";
+          read -p " |--> Do you want to re-install package \"${PKG_NAME}\", locally?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
+          echo "";
+          if [[ "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+            echo " |--> Confirmed";
+            INSTALL_PKG=1;
+          else
+            echo " |--> Denied";
+            INSTALL_PKG=0;
+          fi;
+        fi;
+      fi;
+      # ------------------------------
+      # Download/Install the package
+      if [[ "${INSTALL_PKG}" -eq 1 ]]; then
+        if [[ -n "${LATEST_URL}" ]]; then
+          RESPONSE_HTTP_CODE="$(curl -ILs "${LATEST_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
+          if [ "${RESPONSE_HTTP_CODE}" != "200" ]; then
+            echo "";
+            echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${LATEST_URL}\"";
+          else
+            if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
+              mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
+            fi;
+            # If the package is already installed locally, version-stamp it and remove it
+            LOCAL_VERSION="";
+            if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
+              LOCAL_LAST_MODIFIED="$(if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then stat --dereference --format="%Y" "${FULLPATH_LOCAL_PKG}"; fi;)";
+              LOCAL_VERSION="$(if [[ -n "${VERSION_CLI}" ]] && [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
+              if [[ -n "${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
+                if [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
+                  mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}";
+                  ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" "${FULLPATH_LOCAL_PKG}";
+                fi;
+              fi;
+            fi;
+            if [[ "${LATEST_VERSION}" == "${LOCAL_VERSION}" ]]; then
+              echo "";
+              echo "Info:  Package \"${PKG_NAME}\" version [ ${LATEST_VERSION} ] is already installed and up-to-date w/ latest";
+            else
+              # Download the package
+              FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}";
+              echo "";
+              echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_CURLED_PKG}\"...";
+              curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
+              # Set file permissions on the downloaded package
+              chmod 0755 "${FULLPATH_CURLED_PKG}";
+              # Verify the downloaded package is indeed exectuable
+              mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}";
+              ln -sfv "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" "${FULLPATH_LOCAL_PKG}";
+            fi;
+          fi;
+        fi;
+      fi;
+    fi;
+  fi;
+  # Get the locally installed package's version
+  if [[ -f "${FULLPATH_LOCAL_PKG}" ]] ; then
+    # Package found locally
+    LOCAL_VERSION="$(if [[ -n "${VERSION_CLI}" ]] && [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
+    echo "";
+    echo "Info:  Package \"${PKG_NAME}\"$(if [[ -n "${LOCAL_VERSION}" ]] ; then echo -n " version [ ${LOCAL_VERSION} ]"; fi;) exists locally w/ filepath [ $(realpath "${FULLPATH_LOCAL_PKG}";) ]";
+  else
+    # Package NOT found locally
+    echo "";
+    echo "Error:  Package \"${PKG_NAME}\" not found locally";
+    EXIT_CODE=1;
+  fi;
+  # ------------------------------
+  exit ${EXIT_CODE};
+  # ------------------------------
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   github.com  |  "GitHub - jmespath/jp: Command line interface to JMESPath - http://jmespath.org"  |  https://github.com/jmespath/jp
+#
+# ------------------------------------------------------------

@@ -87,11 +87,13 @@ else
           echo "";
           echo "Warning:  Unable to obtain version from file \"${FULLPATH_LOCAL_PKG}\" - Removing...";
           rm -fv "${FULLPATH_LOCAL_PKG}";
-        # elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
-        #   # Installed version matches latest version
-        #   INSTALL_PKG=0;
-        #   echo "";
-        #   echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${RELEASE_VERSION} ]";
+        elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
+          # Installed version matches latest version
+          # INSTALL_PKG=0;
+          # echo "";
+          # echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${RELEASE_VERSION} ]";
+          # echo '' > '/dev/null';
+          false;
         else
           # Installed version differs from latest version
           READ_TIMEOUT=60;
@@ -169,7 +171,7 @@ else
     # Package found locally
     LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
     echo "";
-    echo -n "Info:  Package \"${PKG_NAME}\"$(if [[ -n "${LOCAL_VERSION}" ]] ; then echo -n " version [ ${LOCAL_VERSION} ]"; fi;) exists locally w/ filepath [ $(realpath "${FULLPATH_LOCAL_PKG}";) ]";
+    echo "Info:  Package \"${PKG_NAME}\"$(if [[ -n "${LOCAL_VERSION}" ]] ; then echo -n " version [ ${LOCAL_VERSION} ]"; fi;) exists locally w/ filepath [ $(realpath "${FULLPATH_LOCAL_PKG}";) ]";
   else
     # Package NOT found locally
     echo "";

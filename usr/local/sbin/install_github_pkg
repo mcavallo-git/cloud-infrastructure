@@ -128,7 +128,9 @@ else
               LOCAL_VERSION="$(if [[ -n "${VERSION_CLI}" ]] && [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
               if [[ -n "${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
                 if [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
+                  echo -n " |--> ";
                   mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}";
+                  echo -n " |--> ";
                   ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" "${FULLPATH_LOCAL_PKG}";
                 fi;
               fi;

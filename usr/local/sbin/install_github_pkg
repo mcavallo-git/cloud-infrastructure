@@ -146,7 +146,7 @@ else
               echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_CURLED_PKG}\"...";
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
               # Set file permissions on the downloaded package
-              echo -n " |--> settings file permissions:  ";
+              echo -n " |--> setting file permissions:  ";
               chmod -v "0755" "${FULLPATH_CURLED_PKG}";
               if [[ "${FULLPATH_CURLED_PKG}" != "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" ]]; then
                 # Version-stamp the downloaded package

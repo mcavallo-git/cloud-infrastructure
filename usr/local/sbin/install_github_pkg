@@ -144,12 +144,21 @@ else
               echo "Info:  Package \"${PKG_NAME}\" version [ ${LATEST_VERSION} ] is already installed and up-to-date w/ latest";
             else
               # Download the package
-              FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}";
+              FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}$(if [[ "${LATEST_FILENAME}" == *.tar.gz  ]]; then echo ".tar.gz"; fi;)";
               echo "";
               echo "Info:  Downloading & installing package \"${PKG_NAME}\"...";
               echo "        |--> Remote URL:  ${LATEST_URL}";
               echo "        |--> Local Filepath:  ${FULLPATH_CURLED_PKG}";
+
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
+
+              if [[ "${FULLPATH_CURLED_PKG}" == *.tar.gz  ]]; then
+                cd "$(dirname "${FULLPATH_CURLED_PKG}";)";
+                echo "";
+                echo -n "Info:  Unpacking .tar.gz archive:  ";
+                gunzip --verbose --suffix ".tar.gz" "flux-tar-test.tar.gz"
+              fi;
+
               # Set file permissions on the downloaded package
               echo "";
               echo -n "Info:  Setting execution bit for package binary:  ";

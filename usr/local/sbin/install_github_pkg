@@ -152,7 +152,7 @@ else
               chmod -v "0755" "${FULLPATH_CURLED_PKG}";
               if [[ "${FULLPATH_CURLED_PKG}" != "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" ]]; then
                 # Version-stamp the downloaded package
-                echo -n " |--> ";
+                echo -n " |--> applying version stamp:  ";
                 mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}";
               fi;
               # Create commands to this package to redirect (via symbolic link) to this version-stamped package

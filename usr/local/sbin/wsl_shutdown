@@ -37,8 +37,21 @@ else
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'
       sudo touch "/var/run/reboot-required";
       if [[ 1 -eq 1 ]]; then
-        # Call Windows Subsystem for Linux's built-in method to shutdown all WSL terminals (wsl --shutdown)
-        "$(wslpath -u "$(wslvar --sys "windir";)";)/System32/WindowsPowerShell/v1.0/powershell.exe" "wsl --shutdown";
+        #
+        # Call WSL's built-in shutdown method (wsl --shutdown)
+        #
+        CLI_SHUTDOWN="wsl.exe --shutdown";
+        CMD_EXE="$(if [[ -n "$(command -v cmd 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "cmd";)" 2>'/dev/null';)"; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
+        if [[ -x "${CMD_EXE}" ]]; then
+          # Default to using cmd to perform the loopback call to wsl (if cmd exists)
+          LOOPBACK_EXE="${CMD_EXE}";
+        else
+          # Fallback to powershell if cmd is not available
+          POWERSHELL_EXE="$(if [[ -n "$(command -v powershell 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "powershell";)";)"; else echo "$(wslpath -u "$(wslvar -s "windir";)";)/System32/WindowsPowerShell/v1.0/powershell.exe"; fi;)";
+          LOOPBACK_EXE="${POWERSHELL_EXE}";
+        fi;
+        echo "Calling [ sleep 1; \"${LOOPBACK_EXE}\" \"${CLI_SHUTDOWN}\"; ]...";
+        sleep 1; "${LOOPBACK_EXE}" "${CLI_SHUTDOWN}";
       else
         # Kill all bash shells (current shell as well as any other bash shells on local device)
         PROCESSES=$(ps -e -o pid,cmd);

@@ -11,6 +11,9 @@ curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo
 
 # curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="fluxcd" GITHUB_REPO="flux2" VERSION_CLI="--version | rev | cut -d' ' -f1 | rev | awk '{print \"v\"\$1}'" FULLPATH_LOCAL_PKG="/usr/local/bin/flux" bash;  # install flux  !!  TARRED
 
+
+env GITHUB_OWNER="fluxcd" GITHUB_REPO="flux2" VERSION_CLI="--version | rev | cut -d' ' -f1 | rev | awk '{print \"v\"\$1}'" FULLPATH_LOCAL_PKG="/usr/local/bin/flux" "$(wslpath -u "C:\Users\mcava\Documents\GitHub\cloud-infrastructure\usr\local\sbin\install_github_pkg";)";
+
 fi;
 # ------------------------------------------------------------
 #
@@ -143,28 +146,27 @@ else
               echo "";
               echo "Info:  Package \"${PKG_NAME}\" version [ ${LATEST_VERSION} ] is already installed and up-to-date w/ latest";
             else
+              # Create temporary working directory
+              echo "";
+              echo -n "Info:  Creating temporary workspace:  ";
+              TMP_DIR="/tmp/${PKG_NAME}-$(date +'%Y%m%d_%H%M%S')"; mkdir -pv "${TMP_DIR}";
               # Download the package
-              FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}$(if [[ "${LATEST_FILENAME}" == *.tar.gz  ]]; then echo ".tar.gz"; fi;)";
+              FULLPATH_CURLED_PKG="${TMP_DIR}/$(basename "${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}$(if [[ "${LATEST_FILENAME}" == *.tar.gz  ]]; then echo ".tar.gz"; fi;)";)";
               echo "";
               echo "Info:  Downloading & installing package \"${PKG_NAME}\"...";
               echo "        |--> Remote URL:  ${LATEST_URL}";
               echo "        |--> Local Filepath:  ${FULLPATH_CURLED_PKG}";
-
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
-
               if [[ "${FULLPATH_CURLED_PKG}" == *.tar.gz  ]]; then
-                cd "$(dirname "${FULLPATH_CURLED_PKG}";)";
                 echo "";
                 echo -n "Info:  Unpacking .tar.gz archive:  ";
-                gunzip --verbose --suffix ".tar.gz" "${FULLPATH_CURLED_PKG}";
+                FULLPATH_UNPACKED="${TMP_DIR}/$(tar -zxvf "${FULLPATH_CURLED_PKG}" --one-top-level=${TMP_DIR};)"; echo "FULLPATH_UNPACKED = [ ${FULLPATH_UNPACKED} ]";
                 FULLPATH_CURLED_PKG="${FULLPATH_CURLED_PKG//.tar.gz/}";
               fi;
-
               # Set file permissions on the downloaded package
               echo "";
               echo -n "Info:  Setting execution bit for package binary:  ";
-              # chmod -v "0755" "${FULLPATH_CURLED_PKG}";
-              chmod -v +x "${FULLPATH_CURLED_PKG}";
+              chmod -v +x "${FULLPATH_CURLED_PKG}";  # chmod -v "0755" "${FULLPATH_CURLED_PKG}";
               if [[ "${FULLPATH_CURLED_PKG}" != "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" ]]; then
                 # Version-stamp the downloaded package
                 echo "";
@@ -175,6 +177,10 @@ else
               echo "";
               echo -n "Info:  Creating symbolic link for package binary:  ";
               ln -sfv "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" "${FULLPATH_LOCAL_PKG}";
+              # Clean up temporary working directory
+              echo "";
+              echo -n "Info:  Cleaning up temporary workspace:  ";
+              rm -rfv "${TMP_DIR}";
             fi;
           fi;
         fi;

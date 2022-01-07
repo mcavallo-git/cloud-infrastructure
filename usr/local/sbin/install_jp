@@ -68,14 +68,14 @@ else
     echo "";
     echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${PKG_RELEASES_URL}\"";
   else
-    RELEASE_INFO=$(curl -sL "${PKG_RELEASES_URL}" | grep '<a href' | grep "${GITHUB_OWNER}/${GITHUB_REPO}/releases/download" | grep "${OS_ARCH}" | head -n 1 | sed -rne "s/^.+<a href=\"((https:\\/\\/github\.com)?\\/${GITHUB_OWNER//\//\\\/}\\/${GITHUB_REPO//\//\\\/}\/releases\/download\/([^\"\\/]+)\/([^\"-]+-${OS_ARCH}[^\"]*))\".+$/\1\n\3/pi";);
-    if [[ -z "${RELEASE_INFO}" ]]; then
+    LATEST_INFO=$(curl -sL "${PKG_RELEASES_URL}" | grep '<a href' | grep "${GITHUB_OWNER}/${GITHUB_REPO}/releases/download" | grep "${OS_ARCH}" | head -n 1 | sed -rne "s/^.+<a href=\"((https:\\/\\/github\.com)?\\/${GITHUB_OWNER//\//\\\/}\\/${GITHUB_REPO//\//\\\/}\/releases\/download\/([^\"\\/]+)\/([^\"-]+-${OS_ARCH}[^\"]*))\".+$/\1\n\3/pi";);
+    if [[ -z "${LATEST_INFO}" ]]; then
       echo "";
       echo "Error:  No data returned from URL [ ${PKG_RELEASES_URL} ] while attempting to obtain latest release info";
     else
-      RELEASE_URL="$(if [[ "$(echo "${RELEASE_INFO}" | head -n 1 | grep 'https://github.com' | wc -l;)" -eq 0 ]]; then echo -n "https://github.com"; fi;)$(echo -n "${RELEASE_INFO}" | head -n 1)";
-      RELEASE_FILENAME="$(echo "${RELEASE_URL}" | rev | cut -d'/' -f1 | rev;)";
-      RELEASE_VERSION="$(echo "${RELEASE_INFO}" | tail -n 1;)";
+      LATEST_URL="$(if [[ "$(echo "${LATEST_INFO}" | head -n 1 | grep 'https://github.com' | wc -l;)" -eq 0 ]]; then echo -n "https://github.com"; fi;)$(echo -n "${LATEST_INFO}" | head -n 1)";
+      LATEST_FILENAME="$(echo "${LATEST_URL}" | rev | cut -d'/' -f1 | rev;)";
+      LATEST_VERSION="$(echo "${LATEST_INFO}" | tail -n 1;)";
       # Handle scenarios where the package is already installed
       if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
         # Package is already installed
@@ -87,11 +87,11 @@ else
           echo "";
           echo "Warning:  Unable to obtain version from file \"${FULLPATH_LOCAL_PKG}\" - Removing...";
           rm -fv "${FULLPATH_LOCAL_PKG}";
-        elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
+        elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${LATEST_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${LATEST_VERSION}" ]]; then
           # Installed version matches latest version
           # INSTALL_PKG=0;
           # echo "";
-          # echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${RELEASE_VERSION} ]";
+          # echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${LATEST_VERSION} ]";
           # echo '' > '/dev/null';
           false;
         else
@@ -99,7 +99,7 @@ else
           READ_TIMEOUT=60;
           USER_RESPONSE="";
           echo "";
-          read -p "Info:  Do you want to update package \"${PKG_NAME}\" from version [ ${LOCAL_VERSION} ] to version [ ${RELEASE_VERSION} ]?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
+          read -p "Info:  Do you want to update package \"${PKG_NAME}\" from version [ ${LOCAL_VERSION} ] to version [ ${LATEST_VERSION} ]?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; EXIT_CODE=${?};
           echo "";
           if [[ "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
             echo " |--> Confirmed";
@@ -115,14 +115,12 @@ else
   # ------------------------------
   # Download/Install the package
   if [[ "${INSTALL_PKG}" -eq 1 ]]; then
-    if [[ -n "${RELEASE_URL}" ]]; then
-      RESPONSE_HTTP_CODE="$(curl -ILs "${RELEASE_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
+    if [[ -n "${LATEST_URL}" ]]; then
+      RESPONSE_HTTP_CODE="$(curl -ILs "${LATEST_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
       if [ "${RESPONSE_HTTP_CODE}" != "200" ]; then
         echo "";
-        echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${RELEASE_URL}\"";
+        echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${LATEST_URL}\"";
       else
-        echo "";
-        echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_LOCAL_PKG}\"...";
         if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
           mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
         fi;
@@ -137,12 +135,15 @@ else
             fi;
           fi;
         fi;
-        if [[ "${RELEASE_VERSION}" == "${LOCAL_VERSION}" ]]; then
-          echo "Info:  Package \"${PKG_NAME}\" version [ ${RELEASE_VERSION} ] is already installed";
+        if [[ "${LATEST_VERSION}" == "${LOCAL_VERSION}" ]]; then
+          echo "";
+          echo "Info:  Package \"${PKG_NAME}\" version [ ${LATEST_VERSION} ] is already installed and up-to-date w/ latest";
         else
-          FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${RELEASE_VERSION}${FULLPATH_EXT}";
           # Download the package
-          curl -sL -o "${FULLPATH_CURLED_PKG}" "${RELEASE_URL}";
+          FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}";
+          echo "";
+          echo "Info:  Downloading/Installing package \"${PKG_NAME}\" to local filepath \"${FULLPATH_CURLED_PKG}\"...";
+          curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
           # Set file permissions on the downloaded package
           chmod 0755 "${FULLPATH_CURLED_PKG}";
           # Verify the downloaded package is indeed exectuable

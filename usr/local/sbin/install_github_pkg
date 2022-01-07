@@ -56,34 +56,34 @@ else
   fi;
   # ------------------------------
   if [[ "${EXIT_CODE}" -eq 0 ]]; then
+    INSTALL_PKG=1;
+    # ------------------------------
+    # Determine OS and processor architecture
+    OS_NAME="";
+    if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == "linux"* ]]; then
+      # Install pkg for Linux
+      FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
+      OS_NAME="linux";
+      if [[ -n "$(command -v dpkg 2>'/dev/null';)" ]]; then
+        PROCESSOR_ARCH="$(dpkg --print-architecture;)";
+      fi;
+    elif [[ "${OSTYPE}" == "darwin"* ]]; then
+      # Install pkg for MacOS
+      FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
+      OS_NAME="darwin";
+    else
+      # Install pkg for Windows
+      FULLPATH_LOCAL_PKG="${HOME}/bin/${GITHUB_REPO}.exe";
+      FULLPATH_EXT=".exe";
+      OS_NAME="windows";
+    fi;
+    PKG_NAME="$(basename "${FULLPATH_LOCAL_PKG}")";
     PKG_RELEASES_URL="https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases";
     RESPONSE_HTTP_CODE="$(curl -ILs "${PKG_RELEASES_URL}" | grep '^HTTP/' | tail -n 1 | awk '{print $2}';)";
     if [ "${RESPONSE_HTTP_CODE}" != "200" ]; then
       echo "";
       echo "Error:  Non-200 HTTP Code [ ${RESPONSE_HTTP_CODE} ] obtained while curl'ing URL \"${PKG_RELEASES_URL}\"";
     else
-      INSTALL_PKG=1;
-      # ------------------------------
-      # Determine OS and processor architecture
-      OS_NAME="";
-      if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == "linux"* ]]; then
-        # Install pkg for Linux
-        FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
-        OS_NAME="linux";
-        if [[ -n "$(command -v dpkg 2>'/dev/null';)" ]]; then
-          PROCESSOR_ARCH="$(dpkg --print-architecture;)";
-        fi;
-      elif [[ "${OSTYPE}" == "darwin"* ]]; then
-        # Install pkg for MacOS
-        FULLPATH_LOCAL_PKG="/usr/bin/${GITHUB_REPO}";
-        OS_NAME="darwin";
-      else
-        # Install pkg for Windows
-        FULLPATH_LOCAL_PKG="${HOME}/bin/${GITHUB_REPO}.exe";
-        FULLPATH_EXT=".exe";
-        OS_NAME="windows";
-      fi;
-      PKG_NAME="$(basename "${FULLPATH_LOCAL_PKG}")";
       # ------------------------------
       # Get package's latest release version
       OS_ARCH="${OS_NAME}-${PROCESSOR_ARCH:-amd64}";

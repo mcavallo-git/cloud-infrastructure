@@ -156,7 +156,8 @@ else
                 cd "$(dirname "${FULLPATH_CURLED_PKG}";)";
                 echo "";
                 echo -n "Info:  Unpacking .tar.gz archive:  ";
-                gunzip --verbose --suffix ".tar.gz" "flux-tar-test.tar.gz"
+                gunzip --verbose --suffix ".tar.gz" "${FULLPATH_CURLED_PKG}";
+                FULLPATH_CURLED_PKG="${FULLPATH_CURLED_PKG//.tar.gz/}";
               fi;
 
               # Set file permissions on the downloaded package

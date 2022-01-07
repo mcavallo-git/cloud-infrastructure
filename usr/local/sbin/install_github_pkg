@@ -9,7 +9,7 @@ curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="kubernetes" GITHUB_REPO="kompose" VERSION_CLI="version | cut -d' ' -f1 | awk '{print \"v\"\$1}'" bash;  # install kompose
 
-# curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="fluxcd" GITHUB_REPO="flux2" VERSION_CLI="--version | rev | cut -d' ' -f1 | rev" FULLPATH_LOCAL_PKG="/usr/local/bin/flux" bash;  # install flux  !!  TARRED
+# curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_github_pkg?t=$(date +'%s.%N')" | env GITHUB_OWNER="fluxcd" GITHUB_REPO="flux2" VERSION_CLI="--version | rev | cut -d' ' -f1 | rev | awk '{print \"v\"\$1}'" FULLPATH_LOCAL_PKG="/usr/local/bin/flux" bash;  # install flux  !!  TARRED
 
 fi;
 # ------------------------------------------------------------

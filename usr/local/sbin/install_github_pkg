@@ -160,8 +160,9 @@ else
               if [[ "${FULLPATH_CURLED_PKG}" == *.tar.gz  ]]; then
                 echo "";
                 echo -n "Info:  Unpacking .tar.gz archive:  ";
-                FULLPATH_UNPACKED="${TMP_DIR}/$(tar -zxvf "${FULLPATH_CURLED_PKG}" --one-top-level=${TMP_DIR};)"; echo "FULLPATH_UNPACKED = [ ${FULLPATH_UNPACKED} ]";
+                FULLPATH_UNPACKED="${TMP_DIR}/$(tar -zxvf "${FULLPATH_CURLED_PKG}" --one-top-level=${TMP_DIR};)";
                 FULLPATH_CURLED_PKG="${FULLPATH_CURLED_PKG//.tar.gz/}";
+                mv -fv "${FULLPATH_UNPACKED}" "${FULLPATH_CURLED_PKG}";
               fi;
               # Set file permissions on the downloaded package
               echo "";

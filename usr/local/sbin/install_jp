@@ -7,6 +7,8 @@ if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
 
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jp?t=$(date +'%s.%N')" | bash;
 
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jp?t=$(date +'%s.%N')" | env GITHUB_OWNER="kubernetes" GITHUB_REPO="kompose" VERSION_CLI="version" bash;  # Call this script with env var arguments
+
 fi;
 # ------------------------------------------------------------
 #

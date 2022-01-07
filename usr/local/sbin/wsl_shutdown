@@ -58,8 +58,8 @@ else
             CLI_SHUTDOWN="wsl.exe --shutdown";
           fi;
         fi;
-        echo "Calling [ sleep 1; \"${LOOPBACK_EXE}\" \"${CLI_SHUTDOWN}\"; ]...";
-        sleep 1; ${LOOPBACK_EXE} "${CLI_SHUTDOWN}";
+        echo "Calling [ ${LOOPBACK_EXE} \"${CLI_SHUTDOWN}\"; ]...";
+        ${LOOPBACK_EXE} "${CLI_SHUTDOWN}";
       else
         # Kill all bash shells (current shell as well as any other bash shells on local device)
         PROCESSES=$(ps -e -o pid,cmd);

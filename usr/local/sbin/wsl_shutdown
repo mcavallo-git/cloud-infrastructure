@@ -28,12 +28,21 @@ else
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
     ACTION_DESCRIPTION="Kill all WSL terminals";
     READ_TIMEOUT=60;
-    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=$?;
+    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=${?};
     echo "";
-    if [ ${RETURN_CODE_READ} -gt 128 ]; then
-      echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-    elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo "Info:  Confirmed - Performing Action [ ${ACTION_DESCRIPTION} ] ...";
+    if [[ "${RETURN_CODE_READ}" -gt 128 ]]; then
+      # FAILED - USER INPUT TIMED OUT
+      echo "  |--> Error:  Response timed out after ${READ_TIMEOUT}s";
+    elif [[ -z "${USER_RESPONSE}" ]]; then
+      # DENIED - USER INPUT IS EMPTY
+      echo "  |--> Warning:  Denied  (empty response received)";
+    elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+      # DENIED - USER INPUT FAILED REGEX TEST
+      echo "  |--> Warning:  Denied  (response '${USER_RESPONSE}' received)";
+    else
+      # CONFIRMED - USER INPUT IS NON-EMPTY AND PASSED REGEX TEST
+      echo "  |--> Info:  Confirmed  (response '${USER_RESPONSE}' received)";
+      echo "  |--> Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
       # ------------------------------
       #
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'
@@ -67,8 +76,6 @@ else
         kill -SIGKILL ${EACH_PID};
       done;
       # ------------------------------
-    else
-      echo "Info:  Denied - Skipping action [ ${ACTION_DESCRIPTION} ]";
     fi;
   else
     # Exit - Non-WSL Environment detected

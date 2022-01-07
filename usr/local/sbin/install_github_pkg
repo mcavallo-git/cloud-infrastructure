@@ -58,14 +58,14 @@ else
     OS_NAME="";
     if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == "linux"* ]]; then
       # Install pkg for Linux
-      FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG:-/usr/bin/${GITHUB_REPO}}";
+      FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG:-/usr/local/bin/${GITHUB_REPO}}";
       OS_NAME="linux";
       if [[ -n "$(command -v dpkg 2>'/dev/null';)" ]]; then
         PROCESSOR_ARCH="$(dpkg --print-architecture;)";
       fi;
     elif [[ "${OSTYPE}" == "darwin"* ]]; then
       # Install pkg for MacOS
-      FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG:-/usr/bin/${GITHUB_REPO}}";
+      FULLPATH_LOCAL_PKG="${FULLPATH_LOCAL_PKG:-/usr/local/bin/${GITHUB_REPO}}";
       OS_NAME="darwin";
     else
       # Install pkg for Windows

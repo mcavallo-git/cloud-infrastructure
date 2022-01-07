@@ -129,9 +129,11 @@ else
               LOCAL_VERSION="$(if [[ -n "${VERSION_CLI}" ]] && [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
               if [[ -n "${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
                 if [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" ]]; then
-                  echo -n " |--> ";
+                  echo "";
+                  echo -n "Info:  Applying version stamp to package binary:  ";
                   mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}";
-                  echo -n " |--> creating symbolic link:  ";
+                  echo "";
+                  echo -n "Info:  Creating symbolic link for package binary:  ";
                   ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION:-${LOCAL_LAST_MODIFIED}}" "${FULLPATH_LOCAL_PKG}";
                 fi;
               fi;
@@ -144,19 +146,22 @@ else
               FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${LATEST_VERSION}${FULLPATH_EXT}";
               echo "";
               echo "Info:  Downloading & installing package \"${PKG_NAME}\"...";
-              echo " |--> remote url:  ${LATEST_URL}";
-              echo " |--> local filepath:  ${FULLPATH_CURLED_PKG}";
+              echo " |--> Remote URL:  ${LATEST_URL}";
+              echo " |--> Local Filepath:  ${FULLPATH_CURLED_PKG}";
               curl -sL -o "${FULLPATH_CURLED_PKG}" "${LATEST_URL}";
               # Set file permissions on the downloaded package
-              echo -n " |--> setting file permissions:  ";
+              echo "";
+              echo -n "Info:  Setting execution bit for package binary:  ";
               chmod -v "0755" "${FULLPATH_CURLED_PKG}";
               if [[ "${FULLPATH_CURLED_PKG}" != "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" ]]; then
                 # Version-stamp the downloaded package
-                echo -n " |--> applying version stamp:  ";
+                echo "";
+                echo -n "Info:  Applying version stamp to package binary:  ";
                 mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}";
               fi;
               # Create commands to this package to redirect (via symbolic link) to this version-stamped package
-              echo -n " |--> creating symbolic link:  ";
+              echo "";
+              echo -n "Info:  Creating symbolic link for package binary:  ";
               ln -sfv "${FULLPATH_LOCAL_PKG}-${LATEST_VERSION}" "${FULLPATH_LOCAL_PKG}";
             fi;
           fi;

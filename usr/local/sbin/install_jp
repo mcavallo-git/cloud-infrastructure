@@ -87,11 +87,11 @@ else
           echo "";
           echo "Warning:  Unable to obtain version from file \"${FULLPATH_LOCAL_PKG}\" - Removing...";
           rm -fv "${FULLPATH_LOCAL_PKG}";
-        elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
-          # Installed version matches latest version
-          INSTALL_PKG=0;
-          echo "";
-          echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${RELEASE_VERSION} ]";
+        # elif [[ -n "${LOCAL_VERSION}" ]] && [[ -n "${RELEASE_VERSION}" ]] && [[ "${LOCAL_VERSION}" == "${RELEASE_VERSION}" ]]; then
+        #   # Installed version matches latest version
+        #   INSTALL_PKG=0;
+        #   echo "";
+        #   echo "Info:  Package \"${PKG_NAME}\" is already installed and up-to-date with the latest version [ ${RELEASE_VERSION} ]";
         else
           # Installed version differs from latest version
           READ_TIMEOUT=60;
@@ -128,21 +128,29 @@ else
         LOCAL_VERSION="";
         if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
           LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
-          if [[ -n "${LOCAL_VERSION}" ]] && [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" ]]; then
-            mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}";
-            ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" "${FULLPATH_LOCAL_PKG}";
+          if [[ -n "${LOCAL_VERSION}" ]]; then
+            if [[ ! -f "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" ]]; then
+              mv -fv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}";
+              ln -sfv "${FULLPATH_LOCAL_PKG}-${LOCAL_VERSION}" "${FULLPATH_LOCAL_PKG}";
+            fi;
           fi;
         fi;
-        # Download the package
-        FULLPATH_DOWNLOADED_PKG_VERSIONED="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${RELEASE_VERSION}${FULLPATH_EXT}";
-        curl -sL -o "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" "${RELEASE_URL}";
-        # Set file permissions on the downloaded package
-        chmod 0755 "${FULLPATH_DOWNLOADED_PKG_VERSIONED}";
-        # Verify the downloaded package is indeed exectuable
-        DOWNLOADED_VERSION="$(if [[ -x "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" ]]; then eval "${FULLPATH_DOWNLOADED_PKG_VERSIONED} ${VERSION_CLI}"; fi;)";
-        if [[ -n "${DOWNLOADED_VERSION}" ]] && [[ ! -f "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}" ]]; then
-          mv -fv "${FULLPATH_DOWNLOADED_PKG_VERSIONED}" "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}";
-          ln -sfv "${FULLPATH_LOCAL_PKG}-${DOWNLOADED_VERSION}" "${FULLPATH_LOCAL_PKG}";
+        if [[ "${RELEASE_VERSION}" == "${LOCAL_VERSION}" ]]; then
+          echo "Info:  Package \"${PKG_NAME}\" version [ ${RELEASE_VERSION} ] is already installed";
+        else
+          FULLPATH_CURLED_PKG="${FULLPATH_LOCAL_PKG//${FULLPATH_EXT}/}-${RELEASE_VERSION}${FULLPATH_EXT}";
+          # Download the package
+          curl -sL -o "${FULLPATH_CURLED_PKG}" "${RELEASE_URL}";
+          # Set file permissions on the downloaded package
+          chmod 0755 "${FULLPATH_CURLED_PKG}";
+          # Verify the downloaded package is indeed exectuable
+          CURLED_PKG_VERSION="$(if [[ -x "${FULLPATH_CURLED_PKG}" ]]; then eval "${FULLPATH_CURLED_PKG} ${VERSION_CLI}"; fi;)";
+          if [[ -n "${CURLED_PKG_VERSION}" ]]; then
+            if [[ ! -f "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" ]]; then
+              mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}";
+              ln -sfv "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" "${FULLPATH_LOCAL_PKG}";
+            fi;
+          fi;
         fi;
       fi;
     fi;
@@ -161,14 +169,7 @@ else
     # Package found locally
     LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
     echo "";
-    echo -n "Info:  Package \"${PKG_NAME}\" found locally w/ filepath [ ${FULLPATH_LOCAL_PKG} ]";
-    if [[ -n "${LOCAL_VERSION}" ]] ; then
-      # Package version successfully obtained
-      echo " & version [ ${LOCAL_VERSION} ]";
-    else
-      # Package version unable to be obtained
-      echo " (version unable to be obtained)";
-    fi;
+    echo -n "Info:  Package \"${PKG_NAME}\"$(if [[ -n "${LOCAL_VERSION}" ]] ; then echo -n " version [ ${LOCAL_VERSION} ]"; fi;) exists locally w/ filepath [ $(realpath "${FULLPATH_LOCAL_PKG}";) ]";
   else
     # Package NOT found locally
     echo "";

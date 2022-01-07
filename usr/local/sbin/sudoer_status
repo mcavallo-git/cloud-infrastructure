@@ -19,8 +19,8 @@ fi;
 #
 LOGDIR="${HOME}/sudoer_status_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/sudoer_status"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d_%H%M%S')"; echo -n "" > "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-exec > >(tee -a "${LOGFILE}" );
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); echo "Script started at [ $(date +'%Y-%m-%dT%H:%M:%S.%N%z';) ]";
 exec 2>&1;
 #
 # ------------------------------------------------------------

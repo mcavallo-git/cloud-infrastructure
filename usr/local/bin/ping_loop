@@ -27,7 +27,7 @@ done;
 
 # Run a while loop to continuously check device online-offline status via ICMP-8 echo (ping) requests
 while [ 1 -eq 1 ]; do
-  echo -n "Pinging \"${PING_TARGET}\":   ";
+  echo -n "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Pinging \"${PING_TARGET}\":  ";
   ping -w 1 -c 1 "${PING_TARGET}" | grep ms | head -n 1;
   sleep 1;
 done;

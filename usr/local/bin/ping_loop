@@ -33,6 +33,14 @@ while [ 1 -eq 1 ]; do
 done;
 
 
+# Run a for loop to check device online-offline status via ICMP-8 echo (ping) requests for a set duration
+LOOP_ITERATIONS=60; for i in $(seq ${LOOP_ITERATIONS}); do
+  echo -n "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Pinging \"${PING_TARGET}\":  ";
+  ping -w 1 -c 1 "${PING_TARGET}" | grep ms | head -n 1;
+  sleep 1;
+done;
+
+
 # ------------------------------------------------------------
 #
 # Citation(s)

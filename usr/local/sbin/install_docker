@@ -40,7 +40,7 @@ else
       # Ensure that no deprecated versions of docker are installed
       apt-get -y remove "docker" "docker-engine" "docker.io" "containerd" "runc";
       # Ensure that docker pre-requisites are installed
-      apt-get -y update; apt-get -y "install" "apt-transport-https" "ca-certificates" "curl" "gnupg" "lsb-release";
+      apt-get -y update; apt-get -y install "apt-transport-https" "ca-certificates" "curl" "gnupg" "lsb-release";
       # Add the docker apt package repository
       echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1>'/dev/null';
       # Add the docker apt package repository's assocated GPG key
@@ -54,7 +54,7 @@ else
     # Determine if docker-compose is already installed
     if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
       # Install prerequisite package(s)
-      apt-get -y update; apt-get -y "jq";
+      apt-get -y update; apt-get -y install "jq";
       # Determine the latest version of docker-compose
       DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
       # Download the latest version of the docker-compose binary

@@ -41,12 +41,12 @@ if [[ "$(kubectl config current-context 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]
   echo "";
   echo "ERROR:  Failed to obtain current kubernetes context";
   echo "         |";
-  echo "         |--> Please ensure that the desired kubernetes connection exists and is the default context";
+  echo "         |--> Please ensure that the desired kubernetes connection exists and is the current context";
   echo "         .     |";
-  echo "         .     |--> Check the default context via:";
+  echo "         .     |--> Check the current Kubernetes context via:";
   echo "         .     |       >  kubectl config current-context";
   echo "         .     |";
-  echo "         .     |--> Set the default context via:";
+  echo "         .     |--> Set the current Kubernetes context via:";
   echo "         .             >  kubectl config use-context YOUR_CLUSTER_CONTEXT";
   echo "         |";
   echo "         |--> Once the context is set as-intended, re-run this script";

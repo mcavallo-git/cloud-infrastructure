@@ -130,6 +130,7 @@ END_MICROSECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-6);
 END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
 END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
 
+echo "";
 echo "== Info:  End of \"kubectl_get_all_resources\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
 
 

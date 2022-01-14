@@ -58,11 +58,11 @@ else
     if [[ -n "${NAMESPACE}" ]]; then
       echo "";
       echo "Variable \${NAMESPACE} is set to \"${NAMESPACE}\"";
-      echo " |--> Getting resource manifests for this namespace...";
+      echo " |--> Getting resource manifests for this namespace";
     else
       echo "";
       echo "Variable \${NAMESPACE} is set but contains no value";
-      echo " |--> Getting resource manifests for all namespaces...";
+      echo " |--> Getting resource manifests for all namespaces";
     fi;
     USE_NAMESPACE="${NAMESPACE}";
   else
@@ -100,7 +100,7 @@ else
     # All Namespaces
     #  |--> Get all kubernetes resources
     echo "";
-    echo "Outputting resource manifests for all namespaces...";
+    echo "Outputting resource manifests for all namespaces";
     echo " |--> Output directory:  \"${LOGDIR}\"";
     for EACH_NAMESPACE in $(kubectl get namespaces | grep -v '^NAME ' | awk '{print $1}' | sort | uniq); do
       LOGDIR_NS="${LOGDIR}/${EACH_NAMESPACE}";
@@ -121,7 +121,7 @@ else
   fi;
 
   echo "";
-  echo -e "Listing manifest filenames in output directory \"${LOGDIR}\"...";
+  echo -e "Listing Manifest Files";
   find "${LOGDIR}";
   if [ -n "$(command -v explorer.exe 2>'/dev/null';)" ]; then
     if [ -n "$(command -v wslpath 2>'/dev/null';)" ]; then

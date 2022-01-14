@@ -81,32 +81,40 @@ else
   if [[ -n "${USE_NAMESPACE}" ]]; then
     # Single Namespace
     #  |--> Get all kubernetes resources
-    mkdir -p "${LOGDIR}/${USE_NAMESPACE}";
+    EACH_NAMESPACE="${USE_NAMESPACE}";
+    LOGDIR_NS="${LOGDIR}/${EACH_NAMESPACE}";
+    mkdir -p "${LOGDIR_NS}";
     echo "";
-    echo "Outputting resource manifests for namespace \"${USE_NAMESPACE}\" to directory \"${LOGDIR}/${USE_NAMESPACE}\" ...";
-    kubectl get namespace "${USE_NAMESPACE}" --output=yaml >> "${LOGDIR}/${USE_NAMESPACE}/namespace.yaml";
+    echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\"";
+    echo " |--> Output directory:  ${LOGDIR_NS}";
+    kubectl get namespace "${EACH_NAMESPACE}" --output=yaml >> "${LOGDIR_NS}/namespace.yaml";
     for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
-      EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${USE_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
+      EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${EACH_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
       if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
-        echo " |--> Found at least 1 \"${EACH_RESOURCE_TYPE}\" resource (in namespace \"${USE_NAMESPACE}\")";
-        echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${USE_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
+        BASENAME_MANIFEST="${EACH_RESOURCE_TYPE}.yaml";
+        echo "       |--> ${BASENAME_MANIFEST}";
+        echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR_NS}/${BASENAME_MANIFEST}";
       fi;
     done;
   else
     # All Namespaces
     #  |--> Get all kubernetes resources
     echo "";
-    echo "Outputting resource manifests for all namespaces to directory \"${LOGDIR}\" ...";
+    echo "Outputting resource manifests for all namespaces...";
+    echo " |--> Output directory:  \"${LOGDIR}\"";
     for EACH_NAMESPACE in $(kubectl get namespaces | grep -v '^NAME ' | awk '{print $1}' | sort | uniq); do
-      mkdir -p "${LOGDIR}/${EACH_NAMESPACE}";
+      LOGDIR_NS="${LOGDIR}/${EACH_NAMESPACE}";
+      mkdir -p "${LOGDIR_NS}";
       echo "";
-      echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\" to directory \"${LOGDIR}/${EACH_NAMESPACE}\" ...";
-      kubectl get namespace "${EACH_NAMESPACE}" --output=yaml >> "${LOGDIR}/${EACH_NAMESPACE}/namespace.yaml";
+      echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\"";
+      echo " |--> Output directory:  ${LOGDIR_NS}";
+      kubectl get namespace "${EACH_NAMESPACE}" --output=yaml >> "${LOGDIR_NS}/namespace.yaml";
       for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
         EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${EACH_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
         if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
-          echo " |--> Found at least 1 \"${EACH_RESOURCE_TYPE}\" resource (in namespace \"${EACH_NAMESPACE}\")";
-          echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${EACH_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
+          BASENAME_MANIFEST="${EACH_RESOURCE_TYPE}.yaml";
+          echo "       |--> ${BASENAME_MANIFEST}";
+          echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR_NS}/${BASENAME_MANIFEST}";
         fi;
       done;
     done;

@@ -88,6 +88,7 @@ else
     for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
       EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${USE_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
       if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
+        echo " |--> Found at least 1 \"${EACH_RESOURCE_TYPE}\" resource (in namespace \"${USE_NAMESPACE}\")";
         echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${USE_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
       fi;
     done;
@@ -102,6 +103,7 @@ else
       for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
         EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${EACH_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
         if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
+          echo " |--> Found at least 1 \"${EACH_RESOURCE_TYPE}\" resource (in namespace \"${USE_NAMESPACE}\")";
           echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${EACH_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
         fi;
       done;

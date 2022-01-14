@@ -34,7 +34,7 @@ if [[ -v NAMESPACE ]]; then
     echo "Variable \${NAMESPACE} is set but contains no value";
     echo " |--> Getting resource manifests for all namespaces...";
   fi;
-  USE_NAMESPACE="${USE_NAMESPACE}"
+  USE_NAMESPACE="${NAMESPACE}";
 else
   # Get namespace from terminal input
   READ_TIMEOUT=60;

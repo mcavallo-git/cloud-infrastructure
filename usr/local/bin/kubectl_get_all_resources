@@ -85,7 +85,7 @@ else
     LOGDIR_NS="${LOGDIR}/${EACH_NAMESPACE}";
     mkdir -p "${LOGDIR_NS}";
     echo "";
-    echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\"";
+    echo "Outputting resource manifests for namespace:  ${EACH_NAMESPACE}";
     echo " |--> Output directory:  ${LOGDIR_NS}";
     kubectl get namespace "${EACH_NAMESPACE}" --output=yaml >> "${LOGDIR_NS}/namespace.yaml";
     for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
@@ -101,12 +101,12 @@ else
     #  |--> Get all kubernetes resources
     echo "";
     echo "Outputting resource manifests for all namespaces";
-    echo " |--> Output directory:  \"${LOGDIR}\"";
+    echo " |--> Output directory:  ${LOGDIR}";
     for EACH_NAMESPACE in $(kubectl get namespaces | grep -v '^NAME ' | awk '{print $1}' | sort | uniq); do
       LOGDIR_NS="${LOGDIR}/${EACH_NAMESPACE}";
       mkdir -p "${LOGDIR_NS}";
       echo "";
-      echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\"";
+      echo "Outputting resource manifests for namespace:  ${EACH_NAMESPACE}";
       echo " |--> Output directory:  ${LOGDIR_NS}";
       kubectl get namespace "${EACH_NAMESPACE}" --output=yaml >> "${LOGDIR_NS}/namespace.yaml";
       for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do

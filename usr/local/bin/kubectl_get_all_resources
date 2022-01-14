@@ -37,27 +37,6 @@ echo "-- Info:  Start of \"kubectl_get_all_resources\" runtime at [ ${START_DATE
 
 # ------------------------------
 
-if [[ -v NAMESPACE ]]; then
-  # Get namespace from environment variable
-  if [[ -n "${NAMESPACE}" ]]; then
-    echo "";
-    echo "Variable \${NAMESPACE} is set to \"${NAMESPACE}\"";
-    echo " |--> Getting resource manifests for this namespace...";
-  else
-    echo "";
-    echo "Variable \${NAMESPACE} is set but contains no value";
-    echo " |--> Getting resource manifests for all namespaces...";
-  fi;
-  USE_NAMESPACE="${NAMESPACE}";
-else
-  # Get namespace from terminal input
-  READ_TIMEOUT=60;
-  echo "";
-  echo -n "Get resource manifests for which namespace?  (enter a blank value to list resources for all namespaces)  ";
-  read -p "" -t ${READ_TIMEOUT} USE_NAMESPACE <'/dev/tty';
-  echo "";
-fi;
-
 if [[ "$(kubectl config current-context 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
   echo "";
   echo "ERROR:  Failed to obtain current kubernetes context";
@@ -73,6 +52,27 @@ if [[ "$(kubectl config current-context 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]
   echo "         |--> Once the context is set as-intended, re-run this script";
 
 else
+
+  if [[ -v NAMESPACE ]]; then
+    # Get namespace from environment variable
+    if [[ -n "${NAMESPACE}" ]]; then
+      echo "";
+      echo "Variable \${NAMESPACE} is set to \"${NAMESPACE}\"";
+      echo " |--> Getting resource manifests for this namespace...";
+    else
+      echo "";
+      echo "Variable \${NAMESPACE} is set but contains no value";
+      echo " |--> Getting resource manifests for all namespaces...";
+    fi;
+    USE_NAMESPACE="${NAMESPACE}";
+  else
+    # Get namespace from terminal input
+    READ_TIMEOUT=60;
+    echo "";
+    echo -n "Get resource manifests for which namespace?  (enter a blank value to list resources for all namespaces)  ";
+    read -p "" -t ${READ_TIMEOUT} USE_NAMESPACE <'/dev/tty';
+    echo "";
+  fi;
 
   # Create log directory
   LOGDIR="${HOME}/Desktop/kubectl_get_all_resources_$(date +'%Y%m%d_%H%M%S')/$(kubectl config current-context;)";

@@ -75,7 +75,7 @@ else
   fi;
 
   # Create log directory
-  LOGDIR="${HOME}/Desktop/kubectl_get_all_resources_$(date +'%Y%m%d_%H%M%S')/$(kubectl config current-context;)";
+  LOGDIR="${HOME}/Desktop/kubectl_get_all_resources/$(date +'%Y%m%d_%H%M%S')/$(kubectl config current-context;)";
   mkdir -p "${LOGDIR}";
 
   if [[ -n "${USE_NAMESPACE}" ]]; then

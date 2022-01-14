@@ -24,7 +24,18 @@ mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
-# ------------------------------------------------------------
+# ------------------------------
+
+START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+
+echo "------------------------------";
+echo "-- Info:  Start of \"kubectl_get_all_resources\" runtime at [ ${START_DATETIME}.${START_MICROSECONDS} ]";
+
+# ------------------------------
 
 if [[ -v NAMESPACE ]]; then
   # Get namespace from environment variable
@@ -33,6 +44,7 @@ if [[ -v NAMESPACE ]]; then
     echo "Variable \${NAMESPACE} is set to \"${NAMESPACE}\"";
     echo " |--> Getting resource manifests for this namespace...";
   else
+    echo "";
     echo "Variable \${NAMESPACE} is set but contains no value";
     echo " |--> Getting resource manifests for all namespaces...";
   fi;
@@ -46,50 +58,79 @@ else
   echo "";
 fi;
 
-# Create log directory
-LOGDIR="${HOME}/Desktop/kubectl_get_all_resources_$(date +'%Y%m%d_%H%M%S')/$(kubectl config current-context;)";
-mkdir -p "${LOGDIR}";
-
-if [[ -n "${USE_NAMESPACE}" ]]; then
-  # Single Namespace
-  #  |--> Get all kubernetes resources
-  mkdir -p "${LOGDIR}/${USE_NAMESPACE}";
+if [[ "$(kubectl config current-context 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
   echo "";
-  echo "Outputting resource manifests for namespace \"${USE_NAMESPACE}\" to directory \"${LOGDIR}/${USE_NAMESPACE}\" ...";
-  kubectl get namespace "${USE_NAMESPACE}" --output=yaml | tee "${LOGDIR}/${USE_NAMESPACE}/namespace.yaml";
-  for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
-    EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${USE_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
-    if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
-      echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${USE_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
-    fi;
-  done;
+  echo "Error:  Failed to obtain current kubernetes context";
+  echo " |";
+  echo " |--> Please ensure that the desired kubernetes connection exists and is the default context";
+  echo " .     |";
+  echo " .     |--> Check the default context via:";
+  echo " .     |       >  kubectl config current-context";
+  echo " .     |";
+  echo " .     |--> Set the default context via:";
+  echo " .           >  kubectl config use-context YOUR_CLUSTER_CONTEXT";
+  echo " |";
+  echo " |--> Once the context is set as-intended, re-run this script";
+
 else
-  # All Namespaces
-  #  |--> Get all kubernetes resources
-  for EACH_NAMESPACE in $(kubectl get namespaces | grep -v '^NAME ' | awk '{print $1}' | sort | uniq); do
-    mkdir -p "${LOGDIR}/${EACH_NAMESPACE}";
+
+  # Create log directory
+  LOGDIR="${HOME}/Desktop/kubectl_get_all_resources_$(date +'%Y%m%d_%H%M%S')/$(kubectl config current-context;)";
+  mkdir -p "${LOGDIR}";
+
+  if [[ -n "${USE_NAMESPACE}" ]]; then
+    # Single Namespace
+    #  |--> Get all kubernetes resources
+    mkdir -p "${LOGDIR}/${USE_NAMESPACE}";
     echo "";
-    echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\" to directory \"${LOGDIR}/${EACH_NAMESPACE}\" ...";
-    kubectl get namespace "${EACH_NAMESPACE}" --output=yaml | tee "${LOGDIR}/${EACH_NAMESPACE}/namespace.yaml";
+    echo "Outputting resource manifests for namespace \"${USE_NAMESPACE}\" to directory \"${LOGDIR}/${USE_NAMESPACE}\" ...";
+    kubectl get namespace "${USE_NAMESPACE}" --output=yaml | tee "${LOGDIR}/${USE_NAMESPACE}/namespace.yaml";
     for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
-      EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${EACH_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
+      EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${USE_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
       if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
-        echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${EACH_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
+        echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${USE_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
       fi;
     done;
-  done;
+  else
+    # All Namespaces
+    #  |--> Get all kubernetes resources
+    for EACH_NAMESPACE in $(kubectl get namespaces | grep -v '^NAME ' | awk '{print $1}' | sort | uniq); do
+      mkdir -p "${LOGDIR}/${EACH_NAMESPACE}";
+      echo "";
+      echo "Outputting resource manifests for namespace \"${EACH_NAMESPACE}\" to directory \"${LOGDIR}/${EACH_NAMESPACE}\" ...";
+      kubectl get namespace "${EACH_NAMESPACE}" --output=yaml | tee "${LOGDIR}/${EACH_NAMESPACE}/namespace.yaml";
+      for EACH_RESOURCE_TYPE in $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq); do
+        EACH_RESOURCE_TYPE_MANIFESTS=$(kubectl get ${EACH_RESOURCE_TYPE} --namespace="${EACH_NAMESPACE}" --ignore-not-found --output=yaml 2>/dev/null;);
+        if [ -n "${EACH_RESOURCE_TYPE_MANIFESTS}" ]; then
+          echo "${EACH_RESOURCE_TYPE_MANIFESTS}" >> "${LOGDIR}/${EACH_NAMESPACE}/${EACH_RESOURCE_TYPE}.yaml";
+        fi;
+      done;
+    done;
+  fi;
+
+  echo "";
+  echo -e "Listing manifest filenames in output directory \"${LOGDIR}\"...";
+  find "${LOGDIR}";
+  if [ -n "$(command -v explorer.exe 2>'/dev/null';)" ]; then
+    if [ -n "$(command -v wslpath 2>'/dev/null';)" ]; then
+      explorer.exe "$(wslpath -w "${LOGDIR}";)";
+    else
+      explorer.exe "${LOGDIR}";
+    fi;
+  fi;
+
 fi;
 
-echo "";
-echo -e "Listing manifest filenames in output directory \"${LOGDIR}\"...";
-find "${LOGDIR}";
-if [ -n "$(command -v explorer.exe 2>'/dev/null';)" ]; then
-  if [ -n "$(command -v wslpath 2>'/dev/null';)" ]; then
-    explorer.exe "$(wslpath -w "${LOGDIR}";)";
-  else
-    explorer.exe "${LOGDIR}";
-  fi;
-fi;
+# ------------------------------
+
+END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+END_NANOSECONDS=$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+END_MICROSECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-6);
+END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
+END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
+
+echo "== Info:  End of \"kubectl_get_all_resources\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
 
 
 # ------------------------------------------------------------

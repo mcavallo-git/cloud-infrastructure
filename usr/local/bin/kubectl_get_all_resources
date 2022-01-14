@@ -8,8 +8,11 @@ if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 # Option 1: (Default) Get resources for one or all namespaces (determined by terminal input at runtime)
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
 
-# Option 2: Get resources for one namespace (if string is a non-blank value) or all namespaces (if string is a blank value)
+# Option 2: Get resources for all namespaces (if string is a blank value)
 export NAMESPACE=""; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
+
+# Option 3: Get resources for one namespace (if string is a NON-blank value)
+export NAMESPACE="single-namespace"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------

@@ -9,7 +9,7 @@ if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
 
 # Option 2: Define namepsace(s) (or all namespaces) as an environment variable
-NS="single-namespace"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
+NS="single-namespace"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | env NAMESPACE="${NS}" bash;
 
 
 fi;

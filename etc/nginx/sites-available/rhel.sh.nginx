@@ -16,14 +16,7 @@ server {
   ssl_certificate_key "/etc/letsencrypt/live/rhel.sh/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/rhel.sh/chain.pem";
   location / {
-    #         ~* [regex match, case-insensitive]
-    if ($host ~* "\.sh$") {
-      return 302 https://mcavallo.com/sh${request_uri};
-    }
-    #         !~* [inversed regex, case-insensitive]
-    if ($host !~* "\.sh$") {
-      return 302 https://${subdomain}mcavallo.com${request_uri};
-    }
+    return 302 https://${subdomain}mcavallo.com${request_uri};
   }
   include "/etc/nginx/nginx_error_locations.conf";
 }

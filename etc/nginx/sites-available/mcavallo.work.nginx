@@ -15,14 +15,7 @@ server {
   ssl_certificate_key "/etc/letsencrypt/live/mcavallo.work/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.work/chain.pem";
   location / {
-    #                    ~* [regex match, case-insensitive]
-    if ($http_user_agent ~* "^curl") {
-      return 302 https://mcavallo.com/sh${request_uri};  # curl -sL https://mcavallo.work | bash -s -- --all;
-    }
-    #                    !~* [inversed regex, case-insensitive]
-    if ($http_user_agent !~* "^curl") {
-      return 302 https://${subdomain}mcavallo.com${request_uri};
-    }
+    return 302 https://${subdomain}mcavallo.com${request_uri};
   }
   include "/etc/nginx/nginx_error_locations.conf";
 }

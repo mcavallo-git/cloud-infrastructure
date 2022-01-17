@@ -33,12 +33,9 @@ server {
 
 
   # ------------------------------------------------------------
-  #                    ~ [regex match, case-sensitive]
+  #                 ~ [regex match, case-sensitive]
   if ($map_uri_type ~ "^meta$") {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
-  }
-  if ($map_uri_type ~ "^shellscript$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_uri_sh}?t=$msec";
   }
 
   # ------------------------------------------------------------
@@ -213,18 +210,9 @@ server {
   #
   #   curl -sL https://mcavallo.com/sh | bash -s -- --all;
   #
-  #              ~* [regex match, case-insensitive]
-  # if ($subdomain ~* "^sh.$") {
-  #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  # }
-  # if ($uri ~* "^/sh$") {
-  #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  # }
-  if ($subdomain ~* "^sync.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
-  if ($uri ~* "^/sync$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+  #                 ~ [regex match, case-sensitive]
+  if ($map_uri_type ~ "^((shellscript)|(shellscript-bin)|(shellscript-sbin)|(shellscript-sync))$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_uri_sh}?t=$msec";
   }
 
 

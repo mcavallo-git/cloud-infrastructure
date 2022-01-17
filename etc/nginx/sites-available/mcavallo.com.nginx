@@ -297,15 +297,16 @@ server {
   #  - Is overridden by any matched nginx directive which either [ occurrs earlier in the current nginx server {...} directive's block ] or [ is a location block which has the longest 'matched' length ]
   #
   location / {
-    #                    ~* [regex match, case-insensitive]
-    if ($http_user_agent ~* "^curl") {
-      # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-      try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_curl;
-    }
-    #                    !~* [inversed regex, case-insensitive]
-    if ($http_user_agent !~* "^curl") {
-      return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
-    }
+    try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_noncurl;
+    # try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_curl;
+    # #                    ~* [regex match, case-insensitive]
+    # if ($http_user_agent ~* "^curl") {
+    #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+    # }
+    # #                    !~* [inversed regex, case-insensitive]
+    # if ($http_user_agent !~* "^curl") {
+    #   return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
+    # }
   }
 
 

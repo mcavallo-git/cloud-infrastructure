@@ -3,7 +3,7 @@
 #==--  Determine if request will need to be redirected
 #
 # 
-# map "$hostname:$request_uri" $redirect_action {
+# map "$hostname:$request_uri" $map_redirect_action {
 #   default 0;
 #   "~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
 # }
@@ -34,13 +34,42 @@ server {
 
   # ------------------------------------------------------------
   #                    ~ [regex match, case-sensitive]
-  if ($redirect_action ~ "^meta$") {
+  if ($map_redirect_action ~ "^meta$") {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
   }
-  if ($redirect_action ~ "^shellscript$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${shellscript_path}?t=$msec";
+  if ($map_redirect_action ~ "^shellscript$") {
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
   }
 
+  location @map_shellscript_uri {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}";
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
+  }
+
+  location @sh_uri {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${uri}";
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${uri}?t=$msec";
+  }
+
+  location @sh_usr_local_bin_uri {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin${uri}";
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin${uri}?t=$msec";
+  }
+
+  location @sh_usr_local_sbin_uri {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin${uri}";
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin${uri}?t=$msec";
+  }
+
+  location @default_curl {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure";
+    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+  }
+
+  location @default_noncurl {
+    return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
+    # return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readm?t=$msec";
+  }
 
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
@@ -270,7 +299,8 @@ server {
   location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+      # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+      try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_curl;
     }
     #                    !~* [inversed regex, case-insensitive]
     if ($http_user_agent !~* "^curl") {
@@ -345,7 +375,7 @@ server {
 #
 #   serverfault.com  |  "How to get substring of a string with nginx - Server Fault"  |  https://serverfault.com/a/1056548
 #
-#   serverfault.com  |  "Nginx redirect non-existant files on https to http with try_files"  |  https://serverfault.com/a/411955
+#   serverfault.com  |  "Nginx redirect non-existant files on https to http with try_files - Server Fault"  |  https://serverfault.com/a/411955
 #
 #   serverfault.com  |  "Reply with 200 from Nginx config without serving a file"  |  https://serverfault.com/a/491817
 #

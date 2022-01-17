@@ -1728,6 +1728,12 @@ else
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               # ------------------------------
               #
+              # /var/log/nginx
+              #
+              NGINX_USER="$(ps aux | grep 'nginx' | grep 'worker process' | grep -v 'grep' | cut -d' ' -f1;)";
+              NGINX_USER="$(ps aux | grep 'nginx' | grep 'worker process' | grep -v 'grep' | awk '{print $1}';)";
+              # ------------------------------
+              #
               # /var/www/error
               #
               DESTINATION_PATH="/var/www/error"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;

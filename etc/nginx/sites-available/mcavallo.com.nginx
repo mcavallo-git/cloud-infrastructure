@@ -224,7 +224,7 @@ server {
   if ($subdomain ~* "^sync.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($request_uri ~* "^/sync$") {  # Forward to default 'cloud-infrastructure' sync script
+  if ($request_uri ~* "^/sync$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
 

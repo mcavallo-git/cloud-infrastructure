@@ -6,10 +6,10 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 # Option 1:  Sync basic + utility methods (only)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date --utc +'%s.%N';)" | bash;
 
 # Option 2 (--all):  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date --utc +'%s.%N';)" | bash -s -- --all;
 
 fi;
 # ------------------------------
@@ -18,7 +18,7 @@ fi;
 #
 LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 #

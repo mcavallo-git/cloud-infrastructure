@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_nginx?t=$(date --utc +'%s.%N';)" | bash;
 
 fi;
 #

@@ -7,7 +7,7 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT:
 
 # Download & run this script - Note: Windows devices require a Linux emulator to run this script (such as WSL, Git Bash (https://git-scm.com/download/win), etc.)
-LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date +'%s.%N')"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
+LOCAL_BIN="/usr/local/bin/git_init"; curl -H 'Cache-Control: no-cache' -o "${LOCAL_BIN}" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/git_init?t=$(date --utc +'%s.%N';)"; chmod 0755 "${LOCAL_BIN}"; "${LOCAL_BIN}";
 
 # Example)  Pull a git repository held in [ Azure DevOps ]
 env REMOTE_HOST="ssh.dev.azure.com" REMOTE_OWNER="ORGANIZATION_NAME/PROJECT_NAME" REMOTE_REPOSITORY="REPOSITORY_NAME" REMOTE_PRIVATE_KEY="FULLPATH_TO_SSH_PRIVATE_KEY" COMMIT_USER_FULLNAME="COMMIT_USER_FULLNAME" COMMIT_USER_EMAIL="COMMIT_EMAIL_ADDRESS@DOMAIN.TLD" git_init;
@@ -26,7 +26,7 @@ fi;
 #
 LOGDIR="${HOME}/git_init_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/git_init"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date +'%Y-%m-%dT%H:%M:%S.%N%z';) ]\n";
 exec 2>&1;
 

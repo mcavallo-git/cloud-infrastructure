@@ -2,7 +2,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-IMAGE="library/nginx"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_hub_list_image_tags?t=$(date +'%s.%N')" | bash -s -- "${IMAGE}";
+IMAGE="library/nginx"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_hub_list_image_tags?t=$(date --utc +'%s.%N';)" | bash -s -- "${IMAGE}";
 
 fi;
 # ------------------------------------------------------------

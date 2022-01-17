@@ -6,13 +6,13 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 # Option 1: (Default) Get resources for one or all namespaces (determined by terminal input at runtime)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date --utc +'%s.%N';)" | bash;
 
 # Option 2: Get resources for all namespaces (if string is a blank value)
-export NAMESPACE=""; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
+export NAMESPACE=""; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date --utc +'%s.%N';)" | bash;
 
 # Option 3: Get resources for one namespace (if string is a NON-blank value)
-export NAMESPACE="single-namespace"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date +'%s.%N')" | bash;
+export NAMESPACE="single-namespace"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/kubectl_get_all_resources?t=$(date --utc +'%s.%N';)" | bash;
 
 fi;
 # ------------------------------
@@ -21,7 +21,7 @@ fi;
 #
 LOGDIR="${HOME}/kubectl_get_all_resources_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/kubectl_get_all_resources"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 # ------------------------------

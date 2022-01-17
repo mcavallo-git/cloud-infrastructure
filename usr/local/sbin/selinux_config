@@ -5,16 +5,16 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash;
 
 # Enable Selinux
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --enable --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --enable --force;
 
 # Disable Selinux
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --disable --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --disable --force;
 
 # Get Selinux's status
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --status;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --status;
 
 fi;
 #
@@ -25,7 +25,7 @@ fi;
 #
 LOGDIR="${HOME}/selinux_config_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/selinux_config"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date +'%Y-%m-%dT%H:%M:%S.%N%z';) ]\n";
 exec 2>&1;
 #

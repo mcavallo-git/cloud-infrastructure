@@ -6,7 +6,7 @@
 # Run as a 1-liner command
 if [[ 0 -eq 1 ]]; then
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_permissions?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_permissions?t=$(date --utc +'%s.%N';)" | bash;
 
 fi;
 # ------------------------------------------------------------

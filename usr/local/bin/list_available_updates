@@ -5,7 +5,7 @@
 # ------------------------------
 if [[ 0 -eq 1 ]]; then
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/list_available_updates?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/list_available_updates?t=$(date --utc +'%s.%N';)" | bash;
 
 fi;
 # ------------------------------

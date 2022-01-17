@@ -7,7 +7,7 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bash_clear_history_logs?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bash_clear_history_logs?t=$(date --utc +'%s.%N';)" | bash;
 
 
 fi;

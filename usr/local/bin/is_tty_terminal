@@ -4,9 +4,9 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date --utc +'%s.%N';)" | bash;
 
-# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash -s -- verbose;
+# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date --utc +'%s.%N';)" | bash -s -- verbose;
 
 fi;
 # ------------------------------------------------------------

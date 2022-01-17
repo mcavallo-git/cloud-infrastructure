@@ -38,37 +38,7 @@ server {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
   }
   if ($map_redirect_action ~ "^shellscript$") {
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
-  }
-
-  location @map_shellscript_uri {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}";
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
-  }
-
-  location @sh_uri {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${uri}";
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${uri}?t=$msec";
-  }
-
-  location @sh_usr_local_bin_uri {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin${uri}";
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin${uri}?t=$msec";
-  }
-
-  location @sh_usr_local_sbin_uri {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin${uri}";
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin${uri}?t=$msec";
-  }
-
-  location @default_curl {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure";
-    # return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
-
-  location @default_noncurl {
-    return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
-    # return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readm?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
   }
 
   # ------------------------------------------------------------
@@ -297,16 +267,14 @@ server {
   #  - Is overridden by any matched nginx directive which either [ occurrs earlier in the current nginx server {...} directive's block ] or [ is a location block which has the longest 'matched' length ]
   #
   location / {
-    try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_noncurl;
-    # try_files @map_shellscript_uri @sh_uri @sh_usr_local_sbin_uri @sh_usr_local_bin_uri @default_curl;
-    # #                    ~* [regex match, case-insensitive]
-    # if ($http_user_agent ~* "^curl") {
-    #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-    # }
-    # #                    !~* [inversed regex, case-insensitive]
-    # if ($http_user_agent !~* "^curl") {
-    #   return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
-    # }
+    #                    ~* [regex match, case-insensitive]
+    if ($http_user_agent ~* "^curl") {
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+    }
+    #                    !~* [inversed regex, case-insensitive]
+    if ($http_user_agent !~* "^curl") {
+      return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
+    }
   }
 
 

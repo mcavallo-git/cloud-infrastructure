@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_rclone?t=$(date --utc +'%s.%N';)" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_rclone?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
@@ -28,7 +28,7 @@ if [[ "$(id -un)" != "root" ]]; then
   exit 1;
 else
 
-  curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z?t=$(date --utc +'%s.%N';)" | bash;
+  curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_7z?t=$(date +'%s.%N')" | bash;
 
   curl "https://rclone.org/install.sh" | bash;
   

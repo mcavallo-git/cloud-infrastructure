@@ -6,9 +6,9 @@
 #
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ping_loop?t=$(date --utc +'%s.%N';)" | bash;  # Set ping target dynamically
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ping_loop?t=$(date +'%s.%N')" | bash;  # Set ping target dynamically
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ping_loop?t=$(date --utc +'%s.%N';)" | env PING_TARGET="8.8.8.8" bash;  # Call this script with predefined ping target
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/ping_loop?t=$(date +'%s.%N')" | env PING_TARGET="8.8.8.8" bash;  # Call this script with predefined ping target
 
 fi;
 # ------------------------------------------------------------

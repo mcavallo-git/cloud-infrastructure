@@ -5,9 +5,9 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_ipv4_lan?t=$(date --utc +'%s.%N';)" | bash; # Non-Verbose (LAN IPv4, only)
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_ipv4_lan?t=$(date +'%s.%N')" | bash; # Non-Verbose (LAN IPv4, only)
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_ipv4_lan?t=$(date --utc +'%s.%N';)" | bash -s -- --verbose; # Verbose (LAN IPv4 + Netmask + NIC + Gateway IPv4)
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/get_ipv4_lan?t=$(date +'%s.%N')" | bash -s -- --verbose; # Verbose (LAN IPv4 + Netmask + NIC + Gateway IPv4)
 
 
 fi;

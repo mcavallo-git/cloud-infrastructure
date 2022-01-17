@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pihole?t=$(date --utc +'%s.%N';)" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pihole?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
@@ -116,7 +116,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       # Remove existing pihole dockers
       echo "";
       echo "Info:  Removing existing pihole containers...";
-      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date --utc +'%s.%N';)" | bash -s -- "pihole";
+      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
       # docker_sniper "pihole";
 
       # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL

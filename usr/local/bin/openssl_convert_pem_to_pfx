@@ -2,7 +2,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-export FULLPATH_FULLCHAIN="fullchain.pem" FULLPATH_PRIVKEY="privkey.pem" FULLPATH_OUTPUT_DIR="${HOME}"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pem_to_pfx?t=$(date --utc +'%s.%N';)" | bash;
+export FULLPATH_FULLCHAIN="fullchain.pem" FULLPATH_PRIVKEY="privkey.pem" FULLPATH_OUTPUT_DIR="${HOME}"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/openssl_convert_pem_to_pfx?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------

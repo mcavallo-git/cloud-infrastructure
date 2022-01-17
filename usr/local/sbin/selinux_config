@@ -5,16 +5,16 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash;
 
 # Enable Selinux
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --enable --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --enable --force;
 
 # Disable Selinux
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --disable --force;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --disable --force;
 
 # Get Selinux's status
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date --utc +'%s.%N';)" | bash -s -- --status;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/selinux_config?t=$(date +'%s.%N')" | bash -s -- --status;
 
 fi;
 #

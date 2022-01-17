@@ -37,6 +37,12 @@ server {
   if ($redirect_action ~ "^meta$") {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
   }
+  if ($redirect_action ~ "^shellscript-sync$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+  }
+  if ($redirect_action ~ "^shellscript$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${request_uri}?t=$msec";
+  }
 
 
   # ------------------------------------------------------------
@@ -348,6 +354,8 @@ server {
 #   nginx.org  |  "Alphabetical index of variables"  |  https://nginx.org/en/docs/varindex.html
 #
 #   nginx.org  |  "NGINX - Core Module Variables"  |  https://nginx.org/en/docs/http/ngx_http_core_module.html#variables
+#
+#   serverfault.com  |  "How to get substring of a string with nginx - Server Fault"  |  https://serverfault.com/a/1056548
 #
 #   serverfault.com  |  "Nginx redirect non-existant files on https to http with try_files"  |  https://serverfault.com/a/411955
 #

@@ -34,6 +34,8 @@ else
     fi;
     WINDOWS_DNS_SERVER="$(powershell.exe -Command 'Get-DnsClientServerAddress | Where-Object { ${_}.Address -NE $Null; } | Where-Object { ${_}.ElementName -NotLike "*Loopback*"; } | Select-Object -First 1 -ExpandProperty "Address" | Select-Object -First 1;' | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
     if [[ -n "${WINDOWS_DNS_SERVER}" ]]; then
+      if [[ -h "/etc/resolv.conf" ]]; then unlink "/etc/resolv.conf"; fi;
+      if [[ -f "/etc/resolv.conf" ]]; then rm "/etc/resolv.conf"; fi;
       echo "nameserver ${WINDOWS_DNS_SERVER}" > "/etc/resolv.conf";
     fi;
     echo "";

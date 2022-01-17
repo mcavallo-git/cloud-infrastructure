@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/wsl_conf" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/wsl_conf_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/wsl_conf"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  #
+  # Setup '/etc/wsl.conf' for WSL2 distros (e.g. Windows Subsystem for Linux distributions)
+  #  |
+  #  |--> Used to configure settings on a per-distribution basis.
+  #  |
+  #  |--> Settings configured in this file will only be applied to the specific Linux distribution that contains the directory where this file is stored.
+  #
+  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
+    if [[ ! -f "/etc/wsl.conf" ]]; then
+      echo -e "\n[network]\ngenerateResolvConf = false\n" > "/etc/wsl.conf";
+    fi;
+    WINDOWS_DNS_SERVER="$(powershell.exe -Command 'Get-DnsClientServerAddress | Where-Object { ${_}.Address -NE $Null; } | Where-Object { ${_}.ElementName -NotLike "*Loopback*"; } | Select-Object -First 1 -ExpandProperty "Address" | Select-Object -First 1;' | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+    if [[ -n "${WINDOWS_DNS_SERVER}" ]]; then
+      echo "nameserver ${WINDOWS_DNS_SERVER}" > "/etc/resolv.conf";
+    fi;
+    echo "";
+    echo "Info:  WSL restart required - please run [ wsl --shutdown ] at your earliest convenience";
+    echo "";
+  else
+    # Exit - Non-WSL Environment detected
+    echo "";
+    echo "Info:  Skipping configuration of '/etc/wsl.conf' (unable to detect WSL environment)";
+    echo "";
+    exit 1;
+  fi;
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.microsoft.com  |  "Advanced settings configuration in WSL | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows/wsl/wsl-config
+#
+#   gist.github.com  |  "Fix DNS resolution in WSL2 · GitHub"  |  https://gist.github.com/coltenkrauter/608cfe02319ce60facd76373249b8ca6#file-fix-wsl2-dns-resolution
+#
+# ------------------------------------------------------------

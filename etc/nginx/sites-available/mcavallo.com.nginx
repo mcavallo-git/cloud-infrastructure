@@ -37,11 +37,8 @@ server {
   if ($redirect_action ~ "^meta$") {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
   }
-  if ($redirect_action ~ "^shellscript-sync$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
   if ($redirect_action ~ "^shellscript$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${request_uri}?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${shellscript_path}?t=$msec";
   }
 
 

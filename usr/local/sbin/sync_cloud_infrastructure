@@ -69,7 +69,7 @@ echo "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${STAR
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
 

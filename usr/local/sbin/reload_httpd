@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -29,19 +29,19 @@ else
   SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;);
   if [ ${SERVICE_RET_CODE} -ne 0 ]; then
     # Service NOT found to exist locally
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst local services";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Service \"${SERVICE_NAME}\" not found amongst local services";
 
   else
     # Service EXISTS locally
     if [ -f "/etc/init.d/apache2" ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | reload_httpd: Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) reload_httpd: Reloading Apache2 (httpd) via command  [ /etc/init.d/apache2 reload; ]...";
       /etc/init.d/apache2 reload;
     elif [ -n "$(which httpd 2>'/dev/null';)" ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | reload_httpd: Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) reload_httpd: Reloading Apache (httpd) via command  [ httpd -t && httpd -k restart; ]...";
       httpd -t && httpd -k restart;
     else
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Apache runtime \"httpd\" not found";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Apache2 initialization file \"/etc/init.d/apache2\" not found";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Apache runtime \"httpd\" not found";
     fi;
 
   fi;

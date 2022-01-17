@@ -21,7 +21,7 @@ STAT_WRITABLE="0";
 
 if [ -z "${STAT_PATH}" ]; then
 
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: empty path \${1} (filepath to stat)";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: empty path \${1} (filepath to stat)";
 
 else
 
@@ -34,7 +34,7 @@ else
 
   if [ ! -e "${STAT_ENDPOINT}" ]; then
 
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: path not found: \"${STAT_ENDPOINT}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: path not found: \"${STAT_ENDPOINT}\"";
 
   else
 
@@ -51,7 +51,7 @@ else
 
     if [ "$?" != "0" ]; then
 
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error thrown while attempting to stat: \"${STAT_ENDPOINT}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error thrown while attempting to stat: \"${STAT_ENDPOINT}\"";
 
     else
 

@@ -29,7 +29,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -63,7 +63,7 @@ else
       if [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ] || [ "${EACH_ARG}" == "--add" ] || [ "${EACH_ARG}" == "--deny" ] || [ "${EACH_ARG}" == "--revoke" ] || [ "${EACH_ARG}" == "--remove" ]; then
         if [ -n "${EDIT_ACTION}" ]; then
           # Error: Multiple add/remove actions defined
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error --> Invalid inline-argument(s) detected:   Must not call function with more than one argument out of:  [ \"--allow\"  \"--add\"  \"--revoke\"  \"--remove\" ]"; exit 1;
         elif [ "${EACH_ARG}" == "--allow" ] || [ "${EACH_ARG}" == "--grant" ]  || [ "${EACH_ARG}" == "--add" ]; then
           # Add user as a sudoer
           EDIT_ACTION="ALLOW";
@@ -80,12 +80,12 @@ else
       if [ "${EACH_ARG}" == "--user" ] && [ -n "${NEXT_ARG}" ]; then
         if [ -n "${TARGET_USER}" ]; then
           # Error: Multiple users defined
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Error --> Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error --> Must define one, single user to modify (called with multiple usernames:  \"${NEXT_ARG}\" & \"${NEXT_USER}\")"; exit 1;
 
         elif [ $(id -u ${NEXT_ARG} > /dev/null 2>&1; echo $?) -eq 1 ]; then
           # Error: Nonexistent target user
-          echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found as a local user: \"${NEXT_ARG}\"";
-          echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
+          echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error --> User not found as a local user: \"${NEXT_ARG}\"";
+          echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${EXAMPLE_VALID_CALL}"; exit 1;
 
         else
           TARGET_USER="${NEXT_ARG}";
@@ -109,14 +109,14 @@ else
   if [ -z "${TARGET_USER}" ]; then 
 
     # Error: Empty/Unset target user
-    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> Target user empty / unset";
-    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
+    echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error --> Target user empty / unset";
+    echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${EXAMPLE_VALID_CALL}"; exit 1;
 
   elif [ $(id -u ${TARGET_USER} > /dev/null 2>&1; echo $?) -eq 1 ]; then
 
     # Error: User not found
-    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Error --> User not found: \"${TARGET_USER}\"";
-    echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | ${EXAMPLE_VALID_CALL}"; exit 1;
+    echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error --> User not found: \"${TARGET_USER}\"";
+    echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${EXAMPLE_VALID_CALL}"; exit 1;
 
   else
 
@@ -175,8 +175,8 @@ else
 
       else
         # Check whether or not a user can masquerade as the root user (via the 'sudo' command)
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info --> To grant sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --grant";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info --> To revoke sudoer privileges, call with: >  sudoer_status --user ${TARGET_USER} --revoke";
 
       fi;
 

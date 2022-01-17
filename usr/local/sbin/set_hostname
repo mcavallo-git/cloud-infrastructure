@@ -30,7 +30,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -83,9 +83,9 @@ else
       if [ "${EACH_ARG}" == "--name" ] || [ "${EACH_ARG}" == "--hostname" ]; then
         if [ "${ARGS_HOSTNAME_DEFINED}" == "1" ]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Inline parameters contain more than one value for hostname";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Inline parameters contain more than one value for hostname";
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using one, single value";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Please call again using one, single value";
           echo "";
           exit 1;
         else
@@ -133,15 +133,15 @@ else
     echo "";
     read -p "${HOSTNAME_INPUT_PROMPT}" -t ${READ_TIMEOUT} -a INPUT_HOSTNAME <'/dev/tty'; EXIT_CODE=${?};
     if [ ${EXIT_CODE} -gt 128 ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Response timed out after ${READ_TIMEOUT}s - Exiting...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Response timed out after ${READ_TIMEOUT}s - Exiting...";
       echo "";
       exit 1;
     elif [ ${#USER_RESPONSE} -eq 0 ]; then
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Response's string length is zero (empty) - Exiting...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Response's string length is zero (empty) - Exiting...";
       echo "";
       exit 1;
     else
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Response received: \"${USER_RESPONSE}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Response received: \"${USER_RESPONSE}\"";
     fi;
   fi;
 
@@ -154,18 +154,18 @@ else
   if [ -z "${INPUT_HOSTNAME}" ]; then
     # Error - Required variable empty: INPUT_HOSTNAME
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command \"set_hostname\" called with empty hostname";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Command \"set_hostname\" called with empty hostname";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --hostname FQDN ]";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Please call again using syntax  [ set_hostname --hostname FQDN ]";
     echo "";
     exit 1;
 
   elif [ "${INPUT_HOSTNAME}" != "$(echo ${INPUT_HOSTNAME} | grep --extended-regexp '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$';)" ]; then
     # Error - Hostname contains one or more invalid characters
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command \"set_hostname\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Command \"set_hostname\" called with invalid hostname:  \"${INPUT_HOSTNAME}\"";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ set_hostname --hostname \"valid-hostname\" ]";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Please call again using syntax  [ set_hostname --hostname \"valid-hostname\" ]";
     echo "";
     exit 1;
 
@@ -191,15 +191,15 @@ else
     fi;
 
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_HOSTNAME:   \"${CURRENT_HOSTNAME}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_DOMAIN:     \"${CURRENT_DOMAIN}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_FQDN:       \"${CURRENT_FQDN}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_ALL_FQDNS:  \"${CURRENT_ALL_FQDNS}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_LAN_IPV4:   \"${CURRENT_LAN_IPV4}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  CURRENT_ALL_IPV4S:  \"${CURRENT_ALL_IPV4S}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_HOSTNAME:       \"${SET_HOSTNAME}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_DOMAIN:         \"${SET_DOMAIN}\"";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Debug:  SET_FQDN:           \"${SET_FQDN}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_HOSTNAME:   \"${CURRENT_HOSTNAME}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_DOMAIN:     \"${CURRENT_DOMAIN}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_FQDN:       \"${CURRENT_FQDN}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_ALL_FQDNS:  \"${CURRENT_ALL_FQDNS}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_LAN_IPV4:   \"${CURRENT_LAN_IPV4}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  CURRENT_ALL_IPV4S:  \"${CURRENT_ALL_IPV4S}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  SET_HOSTNAME:       \"${SET_HOSTNAME}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  SET_DOMAIN:         \"${SET_DOMAIN}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug:  SET_FQDN:           \"${SET_FQDN}\"";
 
     # ------------------------------------------------------------
     # Determine Linux distro
@@ -254,36 +254,36 @@ else
       ### Show Resolved WAN IPv4
       if [ -n "${THIS_WAN_IPV4}" ]; then
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  WAN Outgoing IPv4 resolved to \"${THIS_WAN_IPV4}\"";
       else
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Unable to resolve outgoing WAN IPv4 Address";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Unable to resolve outgoing WAN IPv4 Address";
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"${THIS_LOCALHOST_IPV4}\" set_hostname ]  (replacing ${THIS_LOCALHOST_IPV4} with machine's WAN IPv4)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Please call again using syntax  [ env THIS_WAN_IPV4=\"${THIS_LOCALHOST_IPV4}\" set_hostname ]  (replacing ${THIS_LOCALHOST_IPV4} with machine's WAN IPv4)";
         echo "";
         exit 1;
       fi;
     else
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  (Optional) Resolve hostname requests to WAN IPv4 (instead of LAN) using syntax  [ set_hostname --wan ]";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  (Optional) Resolve hostname requests to WAN IPv4 (instead of LAN) using syntax  [ set_hostname --wan ]";
     fi;
 
     ### Show Resolved Gateway IPv4
     if [ -n "${THIS_GATEWAY_IPV4}" ]; then
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  LAN Gateway IPv4 resolved to \"${THIS_GATEWAY_IPV4}\"";
     else 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning:  Unable to resolve LAN's Gateway-IPv4.";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Warning:  Unable to resolve LAN's Gateway-IPv4.";
     fi;
 
     ### Show Resolved LAN IPv4
     if [ -n "${THIS_LAN_IPV4}" ]; then
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  LAN Local IPv4 resolved to \"${THIS_LAN_IPV4}\"";
     else 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Unable to resolve LAN Local IPv4 Address  - If you want to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Unable to resolve LAN Local IPv4 Address  - If you want to manually set it, please set \${THIS_LAN_IPV4} to your desired value, then re-run this script";
       echo "";
       exit 1;
     fi;
@@ -291,10 +291,10 @@ else
     ### Show Resolved LAN IPv6
     if [ -n "${THIS_LAN_IPV6}" ]; then
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  LAN Local IPv6 resolved to \"${THIS_LAN_IPV6}\"";
     else 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Warning:  Unable to resolve LAN Local IPv6 Address";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Warning:  Unable to resolve LAN Local IPv6 Address";
     fi;
 
     # ------------------------------------------------------------
@@ -305,9 +305,9 @@ else
       echo "";
       read -p "Update hostname to \"${SET_FQDN}\", now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; echo "";
       if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Confirmed - Proceeding with changes to hostname & domain-name...";
       else
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Exiting...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Denied - Exiting...";
         echo "";
         exit 1;
       fi;
@@ -320,22 +320,22 @@ else
     if [[ -f "${HOSTNAME_FILE}" ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (before edits)";
         echo "------------------------------------------------------------";
         cat "${HOSTNAME_FILE}";
         echo "------------------------------------------------------------";
         if [ "$(cat ${HOSTNAME_FILE})" != "{SET_HOSTNAME}" ]; then # update required for hostname file
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Updating hostname file \"${HOSTNAME_FILE}\" to contain new hostname \"${SET_HOSTNAME}\", instead";
           echo "${SET_HOSTNAME}" > "${HOSTNAME_FILE}";
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ cat \"${HOSTNAME_FILE}\"; ]...  (after edits)";
           echo "------------------------------------------------------------";
           cat "${HOSTNAME_FILE}";
           echo "------------------------------------------------------------";
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\"  (already matches desired hostname)";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping update for hostname file \"${HOSTNAME_FILE}\"  (already matches desired hostname)";
         fi;
       fi;
     fi;
@@ -354,19 +354,19 @@ else
       if [ ${USE_WAN_IPV4} -ne 0 ]; then
         SET_HOSTS_IPV4="${THIS_WAN_IPV4}";
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Resolving hostname \"${SET_HOSTNAME}\" to WAN IPv4 address \"${THIS_LAN_IPV4}\"";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Resolving hostname \"${SET_HOSTNAME}\" to WAN IPv4 address \"${THIS_LAN_IPV4}\"";
       else
         # Resolve hostname to LAN IPv4
         SET_HOSTS_IPV4="${THIS_LAN_IPV4}";
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Resolving hostname \"${SET_HOSTNAME}\" to LAN IPv4 address \"${THIS_LAN_IPV4}\"";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Resolving hostname \"${SET_HOSTNAME}\" to LAN IPv4 address \"${THIS_LAN_IPV4}\"";
         # Alert user the hostname will NOT be resolved to the WAN IPv4 (but how to do so)
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  To resolve hostname to the current WAN IPv4 \"${THIS_WAN_IPV4}\", instead, call using the \"--wan\" argument (intended for cloud-based servers, where a given WAN IPv4 Address is associated with only one, unique instance of linux)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  To resolve hostname to the current WAN IPv4 \"${THIS_WAN_IPV4}\", instead, call using the \"--wan\" argument (intended for cloud-based servers, where a given WAN IPv4 Address is associated with only one, unique instance of linux)";
       fi;
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${HOSTS_FILE}\"; ]...  (before edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ cat \"${HOSTS_FILE}\"; ]...  (before edits)";
       echo "------------------------------------------------------------";
       cat "${HOSTS_FILE}";
       echo "------------------------------------------------------------";
@@ -405,7 +405,7 @@ else
       sed -i -e "/^\s*$/d" "${TEMP_HOSTS}";  # Remove empty/blank/whitespace-only lines
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]...  (after edits, $(date +'%Y-%m-%d %H:%M:%S'))";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ cat \"${TEMP_HOSTS}\"; ]...  (after edits)";
       echo "------------------------------------------------------------";
       cat "${TEMP_HOSTS}";
       echo "------------------------------------------------------------";
@@ -414,11 +414,11 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then
         # NOT a Dry run -> Overwrite hosts file
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Updating Hosts file - Calling [ cp --force \"${TEMP_HOSTS}\" \"${HOSTS_FILE}\"; ]...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Updating Hosts file - Calling [ cp --force \"${TEMP_HOSTS}\" \"${HOSTS_FILE}\"; ]...";
         cp --force "${TEMP_HOSTS}" "${HOSTS_FILE}";
       fi;
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Removing temporary Hosts file - Calling [ rm --force "${TEMP_HOSTS}"; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Removing temporary Hosts file - Calling [ rm --force "${TEMP_HOSTS}"; ]...";
       rm --force "${TEMP_HOSTS}";
       
     fi;
@@ -430,20 +430,20 @@ else
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         if [ -n "${SET_DOMAIN}" ]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]...";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]...";
           sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}" "/etc/sysconfig/network";
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]...";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]...";
           sed -i -e "/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}" "/etc/sysconfig/network";
         fi;
       else # Dry run
         if [ -n "${SET_DOMAIN}" ]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_FQDN}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping call [ sed -i -e \"/^HOSTNAME=/c\HOSTNAME=${SET_HOSTNAME}\" \"/etc/sysconfig/network\"; ]  (Dry run enabled)";
         fi;
       fi;
     fi;
@@ -454,11 +454,11 @@ else
     if [[ -f "/etc/init.d/hostname.sh" ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ /etc/init.d/hostname.sh; ]...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ /etc/init.d/hostname.sh; ]...";
         /etc/init.d/hostname.sh;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call  [ /etc/init.d/hostname.sh; ]  (Dry run enabled)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping call  [ /etc/init.d/hostname.sh; ]  (Dry run enabled)";
       fi;
     fi;
 
@@ -468,11 +468,11 @@ else
     if [[ $(hostnamectl | wc -l) -gt 0 ]]; then
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]...";
         hostnamectl set-hostname "${SET_HOSTNAME}";
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]  (Dry run enabled)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping call  [ hostnamectl set-hostname \"${SET_HOSTNAME}\"; ]  (Dry run enabled)";
       fi;
     fi;
 
@@ -487,17 +487,17 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Restarting Network Manager - Calling [ /etc/init.d/network restart; ]...";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Confirmed - Restarting Network Manager - Calling [ /etc/init.d/network restart; ]...";
           /etc/init.d/network restart;
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Postponing Network Manager restart";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Denied - Postponing Network Manager restart";
           echo "";
           exit 1;
         fi;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping Network Manager restart call [ /etc/init.d/network restart; ]  (Dry run enabled)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping Network Manager restart call [ /etc/init.d/network restart; ]  (Dry run enabled)";
       fi;
     else # [other] distros
       if [[ "${DRY_RUN}" -eq 0 ]]; then # NOT a Dry run
@@ -507,17 +507,17 @@ else
         echo "";
         if [[ $REPLY =~ ^[Yy]$ ]]; then
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Confirmed - Rebooting - Calling [ shutdown --reboot now; ]...";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Confirmed - Rebooting - Calling [ shutdown --reboot now; ]...";
           shutdown --reboot now;
         else
           echo "";
-          echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Denied - Reboot postponed";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Denied - Reboot postponed";
           echo "";
           exit 1;
         fi;
       else # Dry run
         echo "";
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Skipping Reboot call [ shutdown --reboot now; ]  (Dry run enabled)";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Skipping Reboot call [ shutdown --reboot now; ]  (Dry run enabled)";
       fi;
     fi;
 
@@ -525,9 +525,9 @@ else
 
   if [[ "${DRY_RUN}" -eq 1 ]]; then
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  No changes made to existing network settings or stored configurations  (Dry run enabled)";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  No changes made to existing network settings or stored configurations  (Dry run enabled)";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  To apply changes, disable Dry run mode using argument [ --dry-run 0 ] or [ --force ]";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  To apply changes, disable Dry run mode using argument [ --dry-run 0 ] or [ --force ]";
     echo "";
   fi;
 

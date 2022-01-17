@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -31,7 +31,7 @@ else
     # Systemctl error(s) 
 
     # TODO:  Catch WSL instance(s), here, then search for nginx processes using powershell methods, etc. (instead of Linux methods thru WSL)
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Systemctl is unresponsive (is this a WSL terminal? If so, please install and use NGINX for Windows @ https://nginx.org/en/download.html )";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Systemctl is unresponsive (is this a WSL terminal? If so, please install and use NGINX for Windows @ https://nginx.org/en/download.html )";
 
   else
 
@@ -41,7 +41,7 @@ else
     if [ ${SERVICE_EXISTS_EXIT_CODE} -eq 1 ] || [ ${SERVICE_STATUS_EXIT_CODE} -eq 1 ]; then
       # Service NOT found to exist locally
 
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Service \"${SERVICE_NAME}\" not found amongst Systemctl's services";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Service \"${SERVICE_NAME}\" not found amongst Systemctl's services";
       exit 1;
 
     else
@@ -50,13 +50,13 @@ else
       if [ ${SERVICE_STATUS_EXIT_CODE} -eq 3 ]; then
 
         # Service is stopped - start it
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: NGINX Service not started - Starting it, now...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: NGINX Service not started - Starting it, now...";
         nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
 
       elif [ -f "/run/${SERVICE_NAME}.pid" ]; then
 
         # Service found to exist locally - Restart the service
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Reloading NGINX Service...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Reloading NGINX Service...";
         nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
         SYSCTL_RESTART_EXIT_CODE=${?};
 
@@ -68,14 +68,14 @@ else
           EACH_PID_USER="$(ps --format "user" --pid "${EACH_NGINX_PID}" --no-headers;)";
           if [ "${EACH_PID_USER}" != "root" ] && [ "${EACH_PID_USER}" != "www-data" ]; then
             # Kill rogue NGINX processes
-            echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Killing NGINX process with PID=[ ${EACH_NGINX_PID} ]...";
+            echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Killing NGINX process with PID=[ ${EACH_NGINX_PID} ]...";
             ps --format "pid,fname,user,%cpu,%mem,maj_flt,cmd" --pid "${EACH_NGINX_PID}" --no-headers;
             kill -SIGKILL ${EACH_NGINX_PID};
           fi;
         done;
 
         # [Re-]Start & Reload NGINX service
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Starting NGINX Service...";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Starting NGINX Service...";
         nginx -t && sleep 1 && /bin/systemctl reload-or-restart "${SYSCTL_NAME}";
 
       fi;

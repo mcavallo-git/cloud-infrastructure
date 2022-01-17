@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
 
@@ -59,7 +59,7 @@ else
 
     if [ -n "${1}" ] && [ "${1}" == "--all" ]; then
 
-      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
+      echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Compressing Jenkins home-directory \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_FULL}\"...\n";
 
       mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_FULL})" && \
       ln -sf "${FILEPATH_ARCHIVE_7Z_FULL}"* "${POINTER_LATEST_7Z_FULL}" && \
@@ -86,10 +86,10 @@ else
 
     else
 
-      # echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
+      # echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ du -sh \"${JENKINS_HOME}/**/config.xml\" ]...\n";
       # du -sh "${JENKINS_HOME}/**/config.xml";
 
-      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
+      echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Compressing XML config-files located within \"${JENKINS_HOME}\" to \"${FILEPATH_ARCHIVE_7Z_CONFIG}\"...\n";
 
       cd "$(dirname ${JENKINS_HOME})" && \
       find "$(basename ${JENKINS_HOME})/" \
@@ -133,10 +133,10 @@ else
       # ------------------------------------------------------------
       # Export all files contained in the 'plugins' directory
 
-      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
+      echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ du -sh \"${JENKINS_HOME}/plugins/\" ]...\n";
       du -sh "${JENKINS_HOME}/plugins/";
 
-      echo -e "\n$(date +'%Y-%m-%d %H:%M:%S') | Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
+      echo -e "\n$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Compressing \"$(basename ${JENKINS_HOME})/plugins/\" into \"${FILEPATH_ARCHIVE_7Z_PLUGINS}\" (split into 49-MB incremenets)...\n";
       mkdir -p "$(dirname ${FILEPATH_ARCHIVE_7Z_PLUGINS})" && \
       ln -sf "${FILEPATH_ARCHIVE_7Z_PLUGINS}"* "${POINTER_LATEST_7Z_PLUGINS}" && \
       cd "$(dirname ${JENKINS_HOME})" && \

@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -29,7 +29,7 @@ else
 
     # Show service status
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (before potential update)...";
     /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
     if [[ 1 -eq 1 ]]; then
@@ -47,27 +47,27 @@ else
 
       # Update UniFi
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ apt-get update -y; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Calling [ apt-get update -y; ]...";
       apt-get update -y;
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Calling [ echo \"unifi unifi/has_backup boolean true\" | debconf-set-selections; ]...";
       echo "unifi unifi/has_backup boolean true" | debconf-set-selections;
 
       echo "";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Calling [ DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service \"${SERVICE_NAME}\" restart; ]...";
       DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade unifi && /usr/sbin/service "${SERVICE_NAME}" restart;
 
     fi;
 
     # Show service status
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ] (after potential update)...";
     /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
 
   else # Service NOT found to exist as a local service
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Update Skipped - Service \"${SERVICE_NAME}\" not found amongst local services";
   fi;
 
 fi;

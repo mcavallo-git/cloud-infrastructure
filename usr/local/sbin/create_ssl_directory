@@ -36,13 +36,13 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
 
   if [ -z "${1}" ] || [ -z "${2}" ] || [ -z "${3}" ]; then
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Must call [ create_ssl_directory ] with two arguments:";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Must call [ create_ssl_directory ] with two arguments:";
     echo "  \$1:  The DNS signing authority for given certificate(s), such as 'letsencrypt' or 'godaddy'";
     echo "  \$2:  The domain secured by given certificate(s), such as 'example.com' or 'localdomain.tld'";
     echo "  \$3:  The nickname for your given certificate(s), such as 'wildcard.example.com_exp-2039-01-01'";

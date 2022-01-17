@@ -62,7 +62,7 @@ if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
   THIS_WAN_IPv4="";
   LENGTH_WAN_IP="";
   # Error: Show Message
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Unable to resolve WAN-IP";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Unable to resolve WAN-IP";
   # Error: Throw 'bad' return-code
   exit 1;
 else
@@ -70,7 +70,7 @@ else
   if [ "${1}" == "verbose" ]; then
   # "Verbose" output
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
     echo "";
   elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
     # "Quiet" output (NO trailing newline)

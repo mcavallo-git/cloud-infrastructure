@@ -22,7 +22,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -62,7 +62,7 @@ else
 
   if [ -z "$(which sed 2>'/dev/null';)" ]; then
     # Missing required package
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error -> Package not found: \"sed\" - Please install this package, then re-run this script";
     echo -e "${EXAMPLE_VALID_CALL}";
     exit 1;
 
@@ -76,16 +76,16 @@ else
 
     if [ ! -v MOTD_ENABLED_VALUE ]; then
       # ERROR - Required argument(s) are empty/undefined
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info -> To disable MOTD (Message of the Day), use the '--disable' directive via: >  motd_status --disable";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info -> To enable MOTD (Message of the Day), use the '--enable' directive via: >  motd_status --enable";
     
     elif [ ${ENABLE_MOTD} -eq 1 ] && [ ${DISABLE_MOTD} -eq 1 ]; then
       # ERROR - Conflicting arguments
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> Please select only enable or disable (and not both) directives";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error -> Please select only enable or disable (and not both) directives";
 
     elif [ $(find /etc/update-motd.d/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ] && [ $(find /etc/default/*motd-news* 2>'/dev/null' | wc -l) -eq 0 ]; then
         # ERROR - Missing required file(s)
-        echo "$(date +'%Y-%m-%d %H:%M:%S') | Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error -> No file(s) found which match glob-pattern [ /etc/update-motd.d/*motd-news* ] or [ /etc/default/*motd-news* ]";
         echo -e "${EXAMPLE_VALID_CALL}";
         exit 1;
 

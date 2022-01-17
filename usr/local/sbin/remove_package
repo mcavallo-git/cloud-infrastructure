@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -29,7 +29,7 @@ else
   if [ -z "${1}" ]; then
 
     # Required variable empty
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: No value given for first parameter (\$1)";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: No value given for first parameter (\$1)";
     echo "Please set \$1 to [ package-name-to-remove ]\" & re-run this script";
     echo "  ( e.g. ${0} \"wget\"; )";
     echo "";
@@ -40,12 +40,12 @@ else
     PACKAGE_NAME="$1";
 
     echo "";
-    read -p "$(date +'%Y-%m-%d %H:%M:%S') Remove package \"${PACKAGE_NAME}\", now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    read -p "$(date +'%Y-%m-%dT%H:%M:%S.%N%z';) Remove package \"${PACKAGE_NAME}\", now? ( y/n )  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
 
     if [[ $REPLY =~ ^[Yy]$ ]]; then
 
-      echo "$(date +'%Y-%m-%d %H:%M:%S') Confirmed - Removing package \"${PACKAGE_NAME}\"...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Confirmed - Removing package \"${PACKAGE_NAME}\"...";
 
       apt-get -y remove "${PACKAGE_NAME}";
 
@@ -59,11 +59,11 @@ else
 
     else
 
-      echo "$(date +'%Y-%m-%d %H:%M:%S') Cancelled - No Action Taken";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Cancelled - No Action Taken";
 
     fi;
 
-    echo "$(date +'%Y-%m-%d %H:%M:%S') Finished - Exiting...";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Finished - Exiting...";
     echo "";
     exit;
     

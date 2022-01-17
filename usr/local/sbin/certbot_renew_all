@@ -26,7 +26,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -35,11 +35,11 @@ else
     # ------------------------------------------------------------
     if [[ -n "$1" ]] && [[ $1 =~ ^((-y)|(--yes)|(--force))$ ]]; then
       # Allow a force-command to skip dry-run mode
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling  [ certbot renew --noninteractive --force-renewal; ]  ...";
       certbot renew --noninteractive --force-renewal;
     else
       # Fallback to dry-run mode, otherwise (default method)
-      echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Calling  [ certbot renew --noninteractive --force-renewal --dry-run; ]  ...";
       certbot renew --noninteractive --force-renewal --dry-run;
     fi;
     # Show status of installed certificate(s)
@@ -52,9 +52,9 @@ else
     # ------------------------------------------------------------
     # Error - certbot command not command
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Error:  Command 'certbot' not found";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Command 'certbot' not found";
     echo "";
-    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Please install certbot, then re-run this script";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Please install certbot, then re-run this script";
     echo "";
     exit 1;
   fi;

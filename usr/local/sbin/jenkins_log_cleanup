@@ -18,7 +18,7 @@ exec 2>&1;
 #
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
   # ------------------------------------------------------------
@@ -37,11 +37,11 @@ else
   echo -e "\n\n${DASHES}\n";
 
   if [ -z "${JENKINS_UNAME}" ]; then # jenkins process not found
-    echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No processes found which match text \"${PS_AUX_CONTAINS}\"";
+    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)\nError - No processes found which match text \"${PS_AUX_CONTAINS}\"";
     exit 1;
     
   elif [ -n "$(id -u ${JENKINS_UNAME} | grep 'no such user')" ]; then # jenkins user not found
-    echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - No users found with name \"${JENKINS_UNAME}\"";
+    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)\nError - No users found with name \"${JENKINS_UNAME}\"";
     exit 1;
 
   else
@@ -49,7 +49,7 @@ else
     JENKINS_UHOME=$(getent passwd ${JENKINS_UNAME} | cut --delimiter=: --fields=6);
 
     if [ ! -d "${JENKINS_UHOME}" ]; then # jenkins home-dir not found
-      echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nError - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
+      echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)\nError - Jenkins home-directory not found: \"${JENKINS_UHOME}\"";
       exit 1;
 
     else # good to go - begin deleting dirs
@@ -57,7 +57,7 @@ else
       FIND_PARENT="${JENKINS_UHOME}/jobs/";
       FIND_REGEX="^${FIND_PARENT}.+/builds/[0-9]+$";
 
-      echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
+      echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)\nDeleting files matching the following constraint(s):";
       echo "  File hasn't been modified for at least ${RETENTION_DAYS} days";
       echo "  Filepath starts with: \"${FIND_PARENT}\"";
       echo "  Filepath matches regex: \"${FIND_REGEX}\"...";
@@ -75,7 +75,7 @@ else
 
   FIND_PARENT="/var/log";
   echo -e "\n\n${DASHES}\n";
-  echo -e "$(date +'%Y-%m-%d %H:%M:%S')\nDeleting files matching the following constraint(s):";
+  echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)\nDeleting files matching the following constraint(s):";
   echo "  File hasn't been modified for at least ${RETENTION_DAYS} days";
   echo "  Filepath starts with: \"${FIND_PARENT}\"";
 

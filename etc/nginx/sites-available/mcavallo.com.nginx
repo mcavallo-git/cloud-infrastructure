@@ -3,7 +3,7 @@
 #==--  Determine if request will need to be redirected
 #
 # 
-# map "$hostname:$request_uri" $map_redirect_action {
+# map "$hostname:$request_uri" $map_uri_type {
 #   default 0;
 #   "~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
 # }
@@ -34,11 +34,11 @@ server {
 
   # ------------------------------------------------------------
   #                    ~ [regex match, case-sensitive]
-  if ($map_redirect_action ~ "^meta$") {
+  if ($map_uri_type ~ "^meta$") {
     return 200 "lt.mcavallo.work\nrz.mcavallo.net\nusg.mcavallo.net\nws.mcavallo.work";
   }
-  if ($map_redirect_action ~ "^shellscript$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_shellscript_uri}?t=$msec";
+  if ($map_uri_type ~ "^shellscript$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_uri_sh}?t=$msec";
   }
 
   # ------------------------------------------------------------
@@ -46,13 +46,13 @@ server {
   if ($subdomain ~* "^cash.$") {
     return 302 "https://cash.me/mcavallo";
   }
-  if ($request_uri ~* "^/cash$") {
+  if ($uri ~* "^/cash$") {
     return 302 "https://cash.me/mcavallo";
   }
   if ($subdomain ~* "^cashapp.$") {
     return 302 "https://cash.me/mcavallo";
   }
-  if ($request_uri ~* "^/cashapp$") {
+  if ($uri ~* "^/cashapp$") {
     return 302 "https://cash.me/mcavallo";
   }
 
@@ -62,7 +62,7 @@ server {
   if ($subdomain ~* "^cloud-infrastructure.$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
   }
-  if ($request_uri ~* "^/cloud-infrastructure$") {
+  if ($uri ~* "^/cloud-infrastructure$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
   }
 
@@ -72,7 +72,7 @@ server {
   if ($subdomain ~* "^cv.$") {
     return 302 "https://linkedin.mcavallo.com";
   }
-  if ($request_uri ~* "^/cv$") {
+  if ($uri ~* "^/cv$") {
     return 302 "https://linkedin.mcavallo.com";
   }
 
@@ -82,7 +82,7 @@ server {
   if ($subdomain ~* "^git.$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
-  if ($request_uri ~* "^/git$") {
+  if ($uri ~* "^/git$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
 
@@ -92,7 +92,7 @@ server {
   if ($subdomain ~* "^good-credit.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
   }
-  if ($request_uri ~* "^/good-credit$") {
+  if ($uri ~* "^/good-credit$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
   }
 
@@ -102,7 +102,7 @@ server {
   if ($subdomain ~* "^linkedin.$") {
     return 302 "https://linkedin.com/in/matt-cavallo";
   }
-  if ($request_uri ~* "^/linkedin$") {
+  if ($uri ~* "^/linkedin$") {
     return 302 "https://linkedin.com/in/matt-cavallo";
   }
 
@@ -112,7 +112,7 @@ server {
   if ($subdomain ~* "^linux.$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
   }
-  if ($request_uri ~* "^/linux$") {
+  if ($uri ~* "^/linux$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
   }
 
@@ -122,13 +122,13 @@ server {
   if ($subdomain ~* "^pay.$") {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
   }
-  if ($request_uri ~* "^/pay$") {
+  if ($uri ~* "^/pay$") {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
   }
   if ($subdomain ~* "^paypal.$") {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
   }
-  if ($request_uri ~* "^/paypal$") {
+  if ($uri ~* "^/paypal$") {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
   }
 
@@ -138,7 +138,7 @@ server {
   if ($subdomain ~* "^pc.$") {
     return 302 "https://pcpartpicker.com/b/bH7TwP";
   }
-  if ($request_uri ~* "^/pc$") {
+  if ($uri ~* "^/pc$") {
     return 302 "https://pcpartpicker.com/b/bH7TwP";
   }
 
@@ -148,7 +148,7 @@ server {
   if ($subdomain ~* "^resume.$") {
     return 302 "https://cv.mcavallo.com";
   }
-  if ($request_uri ~* "^/resume$") {
+  if ($uri ~* "^/resume$") {
     return 302 "https://cv.mcavallo.com";
   }
 
@@ -158,7 +158,7 @@ server {
   if ($subdomain ~* "^repos.$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
-  if ($request_uri ~* "^/repos$") {
+  if ($uri ~* "^/repos$") {
     return 302 "https://github.com/mcavallo-git/repositories";
   }
 
@@ -168,22 +168,22 @@ server {
   if ($subdomain ~* "^spotify.$") {
     return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
   }
-  if ($request_uri ~* "^/spotify$") {
+  if ($uri ~* "^/spotify$") {
     return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
   }
-  if ($request_uri ~* "^/spotify/1$") {
+  if ($uri ~* "^/spotify/1$") {
     return 302 "https://open.spotify.com/playlist/3SfJ6rFJsjcPuHeFKpBGPu?si=yIz9vG9KT-ucNEL6fu3JHQ";  #  Spotify Playlist [ Driving ]
   }
-  if ($request_uri ~* "^/spotify/2$") {
+  if ($uri ~* "^/spotify/2$") {
     return 302 "https://open.spotify.com/playlist/7rnogAsAA7QO7RErbd0XM6?si=b4e007d3490e435a";  #  Spotify Playlist [ Shindig, ya dig ]
   }
-  if ($request_uri ~* "^/spotify/3$") {
+  if ($uri ~* "^/spotify/3$") {
     return 302 "https://open.spotify.com/playlist/0f6ikyxba7qXRDxmv6pLvH?si=4e94462a954b4626";  #  Spotify Playlist [ Electronica - Chill ]
   }
-  if ($request_uri ~* "^/spotify/4$") {
+  if ($uri ~* "^/spotify/4$") {
     return 302 "https://open.spotify.com/playlist/7HeDI1N5X1FuB5joKnk2Fm?si=5f73c987a59746b4";  #  Spotify Playlist [ Electronica - Hype ]
   }
-  if ($request_uri ~* "^/spotify/5$") {
+  if ($uri ~* "^/spotify/5$") {
     return 302 "https://open.spotify.com/playlist/20OcRbSy40B1qTVI3mVs4A?si=3eb7033e12314b0a";  #  Spotify Playlist [ Electronica - Retro ]
   }
 
@@ -193,7 +193,7 @@ server {
   if ($subdomain ~* "^venmo.$") {
     return 302 "https://venmo.com/cavalol";
   }
-  if ($request_uri ~* "^/venmo$") {
+  if ($uri ~* "^/venmo$") {
     return 302 "https://venmo.com/cavalol";
   }
 
@@ -203,7 +203,7 @@ server {
   if ($subdomain ~* "^youtube.$") {
     return 302 "https://youtu.be/1CJIw-Rxleo";
   }
-  if ($request_uri ~* "^/youtube$") {
+  if ($uri ~* "^/youtube$") {
     return 302 "https://youtu.be/1CJIw-Rxleo";
   }
 
@@ -217,13 +217,13 @@ server {
   if ($subdomain ~* "^sh.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($request_uri ~* "^/sh$") {
+  if ($uri ~* "^/sh$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
   if ($subdomain ~* "^sync.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($request_uri ~* "^/sync$") {
+  if ($uri ~* "^/sync$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
 
@@ -251,13 +251,13 @@ server {
   if ($subdomain ~* "^ps.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
   }
-  if ($request_uri ~* "^/ps$") {
+  if ($uri ~* "^/ps$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
   }
   if ($subdomain ~* "^sync-ps.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
   }
-  if ($request_uri ~* "^/sync-ps$") {
+  if ($uri ~* "^/sync-ps$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
   }
 

@@ -1730,8 +1730,14 @@ else
               #
               # /var/log/nginx
               #
-              NGINX_USER="$(ps aux | grep 'nginx' | grep 'worker process' | grep -v 'grep' | cut -d' ' -f1;)";
-              NGINX_USER="$(ps aux | grep 'nginx' | grep 'worker process' | grep -v 'grep' | awk '{print $1}';)";
+              DESTINATION_PATH="/var/log/nginx"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
+              DIR_PERMS="0755";
+              NGINX_LOGS_USER="$(cat "/etc/nginx/nginx.conf" | sed -rne "s/^user\s+([a-zA-Z0-9_-]+);.*$/\1/pi";)";
+              if [[ -n "${NGINX_LOGS_USER}" ]] && [[ -d "${DESTINATION_PATH}" ]]; then
+                NGINX_LOGS_GROUP="$(stat -c '%G' "${DESTINATION_PATH}";)";
+                chown "${NGINX_LOGS_USER}:${NGINX_LOGS_GROUP:-${NGINX_LOGS_USER}}" "${DESTINATION_PATH}";
+                chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
+              fi;
               # ------------------------------
               #
               # /var/www/error

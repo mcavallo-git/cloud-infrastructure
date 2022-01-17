@@ -70,7 +70,6 @@ else
         sudo apt list --upgradable;
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y dist-upgrade";
-        sudo apt-get -y dist-upgrade;
         sudo apt-get -y dist-upgrade -o Dpkg::Options::="--force-confold";
         echo "";
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Calling  > sudo apt-get -y autoremove";

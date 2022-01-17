@@ -1741,7 +1741,7 @@ else
                   echo -e "  |--> Updating \"${DESTINATION_PATH}\" user:group ownership to \"${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}\"$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chown "${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}" "${DESTINATION_PATH}";
                 fi;
-                CURRENT_LOGS_PERMS="$(stat -c "%a" "${DESTINATION_PATH}";)"
+                CURRENT_LOGS_PERMS="$(stat -c "%a" "${DESTINATION_PATH}";)";
                 if [[ "${CURRENT_LOGS_PERMS}" != "${DIR_PERMS}" ]]; then
                   echo -e "  |--> Updating \"${DESTINATION_PATH}\" file mode (access) permissions to \"${DIR_PERMS}\"$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chmod "${DIR_PERMS}" "${DESTINATION_PATH}";

@@ -2,31 +2,31 @@
 #
 #==--  mcavallo.net
 #
-# server {
-#   listen 80;
-#   listen 443 ssl http2;
-#   listen [::]:80;
-#   listen [::]:443 ssl http2;
-#   server_name ~^(?<subdomain>\w+\.)?mcavallo\.net$;
-#   access_log "/var/log/nginx/access_mcavallo.net.log" thin;
-#   if ($scheme != "https") {
-#     return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
-#   }
-#   ssl_certificate "/etc/letsencrypt/live/mcavallo.net/fullchain.pem";
-#   ssl_certificate_key "/etc/letsencrypt/live/mcavallo.net/privkey.pem";
-#   ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.net/chain.pem";
-#   location / {
-#     #                    ~* [regex match, case-insensitive]
-#     if ($http_user_agent ~* "^curl") {
-#       return 302 https://mcavallo.com/sh${request_uri};
-#     }
-#     #                    !~* [inversed regex, case-insensitive]
-#     if ($http_user_agent !~* "^curl") {
-#       return 302 https://${subdomain}mcavallo.com${request_uri};
-#     }
-#   }
-#   include "/etc/nginx/nginx_error_locations.conf";
-# }
+server {
+  listen 80;
+  listen 443 ssl http2;
+  listen [::]:80;
+  listen [::]:443 ssl http2;
+  server_name ~^(?<subdomain>\w+\.)?mcavallo\.net$;
+  access_log "/var/log/nginx/access_mcavallo.net.log" thin;
+  if ($scheme != "https") {
+    return 301 https://${host}${request_uri};  # Force request-upgrade from HTTP(80) to HTTPS(443)
+  }
+  ssl_certificate "/etc/letsencrypt/live/mcavallo.net/fullchain.pem";
+  ssl_certificate_key "/etc/letsencrypt/live/mcavallo.net/privkey.pem";
+  ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.net/chain.pem";
+  location / {
+    #         ~* [regex match, case-insensitive]
+    if ($host ~* "\.sh$") {
+      return 302 https://mcavallo.com/sh${request_uri};
+    }
+    #         !~* [inversed regex, case-insensitive]
+    if ($host !~* "\.sh$") {
+      return 302 https://${subdomain}mcavallo.com${request_uri};
+    }
+  }
+  include "/etc/nginx/nginx_error_locations.conf";
+}
 #
 #
 # ------------------------------------------------------------

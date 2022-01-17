@@ -16,12 +16,12 @@ server {
   ssl_certificate_key "/etc/letsencrypt/live/curl.rest/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/curl.rest/chain.pem";
   location / {
-    #                    ~* [regex match, case-insensitive]
-    if ($http_user_agent ~* "^curl") {
+    #         ~* [regex match, case-insensitive]
+    if ($host ~* "\.sh$") {
       return 302 https://mcavallo.com/sh${request_uri};
     }
-    #                    !~* [inversed regex, case-insensitive]
-    if ($http_user_agent !~* "^curl") {
+    #         !~* [inversed regex, case-insensitive]
+    if ($host !~* "\.sh$") {
       return 302 https://${subdomain}mcavallo.com${request_uri};
     }
   }

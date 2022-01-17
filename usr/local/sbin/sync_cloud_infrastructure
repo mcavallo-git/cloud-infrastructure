@@ -1731,7 +1731,7 @@ else
               # /var/log/nginx
               #
               DESTINATION_PATH="/var/log/nginx"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
-              DIR_PERMS="0755";
+              DIR_PERMS="755";
               NGINX_LOGS_USER="$(cat "/etc/nginx/nginx.conf" 2>'/dev/null' | sed -rne "s/^user\s+([a-zA-Z0-9_-]+);.*$/\1/pi";)";
               if [[ -d "${DESTINATION_PATH}" ]] && [[ -n "${NGINX_LOGS_USER}" ]]; then
                 CURRENT_LOGS_USER="$(stat -c "%U" "${DESTINATION_PATH}";)";

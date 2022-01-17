@@ -211,17 +211,23 @@ server {
   #
   #   curl -sL https://mcavallo.com/sh | bash -s -- --all;
   #
+  #        ~* [regex match, case-insensitive]
+  location ~* "^/sh" {
+    if ($request_uri ~* "^/sh/.+$") {  # Forward to relative 'cloud-infrastructure' script (such as '/usr/local/bin/get_os')
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/${request_uri}?t=$msec";
+    }
+    if ($request_uri ~* "^/sh$") {  # Forward to default 'cloud-infrastructure' sync script
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+    }
+  }
   #              ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^sh.$") {
+  if ($subdomain ~* "^sh.$") {  # Forward to default 'cloud-infrastructure' sync script
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($request_uri ~* "^/sh$") {
+  if ($subdomain ~* "^sync.$") {  # Forward to default 'cloud-infrastructure' sync script
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($subdomain ~* "^sync.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
-  if ($request_uri ~* "^/sync$") {
+  if ($request_uri ~* "^/sync$") {  # Forward to default 'cloud-infrastructure' sync script
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
 
@@ -235,13 +241,13 @@ server {
   #
   #        ~* [regex match, case-insensitive]
   location ~* "^/codesign$" {
-    if ($subdomain ~* "^ps.$") { # PowerShell code signing (nginx catch 1-of-2)
+    if ($subdomain ~* "^ps.$") {  # PowerShell code signing (nginx catch 1-of-2)
       return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
     }
   }
   #        ~* [regex match, case-insensitive]
   location ~* "^/ps$" {
-    if ($subdomain ~* "^codesign.$") { # PowerShell code signing (nginx catch 2-of-2)
+    if ($subdomain ~* "^codesign.$") {  # PowerShell code signing (nginx catch 2-of-2)
       return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
     }
   }
@@ -266,7 +272,7 @@ server {
   #
   location / {
     #                    ~* [regex match, case-insensitive]
-    if ($http_user_agent ~* "^curl") {
+    if ($http_user_agent ~* "^curl") {  # Forward to default 'cloud-infrastructure' sync script
       return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -sL https://mcavallo.com | bash -s -- --all;
     }
     #                    !~* [inversed regex, case-insensitive]
@@ -285,7 +291,7 @@ server {
   #     try_files $uri $uri/ /index.php?$args;
   #   }
   #            ~* [regex match, case-insensitive]
-  #   location ~* \.php$ { #  *.php requests
+  #   location ~* \.php$ {  #  *.php requests
   #     try_files $uri $uri/ /index.php?$args;
   #     fastcgi_read_timeout 120;
   #     fastcgi_index   index.php;

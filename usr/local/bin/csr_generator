@@ -40,7 +40,7 @@ days_valid="${REPLY}";
 
 output_dir="~/";
 key_size=4096;  # Use a miminum of 2048 bit strength, with 3072 or 4096 preferred
-NEW_CSR_FULLPATH="${output_dir}/${domain_name}_csr_$(date +'%Y%m%d%H%M%S')";
+NEW_CSR_FULLPATH="${output_dir}/${domain_name}_csr_$(date --utc +'%Y%m%d%H%M%S')";
 mkdir -p "${NEW_CSR_FULLPATH}";
 openssl req \
 -new \

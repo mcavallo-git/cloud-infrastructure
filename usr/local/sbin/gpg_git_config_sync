@@ -18,7 +18,7 @@ fi;
 #
 LOGDIR="${HOME}/gpg_git_config_sync"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/gpg_git_config_sync"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
 # ------------------------------------------------------------

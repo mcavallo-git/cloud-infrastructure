@@ -25,7 +25,7 @@ if [ -n "${USER_HOMEDIR}" ]; then
   BASH_LOGDIR="${USER_HOMEDIR}/.bash-logs";
 
   # Define the fullpath for the log-file
-  BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date +'%Y-%m-%d').log";
+  BASH_LOGFILE="${BASH_LOGDIR}/bash-log.$(id -un).$(date --utc +'%Y-%m-%d').log";
 
   # Ensure the log-directory exists (create it if it doesn't)
   if [ ! -d "${BASH_LOGDIR}" ] && [ -w "${USER_HOMEDIR}/" ]; then

@@ -18,7 +18,7 @@ fi;
 #
 LOGDIR="${HOME}/install_pwsh_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_pwsh"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
 exec 2>&1;
 #

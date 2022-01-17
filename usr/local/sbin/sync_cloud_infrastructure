@@ -722,13 +722,13 @@ else
           git pull --quiet;
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo files as-intended
-          echo -e "\nInfo:  Setting ownership for directories within the \"${GIT_REPO_NAME}\" synced repository";
+          echo -e "\nInfo:  Setting ownership for directories within the local \"${GIT_REPO_NAME}\" repo clone";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
           if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo directories as-intended
-          echo -e "\nInfo:  Setting ownership for files within the \"${GIT_REPO_NAME}\" synced repository";
+          echo -e "\nInfo:  Setting ownership for files within the local \"${GIT_REPO_NAME}\"  repo clone";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod

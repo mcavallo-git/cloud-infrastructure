@@ -1951,7 +1951,7 @@ else
             SERVICE_NAME="nginx";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
-              /usr/local/sbin/reload_nginx;
+              eval " /usr/local/sbin/reload_nginx";
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;

@@ -212,9 +212,9 @@ server {
   #   curl -sL https://mcavallo.com/sh | bash -s -- --all;
   #
   #        ~* [regex match, case-insensitive]
-  location ~* "^/sh" {
+  location ~* "^/.+" {
     if ($request_uri ~* "^/sh/.+$") {  # Forward to relative 'cloud-infrastructure' script (such as '/usr/local/bin/get_os')
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/${request_uri}?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/${request_uri//\/sh/}?t=$msec";
     }
     if ($request_uri ~* "^/sh$") {  # Forward to default 'cloud-infrastructure' sync script
       return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";

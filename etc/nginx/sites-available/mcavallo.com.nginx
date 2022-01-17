@@ -216,21 +216,21 @@ server {
   #
   #        ~* [regex match, case-insensitive]
   # location ~* "^/sh" {
-  #   if ($request_uri ~* "^/sh/.+$") {  # Forward to relative 'cloud-infrastructure' script (such as '/usr/local/bin/get_os')
+  #   if ($request_uri ~* "^/sh/.+$") {
   #     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/${request_uri}?t=$msec";
   #   }
-  #   if ($request_uri ~* "^/sh$") {  # Forward to default 'cloud-infrastructure' sync script
+  #   if ($request_uri ~* "^/sh$") {
   #     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   #   }
   # }
   #              ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^sh.$") {  # Forward to default 'cloud-infrastructure' sync script
+  if ($subdomain ~* "^sh.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($request_uri ~* "^/sh$") {  # Forward to default 'cloud-infrastructure' sync script
+  if ($request_uri ~* "^/sh$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
-  if ($subdomain ~* "^sync.$") {  # Forward to default 'cloud-infrastructure' sync script
+  if ($subdomain ~* "^sync.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }
   if ($request_uri ~* "^/sync$") {  # Forward to default 'cloud-infrastructure' sync script
@@ -278,8 +278,8 @@ server {
   #
   location / {
     #                    ~* [regex match, case-insensitive]
-    if ($http_user_agent ~* "^curl") {  # Forward to default 'cloud-infrastructure' sync script
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";  # curl -sL https://mcavallo.com | bash -s -- --all;
+    if ($http_user_agent ~* "^curl") {
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
     }
     #                    !~* [inversed regex, case-insensitive]
     if ($http_user_agent !~* "^curl") {

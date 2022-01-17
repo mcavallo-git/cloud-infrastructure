@@ -214,12 +214,12 @@ server {
   #   curl -sL https://mcavallo.com/sh | bash -s -- --all;
   #
   #              ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^sh.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
-  if ($uri ~* "^/sh$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
-  }
+  # if ($subdomain ~* "^sh.$") {
+  #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+  # }
+  # if ($uri ~* "^/sh$") {
+  #   return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+  # }
   if ($subdomain ~* "^sync.$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
   }

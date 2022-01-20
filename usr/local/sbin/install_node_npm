@@ -35,8 +35,9 @@ else
 
   # Install Linux packages node (Node.JS) & npm (Node Package Manager)
   if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
-    echo -e "\nInstalling nodejs & npm...";
+    echo -e "\nRunning Node.JS convenience script (to obtain package repository details & add it to the keyring)...";
     curl -fsSL "https://deb.nodesource.com/setup_${NODE_JS_INSTALL_VERSION}.x" | bash -;
+    echo -e "\nInstalling nodejs & npm...";
     apt-get -y update;
     apt-get -y install "nodejs";
     apt-get -y install "npm";

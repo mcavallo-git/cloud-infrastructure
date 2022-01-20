@@ -41,9 +41,12 @@ else
     apt-get -y install "nodejs";
     apt-get -y install "npm";
   else
-    echo -e "\nCommand 'node' already exists with version:  $(node --version;)";
-    echo -e "\nCommand 'npm' already exists with version:   v$(npm --version;)";
+    echo -e "\nSkipped nodejs install - Command 'node' already exists locally";
+    echo -e "\nSkipped npm install - Command 'npm' already exists locally";
   fi;
+  
+  echo -e "\nGetting version of 'node' running locally:  $(node --version;)";
+  echo -e "\nGetting version of 'npm' running locally:   v$(npm --version;)";
 
   # Install npm package n (Node.JS version management)
   echo -e "\nInstalling/Updating npm package 'n', globally...";
@@ -54,13 +57,13 @@ else
   echo -e "\nGetting version of 'node' running locally (before changes):  $(node --version;)";
   echo -e "\nUpdating package 'node' to use version [ ${NODE_JS_INSTALL_VERSION} ]...";
   n "${NODE_JS_INSTALL_VERSION}";
-  echo -e "\nGetting version of 'node' running locally (after changes):  $(node --version;)";
+  echo -e "\nGetting version of 'node' running locally (after changes):   $(node --version;)";
 
   # Update the version npm running locally to avoid issues when using npm's [ --prefix "..." ] argument  -  https://github.com/npm/npm/issues/11007#issuecomment-246246764
-  echo -e "\nGetting version of 'npm' running locally (before changes):  $(npm --version;)";
+  echo -e "\nGetting version of 'npm' running locally (before changes):  v$(npm --version;)";
   echo -e "\nUpdating package 'npm' to use version [ ${NPM_INSTALL_VERSION} ]...";
   npm install --global "npm@${NPM_INSTALL_VERSION}";
-  echo -e "\nGetting version of 'npm' running locally (after changes):  $(npm --version;)";
+  echo -e "\nGetting version of 'npm' running locally (after changes):   v$(npm --version;)";
 
   # Show how to handle multiple versions of npm simultaneously
   echo -e "\nIf different versions of npm are desired to run in-parallel, refer to Microsofts guide \"Set up Node.js on WSL 2\" at [ https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl ]";

@@ -42,7 +42,7 @@ else
     echo -e "\nInstalling nodejs & npm...";
     apt-get -y update;
     apt-get -y install "nodejs";
-    # apt-get -y install "npm";
+    # apt-get -y install "npm";  # Included in 'nodejs' install from source
   else
     echo -e "${DASH_NL}Skipped nodejs install - Command 'node' already exists locally";
     echo -e "\nSkipped npm install - Command 'npm' already exists locally";

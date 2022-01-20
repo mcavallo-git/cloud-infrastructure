@@ -36,7 +36,7 @@ else
   if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
     echo -e "\nInstalling npm & nodejs...";
     apt-get -y update;
-    apt-get -y install "npm";
+    apt-get -y install "npm" "nodejs";
   else
     echo -e "\nCommand 'node' already exists with version:  $(node --version;)";
     echo -e "\nCommand 'npm' already exists with version:   v$(npm --version;)";

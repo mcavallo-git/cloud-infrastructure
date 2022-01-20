@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_node_npm" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_node_npm?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_node_npm_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_node_npm"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+
+  # Install node & npm
+  NPM_INSTALL_VERSION="${NPM_INSTALL_VERSION:-latest}";
+  NODE_JS_INSTALL_VERSION="${NODE_JS_INSTALL_VERSION:-latest}";
+
+  # Install Linux packages node (Node.JS) & npm (Node Package Manager)
+  if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
+    echo -e "\nInstalling npm & nodejs...";
+    apt-get -y update;
+    apt-get -y install "npm";
+  else
+    echo -e "\nCommand 'node' already exists with version:  $(node --version;)";
+    echo -e "\nCommand 'npm' already exists with version:   v$(npm --version;)";
+  fi;
+
+  # Install npm package n (Node.JS version management)
+  echo -e "\nInstalling/Updating npm package 'n', globally...";
+  npm cache clean --force;
+  npm install --global "n@latest";
+
+  # Set the version of node running locally using npm package n
+  echo -e "\nGetting version of 'node' running locally (before changes):  $(node --version;)";
+  echo -e "\nUpdating package 'node' to use version [ ${NODE_JS_INSTALL_VERSION} ]...";
+  n "${NODE_JS_INSTALL_VERSION}";
+  echo -e "\nGetting version of 'node' running locally (after changes):  $(node --version;)";
+
+  # Update the version npm running locally to avoid issues when using npm's [ --prefix "..." ] argument  -  https://github.com/npm/npm/issues/11007#issuecomment-246246764
+  echo -e "\nGetting version of 'npm' running locally (before changes):  $(npm --version;)";
+  echo -e "\nUpdating package 'npm' to use version [ ${NPM_INSTALL_VERSION} ]...";
+  npm install --global "npm@${NPM_INSTALL_VERSION}";
+  echo -e "\nGetting version of 'npm' running locally (after changes):  $(npm --version;)";
+
+  # Show how to handle multiple versions of npm simultaneously
+  echo -e "\nIf different versions of npm are desired to run in-parallel, refer to Microsofts guide \"Set up Node.js on WSL 2\" at [ https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl ]";
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.microsoft.com  |  "Set up Node.js on WSL 2 | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl
+#
+#   github.com  |  "npm install --prefix: still available? · Issue #11007 · npm/npm · GitHub"  |  https://github.com/npm/npm/issues/11007#issuecomment-246246764
+#
+#   www.npmjs.com  |  "https://www.npmjs.com/package/n"  |  https://www.npmjs.com/package/n
+#
+# ------------------------------------------------------------

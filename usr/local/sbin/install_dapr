@@ -41,6 +41,9 @@ else
     echo "Command \"dapr\" already exists with path \"$(command -v "dapr";)\"";
   fi;
   echo "";
+  echo "Calling [ command -v dapr; ]..."
+  command -v dapr;
+  echo "";
   echo "Calling [ dapr --version; ]..."
   dapr --version;
   echo "";

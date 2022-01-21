@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_dapr" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_dapr?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_dapr_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_dapr"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Install Dapr (Distributed Application Runtime, an "open source runtime system designed to support cloud native and serverless computing")
+  #
+  if [ $(which dapr 2>'/dev/null' | wc -l;) -eq 0 ]; then
+    echo "";
+    echo "Downloading/Installing dapr...";
+    wget -q "https://raw.githubusercontent.com/dapr/cli/master/install/install.sh" -O - | /bin/bash;
+    echo "";
+  else
+    echo "";
+    echo "Command \"dapr\" already exists with path \"$(command -v "dapr";)\"";
+  fi;
+  echo "";
+  echo "Calling [ dapr --version; ]..."
+  dapr --version;
+  echo "";
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.dapr.io    |  "Deploy Dapr on a Kubernetes cluster | Dapr Docs"  |  https://docs.dapr.io/operations/hosting/kubernetes/kubernetes-deploy/
+#
+#   docs.dapr.io    |  "Install the Dapr CLI | Dapr Docs"  |  https://docs.dapr.io/getting-started/install-dapr-cli/
+#
+# ------------------------------------------------------------

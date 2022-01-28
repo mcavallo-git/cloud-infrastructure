@@ -272,7 +272,12 @@ echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_HOST=\"${REMOTE_HOST}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_OWNER=\"${REMOTE_OWNER}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REPO_BRANCH=\"${REPO_BRANCH}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_BRANCH=\"${REMOTE_BRANCH}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) BRANCH=\"${BRANCH}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) DEFAULT_BRANCH=\"${DEFAULT_BRANCH}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ORIGIN_GIT=\"${ORIGIN_GIT}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
@@ -448,7 +453,7 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
   else
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Exiting after 20s...";
-    # ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}"; <-- CREATES BRANCH
+    # ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}"; <-- creates branch locally
     sleep 20;
     exit 1;
   fi;

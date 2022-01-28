@@ -343,8 +343,13 @@ ${GIT_CLI} init;
 
 # [config --global]  init.defaultbranch  (ROLLBACK)
 if [[ -n "${DEFAULT_BRANCH}" ]]; then  # Rollback the default branch (once repo is initialized with said default branch)
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
-  git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
+  if [[ -n "${PRE_EXISTING_INIT_DEFAULTBRANCH}" ]]; then
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
+    git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
+  else
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global --unset init.defaultbranch";
+    git config --global --unset init.defaultbranch;
+  fi;
 fi;
 
 # [config] remote.origin.url

@@ -526,8 +526,12 @@ chmod -R 0700 "${GIT_WORK_TREE}";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> cd \"${GIT_WORK_TREE}\"; git fetch --all;";
-cd "${GIT_WORK_TREE}"; git fetch --all;
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) !!! PLEASE RUN THE FOLLOWING COMMAND !!!";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)    cd \"${GIT_WORK_TREE}\" && git fetch --all;";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+# cd "${GIT_WORK_TREE}" && git fetch --all;
 
 # ------------------------------
 #

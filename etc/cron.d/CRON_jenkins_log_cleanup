@@ -4,5 +4,5 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-### [ JENKINS ] Cleanup excess logfiles created by Jenkins' runtime
+### [ JENKINS ] Cleanup excess logfiles created by Jenkins' runtime  -  https://crontab.guru/#25_01_*_*_*
 25 01 * * * root test -x "/usr/local/sbin/jenkins_log_cleanup" && "/usr/local/sbin/jenkins_log_cleanup";

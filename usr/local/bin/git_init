@@ -160,7 +160,7 @@ GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
 # GIT_CHOWN_GROUPNAME=$(id --group --name "${GIT_CHOWN_GID}");
 
 # Set the target checkout branch
-CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH}}}}";
+CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-${DEFAULT_BRANCH}}}}}";
 
 # Verify that the git repos-dir has correct ownership & access-privileges set
 if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
@@ -326,6 +326,12 @@ if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
 else
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote add origin \"${ORIGIN_GIT}\"";
   ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
+fi;
+
+# [config]  init.defaultbranch
+if [ -n "${DEFAULT_BRANCH}" ]; then # default branch
+  ${GIT_CLI} config init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
+  ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
 fi;
 
 # [config]  core.sshcommand

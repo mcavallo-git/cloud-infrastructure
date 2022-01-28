@@ -333,6 +333,7 @@ cd "${GIT_WORK_TREE}";
 
 # [config --global]  init.defaultbranch
 if [[ -n "${DEFAULT_BRANCH}" ]]; then # Set the default branch (before initialization of repo, which creates the repo w/ the default branch)
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${DEFAULT_BRANCH//refs\/heads\//}\"";
   git config --global init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
   # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
 fi;
@@ -342,13 +343,14 @@ ${GIT_CLI} init;
 
 # [config --global]  init.defaultbranch  (Rollback, if needed)
 if [[ -n "${DEFAULT_BRANCH}" ]] && [[ -n "${PRE_EXISTING_INIT_DEFAULTBRANCH}" ]]; then  # Rollback the default branch (once repo is initialized with said default branch)
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
   git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
 fi;
 
 # [config] remote.origin.url
 LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
 if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote set-url origin \"${ORIGIN_GIT}\"";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote set-url origin \"${ORIGIN_GIT}\";";
   ${GIT_CLI} remote set-url origin "${ORIGIN_GIT}";
 else
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote add origin \"${ORIGIN_GIT}\"";

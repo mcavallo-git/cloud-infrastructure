@@ -360,7 +360,7 @@ if [ -n "${COMMIT_USER_FULLNAME}" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config user.name \"${COMMIT_USER_FULLNAME}\"";
   ${GIT_CLI} config user.name "${COMMIT_USER_FULLNAME}";
   if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)       |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
   fi;
 fi;
 
@@ -370,7 +370,7 @@ if [ -n "${COMMIT_USER_EMAIL}" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config user.email \"${COMMIT_USER_EMAIL}\"";
   ${GIT_CLI} config user.email "${COMMIT_USER_EMAIL}";
   if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)       |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
   fi;
 fi;
 
@@ -487,8 +487,8 @@ FINAL_PARENT_DIR="${HOME}/Documents/GitHub";
 if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
   if [ ! -d "${WINDOWS_GITHUB_WORK_TREE}" ]; then
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Attempting to relocate the git repository's root directory...";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) |--> from \"${GIT_WORK_TREE}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> from \"${GIT_WORK_TREE}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
     mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
     GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";

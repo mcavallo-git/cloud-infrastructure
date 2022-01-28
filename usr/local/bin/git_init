@@ -508,12 +508,12 @@ if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Attempting to relocate the git repository's root directory...";
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> from \"${GIT_WORK_TREE}\"";
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
     mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
     GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
   else
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Directory already exists (unable to relocate git work tree to):";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) --> \"${WINDOWS_GITHUB_WORK_TREE}\"";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)         |--> \"${WINDOWS_GITHUB_WORK_TREE}\"";
   fi;
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 fi;
@@ -526,7 +526,7 @@ chmod -R 0700 "${GIT_WORK_TREE}";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) cd \"${GIT_WORK_TREE}\"; git fetch --all;";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> cd \"${GIT_WORK_TREE}\"; git fetch --all;";
 cd \"${GIT_WORK_TREE}\"; git fetch --all;
 
 # ------------------------------

@@ -258,6 +258,9 @@ if [ "${LOCAL_GIT_USER_EMAIL}" == "git" ]; then LOCAL_GIT_USER_EMAIL=""; fi;
 if [ "${HOMEDIR_GIT_USER_EMAIL}" == "git" ]; then HOMEDIR_GIT_USER_EMAIL=""; fi;
 COMMIT_USER_EMAIL="${COMMIT_USER_EMAIL:-${LOCAL_GIT_USER_EMAIL:-${HOMEDIR_GIT_USER_EMAIL}}}";
 
+# Store any pre-existing default branch config declaration (to make sure to rollback to it later, if it exists)
+PRE_EXISTING_INIT_DEFAULTBRANCH="$(git config --global "init.defaultbranch";)";
+
 # ------------------------------
 #
 # Final runtime values - echo them so that they're shown to the user & saved to the logfile (for possible future reference)
@@ -278,6 +281,8 @@ echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REPO_BRANCH=\"${REPO_BRANCH}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_BRANCH=\"${REMOTE_BRANCH}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) BRANCH=\"${BRANCH}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) DEFAULT_BRANCH=\"${DEFAULT_BRANCH}\"";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) PRE_EXISTING_INIT_DEFAULTBRANCH=\"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ORIGIN_GIT=\"${ORIGIN_GIT}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
@@ -323,9 +328,22 @@ if [ ! -d "${GIT_GITDIR}" ]; then
 #   unset GIT_SSH_COMMAND;
 fi;
 
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git init";
 cd "${GIT_WORK_TREE}";
+
+# [config --global]  init.defaultbranch
+if [[ -n "${DEFAULT_BRANCH}" ]]; then # Set the default branch (before initialization of repo, which creates the repo w/ the default branch)
+  git config --global init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
+  # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
+fi;
+
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git init";
 ${GIT_CLI} init;
+
+# [config --global]  init.defaultbranch  (Rollback, if needed)
+if [[ -n "${DEFAULT_BRANCH}" ]] && [[ -n "${PRE_EXISTING_INIT_DEFAULTBRANCH}" ]]; then  # Rollback the default branch (once repo is initialized with said default branch)
+  git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
+fi;
 
 # [config] remote.origin.url
 LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
@@ -335,12 +353,6 @@ if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
 else
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote add origin \"${ORIGIN_GIT}\"";
   ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
-fi;
-
-# [config]  init.defaultbranch
-if [ -n "${DEFAULT_BRANCH}" ]; then # default branch
-  ${GIT_CLI} config init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
-  # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
 fi;
 
 # [config]  core.sshcommand

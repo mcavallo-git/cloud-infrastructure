@@ -331,7 +331,7 @@ fi;
 # [config]  init.defaultbranch
 if [ -n "${DEFAULT_BRANCH}" ]; then # default branch
   ${GIT_CLI} config init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
-  ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
+  # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
 fi;
 
 # [config]  core.sshcommand

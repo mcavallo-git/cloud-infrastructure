@@ -303,9 +303,13 @@ if [ ! -d "${HOME}/.ssh" ]; then
 fi;
 
 # Gather SSH Public Keys for target Hostname
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
 # ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts"; # Enforce public-key checking
-ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}"; # Skip checking public-keys
+
+# Disable StrictHostKeyChecking for target Hostname
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Disabling StrictHostKeyChecking for SSH connections to host \"${REMOTE_HOST}\"...";
+# ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}";
+ssh -o StrictHostKeyChecking=no -T "${REMOTE_HOST}";
 
 # Clone repo (if non existent)
 FIRST_CLONE_OF_REPO="0";
@@ -390,8 +394,8 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
   # get default branch(es)
   if [ -n "${CHECKOUT_BRANCH}" ]; then
     TRY_BRANCH="${CHECKOUT_BRANCH}";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -401,8 +405,8 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
   fi;
   if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
     TRY_BRANCH="main";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -414,8 +418,8 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
   fi;
   if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
     TRY_BRANCH="master";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout -f \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout -f "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -441,9 +445,9 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
   if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
     # checkout specific branch if not already on it
     if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
-      # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout -f ${CHECKOUT_BRANCH}";
-      ${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
+      # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> ${GIT_CLI} checkout --force ${CHECKOUT_BRANCH}";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout --force ${CHECKOUT_BRANCH}";
+      ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
     else
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
     fi;
@@ -458,9 +462,9 @@ if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
     exit 1;
   fi;
 else
-  # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> ${GIT_CLI} checkout -f ${CHECKOUT_BRANCH}";
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout -f ${CHECKOUT_BRANCH}";
-  ${GIT_CLI} checkout -f "${CHECKOUT_BRANCH}";
+  # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> ${GIT_CLI} checkout --force ${CHECKOUT_BRANCH}";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout --force ${CHECKOUT_BRANCH}";
+  ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
 fi;
 
 # pull the desired branch

@@ -393,9 +393,9 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> FIRST_CLONE_OF_REPO == 1";
   # get default branch(es)
   if [ -n "${CHECKOUT_BRANCH}" ]; then
-    TRY_BRANCH="origin/${CHECKOUT_BRANCH}";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    TRY_BRANCH="${CHECKOUT_BRANCH}";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -404,9 +404,9 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
     fi;
   fi;
   if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
-    TRY_BRANCH="origin/main";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    TRY_BRANCH="main";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
@@ -417,9 +417,9 @@ if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
     fi;
   fi;
   if [ ${BRANCH_CHECKED_OUT} -eq 0 ]; then
-    TRY_BRANCH="origin/master";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"${TRY_BRANCH}\"; ]";
-    ${GIT_CLI} checkout --track "${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
+    TRY_BRANCH="master";
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+    ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
     if [ ${CHECKOUT_ERROR_CODE} -eq 0 ]; then
       BRANCH_CHECKED_OUT=1;
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";

@@ -147,8 +147,12 @@ else
     if [[ ! -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]]; then
       mkdir -pv "${LOCAL_CONFIG_DIR_FULLPATH}";
     fi;
-    if [[ -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]] && [[ -n "$(command -v stat 2>'/dev/null';)" ]] && [[ "$(stat --format '%a' ${LOCAL_CONFIG_DIR_FULLPATH})" != "755" ]]; then
-      chmod 755 "${LOCAL_CONFIG_DIR_FULLPATH}";
+    if [[ -d "${LOCAL_CONFIG_DIR_FULLPATH}" ]]; then
+      if [[ -n "$(command -v stat 2>'/dev/null';)" ]]; then
+        if [[ "$(stat --format '%a' ${LOCAL_CONFIG_DIR_FULLPATH})" != "755" ]]; then
+          chmod 755 "${LOCAL_CONFIG_DIR_FULLPATH}";
+        fi;
+      fi;
     fi;
 
     # Git Repo URL - Allow overriding default repo URL with local filepath

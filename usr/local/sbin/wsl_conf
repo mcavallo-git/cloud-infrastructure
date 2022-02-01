@@ -2,7 +2,13 @@
 #
 # LOCAL_SBIN="/usr/local/sbin/wsl_conf" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
-# ------------------------------------------------------------
+# ------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/wsl_conf?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------
 #
 # Log all shell output & error output to logfile
 #
@@ -12,7 +18,7 @@ LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOG
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
 exec 2>&1;
 #
-# ------------------------------------------------------------
+# ------------------------------
 #
 # Script must run as root or via sudo
 #
@@ -28,10 +34,17 @@ else
   #  |
   #  |--> Settings configured in this file will only be applied to the specific Linux distribution that contains the directory where this file is stored.
   #
-  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
+  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
+    if [[ -n "$(command -v powershell.exe 2>'/dev/null';)" ]]; then
+      # Create a symbolic link to access powershell.exe from WSL
+      WINDOWS_POWERSHELL_EXE_PATH="$(wslpath -u "$(wslvar --sys "windir";)/System32/WindowsPowerShell/v1.0/powershell.exe";)";
+      LINUX_POWERSHELL_EXE_PATH="/usr/local/bin/powershell.exe";
+      ln -sf "${WINDOWS_POWERSHELL_EXE_PATH}" "${LINUX_POWERSHELL_EXE_PATH}";
+    fi;
     if [[ ! -f "/etc/wsl.conf" ]]; then
       echo -e "\n[network]\ngenerateResolvConf = false\n" > "/etc/wsl.conf";
     fi;
+    # Use Powershell's "Get-DnsClientServerAddress" cmdlet to get the primary DNS server used by the Windows host
     WINDOWS_DNS_SERVER="$(powershell.exe -Command 'Get-DnsClientServerAddress | Where-Object { ${_}.Address -NE $Null; } | Where-Object { ${_}.ElementName -NotLike "*Loopback*"; } | Select-Object -First 1 -ExpandProperty "Address" | Select-Object -First 1;' | sed -e "/^\s*$/d" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
     if [[ -n "${WINDOWS_DNS_SERVER}" ]]; then
       if [[ -h "/etc/resolv.conf" ]]; then
@@ -40,6 +53,7 @@ else
       if [[ -f "/etc/resolv.conf" ]]; then
         rm -fv "/etc/resolv.conf";
       fi;
+      # Apply the primary Windows DNS server to WSL
       echo "nameserver ${WINDOWS_DNS_SERVER}" > "/etc/resolv.conf";
     fi;
     echo "";

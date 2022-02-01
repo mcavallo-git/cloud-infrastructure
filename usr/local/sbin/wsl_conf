@@ -35,7 +35,7 @@ else
   #  |--> Settings configured in this file will only be applied to the specific Linux distribution that contains the directory where this file is stored.
   #
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
-    if [[ -n "$(command -v powershell.exe 2>'/dev/null';)" ]]; then
+    if [[ -z "$(command -v powershell.exe 2>'/dev/null';)" ]]; then
       # Create a symbolic link to access powershell.exe from WSL
       WINDOWS_POWERSHELL_EXE_PATH="$(wslpath -u "$(wslvar --sys "windir";)/System32/WindowsPowerShell/v1.0/powershell.exe";)";
       LINUX_POWERSHELL_EXE_PATH="/usr/local/bin/powershell.exe";

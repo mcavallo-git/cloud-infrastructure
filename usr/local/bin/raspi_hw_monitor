@@ -79,7 +79,7 @@ echo "${AvgCount_Updated}" > "${AvgCount_LogFile}";
 
 # ------------------------------
 #
-# Get additional hardware data
+# Get additional hardware readings
 #
 
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');

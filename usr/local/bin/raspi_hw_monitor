@@ -77,7 +77,7 @@ AvgTemp_LogVal=$(if [[ -f "${AvgTemp_LogFile}" ]] && [[ -r "${AvgTemp_LogFile}" 
 # See if an average count logfile exists (yet)
 AvgCount_LogVal=$(if [[ -f "${AvgCount_LogFile}" ]] && [[ -r "${AvgCount_LogFile}" ]]; then cat "${AvgCount_LogFile}"; else echo ""; fi;);
 # Calculate the latest average temperature (based on historical data & number of runs)
-echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-0} ) + ${CurrentTemp_Celsuis} ) / ( ${AvgCount_LogVal:-0} + 1 )";
+# echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-0} ) + ${CurrentTemp_Celsuis} ) / ( ${AvgCount_LogVal:-0} + 1 )";
 AvgTemp_Celsuis=$(echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-0} ) + ${CurrentTemp_Celsuis} ) / ( ${AvgCount_LogVal:-0} + 1 )" | bc -l;);
 AvgCount_Updated=$(echo "( ${AvgCount_LogVal:-0} + 1 )" | bc;);
 echo "${AvgTemp_Celsuis}" > "${AvgTemp_LogFile}";

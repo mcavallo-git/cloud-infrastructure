@@ -1,6 +1,9 @@
 #!/bin/bash
 
-apt-get -y install stress;
+if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
+  apt-get -y update;
+  apt-get -y install stress;
+fi;
 
 stress -c 500 -t 3600;
 

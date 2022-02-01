@@ -11,11 +11,6 @@
 LOGDIR="${HOME}/raspi_hw_monitor_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/raspi_hw_monitor"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 
-MinTemp_LogFile="${LOGDIR}/min_temp";
-MaxTemp_LogFile="${LOGDIR}/max_temp";
-AvgTemp_LogFile="${LOGDIR}/avg_temp";
-AvgCount_LogFile="${LOGDIR}/avg_readings_taken";
-
 
 # ------------------------------
 #
@@ -28,10 +23,13 @@ else
   CurrentTemp_Celsuis=$(echo "scale=3 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);
 fi;
 
+
 # ------------------------------
 #
 # Min Temp (historically)
 #
+
+MinTemp_LogFile="${LOGDIR}/min_temp";
 
 # See if a minimum temp logfile exists (yet)
 MinTemp_LogVal="$(if [[ -f "${MinTemp_LogFile}" ]] && [[ -r "${MinTemp_LogFile}" ]]; then cat "${MinTemp_LogFile}"; else echo ""; fi;)";
@@ -45,10 +43,13 @@ if [[ "${MinTemp_LogVal}" != "${MinTemp_Celsuis}" ]]; then
   echo "${MinTemp_Celsuis}" > "${MinTemp_LogFile}";
 fi;
 
+
 # ------------------------------
 #
 # Max Temp (historically)
 #
+
+MaxTemp_LogFile="${LOGDIR}/max_temp";
 
 # See if a maximum temp logfile exists (yet)
 MaxTemp_LogVal="$(if [[ -f "${MaxTemp_LogFile}" ]] && [[ -r "${MaxTemp_LogFile}" ]]; then cat "${MaxTemp_LogFile}"; else echo ""; fi;)";
@@ -62,10 +63,14 @@ if [[ "${MaxTemp_LogVal}" != "${MaxTemp_Celsuis}" ]]; then
   echo "${MaxTemp_Celsuis}" > "${MaxTemp_LogFile}";
 fi;
 
+
 # ------------------------------
 #
 # Avg Temp (historically)
 #
+
+AvgTemp_LogFile="${LOGDIR}/avg_temp";
+AvgCount_LogFile="${LOGDIR}/avg_readings_taken";
 
 # See if an average temp logfile exists (yet)
 AvgTemp_LogVal=$(if [[ -f "${AvgTemp_LogFile}" ]] && [[ -r "${AvgTemp_LogFile}" ]]; then cat "${AvgTemp_LogFile}"; else echo ""; fi;);
@@ -77,6 +82,7 @@ AvgTemp_Celsuis=$(echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-
 AvgCount_Updated=$(echo "( ${AvgCount_LogVal:-0} + 1 )" | bc;);
 echo "${AvgTemp_Celsuis}" > "${AvgTemp_LogFile}";
 echo "${AvgCount_Updated}" > "${AvgCount_LogFile}";
+
 
 # ------------------------------
 #
@@ -156,6 +162,8 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_logfile_info="${list_logfile_info}logfile (min)   =  \"${MinTemp_LogFile}\"";
     list_logfile_info="${list_logfile_info}\n";
     list_logfile_info="${list_logfile_info}logfile (max)   =  \"${MaxTemp_LogFile}\"";
+    list_logfile_info="${list_logfile_info}\n";
+    list_logfile_info="${list_logfile_info}logfile (avg)   =  \"${AvgTemp_LogFile}\"";
 
     # ------------------------------------------------------------
 

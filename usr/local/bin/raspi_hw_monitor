@@ -74,7 +74,7 @@ AvgCount_LogVal=$(if [[ -f "${AvgCount_LogFile}" ]] && [[ -r "${AvgCount_LogFile
 # Calculate the latest average temperature (based on historical data & number of runs)
 echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-0} ) + ${CurrentTemp_Celsuis} ) / ( ${AvgCount_LogVal:-0} + 1 )";
 AvgTemp_Celsuis=$(echo "scale=3 ; ( ( ${AvgTemp_LogVal:-0} * ${AvgCount_LogVal:-0} ) + ${CurrentTemp_Celsuis} ) / ( ${AvgCount_LogVal:-0} + 1 )" | bc -l;);
-AvgCount_Updated=$(echo "( ${AvgCount_LogVal:-0} + 1 )" | bc;);sync_
+AvgCount_Updated=$(echo "( ${AvgCount_LogVal:-0} + 1 )" | bc;);
 echo "${AvgTemp_Celsuis}" > "${AvgTemp_LogFile}";
 echo "${AvgCount_Updated}" > "${AvgCount_LogFile}";
 

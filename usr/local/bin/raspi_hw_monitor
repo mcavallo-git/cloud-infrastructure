@@ -70,7 +70,7 @@ fi;
 #
 
 AvgTemp_LogFile="${LOGDIR}/avg_temp";
-AvgCount_LogFile="${LOGDIR}/avg_readings_taken";
+AvgCount_LogFile="${LOGDIR}/count_avg_readings";
 
 # See if an average temp logfile exists (yet)
 AvgTemp_LogVal=$(if [[ -f "${AvgTemp_LogFile}" ]] && [[ -r "${AvgTemp_LogFile}" ]]; then cat "${AvgTemp_LogFile}"; else echo ""; fi;);

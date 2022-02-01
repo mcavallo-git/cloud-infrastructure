@@ -105,7 +105,13 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     # If any pihole containers are already running locally
     REVERT_RESOLV_CONF=0;
     if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
-      # At least one docker container exists
+      # At least one pihole container already exists
+      echo "";
+      echo "Info:  At least one pihole container already exists";
+      # Show the version of target pihole container
+      echo "";
+      echo "Info:  Getting version from pihole container...";
+      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
       if [[ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]]; then
         # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
         echo "";
@@ -115,7 +121,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       fi;
       # Remove existing pihole dockers
       echo "";
-      echo "Info:  Removing existing pihole containers...";
+      echo "Info:  Removing existing pihole container(s)...";
       curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
       # docker_sniper "pihole";
 
@@ -300,6 +306,13 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
         done;
         IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
       fi;
+
+      # ------------------------------
+
+      # Show the version of target pihole container
+      echo "";
+      echo "Info:  Getting version from pihole container...";
+      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
 
       # ------------------------------
 

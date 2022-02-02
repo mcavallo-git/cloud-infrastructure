@@ -740,13 +740,18 @@ else
         fi;
         # ------------------------------
         if [[ ${ARGS_CHECK_WSL} -eq 1 ]]; then
-          # Detect if current runtime is being executed within a WSL shell
-          WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
+          # Detect if current runtime is being executed within a WSL shell, then attempt to resolve the Windows user who is running the current WSL shell
+          # WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
+          # if [[ -n "${WSL_CHECK_EXISTS}" ]]; then
+          #   echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment";
+          #   WIN32_USERNAME=$(get_username_windows_wsl);
+          #   WIN32_USER_ERRORS="$?";
+          # fi;
+          WSL_CHECK_EXISTS="$(command -v wslvar 2>'/dev/null';)";
           if [[ -n "${WSL_CHECK_EXISTS}" ]]; then
-            # Attempt to resolve the Windows-user who is running the current WSL shell
             echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment";
-            WIN32_USERNAME=$(get_username_windows_wsl);
-            WIN32_USER_ERRORS="$?";
+            WIN32_USERNAME=$(wslvar --sys "USERNAME";);
+            WIN32_USER_ERRORS="${?}";
           fi;
           if [[ -n "${WIN32_USERNAME}" ]] && [[ -n "${WIN32_USER_ERRORS}" ]] && [[ "${WIN32_USER_ERRORS}" == "0" ]]; then
             #  Windows OS running WSL (Windows Subsystem for Linux) - Locate source directory from amongst Win32-Host-User's files

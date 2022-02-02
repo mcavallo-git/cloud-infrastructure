@@ -56,6 +56,7 @@ if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
         -not -path "${DIR_WIN32_USERS}/Default" \
         -not -path "${DIR_WIN32_USERS}/Public" \
         -print0 \
+        2>'/dev/null' \
       | while IFS= read -r -d $'\0' EachUserDir; do
         LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
         if [ "${LastExitCode}" == "0" ]; then

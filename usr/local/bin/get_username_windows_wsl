@@ -26,20 +26,16 @@ if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
       # Assumed to be a Windows based OS
 
       Invalid_UsersFile="/tmp/invalid_wsl_hosts_$(date +'%s%N')";
-      if [ -f "${Invalid_UsersFile}" ]; then
-        rm -f "${Invalid_UsersFile}";
-      fi;
 
       Potential_UsersFile="/tmp/potential_wsl_hosts_$(date +'%s%N')";
-      if [ -f "${Potential_UsersFile}" ]; then
-        rm -f "${Potential_UsersFile}";
-      fi;
 
       WSL_HostUser_File="/tmp/valid_wsl_hosts_$(date +'%s%N')";
-      if [ -f "${Valid_UsersFile}" ]; then
-        rm -f "${Valid_UsersFile}";
-      fi;
-      
+
+      # Pre-Cleanup
+      if [[ -n "${Invalid_UsersFile}" ]] && [[ -f "${Invalid_UsersFile}" ]]; then rm -f "${Invalid_UsersFile}"; fi;
+      if [[ -n "${Potential_UsersFile}" ]] && [[ -f "${Potential_UsersFile}" ]]; then rm -f "${Potential_UsersFile}"; fi;
+      if [[ -n "${Valid_UsersFile}" ]] && [[ -f "${Valid_UsersFile}" ]]; then rm -f "${Valid_UsersFile}"; fi;
+
       # Make sure required runtime(s) are installed
       if [ -z "$(which bc 2>'/dev/null';)" ]; then
         apt-get-update -y; apt-get install -y bc;
@@ -53,13 +49,13 @@ if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
       fi;
 
       find "${DIR_WIN32_USERS}" \
-      -mindepth 1 \
-      -maxdepth 1 \
-      -name '*' \
-      -type 'd' \
-      -not -path "${DIR_WIN32_USERS}/Default" \
-      -not -path "${DIR_WIN32_USERS}/Public" \
-      -print0 \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -name '*' \
+        -type 'd' \
+        -not -path "${DIR_WIN32_USERS}/Default" \
+        -not -path "${DIR_WIN32_USERS}/Public" \
+        -print0 \
       | while IFS= read -r -d $'\0' EachUserDir; do
         LastExitCode=$([[ -r "${EachUserDir}/Documents" ]]; echo $?);
         if [ "${LastExitCode}" == "0" ]; then
@@ -117,11 +113,33 @@ if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
 
       if [ "${1}" == "verbose" ]; then echo ""; fi;
 
+      # Post-Cleanup
+      if [[ -n "${Invalid_UsersFile}" ]] && [[ -f "${Invalid_UsersFile}" ]]; then rm -fv "${Invalid_UsersFile}"; fi;
+      if [[ -n "${Potential_UsersFile}" ]] && [[ -f "${Potential_UsersFile}" ]]; then rm -fv "${Potential_UsersFile}"; fi;
+      if [[ -n "${Valid_UsersFile}" ]] && [[ -f "${Valid_UsersFile}" ]]; then rm -fv "${Valid_UsersFile}"; fi;
+
     fi;
 
   fi;
 
 fi;
+
+
+# ------------------------------
+# ------------------------------
+#
+# HOTFIX - CLEANUP LEFTOVER TMP FILES (LOTS OF THEM ACCRUING AS THEY WERENT BEING DELETED BEFORE)
+#  |
+#  |--> CAN BE REMOVED AFTER [  Saturday, February 5, 2022 1:18:14 PM GMT-05:00  ]
+#
+if [[ "$(date --utc +'%s';)" -lt 1644085094 ]]; then
+  rm -rf "/tmp/invalid_wsl_hosts_20"*;
+  rm -rf "/tmp/potential_wsl_hosts_20"*;
+  rm -rf "/tmp/valid_wsl_hosts_20"*;
+fi;
+# ------------------------------
+# ------------------------------
+
 
 if [ -z "${WINDOWS_USERNAME}" ]; then
   # Non-WSL environment/OS detected

@@ -25,24 +25,37 @@ else
   # Shutdown WSL (Windows Subsystem for Linux)
   #  |--> To shutdown WSL, signal to linux that a reboot is required by manually creating file '/var/run/reboot-required', otherwise the WSL linux environment persists the background as a service (and continues to consume hardware resources as-needed)
   #
-  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then  
+  REQUIRE_CONFIRMATION="${REQUIRE_CONFIRMATION:-0}";
+  USER_CONFIRMED=0;
+  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
     ACTION_DESCRIPTION="Kill all WSL terminals";
-    READ_TIMEOUT=60;
-    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=${?};
-    echo "";
-    if [[ "${RETURN_CODE_READ}" -gt 128 ]]; then
-      # FAILED - USER INPUT TIMED OUT
-      echo "  |--> Error:  Response timed out after ${READ_TIMEOUT}s";
-    elif [[ -z "${USER_RESPONSE}" ]]; then
-      # DENIED - USER INPUT IS EMPTY
-      echo "  |--> Warning:  Denied  (empty response received)";
-    elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
-      # DENIED - USER INPUT FAILED REGEX TEST
-      echo "  |--> Warning:  Denied  (response '${USER_RESPONSE}' received)";
-    else
-      # CONFIRMED - USER INPUT IS NON-EMPTY AND PASSED REGEX TEST
-      echo "  |--> Info:  Confirmed  (response '${USER_RESPONSE}' received)";
-      echo "  |--> Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
+    if [[ "${REQUIRE_CONFIRMATION}" != "0" ]]; then
+      #
+      # Require user confirmation before killing all WSL terminals
+      #
+      READ_TIMEOUT=60;
+      read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; RETURN_CODE_READ=${?};
+      echo "";
+      if [[ "${RETURN_CODE_READ}" -gt 128 ]]; then
+        # FAILED - USER INPUT TIMED OUT
+        echo "  |--> Error:  Response timed out after ${READ_TIMEOUT}s";
+      elif [[ -z "${USER_RESPONSE}" ]]; then
+        # DENIED - USER INPUT IS EMPTY
+        echo "  |--> Warning:  Denied  (empty response received)";
+      elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+        # DENIED - USER INPUT FAILED REGEX TEST
+        echo "  |--> Warning:  Denied  (response '${USER_RESPONSE}' received)";
+      else
+        # CONFIRMED - USER INPUT IS NON-EMPTY AND PASSED REGEX TEST
+        echo "  |--> Info:  Confirmed  (response '${USER_RESPONSE}' received)";
+        USER_CONFIRMED=1;
+      fi;
+    fi;
+    #
+    # Verify that confirmation is either [ skipped ] or [ required and has already been confirmed by user ]
+    #
+    if [[ "${REQUIRE_CONFIRMATION}" == "0" ]] || [[ "${USER_CONFIRMED}" -eq 1 ]]; then
+      echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
       # ------------------------------
       #
       # Signal to linux that a reboot is required by manually creating file '/var/run/reboot-required'

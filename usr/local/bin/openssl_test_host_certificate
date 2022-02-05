@@ -185,9 +185,13 @@ else
   CERT_DATE_INFO=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" 2>'/dev/null' | openssl x509 -noout -dates | sed -rne 's/^\s*[Nn]ot\s*[Aa]fter\s*(:|=)\s*(.+)$/\2/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';);
   CERTIFICATE_STATUS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" 2>'/dev/null' | openssl x509 -text;);
   CERT_EXP_DATE="$(echo "${CERTIFICATE_STATUS}" | sed -rne 's/^\s*[Nn]ot\s*[Aa]fter\s*(:|=)\s*(.+)$/\2/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
+  CERT_EXP_DATE_EPOCHSECONDS="$(date --date="${CERT_EXP_DATE}" +'%s';)";
   CERT_EXP_DATE_SHORTHAND="$(date --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H:%M:%S%z';)";
   CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
   CERT_EXP_DATE_HUMAN_READABLE="$(date --date="${CERT_EXP_DATE}" +'%d-%b-%Y at %r %Z';)";
+
+  SECONDS_UNTIL_EXPIRATION=$(echo "scale=0; (${CERT_EXP_DATE_EPOCHSECONDS} - $(date +'%s'))/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
+
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
@@ -203,6 +207,8 @@ else
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="  Certificate Expiration Date:  ${CERT_EXP_DATE_HUMAN_READABLE}"$'\n';
+  CERT_DETAILS+=$'\n';
+  CERT_DETAILS+="  SECONDS_UNTIL_EXPIRATION:  ${SECONDS_UNTIL_EXPIRATION}"$'\n';
   # CERT_DETAILS+="  Certificate Expiration Date:"$'\n';
   # CERT_DETAILS+="   |"$'\n';
   # CERT_DETAILS+="   |--> Human readable format:    ${CERT_EXP_DATE_HUMAN_READABLE}"$'\n';

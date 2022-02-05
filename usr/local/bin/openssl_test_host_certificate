@@ -201,11 +201,13 @@ else
   CERT_DETAILS+="-- OPENSSL - END CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+=$'\n';
-  CERT_DETAILS+="Certificate expiration date (default format):  ${CERT_EXP_DATE}"$'\n';
-  CERT_DETAILS+=$'\n';
-  CERT_DETAILS+="Certificate expiration date (shorthand format):  ${CERT_EXP_DATE_SHORTHAND}"$'\n';
-  CERT_DETAILS+=$'\n';
-  CERT_DETAILS+="Certificate expiration date (filename format):  ${CERT_EXP_DATE_FILENAME}"$'\n';
+  CERT_DETAILS+="Certificate expiration date:"$'\n';
+  CERT_DETAILS+=" |"$'\n';
+  CERT_DETAILS+=" |--> Default format:  ${CERT_EXP_DATE}"$'\n';
+  CERT_DETAILS+=" |"$'\n';
+  CERT_DETAILS+=" |--> Shorthand format:  ${CERT_EXP_DATE_SHORTHAND}"$'\n';
+  CERT_DETAILS+=" |"$'\n';
+  CERT_DETAILS+=" |--> Filename format:  ${CERT_EXP_DATE_FILENAME}"$'\n';
   CERT_DETAILS+=$'\n';
 fi;
 echo "${CERT_DETAILS}";

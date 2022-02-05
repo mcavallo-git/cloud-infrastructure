@@ -173,7 +173,9 @@ if [ -n "${PROTO_STARTTLS}" ]; then
   CONNECTION_DETAILS="$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS} 2>&1;)";
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN OPENSSL CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="${CONNECTION_DETAILS}"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - END OPENSSL CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
 else
@@ -187,11 +189,15 @@ else
   CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="${CONNECTION_DETAILS}"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - END CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="${CERTIFICATE_STATUS}"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - END CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="Certificate expiration date:  ${CERT_EXP_DATE_SHORTHAND}";

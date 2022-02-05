@@ -191,6 +191,7 @@ else
   CERT_EXP_DATE_HUMAN_READABLE="$(date --date="${CERT_EXP_DATE}" +'%d-%b-%Y at %r %Z';)";
 
   SECONDS_UNTIL_EXPIRATION=$(echo "scale=0; (${CERT_EXP_DATE_EPOCHSECONDS} - $(date +'%s'))/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
+  DAYS_UNTIL_EXPIRATION=$(echo "scale=0; (${SECONDS_UNTIL_EXPIRATION})/(60*60*24)" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
 
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
@@ -209,6 +210,7 @@ else
   CERT_DETAILS+="  Certificate Expiration Date:  ${CERT_EXP_DATE_HUMAN_READABLE}"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="  SECONDS_UNTIL_EXPIRATION:  ${SECONDS_UNTIL_EXPIRATION}"$'\n';
+  CERT_DETAILS+="  DAYS_UNTIL_EXPIRATION:     ${DAYS_UNTIL_EXPIRATION}"$'\n';
   # CERT_DETAILS+="  Certificate Expiration Date:"$'\n';
   # CERT_DETAILS+="   |"$'\n';
   # CERT_DETAILS+="   |--> Human readable format:    ${CERT_EXP_DATE_HUMAN_READABLE}"$'\n';

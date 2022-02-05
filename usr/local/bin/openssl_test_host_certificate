@@ -171,9 +171,11 @@ if [ -n "${PROTO_STARTTLS}" ]; then
   echo "";
   echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" -starttls ${PROTO_STARTTLS} 2>&1; ] ...";
   CONNECTION_DETAILS="$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS} 2>&1;)";
-  CERT_DETAILS+="-- BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
+  CERT_DETAILS+="-- OPENSSL - BEGIN OPENSSL CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+="${CONNECTION_DETAILS}"$'\n';
-  CERT_DETAILS+="-- END CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+="-- OPENSSL - END OPENSSL CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
 else
   echo "";
   echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";
@@ -183,19 +185,19 @@ else
   CERT_EXP_DATE="$(echo "${CERTIFICATE_STATUS}" | sed -rne 's/^\s*[Nn]ot\s*[Aa]fter\s*(:|=)\s*(.+)$/\2/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
   CERT_EXP_DATE_SHORTHAND="$(date --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H:%M:%S%z';)";
   CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
-  CERT_DETAILS+="-- BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
+  CERT_DETAILS+="-- OPENSSL - BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+="${CONNECTION_DETAILS}"$'\n';
-  CERT_DETAILS+="-- END CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
-  CERT_DETAILS+="-- BEGIN CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+="-- OPENSSL - END CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
+  CERT_DETAILS+="-- OPENSSL - BEGIN CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+="${CERTIFICATE_STATUS}"$'\n';
-  CERT_DETAILS+="-- END CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+="-- OPENSSL - END CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+=$'\n';
   CERT_DETAILS+="Certificate expiration date:  ${CERT_EXP_DATE_SHORTHAND}";
+  CERT_DETAILS+=$'\n';
 fi;
-echo "";
-echo "BEGIN OPENSSL OUTPUT ------------------------------ ------------------------------";
 echo "${CERT_DETAILS}";
-echo "END OF OPENSSL OUTPUT ------------------------------ ------------------------------";
-echo "";
 
 
 # ------------------------------------------------------------

@@ -169,7 +169,7 @@ fi;
 if [ -n "${PROTO_STARTTLS}" ]; then
   echo "";
   echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" -starttls ${PROTO_STARTTLS} 2>&1; ] ...";
-  CONNECTION_DETAILS=$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS} 2>&1;);
+  CERT_DETAILS="$(echo | openssl s_client -servername "${HOST_NAME}" -connect "${HOST_NAME}:${HOST_PORT}" -starttls ${PROTO_STARTTLS} 2>&1;)";
 else
   echo "";
   echo "Calling  [ openssl s_client -servername \"${HOST_NAME}\" -connect \"${HOST_NAME}:${HOST_PORT}\" ] ...";

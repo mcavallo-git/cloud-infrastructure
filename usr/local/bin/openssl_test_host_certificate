@@ -187,13 +187,13 @@ else
   CERT_EXP_DATE="$(echo "${CERTIFICATE_STATUS}" | sed -rne 's/^\s*[Nn]ot\s*[Aa]fter\s*(:|=)\s*(.+)$/\2/pi' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//';)";
   CERT_EXP_DATE_SHORTHAND="$(date --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H:%M:%S%z';)";
   CERT_EXP_DATE_FILENAME="$(date --utc --date="${CERT_EXP_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
-  CERT_EXP_DATE_HUMAN_READABLE="$(date --utc --date="${CERT_EXP_DATE}" +'date +'%d-%b-%Y at %r %Z'';)";
+  CERT_EXP_DATE_HUMAN_READABLE="$(date --utc --date="${CERT_EXP_DATE}" +'%d-%b-%Y at %r %Z';)";
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="${CONNECTION_DETAILS}"$'\n';
   CERT_DETAILS+=$'\n';
-  CERT_DETAILS+="-- OPENSSL - END CONNECTION DETAILS  ------------------------------ ------------------------------"$'\n';
+  CERT_DETAILS+="-- OPENSSL - END CONNECTION DETAILS  ----1-------------------------- ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';
   CERT_DETAILS+="-- OPENSSL - BEGIN CERTIFICATE STATUS  ------------------------------ ------------------------------"$'\n';
   CERT_DETAILS+=$'\n';

@@ -27,7 +27,7 @@ if [ -n "$0" ]; then
       ARR_DOCKER_IMAGES+=(["${CHOICE_KEY}"]="${EACH_DOCKER_IMAGE}");
     done;
 
-    if [ ${CHOICE_KEY} -le 0 ]; then
+    if [[ "${#ARR_CONTAINER_IDS[@]}" -eq 0 ]]; then
 
       echo "Error: No Containers found to be running - Please start a container then rerun \"${0}\"";
 
@@ -44,8 +44,13 @@ if [ -n "$0" ]; then
 
       echo "------------------------------------------------------------";
       echo "";
+
       MAX_READ_WAIT=20;
-      read -p "Select: " -t ${MAX_READ_WAIT} USER_INPUT <'/dev/tty';
+      if [[ "${#ARR_CONTAINER_IDS[@]}" -eq 1 ]]; then
+        USER_INPUT="1";
+      else
+        read -p "Select: " -t ${MAX_READ_WAIT} USER_INPUT <'/dev/tty';
+      fi;
 
       if [ -z "${USER_INPUT}" ]; then
         echo "";

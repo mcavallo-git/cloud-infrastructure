@@ -47,6 +47,8 @@ if [ -n "$0" ]; then
       MAX_READ_WAIT=20;
       if [[ "${#ARR_CONTAINER_IDS[@]}" -eq 1 ]]; then
         USER_INPUT="1";
+        echo "";
+        echo "Auto-Selecting Standalone Container";
       else
         echo "";
         read -p "Select: " -t ${MAX_READ_WAIT} USER_INPUT <'/dev/tty';

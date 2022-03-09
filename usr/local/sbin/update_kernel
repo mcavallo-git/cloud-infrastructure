@@ -83,6 +83,9 @@ else
       echo "Installing kernel (latest available version)";
       echo "Calling [ ${SCRIPT_LOCAL_PATH} -i; ]...";
       "${SCRIPT_LOCAL_PATH}" -i --yes;
+      echo "";
+      echo "Reboot this device to complete kernel installation";
+      echo "";
     fi;
   fi;
 
@@ -92,7 +95,7 @@ fi;
 #
 # Oneliner  -  Download "ubuntu-mainline-kernel.sh" script & update kernel, auto-accepting any confirmation prompts along the way
 #
-#   SCRIPT_REMOTE_PATH="https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh"; SCRIPT_LOCAL_PATH="/root/bin/ubuntu-mainline-kernel.sh"; sudo mkdir -pv "$(dirname "${SCRIPT_LOCAL_PATH}";)"; sudo curl -o "${SCRIPT_LOCAL_PATH}" "${SCRIPT_REMOTE_PATH}"; sudo chmod 0755 "${SCRIPT_LOCAL_PATH}"; sudo "${SCRIPT_LOCAL_PATH}" -i --yes;
+#   SCRIPT_REMOTE_PATH="https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh"; SCRIPT_LOCAL_PATH="/root/bin/ubuntu-mainline-kernel.sh"; sudo mkdir -pv "$(dirname "${SCRIPT_LOCAL_PATH}";)"; sudo curl -o "${SCRIPT_LOCAL_PATH}" "${SCRIPT_REMOTE_PATH}"; sudo chmod 0755 "${SCRIPT_LOCAL_PATH}"; sudo "${SCRIPT_LOCAL_PATH}" -i --yes; echo ""; echo "Reboot this device to complete kernel installation"; echo "";
 #
 #
 # ------------------------------------------------------------

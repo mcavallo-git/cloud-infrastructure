@@ -71,7 +71,8 @@ else
   echo "";
   if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
     REPLY="";
-    read -p "     |--> Are you completely positive you want to continue?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    echo "      |";
+    read -p "      |--> Are you completely positive you want to continue?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
     echo "";
     if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
       # ------------------------------------------------------------

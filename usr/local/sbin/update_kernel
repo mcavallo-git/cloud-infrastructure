@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/update_kernel" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY:
+
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/update_kernel?t=$(date +'%s.%N')" | bash;
+
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/update_kernel_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/update_kernel"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Download "ubuntu-mainline-kernel.sh" from GitHub  -  https://github.com/pimlie/ubuntu-mainline-kernel.sh
+  #
+
+  SCRIPT_REMOTE_PATH="https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh";
+
+  SCRIPT_LOCAL_PATH="/root/bin/ubuntu-mainline-kernel.sh";
+
+  mkdir -pv "$(dirname "${SCRIPT_LOCAL_PATH}";)";
+
+  echo "";
+  echo "Downloading \"$(basename "${SCRIPT_LOCAL_PATH}";)\" to from GitHub to local path \"${SCRIPT_LOCAL_PATH}\"...";
+
+  curl -o "${SCRIPT_LOCAL_PATH}" "${SCRIPT_REMOTE_PATH}";
+
+  chmod 0755 "${SCRIPT_LOCAL_PATH}";
+
+  # ------------------------------------------------------------
+  #
+  # Check for newer kernel
+  #
+  echo "";
+  echo "Checking if a newer kernel version is available";
+  echo "Calling [ ${SCRIPT_LOCAL_PATH} -c; ]...";
+  "${SCRIPT_LOCAL_PATH}" -c;
+
+  # ------------------------------------------------------------
+  #
+  # Require user-confirmation to perform this action
+  #
+  echo "";
+  echo "! ! WARNING ! ! Make sure you have a backup of this server before attempting to update the kernel";
+  read -p "     |--> Are you sure you want to continue?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+  echo "";
+  if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+    REPLY="";
+    read -p "     |--> Are you completely positive you want to continue?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; # Await single keypress
+    echo "";
+    if [ -n "${REPLY}" ] && [ "$(echo ${REPLY} | tr '[:lower:]' '[:upper:]';)" == "Y" ]; then
+      # ------------------------------------------------------------
+      #
+      # Installing kernel (latest available version)
+      #
+      echo "";
+      echo "Installing kernel (latest available version)";
+      echo "Calling [ ${SCRIPT_LOCAL_PATH} -i; ]...";
+      "${SCRIPT_LOCAL_PATH}" -i;
+    fi;
+  fi;
+
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   github.com  |  "GitHub - pimlie/ubuntu-mainline-kernel.sh: Bash script for Ubuntu (and derivatives) to easily (un)install kernels from the Ubuntu Kernel PPA"  |  https://github.com/pimlie/ubuntu-mainline-kernel.sh
+#
+# ------------------------------------------------------------

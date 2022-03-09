@@ -9,6 +9,10 @@ if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY:
 curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/update_kernel?t=$(date +'%s.%N')" | bash;
 
 
+# Oneliner - Update Linux Kernel
+SCRIPT_REMOTE_PATH="https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh"; SCRIPT_LOCAL_PATH="/root/bin/ubuntu-mainline-kernel.sh"; sudo mkdir -pv "$(dirname "${SCRIPT_LOCAL_PATH}";)"; sudo curl -o "${SCRIPT_LOCAL_PATH}" "${SCRIPT_REMOTE_PATH}"; sudo chmod 0755 "${SCRIPT_LOCAL_PATH}"; sudo "${SCRIPT_LOCAL_PATH}" -i --yes; echo ""; echo "Reboot this device to complete kernel installation"; echo "";  # Update Linux Kernel using the "ubuntu-mainline-kernel.sh" convenience script  -  https://github.com/pimlie/ubuntu-mainline-kernel.sh
+
+
 fi;
 # ------------------------------------------------------------
 #
@@ -91,13 +95,7 @@ else
 
 fi;
 
-# ------------------------------------------------------------
-#
-# Oneliner  -  Download "ubuntu-mainline-kernel.sh" script & update kernel, auto-accepting any confirmation prompts along the way
-#
-#   SCRIPT_REMOTE_PATH="https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh"; SCRIPT_LOCAL_PATH="/root/bin/ubuntu-mainline-kernel.sh"; sudo mkdir -pv "$(dirname "${SCRIPT_LOCAL_PATH}";)"; sudo curl -o "${SCRIPT_LOCAL_PATH}" "${SCRIPT_REMOTE_PATH}"; sudo chmod 0755 "${SCRIPT_LOCAL_PATH}"; sudo "${SCRIPT_LOCAL_PATH}" -i --yes; echo ""; echo "Reboot this device to complete kernel installation"; echo "";
-#
-#
+
 # ------------------------------------------------------------
 #
 # Citation(s)

@@ -1783,8 +1783,14 @@ else
             TO_DEL="${DELDIR}/LAN_subnets.conf"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-192658
 
           DELDIR="/var/cache/jenkins/war";
-            TO_DEL="${DELDIR}Jenkins Artwork (jenkins.io).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
-            TO_DEL="${DELDIR}Jenkins Material Theme (GitHub).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+            TO_DEL="${DELDIR}/Jenkins Artwork (jenkins.io).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+            TO_DEL="${DELDIR}/Jenkins Material Theme (GitHub).url"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+
+          DELDIR="/var/www/error/css";
+            TO_DEL="${DELDIR}/error_animation_once.gif"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+            TO_DEL="${DELDIR}/error_stylesheet.css"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+            TO_DEL="${DELDIR}/f4109k-27.jpg"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+            TO_DEL="${DELDIR}/wave75.gif"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
 
           # ------------------------------
           #

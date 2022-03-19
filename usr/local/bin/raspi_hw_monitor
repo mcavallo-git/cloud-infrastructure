@@ -114,9 +114,29 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     # 17  |  10001  |  0x11  | arm frequency capped has occurred
     # 18  |  10010  |  0x12  | throttling has occurred
     #
-    # ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
     #
-
+    # ex) vcgencmd get_throttled returns "0x50005" hex value
+    #       |
+    #       |--> Convert to binary: "01010000000000000101"
+    #       |     |
+    #       |     |--> binary OR with 00000  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 00001  - TRUE  (arm frequency capped)
+    #       |     |
+    #       |     |--> binary OR with 00010  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10000  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10001  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10010  - FALSE
+    #       |
+    #       |
+    #       |--> Result:  System reports [ arm frequency capped ]
+    #       |
+    #       |--> Old Note (based on Raspi forum comment): System reports [ under-voltage ] and [ currently throttled ]
+    #
+    #
     # ------------------------------
 
     declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");

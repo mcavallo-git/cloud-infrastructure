@@ -91,12 +91,15 @@ echo "${AvgCount_Updated}" > "${AvgCount_LogFile}";
 RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --quiet --expression='s/^Hardware\s*:\s*([a-zA-Z0-9]+)\s*$/\1/p');
 
 if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
+
+  # Ensure "vcgencmd" (Raspberry Pi utility package) is installed - Install if missing
+  if [[ -z "$(command -v vcgencmd 2>'/dev/null';)" ]]; then
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install libraspberrypi-bin; ]...";
+    apt-get -y update; apt-get -y install libraspberrypi-bin;
+  fi;
+
   if [[ -n "$(command -v vcgencmd 2>'/dev/null';)" ]]; then
-  # if [[ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]]; then
-
-    # while [[ 1 -eq 1 ]]; do # Loop until manually cancelled (e.g. loop until CTRL+C is pressed)
-
-    # ------------------------------------------------------------
+    # ------------------------------
 
     Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
     Throttle_Val="0x${Throttle_Val_After_X}";
@@ -112,7 +115,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     # ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
     #
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
     list_clock_freq="";
@@ -131,7 +134,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     done;
     # list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     declare -a Components_Voltage=("core   " "sdram_c" "sdram_i" "sdram_p");
     list_voltages="";
@@ -143,7 +146,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
       list_voltages="${list_voltages}Volt, ${EachComponent}\t=  ${Each_Voltage} V";
     done;
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     declare -a Components_Memory=("arm" "gpu");
     list_memory_info="";
@@ -155,7 +158,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
       list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
     done;
     # list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
-    # ------------------------------------------------------------
+    # ------------------------------
 
     list_logfile_info="";
     list_logfile_info="${list_logfile_info}logfile (min)   =  \"${MinTemp_LogFile}\"";
@@ -164,7 +167,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_logfile_info="${list_logfile_info}\n";
     list_logfile_info="${list_logfile_info}logfile (avg)   =  \"${AvgTemp_LogFile}\"";
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
 
@@ -175,7 +178,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_temperature="${list_temperature}\n";
     list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     list_all="";
     list_all="${list_all}$(date +'%c')\n";
@@ -187,7 +190,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------\n\n";
     list_all="${list_all}${list_logfile_info}\n\n------------------------------------------------------------";
 
-    # ------------------------------------------------------------
+    # ------------------------------
 
     # done;
 

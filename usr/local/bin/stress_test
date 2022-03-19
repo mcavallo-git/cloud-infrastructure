@@ -16,7 +16,7 @@ if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
 fi;
 
 EVAL_COMMAND="";
-EVAL_COMMAND+="stress";
+EVAL_COMMAND+="stress ";
 EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
 EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
 EVAL_COMMAND+="--vm ${STRESS_MEM_THREADS:-${STRESS_RAM_THREADS:-1}} ";

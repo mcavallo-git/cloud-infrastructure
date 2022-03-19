@@ -97,7 +97,7 @@ else
       for EACH_HIGH_AVAILABILITY_HOST in $(echo ${HIGH_AVAILABILITY_HOSTS} | tr "," "\n";); do
         EACH_HOST_FAILED="$(ping -w 1 -c 1 "${EACH_HIGH_AVAILABILITY_HOST}" 1>'/dev/null' 2>&1; echo ${?};)";
         if [[ "${EACH_HOST_FAILED}" -eq 0 ]]; then
-          echo "Info:  High Availability (HA) host FOUND (ping succeeded):  [ ${EACH_HIGH_AVAILABILITY_HOST} ]  -  Do NOT restart PoE (wait until all no HA hosts are disconnected)";
+          echo "Info:  High Availability (HA) host FOUND (ping succeeded):  [ ${EACH_HIGH_AVAILABILITY_HOST} ]  -  Do NOT restart PoE (wait until no HA hosts are found)";
           HIGH_AVAILABILITY_HOST_EXISTS=1;
           break;
         fi;

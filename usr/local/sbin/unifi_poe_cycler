@@ -175,7 +175,7 @@ else
     LOGFILES_TO_CLEAN="${LOGDIR}/$(basename ${LOGDIR})_";
     RETENTION_DAYS=30;
     if [[ "$(find "${LOGFILES_TO_CLEAN}"* -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
-      # echo "Info:  Cleaning logs which are [ older than ${RETENTION_DAYS} days old ] and [ whose fullpath matches the pattern \"${LOGFILES_TO_CLEAN}\"* ]...";
+      echo "Info:  Cleaning logs which are [ older than ${RETENTION_DAYS} days old ] and [ whose fullpath matches the pattern \"${LOGFILES_TO_CLEAN}\"* ]...";
       find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
     fi;
 

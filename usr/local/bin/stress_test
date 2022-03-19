@@ -10,26 +10,71 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 fi;
 # ------------------------------
 
-# Install Linux package "stress"
-if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
-  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress; ]...";
-  apt-get -y update; apt-get -y install stress;
+# STRESS_TESTER="stress";
+STRESS_TESTER="stress-ng";
+
+# ------------------------------
+
+if [[ "${STRESS_TESTER}" == "stress" ]]; then
+
+  # Ensure "stress" (Linux package) is installed - Install if missing
+  if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
+    echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress; ]...";
+    apt-get -y update; apt-get -y install stress;
+  fi;
+
+  # Instantiate runtime variables
+  EVAL_COMMAND="";
+  EVAL_COMMAND+="stress ";
+  EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
+  EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
+  EVAL_COMMAND+="--vm ${STRESS_MEMORY_THREADS:-1} ";
+  EVAL_COMMAND+="--vm-bytes ${STRESS_MEMORY_THREAD_BYTES:-128MB} ";
+  EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-3600} ";
+  EVAL_COMMAND+=";";
+
+  # Run the stress test
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
+  eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
+
+# ------------------------------
+
+elif [[ "${STRESS_TESTER}" == "stress-ng" ]]; then
+
+# Ensure "stress-ng" (Linux package) is installed - Install if missing
+if [[ -z "$(command -v stress-ng 2>'/dev/null';)" ]]; then
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress-ng; ]...";
+  apt-get -y update; apt-get -y install stress-ng;
 fi;
 
-# Instantiate runtime variables which allow overrides via environment variables
-EVAL_COMMAND="";
-EVAL_COMMAND+="stress ";
-EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
-EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
-EVAL_COMMAND+="--vm ${STRESS_MEMORY_THREADS:-1} ";
-EVAL_COMMAND+="--vm-bytes ${STRESS_MEMORY_THREAD_BYTES:-128MB} ";  # default: --vm-bytes 256MB
-EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-3600} ";
-# EVAL_COMMAND+="--verbose ";
-EVAL_COMMAND+=";";
+  # Instantiate runtime variables
+  EVAL_COMMAND="";
+  EVAL_COMMAND+="stress-ng ";
+  EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-0} ";
+  EVAL_COMMAND+="--cpu-method all ";
+  # EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
+  # EVAL_COMMAND+="--vm ${STRESS_MEMORY_THREADS:-1} ";
+  # EVAL_COMMAND+="--vm-bytes ${STRESS_MEMORY_THREAD_BYTES:-128MB} ";
+  EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-3600} ";
+  EVAL_COMMAND+="--metrics ";
+  EVAL_COMMAND+=";";
 
-# Run the stress test
-echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
-eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
+  # Run the stress test
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
+  eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
+
+
+# ------------------------------
+
+else
+
+  # Invalid stress test application selected
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Invalid value set in environment variable \${STRESS_TESTER}: \"${STRESS_TESTER}\" (must be either \"stress\" or \"stress-ng\")";
+  EXIT_CODE=1;
+
+fi;
+
+# ------------------------------
 
 # Exit cleanly
 exit ${EXIT_CODE};

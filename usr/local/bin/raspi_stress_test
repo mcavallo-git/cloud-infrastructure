@@ -5,7 +5,9 @@ if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
   apt-get -y install stress;
 fi;
 
-stress -c 500 -t 3600;
+echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ stress --cpu ${STRESS_CPU_THREADS:-500} --timeout ${STRESS_TIMEOUT:-3600}; ]...";
+
+stress --cpu ${STRESS_CPU_THREADS:-500} --timeout ${STRESS_TIMEOUT:-3600};
 
 
 # ------------------------------------------------------------

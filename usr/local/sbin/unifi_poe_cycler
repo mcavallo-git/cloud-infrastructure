@@ -163,7 +163,7 @@ else
 
       echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Power cycling PoE port [ ${UNIFI_POE_PORT} ] on UniFi host \"${UNIFI_SSH_HOSTNAME}\"" | tee -a "${POE_CYCLE_EVENTS_LOG}";
 
-      SSH_COMMAND="swctrl poe restart id "${UNIFI_POE_PORT}";";
+      SSH_COMMAND="swctrl poe restart id ${UNIFI_POE_PORT};";
 
       if [[ 0 -eq 1 ]]; then
         # Disable then re-enable the network connection to the device (do not power cycle)

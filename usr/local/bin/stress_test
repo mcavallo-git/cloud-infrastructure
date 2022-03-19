@@ -31,9 +31,9 @@ fi;
 
 HARDWARE_CPU_THREADS="$(stress-ng --cpu 0 --cpu-method all --dry-run 2>&1 | sed -rne "s/^.+dispatching hogs: ([0-9]{1,}) cpu\s*$/\1/pi";)";
 
-STRESS_CPU_THREADS="${STRESS_CPU_THREADS:-$(( ${HARDWARE_CPU_THREADS} * 4 ))}";
+STRESS_CPU_THREADS="${STRESS_CPU_THREADS:-$(( ${HARDWARE_CPU_THREADS} * 3 ))}";
 
-STRESS_IO_THREADS="${STRESS_IO_THREADS:-$(( ${HARDWARE_CPU_THREADS} * 2 ))}";
+STRESS_IO_THREADS="${STRESS_IO_THREADS:-$(( ${HARDWARE_CPU_THREADS} * 1 ))}";
 
 STRESS_MEMORY_THREADS="${STRESS_MEMORY_THREADS:-1}";
 

@@ -163,8 +163,12 @@ else
 
       echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Power cycling PoE port [ ${UNIFI_POE_PORT} ] on UniFi host \"${UNIFI_SSH_HOSTNAME}\"" | tee -a "${POE_CYCLE_EVENTS_LOG}";
 
-      POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
-      # POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
+      POE_CYCLE_CLI_COMMAND="swctrl poe restart id "${UNIFI_POE_PORT}";";
+
+      if [[ 0 -eq 1 ]]; then
+        # Disable then re-enable the network connection to the device (do not power cycle)
+        POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
+      fi;
 
       sshpass -p ${UNIFI_SSH_USERPASS} ssh ${UNIFI_SSH_USERNAME}@${UNIFI_SSH_HOSTNAME} -i "${UNIFI_SSH_KEY_FULLPATH}" "${POE_CYCLE_CLI_COMMAND}";
 

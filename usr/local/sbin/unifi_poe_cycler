@@ -80,8 +80,6 @@ else
 
     CYCLE_MAX_FREQUENCY_MINUTES=${CYCLE_MAX_FREQUENCY_MINUTES:-120};  # Do not power cycle more often than this many minutes
 
-    POE_CYCLE_SLEEP_SECONDS=${POE_CYCLE_SLEEP_SECONDS:-10};
-
     POE_CYCLE_EVENTS_LOG="${POE_CYCLE_EVENTS_LOG:-${LOGDIR}/poe_cycle_events.log}";
 
     if [[ ! -d "$(dirname "${POE_CYCLE_EVENTS_LOG}";)" ]]; then
@@ -163,9 +161,10 @@ else
         apt-get -y update; apt-get -y install "sshpass";
       fi;
 
-      echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Cycling power for PoE port [ ${UNIFI_POE_PORT} ] on Unifi host \"${UNIFI_SSH_HOSTNAME}\"  (sleep duration between PoE stop & PoE start commands = [ ${POE_CYCLE_SLEEP_SECONDS} ])" | tee -a "${POE_CYCLE_EVENTS_LOG}";
+      echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Power cycling PoE port [ ${UNIFI_POE_PORT} ] on UniFi host \"${UNIFI_SSH_HOSTNAME}\"" | tee -a "${POE_CYCLE_EVENTS_LOG}";
 
-      POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep ${POE_CYCLE_SLEEP_SECONDS}; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
+      POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
+      # POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
 
       sshpass -p ${UNIFI_SSH_USERPASS} ssh ${UNIFI_SSH_USERNAME}@${UNIFI_SSH_HOSTNAME} -i "${UNIFI_SSH_KEY_FULLPATH}" "${POE_CYCLE_CLI_COMMAND}";
 

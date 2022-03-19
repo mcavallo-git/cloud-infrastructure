@@ -131,10 +131,27 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     #       |     |
     #       |     |--> binary OR with 10010  - FALSE
     #       |
-    #       |
     #       |--> Result:  System reports [ arm frequency capped ]
+    #
+    #
+    #
+    # ex) vcgencmd get_throttled returns "0x50000" hex value
     #       |
-    #       |--> Old Note (based on Raspi forum comment): System reports [ under-voltage ] and [ currently throttled ]
+    #       |--> Convert to binary: "01010000000000000000"
+    #       |     |
+    #       |     |--> binary OR with 00000  -  TRUE  (under-voltage)
+    #       |     |
+    #       |     |--> binary OR with 00001  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 00010  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10000  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10001  - FALSE
+    #       |     |
+    #       |     |--> binary OR with 10010  - FALSE
+    #       |
+    #       |--> Result:  System reports [ under-voltage ]
     #
     #
     # ------------------------------

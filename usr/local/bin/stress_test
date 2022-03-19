@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/stress_test" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/stress_test?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------
 
 if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
   apt-get -y update;

@@ -196,8 +196,8 @@ fi;
 # env:PATH Appends (Directories/Executables)
 #
 unset PATH_APPENDS_ARR; declare -a PATH_APPENDS_ARR; # [Re-]Instantiate bash array
-PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/bin");
-PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
+# PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/bin");
+# PATH_APPENDS_ARR+=("${HOME}/Documents/GitHub/cloud-infrastructure/usr/local/sbin");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubectl");
 PATH_APPENDS_ARR+=("${HOME}/.azure-kubelogin");
 for EACH_PATH_APPEND in "${PATH_APPENDS_ARR[@]}"; do

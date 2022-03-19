@@ -15,9 +15,30 @@ if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
   apt-get -y install stress;
 fi;
 
-echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ stress --cpu ${STRESS_CPU_THREADS:-500} --timeout ${STRESS_TIMEOUT:-3600}; ]...";
+EVAL_COMMAND="";
+EVAL_COMMAND+="stress";
+EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
+EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
+EVAL_COMMAND+="--vm ${STRESS_MEM_THREADS:-${STRESS_RAM_THREADS:-1}} ";
+EVAL_COMMAND+="--vm-bytes 128M ";
+EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-10} ";
+EVAL_COMMAND+="--verbose ";
+EVAL_COMMAND+=";";
 
-stress --cpu ${STRESS_CPU_THREADS:-500} --timeout ${STRESS_TIMEOUT:-3600};
+echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
+eval "${EVAL_COMMAND}";
+
+
+# ------------------------------
+# Example stress call:
+# -c 2 : Spawn two workers spinning on sqrt()
+# -i 1 : Spawn one worker spinning on sync()
+# -m 1 : Spawn one worker spinning on malloc()/free()
+# --vm-bytes 128M : Malloc 128MB per vm worker (default is 256MB)
+# -t 10s : Timeout after ten seconds
+# -v : Be verbose
+
+# stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M --timeout 10s;
 
 
 # ------------------------------------------------------------
@@ -25,5 +46,7 @@ stress --cpu ${STRESS_CPU_THREADS:-500} --timeout ${STRESS_TIMEOUT:-3600};
 # Citation(s)
 #
 #   linustechtips.com  |  "Linux CPU Stress testing and temperature recording - Linux, macOS and Everything Not-Windows - Linus Tech Tips"  |  https://linustechtips.com/main/topic/277966-linux-cpu-stress-testing-and-temperature-recording/?tab=comments#comment-3770257
+#
+#   www.cyberciti.biz  |  "Stress Test CPU and Memory (VM) On a Linux / Unix With Stress-ng - nixCraft"  |  https://www.cyberciti.biz/faq/stress-test-linux-unix-server-with-stress-ng/
 #
 # ------------------------------------------------------------

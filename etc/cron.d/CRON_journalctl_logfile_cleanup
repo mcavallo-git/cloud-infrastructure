@@ -6,3 +6,9 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### [ JOURNALCTL ] Remove logfiles older than 90 days & make sure that, net, the logfiles don't add up to over 5 GB (otherwise trim them back until they do)  -  https://crontab.guru/#0_2_*_*_*
 0 2 * * * root journalctl --vacuum-time=90d --vacuum-size=5G;
+
+# ------------------------------
+#
+# journalctl global config:  /etc/systemd/journald.conf
+#
+# ------------------------------

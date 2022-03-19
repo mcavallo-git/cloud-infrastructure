@@ -19,10 +19,10 @@ EVAL_COMMAND="";
 EVAL_COMMAND+="stress ";
 EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
 EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
-EVAL_COMMAND+="--vm ${STRESS_MEM_THREADS:-${STRESS_RAM_THREADS:-1}} ";
-EVAL_COMMAND+="--vm-bytes 128M ";
-EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-10} ";
-# EVAL_COMMAND+="--verbose ";
+EVAL_COMMAND+="--vm ${STRESS_MEM_THREADS:-1} ";
+EVAL_COMMAND+="--vm-bytes ${STRESS_MEM_BYTES:-128M} ";
+EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-3600} ";
+EVAL_COMMAND+="--verbose ";
 EVAL_COMMAND+=";";
 
 echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";

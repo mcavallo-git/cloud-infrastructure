@@ -1,6 +1,14 @@
 #!/bin/bash
+#
+#   LOCAL_SBIN="/usr/local/sbin/unifi_poe_cycler" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
 # ------------------------------
-# vi "/root/bin/unifi_poe_cycler";
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/unifi_poe_cycler?t=$(date +'%s.%N')" | bash;
+
+
+fi;
 # ------------------------------
 #
 # Log all shell output & error output to logfile

@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/str_repeat" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/str_repeat?t=$(date +'%s.%N')" | bash -s -- "-" "60";
+
+fi;
+# ------------------------------------------------------------
+
+if [[ -z "${1}" ]]; then
+  echo "Error:  First argument unset/empty - Expected string to be repeated";
+elif [[ -z "${2}" ]]; then
+  echo "Error:  Second argument unset/empty - Expected repeat count (e.g. the number of times to repeat the first argument)";
+else
+  printf -- "${1}%.0s" $(seq ${2});
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   www.cyberciti.biz  |  "How to repeat a character 'n' times in Bash - nixCraft"  |  https://www.cyberciti.biz/faq/repeat-a-character-in-bash-script-under-linux-unix/
+#
+# ------------------------------------------------------------

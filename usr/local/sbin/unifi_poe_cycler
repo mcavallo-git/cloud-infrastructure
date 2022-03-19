@@ -156,7 +156,7 @@ else
       echo "Info:  ✓  DO power cycle (restart) PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) != 0)";
 
       # Install sshpass
-      if [[ -n "$(command -v sshpass 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+      if [[ -z "$(command -v sshpass 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
         echo "Info:  Installing required Linux package \"sshpass\"...";
         apt-get -y update; apt-get -y install "sshpass";
       fi;

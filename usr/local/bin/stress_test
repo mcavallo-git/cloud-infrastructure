@@ -10,35 +10,59 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 fi;
 # ------------------------------
 
+# Install Linux package "stress"
 if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
-  apt-get -y update;
-  apt-get -y install stress;
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress; ]...";
+  apt-get -y update; apt-get -y install stress;
 fi;
 
+# Instantiate runtime variables which allow overrides via environment variables
 EVAL_COMMAND="";
 EVAL_COMMAND+="stress ";
 EVAL_COMMAND+="--cpu ${STRESS_CPU_THREADS:-2} ";
 EVAL_COMMAND+="--io ${STRESS_IO_THREADS:-1} ";
 EVAL_COMMAND+="--vm ${STRESS_MEMORY_THREADS:-1} ";
-EVAL_COMMAND+="--vm-bytes ${STRESS_MEMORY_THREAD_BYTES:-128M} ";
+EVAL_COMMAND+="--vm-bytes ${STRESS_MEMORY_THREAD_BYTES:-128MB} ";  # default: --vm-bytes 256MB
 EVAL_COMMAND+="--timeout ${STRESS_TIMEOUT:-3600} ";
-EVAL_COMMAND+="--verbose ";
+# EVAL_COMMAND+="--verbose ";
 EVAL_COMMAND+=";";
 
+# Run the stress test
 echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
-eval "${EVAL_COMMAND}";
+eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
+
+# Exit cleanly
+exit ${EXIT_CODE};
 
 
 # ------------------------------
-# Example stress call:
-# -c 2 : Spawn two workers spinning on sqrt()
-# -i 1 : Spawn one worker spinning on sync()
-# -m 1 : Spawn one worker spinning on malloc()/free()
-# --vm-bytes 128M : Malloc 128MB per vm worker (default is 256MB)
-# -t 10s : Timeout after ten seconds
-# -v : Be verbose
+#
+# Example call(s):  stress
+#
 
-# stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M --timeout 10s;
+if [[ 0 -eq 1 ]]; then
+
+stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M --timeout 10s;
+
+fi;
+
+
+# ------------------------------
+#
+# Example call(s):  stress-ng
+#
+
+if [[ 0 -eq 1 ]]; then
+
+stress-ng --sequential 4 --timeout 10s --metrics;
+
+stress-ng --all 2 --cpu-ops 10 --metrics-brief;
+
+stress-ng --cpu 0 --cpu-method all --timeout 10s;
+
+stress-ng --cpu 0 --cpu-method all --cpu-ops 100;
+
+fi;
 
 
 # ------------------------------------------------------------

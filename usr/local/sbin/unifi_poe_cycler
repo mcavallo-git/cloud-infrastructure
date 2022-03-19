@@ -1,0 +1,197 @@
+#!/bin/bash
+# ------------------------------
+# vi "/root/bin/unifi_poe_cycler";
+# ------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/unifi_poe_cycler_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/unifi_poe_cycler"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date +'%Y%m%d')"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" );
+exec 2>&1;
+# ------------------------------
+
+EXIT_CODE=0;
+
+START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+START_NANOSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+START_MICROSECONDS=$(echo ${START_NANOSECONDS} | cut --characters 1-6);
+START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+
+echo "------------------------------";
+echo "-- Info:  Start of \"unifi_poe_cycler\" runtime at [ ${START_DATETIME}.${START_MICROSECONDS} ]";
+
+# ------------------------------
+#
+# Script must run as root (or via sudo)
+#
+if [[ "$(id -un)" != "root" ]]; then
+
+  echo "";
+  echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Script must run as user \"root\" or via \"sudo\" command";
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+
+else
+  # ------------------------------
+  #
+  # Ensure required variables are set to a non-empty value
+  #
+  if [[ -z "${UNIFI_SSH_HOSTNAME}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"UNIFI_SSH_HOSTNAME\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  if [[ -z "${UNIFI_POE_PORT}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"UNIFI_POE_PORT\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  if [[ -z "${UNIFI_SSH_USERNAME}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"UNIFI_SSH_USERNAME\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  if [[ -z "${UNIFI_SSH_USERPASS}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"UNIFI_SSH_USERPASS\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  if [[ -z "${UNIFI_SSH_KEY_FULLPATH}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"UNIFI_SSH_KEY_FULLPATH\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  if [[ -z "${POE_DEPENDENT_HOSTS}" ]]; then
+    echo "Error:  Required environment variable is unset/empty:  \"POE_DEPENDENT_HOSTS\"";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+  # ------------------------------
+  if [[ "${EXIT_CODE}" -eq 0 ]]; then
+
+    DO_POE_CYCLE=0;
+
+    HIGH_AVAILABILITY_HOST_EXISTS=0;
+    POE_DEPENDENT_HOST_EXISTS=0;
+
+    POE_CYCLE_TIMEOUT_MINUTES=${POE_CYCLE_TIMEOUT_MINUTES:-120};  # Do not cycle more often than this many minutes
+    POE_CYCLE_EVENTS_LOG="${POE_CYCLE_EVENTS_LOG:-${LOGDIR}/poe_cycle_events.log}";
+
+    if [[ ! -d "$(dirname "${POE_CYCLE_EVENTS_LOG}";)" ]]; then
+      mkdir -p "$(dirname "${POE_CYCLE_EVENTS_LOG}";)";
+    fi;
+
+    # ------------------------------
+    #
+    # Parse ${HIGH_AVAILABILITY_HOSTS} as a comma delimited string of high availibility hostnames/ip addresses
+    #  |
+    #  |--> Do NOT cycle power if any poe dependent high availability hosts (usually mobile devices) are active - Require that they are all absent (which could mean asleep/locked) before cycling PoE power
+    #
+
+    if [[ -n "${HIGH_AVAILABILITY_HOSTS}" ]]; then  # If one or more High Availability hosts are specified
+
+      for EACH_HIGH_AVAILABILITY_HOST in $(echo ${HIGH_AVAILABILITY_HOSTS} | tr "," "\n";); do
+        EACH_HOST_FAILED="$(ping -w 1 -c 1 "${EACH_HIGH_AVAILABILITY_HOST}" 1>'/dev/null' 2>&1; echo ${?};)";
+        if [[ "${EACH_HOST_FAILED}" -eq 0 ]]; then
+          echo "Info:  High Availability (HA) host FOUND (ping succeeded):  [ ${EACH_HIGH_AVAILABILITY_HOST} ]  -  Do NOT restart PoE (wait until all no HA hosts are disconnected)";
+          HIGH_AVAILABILITY_HOST_EXISTS=1;
+          break;
+        fi;
+      done;
+      if [[ "${HIGH_AVAILABILITY_HOST_EXISTS}" -eq 0 ]]; then
+        echo "Info:  No High Availability (HA) host(s) found (ping failed for all hosts in HIGH_AVAILABILITY_HOSTS_ARR[@] == [$(echo "${HIGH_AVAILABILITY_HOSTS}" | tr "," "|";)])";
+      fi;
+    fi;
+
+    # ------------------------------
+    #
+    # Parse ${POE_DEPENDENT_HOSTS} as a comma delimited string of static, "known good" device hostnames/ip addresses (one of which should always exist) which are connected via target UniFi PoE switch
+    #  |
+    #  |--> Only perform check if no High Availability (HA) hosts exist
+    #
+    if [[ "${HIGH_AVAILABILITY_HOST_EXISTS}" -eq 0 ]]; then
+
+      for EACH_POE_DEPENDENT_HOST in $(echo ${POE_DEPENDENT_HOSTS} | tr "," "\n";); do
+        EACH_HOST_FAILED="$(ping -w 1 -c 1 "${EACH_POE_DEPENDENT_HOST}" 1>'/dev/null' 2>&1; echo ${?};)";
+        if [[ "${EACH_HOST_FAILED}" -eq 0 ]]; then
+          echo "Info:  PoE dependent host FOUND (ping succeeded):  [ ${EACH_POE_DEPENDENT_HOST} ]  -  Do NOT restart PoE (assume UniFi PoE AP is working as-intended)";
+          POE_DEPENDENT_HOST_EXISTS=1;
+          break;
+        fi;
+      done;
+      if [[ "${POE_DEPENDENT_HOST_EXISTS}" -eq 0 ]]; then
+        if [[ -f "${POE_CYCLE_EVENTS_LOG}" ]]; then
+          # Check to see if we've cycled the PoE for this port in the last X minutes
+          if [[ "$(find "${POE_CYCLE_EVENTS_LOG}" -type f -cmin -${POE_CYCLE_TIMEOUT_MINUTES} | wc -l;)" -gt 0 ]]; then
+            # Don't run this action too often - the AP would always be getting power cycled by false negatives!
+            echo "Info:  PoE cycle skipped  -  Previous PoE was cycle occurred less than ${POE_CYCLE_TIMEOUT_MINUTES} minutes ago";
+          else
+            echo "Info:  PoE cycle approved  -  At least ${POE_CYCLE_TIMEOUT_MINUTES} minutes have elapsed since the previous PoE cycle";
+            DO_POE_CYCLE=1;
+          fi;
+        else
+          echo "Info:  PoE cycle approved  -  No PoE cycle logfile exists (yet)";
+          DO_POE_CYCLE=1;
+        fi;
+      fi;
+      if [[ "${POE_DEPENDENT_HOST_EXISTS}" -eq 0 ]]; then
+        echo "Info:  No PoE dependent host(s) were found (ping failed for all hosts in HIGH_AVAILABILITY_HOSTS_ARR[@] == [$(echo "${POE_DEPENDENT_HOSTS}" | tr "," "|";)])";
+      fi;
+    fi;
+
+    # ------------------------------
+    #
+    # If above criteria determined that the poe should be cycled, then cycle it
+    #
+    if [[ "${DO_POE_CYCLE}" -eq 0 ]]; then
+      echo "Info:  ✘  Do NOT cycle/restart PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) == 0)";
+
+    else
+      echo "Info:  ✓  DO cycle/restart PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) != 0)";
+
+      # Install sshpass
+      if [[ -n "$(command -v sshpass 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+        echo "Info:  Installing required Linux package \"sshpass\"...";
+        apt-get -y update; apt-get -y install "sshpass";
+      fi;
+
+      echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Cycling power for PoE port [ ${UNIFI_POE_PORT} ] on Unifi host \"${UNIFI_SSH_HOSTNAME}\"" | tee -a "${POE_CYCLE_EVENTS_LOG}";
+
+      POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep 10; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
+
+      sshpass -p ${UNIFI_SSH_USERPASS} ssh ${UNIFI_SSH_USERNAME}@${UNIFI_SSH_HOSTNAME} -i "${UNIFI_SSH_KEY_FULLPATH}" "${POE_CYCLE_CLI_COMMAND}";
+
+    fi;
+
+    # ------------------------------
+    #
+    # Cleanup log files outside of the retention policy's max-age
+    #
+    LOGFILES_TO_CLEAN="${LOGDIR}/$(basename ${LOGDIR})_";
+    RETENTION_DAYS=30;
+    if [[ "$(find "${LOGFILES_TO_CLEAN}"* -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
+      echo "";
+      echo "Info:  Cleaning logs which are [ older than ${RETENTION_DAYS} days old ] ** [ whose fullpath matches the pattern \"${LOGFILES_TO_CLEAN}\"* ]...";
+      find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
+    fi;
+
+  fi;
+
+fi;
+
+# ------------------------------
+
+END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+END_NANOSECONDS=$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+END_MICROSECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-6);
+END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
+END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
+
+echo "== Info:  End of \"unifi_poe_cycler\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
+
+exit ${EXIT_CODE:-0};
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   community.ui.com  |  "Power Cycle POE port on UniFi Switch remotely. | Ubiquiti Community"  |  https://community.ui.com/questions/Power-Cycle-POE-port-on-UniFi-Switch-remotely-/f14675bd-85ae-41de-a524-5ffdfcdca7bf#answer/9a8ad92a-5520-478c-b886-f06f767d840c
+#
+# ------------------------------------------------------------

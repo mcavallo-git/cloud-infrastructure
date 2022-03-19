@@ -105,12 +105,14 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     Throttle_Val="0x${Throttle_Val_After_X}";
     list_throttled="Throttle Val\t=  ${Throttle_Val}";
     #
-    # 0   |  00000  |  0x00    under-voltage
-    # 1   |  00001  |  0x01    arm frequency capped
-    # 2   |  00010  |  0x02    currently throttled (turbo disabled due to low voltage / over-temperature)
-    # 16  |  10000  |  0x10    under-voltage has occurred
-    # 17  |  10001  |  0x11    arm frequency capped has occurred
-    # 18  |  10010  |  0x12    throttling has occurred
+    # Dec |  Binary |  Hex   | Result
+    # ----|---------|--------|----------------------------
+    # 0   |  00000  |  0x00  | under-voltage
+    # 1   |  00001  |  0x01  | arm frequency capped
+    # 2   |  00010  |  0x02  | currently throttled (turbo disabled due to low voltage / over-temperature)
+    # 16  |  10000  |  0x10  | under-voltage has occurred
+    # 17  |  10001  |  0x11  | arm frequency capped has occurred
+    # 18  |  10010  |  0x12  | throttling has occurred
     #
     # ex) 0x50005 means you are [ under-voltage ] and [ currently throttled ]
     #
@@ -220,6 +222,8 @@ fi;
 #
 # Citation(s)
 #
-#   www.raspberrypi.org  |  "[ubuntu] Getting CPU tempature on Ubuntu - Raspberry Pi Forums"  |  https://www.raspberrypi.org/forums/viewtopic.php?t=252115
+#   forums.raspberrypi.com  |  "[ubuntu] Getting CPU tempature on Ubuntu - Raspberry Pi Forums"  |  https://forums.raspberrypi.com/viewtopic.php?t=252115
+#
+#   forums.raspberrypi.com  |  "vcgencmd get_throttled returns 0xd0000 and 0x50000 - Raspberry Pi Forums"  |  https://forums.raspberrypi.com/viewtopic.php?f=63&t=240215
 #
 # ------------------------------------------------------------

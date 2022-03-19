@@ -78,7 +78,8 @@ else
     HIGH_AVAILABILITY_HOST_EXISTS=0;
     POE_DEPENDENT_HOST_EXISTS=0;
 
-    POE_CYCLE_TIMEOUT_MINUTES=${POE_CYCLE_TIMEOUT_MINUTES:-120};  # Do not cycle more often than this many minutes
+    POE_CYCLE_TIMEOUT_MINUTES=${POE_CYCLE_TIMEOUT_MINUTES:-120};  # Do not power cycle more often than this many minutes
+
     POE_CYCLE_EVENTS_LOG="${POE_CYCLE_EVENTS_LOG:-${LOGDIR}/poe_cycle_events.log}";
 
     if [[ ! -d "$(dirname "${POE_CYCLE_EVENTS_LOG}";)" ]]; then
@@ -89,7 +90,7 @@ else
     #
     # Parse ${HIGH_AVAILABILITY_HOSTS} as a comma delimited string of high availibility hostnames/ip addresses
     #  |
-    #  |--> Do NOT cycle power if any poe dependent high availability hosts (usually mobile devices) are active - Require that they are all absent (which could mean asleep/locked) before cycling PoE power
+    #  |--> Do NOT power cycle if any poe dependent high availability hosts (usually mobile devices) are active - Require that they are all absent (which could mean asleep/locked) before cycling PoE power
     #
 
     if [[ -n "${HIGH_AVAILABILITY_HOSTS}" ]]; then  # If one or more High Availability hosts are specified
@@ -125,16 +126,16 @@ else
       done;
       if [[ "${POE_DEPENDENT_HOST_EXISTS}" -eq 0 ]]; then
         if [[ -f "${POE_CYCLE_EVENTS_LOG}" ]]; then
-          # Check to see if we've cycled the PoE for this port in the last X minutes
+          # Check to see if we've power cycled the PoE for this port in the last X minutes
           if [[ "$(find "${POE_CYCLE_EVENTS_LOG}" -type f -cmin -${POE_CYCLE_TIMEOUT_MINUTES} | wc -l;)" -gt 0 ]]; then
             # Don't run this action too often - the AP would always be getting power cycled by false negatives!
-            echo "Info:  PoE cycle skipped  -  Previous PoE was cycle occurred less than ${POE_CYCLE_TIMEOUT_MINUTES} minutes ago";
+            echo "Info:  PoE power cycle skipped  -  Previous PoE power cycle occurred less than ${POE_CYCLE_TIMEOUT_MINUTES} minutes ago";
           else
-            echo "Info:  PoE cycle approved  -  At least ${POE_CYCLE_TIMEOUT_MINUTES} minutes have elapsed since the previous PoE cycle";
+            echo "Info:  PoE power cycle approved  -  At least ${POE_CYCLE_TIMEOUT_MINUTES} minutes have elapsed since the previous PoE power cycle";
             DO_POE_CYCLE=1;
           fi;
         else
-          echo "Info:  PoE cycle approved  -  No PoE cycle logfile exists (yet)";
+          echo "Info:  PoE power cycle approved  -  No PoE power cycle logfile exists (yet)";
           DO_POE_CYCLE=1;
         fi;
       fi;
@@ -145,13 +146,13 @@ else
 
     # ------------------------------
     #
-    # If above criteria determined that the poe should be cycled, then cycle it
+    # If above criteria determined that the poe should be power cycled, then power cycle it
     #
     if [[ "${DO_POE_CYCLE}" -eq 0 ]]; then
-      echo "Info:  ✘  Do NOT cycle/restart PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) == 0)";
+      echo "Info:  ✘  Do NOT power cycle (restart) PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) == 0)";
 
     else
-      echo "Info:  ✓  DO cycle/restart PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) != 0)";
+      echo "Info:  ✓  DO power cycle (restart) PoE  (DO_POE_CYCLE(${DO_POE_CYCLE}) != 0)";
 
       # Install sshpass
       if [[ -n "$(command -v sshpass 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.

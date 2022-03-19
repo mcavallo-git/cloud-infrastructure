@@ -73,7 +73,7 @@ else
   # ------------------------------
   if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
-    DO_POE_CYCLE=0;
+    DO_POE_CYCLE=${DO_POE_CYCLE:-0};
 
     HIGH_AVAILABILITY_HOST_EXISTS=0;
     POE_DEPENDENT_HOST_EXISTS=0;
@@ -114,7 +114,7 @@ else
     #  |
     #  |--> Only perform check if no High Availability (HA) hosts exist
     #
-    if [[ "${HIGH_AVAILABILITY_HOST_EXISTS}" -eq 0 ]]; then
+    if [[ "${HIGH_AVAILABILITY_HOST_EXISTS}" -eq 0 ]] && [[ "${DO_POE_CYCLE}" -eq 0 ]]; then
 
       for EACH_POE_DEPENDENT_HOST in $(echo ${POE_DEPENDENT_HOSTS} | tr "," "\n";); do
         EACH_HOST_FAILED="$(ping -w 1 -c 1 "${EACH_POE_DEPENDENT_HOST}" 1>'/dev/null' 2>&1; echo ${?};)";
@@ -142,6 +142,7 @@ else
       if [[ "${POE_DEPENDENT_HOST_EXISTS}" -eq 0 ]]; then
         echo "Info:  No PoE dependent host(s) were found (ping failed for all hosts in HIGH_AVAILABILITY_HOSTS_ARR[@] == [$(echo "${POE_DEPENDENT_HOSTS}" | tr "," "|";)])";
       fi;
+
     fi;
 
     # ------------------------------

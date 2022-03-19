@@ -78,8 +78,9 @@ else
     HIGH_AVAILABILITY_HOST_EXISTS=0;
     POE_DEPENDENT_HOST_EXISTS=0;
 
-    CYCLE_PADDING_MINUTES=${CYCLE_PADDING_MINUTES:-120};  # Do not power cycle more often than this many minutes
-    # CYCLE_PAUSE_SECONDS=${CYCLE_PADDING_MINUTES:-120};
+    CYCLE_MAX_FREQUENCY_MINUTES=${CYCLE_MAX_FREQUENCY_MINUTES:-120};  # Do not power cycle more often than this many minutes
+
+    # POE_SLEEP_SECONDS=${CYCLE_MAX_FREQUENCY_MINUTES:-120};
 
     POE_CYCLE_EVENTS_LOG="${POE_CYCLE_EVENTS_LOG:-${LOGDIR}/poe_cycle_events.log}";
 
@@ -128,11 +129,11 @@ else
       if [[ "${POE_DEPENDENT_HOST_EXISTS}" -eq 0 ]]; then
         if [[ -f "${POE_CYCLE_EVENTS_LOG}" ]]; then
           # Check to see if we've power cycled the PoE for this port in the last X minutes
-          if [[ "$(find "${POE_CYCLE_EVENTS_LOG}" -type f -cmin -${CYCLE_PADDING_MINUTES} | wc -l;)" -gt 0 ]]; then
+          if [[ "$(find "${POE_CYCLE_EVENTS_LOG}" -type f -cmin -${CYCLE_MAX_FREQUENCY_MINUTES} | wc -l;)" -gt 0 ]]; then
             # Don't run this action too often - the AP would always be getting power cycled by false negatives!
-            echo "Info:  PoE power cycle skipped  -  Previous PoE power cycle occurred less than ${CYCLE_PADDING_MINUTES} minutes ago";
+            echo "Info:  PoE power cycle skipped  -  Previous PoE power cycle occurred less than ${CYCLE_MAX_FREQUENCY_MINUTES} minutes ago";
           else
-            echo "Info:  PoE power cycle approved  -  At least ${CYCLE_PADDING_MINUTES} minutes have elapsed since the previous PoE power cycle";
+            echo "Info:  PoE power cycle approved  -  At least ${CYCLE_MAX_FREQUENCY_MINUTES} minutes have elapsed since the previous PoE power cycle";
             DO_POE_CYCLE=1;
           fi;
         else

@@ -163,7 +163,7 @@ else
         apt-get -y update; apt-get -y install "sshpass";
       fi;
 
-      echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Cycling power for PoE port [ ${UNIFI_POE_PORT} ] on Unifi host \"${UNIFI_SSH_HOSTNAME}\"" | tee -a "${POE_CYCLE_EVENTS_LOG}";
+      echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] Cycling power for PoE port [ ${UNIFI_POE_PORT} ] on Unifi host \"${UNIFI_SSH_HOSTNAME}\"  (sleep duration between PoE stop & PoE start commands = [ ${POE_CYCLE_SLEEP_SECONDS} ])" | tee -a "${POE_CYCLE_EVENTS_LOG}";
 
       POE_CYCLE_CLI_COMMAND="cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'shutdown'; sleep ${POE_CYCLE_SLEEP_SECONDS}; cli -c 'configure' -c 'interface GigabitEthernet ${UNIFI_POE_PORT}' -c 'no shutdown';";
 

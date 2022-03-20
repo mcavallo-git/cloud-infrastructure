@@ -169,10 +169,7 @@ bash_prompt() {
 export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";  # helm: Allow Pushing/pulling of helm charts to/from registries  -  Helm 3 supports storing and sharing across Open Container Initiative (OCI) registries; However, the support is still considered experimental, and you need to enable it by setting HELM_EXPERIMENTAL_OCI variable to 1.  -  https://helm.sh/docs/topics/registries/
 
 
-export MANOPT=${MANOPT:-"-P cat"};  # man: Set command line defaults.  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
-
-
-# export MANPAGER=${MANPAGER:-cat};  # man: Set the name of the program used to display the manual page.  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
+export MANOPT=${MANOPT:-"--pager=cat --no-hyphenation --no-justification"};  # man: Set additional cli arguments used for every call to "man".  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
 
 
 export MANWIDTH=${MANWIDTH:-150};  # man: Set the line length for which manual pages should be formatted.  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html

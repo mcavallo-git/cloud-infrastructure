@@ -1423,8 +1423,8 @@ else
               # Set journalctl/journald system wide defaults via its config file in /etc/systemd
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 CONF_FILEPATH="/etc/systemd/journald.conf";
-                OPT="SystemMaxUse";  VAL="768M";  sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
-                OPT="RuntimeMaxUse"; VAL="32M"; sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
+                OPT="SystemMaxUse";  VAL="768M"; sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
+                OPT="RuntimeMaxUse"; VAL="32M";  sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
               fi;
             fi;
             # ------------------------------

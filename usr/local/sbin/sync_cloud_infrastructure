@@ -1420,11 +1420,18 @@ else
               else
                 echo "  |--> Denied - Logfile auto cleanup disabled";
               fi;
-              # Set journalctl/journald system wide defaults via its config file in /etc/systemd
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 CONF_FILEPATH="/etc/systemd/journald.conf";
-                OPT="SystemMaxUse";  VAL="768M"; sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
-                OPT="RuntimeMaxUse"; VAL="32M";  sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
+                if [[ 0 -eq 1 ]]; then
+                  # Set journalctl/journald system wide defaults via its config file in /etc/systemd
+                  OPT="SystemMaxUse";  VAL="768M"; sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
+                  OPT="RuntimeMaxUse"; VAL="32M";  sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
+                else
+                  # WARNING: Setting the values directly in /etc/systemd/journald.conf seems to make Raspberry Pis hiccup and max their disk I/O usage while running (mild speculation, but issue presented itself intermittently after setting these values)
+                  #  |--> Revert the change by re-commending out these lines
+                  OPT="SystemMaxUse";  sed -re "s/^\s*${OPT}=.*$/#\0/" "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
+                  OPT="RuntimeMaxUse"; sed -re "s/^\s*${OPT}=.*$/#\0/" "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
+                fi;
               fi;
             fi;
             # ------------------------------

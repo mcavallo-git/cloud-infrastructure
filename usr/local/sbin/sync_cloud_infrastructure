@@ -1429,8 +1429,8 @@ else
                 else
                   # WARNING: Setting the values directly in /etc/systemd/journald.conf seems to make Raspberry Pis hiccup and max their disk I/O usage while running (mild speculation, but issue presented itself intermittently after setting these values)
                   #  |--> Revert the change by re-commending out these lines
-                  OPT="SystemMaxUse";  sed -re "s/^\s*${OPT}=.*$/#\0/" "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
-                  OPT="RuntimeMaxUse"; sed -re "s/^\s*${OPT}=.*$/#\0/" "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
+                  OPT="SystemMaxUse";  sed -re "s/^\s*${OPT}=.*$/#\0/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.
+                  OPT="RuntimeMaxUse"; sed -re "s/^\s*${OPT}=.*$/#\0/" -i "${CONF_FILEPATH}";  # RuntimeMaxUse: Specifies the maximum disk space that can be used in volatile storage (within the /run filesystem).
                 fi;
               fi;
             fi;

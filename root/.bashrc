@@ -160,29 +160,20 @@ bash_prompt() {
   # extra backslash in front of \$ to make bash colorize the prompt
 }
 
+# ------------------------------
+#
+# Environment variables
+#
 
-#
-# env:MANWIDTH
-#  |
-#  |--> man  -  Used as the line length for which manual pages should be formatted.  -  https://www.freebsd.org/cgi/man.cgi?query=man
-#
-export MANWIDTH=${MANWIDTH:-150};
-
-
-#
-# env:HELM_EXPERIMENTAL_OCI
-#  |
-#  |--> helm  -  Allow Pushing/pulling of helm charts  -  Helm 3 supports storing and sharing across Open Container Initiative (OCI) registries; However, the support is still considered experimental, and you need to enable it by setting HELM_EXPERIMENTAL_OCI variable to 1.  -  https://helm.sh/docs/topics/registries/
-#
-export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";
+export MANPAGER=${MANPAGER:-cat};  # man: Set the name of the program used to display the manual page.  -  https://www.freebsd.org/cgi/man.cgi?query=man
 
 
-#
-# env:NG_CLI_ANALYTICS
-#  |
-#  |--> ng (Angular)  -  Avoid having to always hit "n" or "no" to analytics requests during ng cli calls (Disables Usage Analytics)  -  Equivalent to calling [ ng analytics off --global; ]  -  https://github.com/angular/angular-cli/blob/master/docs/design/analytics.md
-#
-export NG_CLI_ANALYTICS="${NG_CLI_ANALYTICS:-false}";
+export MANWIDTH=${MANWIDTH:-150};  # man: Set the line length for which manual pages should be formatted.  -  https://www.freebsd.org/cgi/man.cgi?query=man
+
+
+export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";  # helm: Allow Pushing/pulling of helm charts to/from registries  -  Helm 3 supports storing and sharing across Open Container Initiative (OCI) registries; However, the support is still considered experimental, and you need to enable it by setting HELM_EXPERIMENTAL_OCI variable to 1.  -  https://helm.sh/docs/topics/registries/
+
+export NG_CLI_ANALYTICS="${NG_CLI_ANALYTICS:-false}";  # ng (Angular): Avoid having to always hit "n" or "no" to analytics requests during ng cli calls (Disables Usage Analytics). Equivalent to calling [ ng analytics off --global; ]  -  https://github.com/angular/angular-cli/blob/master/docs/design/analytics.md
 
 
 #

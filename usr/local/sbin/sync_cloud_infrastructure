@@ -1420,7 +1420,7 @@ else
               else
                 echo "  |--> Denied - Logfile auto cleanup disabled";
               fi;
-              # Set journalctl/journald default settings directly in its config file
+              # Set journalctl/journald system wide defaults via its config file in /etc/systemd
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 CONF_FILEPATH="/etc/systemd/journald.conf";
                 OPT="SystemMaxUse";  VAL="1G";  sed -re "s/^[#\s]*${OPT}=.*$/${OPT}=${VAL}/" -i "${CONF_FILEPATH}";  # SystemMaxUse:  Specifies the maximum disk space that can be used by the journal in persistent storage.

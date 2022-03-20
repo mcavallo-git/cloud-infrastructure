@@ -245,9 +245,11 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
     for EachComponent in "${Components_ClockFreq[@]}"; do
       Each_ClockFreq_Hz=$(vcgencmd measure_clock $EachComponent | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p';);
-      if [[ "$(echo "${Each_ClockFreq_Hz} > 0" | bc -l;)" -eq 1 ]]; then
-        list_clock_freq="${list_clock_freq}\n";
-        list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l;) MHz";
+      if [[ -n "${Each_ClockFreq_Hz}" ]]; then
+        if [[ "$(echo "${Each_ClockFreq_Hz} > 0" | bc -l;)" -eq 1 ]]; then
+          list_clock_freq="${list_clock_freq}\n";
+          list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l;) MHz";
+        fi;
       fi;
     done;
     # list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";

@@ -192,10 +192,8 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
         ["F"]="1111" \
       );
 
-      THROTTLED_OUTPUT=$(vcgencmd get_throttled);
-      IFS='x';
-      read -a strarr <<< "$THROTTLED_OUTPUT";
-      THROTTLED_CODE_HEX=${strarr[1]};
+      # Get the throttle code as a hex value & slice off the beginning "0x", then left-pad it with zeroes to 5 total characters
+      THROTTLED_CODE_HEX="$(echo "$(printf "%05d" "$(vcgencmd get_throttled | sed -rne "s/^\s*throttled=0x([0-9]+)\s*$/\1/pi";)";)";)";
 
       # Display current issues
       list_throttled+="Current issues:";

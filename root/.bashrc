@@ -172,6 +172,9 @@ export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";  # helm: Allow Pushi
 export MANOPT=${MANOPT:-"--pager=cat --no-hyphenation --no-justification"};  # man: Set additional cli arguments used for every call to "man".  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
 
 
+# export MANROFFOPT="${MANROFFOPT:-""}";  # man: Set additional cli arguments for man's formatting tool (assumed to be groff).  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
+
+
 export MANWIDTH=${MANWIDTH:-150};  # man: Set the line length for which manual pages should be formatted.  -  https://manpages.debian.org/bullseye/man-db/man.1.en.html
 
 

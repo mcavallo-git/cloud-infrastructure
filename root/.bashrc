@@ -162,13 +162,25 @@ bash_prompt() {
 
 
 #
+# env:MANWIDTH
+#  |
+#  |--> man  -  Used as the line length for which manual pages should be formatted.  -  https://www.freebsd.org/cgi/man.cgi?query=man
+#
+export MANWIDTH=${MANWIDTH:-150};
+
+
+#
 # env:HELM_EXPERIMENTAL_OCI
+#  |
+#  |--> helm  -  Allow Pushing/pulling of helm charts  -  Helm 3 supports storing and sharing across Open Container Initiative (OCI) registries; However, the support is still considered experimental, and you need to enable it by setting HELM_EXPERIMENTAL_OCI variable to 1.  -  https://helm.sh/docs/topics/registries/
 #
 export HELM_EXPERIMENTAL_OCI="${HELM_EXPERIMENTAL_OCI:-1}";
 
 
 #
 # env:NG_CLI_ANALYTICS
+#  |
+#  |--> ng (Angular)  -  Avoid having to always hit "n" or "no" to analytics requests during ng cli calls (Disables Usage Analytics)  -  Equivalent to calling [ ng analytics off --global; ]  -  https://github.com/angular/angular-cli/blob/master/docs/design/analytics.md
 #
 export NG_CLI_ANALYTICS="${NG_CLI_ANALYTICS:-false}";
 

@@ -31,7 +31,7 @@ server {
 # ------------------------------------------------------------
 ### Create/Renew SSL Certificate (Wildcard, Let's Encrypt using [ _acme-challenge ] TXT records)
 #
-# DN="mcavallo.work"; certbot certonly --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DN}" -d "*.${DN}"; certbot certificates -d "${DN}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
+# DN="mcavallo.work"; certbot certonly --no-eff-email --manual --manual-public-ip-logging-ok --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns-01 -d "${DN}" -d "*.${DN}"; certbot certificates -d "${DN}"; test -x "/usr/local/sbin/reload_nginx" && /usr/local/sbin/reload_nginx;
 #
 #
 # ------------------------------------------------------------

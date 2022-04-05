@@ -124,7 +124,7 @@ else
         if [[ ! -d "$(dirname "${FULLPATH_LOCAL_PKG}";)" ]]; then
           mkdir -pv "$(dirname "${FULLPATH_LOCAL_PKG}";)";
         fi;
-        # If the package is already installed locally, version-stamp it and remove it
+        # If the package is already installed locally, version-stamp it and move it
         LOCAL_VERSION="";
         if [[ -f "${FULLPATH_LOCAL_PKG}" ]]; then
           LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";
@@ -148,8 +148,12 @@ else
           chmod 0755 "${FULLPATH_CURLED_PKG}";
           # Verify the downloaded package is indeed exectuable
           CURLED_PKG_VERSION="$(if [[ -x "${FULLPATH_CURLED_PKG}" ]]; then eval "${FULLPATH_CURLED_PKG} ${VERSION_CLI}"; fi;)";
-          if [[ -n "${CURLED_PKG_VERSION}" ]]; then
-            if [[ ! -f "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" ]]; then
+          if [[ -z "${CURLED_PKG_VERSION}" ]]; then
+            echo "Unable to determine version of downloaded module (by running it)";
+          else
+            if [[ -f "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" ]]; then
+              echo "File [ ${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION} ] already exists"
+            else
               mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}";
               ln -sfv "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" "${FULLPATH_LOCAL_PKG}";
             fi;

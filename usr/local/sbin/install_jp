@@ -151,12 +151,8 @@ else
           if [[ -z "${CURLED_PKG_VERSION}" ]]; then
             echo "Unable to determine version of downloaded module (by running it)";
           else
-            if [[ -f "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" ]]; then
-              echo "File [ ${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION} ] already exists"
-            else
-              mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}";
-              ln -sfv "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" "${FULLPATH_LOCAL_PKG}";
-            fi;
+            mv -fv "${FULLPATH_CURLED_PKG}" "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}";
+            ln -sfv "${FULLPATH_LOCAL_PKG}-${CURLED_PKG_VERSION}" "${FULLPATH_LOCAL_PKG}";
           fi;
         fi;
       fi;

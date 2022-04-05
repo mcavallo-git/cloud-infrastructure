@@ -169,8 +169,8 @@ else
   fi;
   # Get the locally installed package's version
   if [[ -f "${FULLPATH_LOCAL_PKG}" ]] ; then
-    if [[ -z "$(command -v "jp";)" ]] || [[ -z "$(jp --version 2>'/dev/null';)" ]]; then
-      # ln -sfv "${FULLPATH_LOCAL_PKG}" "${FULLPATH_LOCAL_PKG}";
+    if [[ -z "$(command -v "jp";)" || -z "$(jp --version 2>'/dev/null';)" ]] && [[ ! -f "/usr/bin/jp" ]]; then
+      ln -sfv "${FULLPATH_LOCAL_PKG}" "/usr/bin/jp";
     fi;
     # Package found locally
     LOCAL_VERSION="$(if [[ -x "${FULLPATH_LOCAL_PKG}" ]]; then eval "${FULLPATH_LOCAL_PKG} ${VERSION_CLI}"; fi;)";

@@ -11,11 +11,12 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 # Dry run
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bulk_rename_based_on_media_creation_date?t=$(date +'%s.%N')" | bash;
-
+# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bulk_rename_based_on_media_creation_date?t=$(date +'%s.%N')" | bash;  # Need to determine why curl'ed script does not function past the DEFAULT_WORKING_DIR if conditional
+bulk_rename_based_on_media_creation_date;
 
 # Non-dry run
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bulk_rename_based_on_media_creation_date?t=$(date +'%s.%N')" | bash -s -- --dry-run 0;
+# curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/bulk_rename_based_on_media_creation_date?t=$(date +'%s.%N')" | bash -s -- --dry-run 0;  # Need to determine why curl'ed script does not function past the DEFAULT_WORKING_DIR if conditional
+bulk_rename_based_on_media_creation_date --dry-run 0;
 
 fi;
 # ------------------------------------------------------------

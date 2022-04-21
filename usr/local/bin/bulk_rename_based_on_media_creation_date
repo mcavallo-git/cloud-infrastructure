@@ -159,8 +159,8 @@ else
 
       if [ ${DRY_RUN} -eq 1 ]; then
         echo "============================================================";
-        echo "FILENAME_STARTSWITH: ${FILENAME_STARTSWITH}";
-        echo "FILENAME_GLOBMATCH:  ${FILENAME_GLOBMATCH}";
+        echo "FILENAME_STARTSWITH:  ${FILENAME_STARTSWITH}";
+        echo "FILENAME_GLOBMATCH:   ${FILENAME_GLOBMATCH}";
       fi;
 
       if [ -d "${WORKING_DIR}" ]; then
@@ -174,9 +174,9 @@ else
           if [ ${DRY_RUN} -ne 0 ]; then  # Running in dry-run mode
 
             echo "------------------------------------------------------------";
-            echo "EACH_FILENAME:       ${EACH_FILENAME}";
-            echo "EACH_CREATE_DATE:    ${EACH_CREATE_DATE}";
-            echo "EACH_NEW_FILENAME:   ${EACH_NEW_FILENAME}   ! ! Skipping File-Rename (Dry-Run Mode) ! !";
+            echo "EACH_FILENAME:        ${EACH_FILENAME}";
+            echo "EACH_CREATE_DATE:     ${EACH_CREATE_DATE}";
+            echo "EACH_NEW_FILENAME:    ${EACH_NEW_FILENAME}   ! ! Skipping File-Rename (Dry-Run Mode) ! !";
 
           else  # NOT running in dry-run mode
 

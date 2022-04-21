@@ -3,7 +3,9 @@
 #
 # bulk_rename_based_on_media_creation_date
 #  |
-#  |--> Appens a date-created timestamp onto the filename for Game clips downloaded from 'Xbox Console Companion' (Windows 10) app
+#  |--> Reads the metadata from files (via 'exiftool' package) in a given working directory and appends each file's date-created timestamp onto the end of its filename.
+#  |
+#  |--> Originally used as a bulk-renamer for Game clips downloaded from the "Xbox Console Companion" Windows 10 app
 #
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:

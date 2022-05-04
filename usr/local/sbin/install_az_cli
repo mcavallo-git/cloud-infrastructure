@@ -31,11 +31,11 @@ else
   elif [ -n "$(command -v yum 2>'/dev/null';)" ]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
 
     # Import the Microsoft repository key
-    sudo rpm --import "https://packages.microsoft.com/keys/microsoft.asc";
+    rpm --import "https://packages.microsoft.com/keys/microsoft.asc";
     # Create local azure-cli repository information
     echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "/etc/yum.repos.d/azure-cli.repo";
     # Install with the dnf install command
-    sudo dnf install azure-cli;
+    dnf install azure-cli;
     # ------------------------------
 
   else  # Distros:  Anything non-Debian && non-Fedora
@@ -49,8 +49,11 @@ else
   # ------------------------------------------------------------
 
   if [ -n "$(command -v az 2>'/dev/null';)" ]; then
+    # Configure Az CLI to auto-install any prerequisite modules required by Az CLI calls
+    az config set "auto-upgrade.enable=no" "auto-upgrade.prompt=no" "extension.use_dynamic_install=yes_without_prompt" "auto-upgrade.all=yes";
+
     # Install the Kubernetes CLI (e.g. kubectl) for Azure AKS Clusters
-    sudo az aks install-cli;
+    az aks install-cli;
     # ------------------------------
   fi;
 

@@ -31,6 +31,8 @@ else
   if [ -z "$(command -v jq 2>'/dev/null';)" ]; then
     apt-get -y update; apt-get -y install "jq";
   fi;
+  # OS info
+  IS_WSL="$(uname -r 2>&1 | grep -i 'microsoft' 1>'/dev/null' 2>&1 && echo "1" || echo "0";)";
   # docker info
   DOCKER_BINPATH="/usr/bin/docker";
   DOCKER_CURRENT_PATH="$(command -v docker 2>'/dev/null';)";
@@ -46,47 +48,66 @@ else
   DOCKER_WINCRED_CURRENT_VERSION="$(docker-credential-wincred.exe version 2>'/dev/null' | tr -d 'v';)";
   DOCKER_WINCRED_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" "https://github.com/docker/docker-credential-helpers/releases/latest" | xargs basename | tr -d 'v';);
   #
-  # Detect Linux vs WSL (Windows Subsystem for Linux) OSes
+  #   docker  - install/update
   #
-  if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then # ------------------------------------------------------------
-    #
-    #   docker  (WSL OS)
-    #
-    # Determine if docker is not installed
-    PACKAGE_ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^docker-ce\/" | wc -l);
-    if [[ "${PACKAGE_ALREADY_INSTALLED}" -eq 0 ]] && [ ! -f "${DOCKER_BINPATH}" ]; then
-      # Ensure that no deprecated versions of docker are installed
-      apt-get -y remove "docker" "docker-engine" "docker.io" "containerd" "runc";
-      # Ensure that docker pre-requisites are installed
-      apt-get -y update; apt-get -y install "apt-transport-https" "ca-certificates" "curl" "gnupg" "lsb-release";
-      # Add Docker’s official GPG key
-      mkdir -p "/etc/apt/keyrings"; curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | sudo gpg --dearmor -o "/etc/apt/keyrings/docker.gpg";
-      # Add the docker apt package repository
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1> '/dev/null';
-      # Install docker ce (community edition)
-      echo -e "\nInstalling/Updating docker from source \"download.docker.com/linux/ubuntu\"...\n";
-      apt-get -y update; apt-get -y install "docker-ce" "docker-ce-cli" "containerd.io" "docker-compose-plugin";
+  # Determine if docker is not installed
+  PACKAGE_ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^docker-ce\/" | wc -l;);
+  if [[ "${PACKAGE_ALREADY_INSTALLED}" -eq 0 ]] && [ ! -f "${DOCKER_BINPATH}" ]; then
+    # Ensure that no deprecated versions of docker are installed
+    apt-get -y remove "docker" "docker-engine" "docker.io" "containerd" "runc";
+    # Ensure that docker pre-requisites are installed
+    apt-get -y update; apt-get -y install "apt-transport-https" "ca-certificates" "curl" "gnupg" "lsb-release";
+    # Add Docker’s official GPG key
+    mkdir -p "/etc/apt/keyrings"; curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o "/etc/apt/keyrings/docker.gpg";
+    # Add the docker apt package repository
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1> '/dev/null';
+    # Install docker ce (community edition)
+    echo -e "\nInstalling/Updating docker from source \"download.docker.com/linux/ubuntu\"...\n";
+    apt-get -y update; apt-get -y install "docker-ce" "docker-ce-cli" "containerd.io" "docker-compose-plugin";
+    # Fallback installer
+    if [ -z "$(command -v docker 2>'/dev/null';)" ]; then
+      echo -e "\nUsing docker convenience script (fallback installer) from source \"get.docker.com\"...\n";
+      curl -sL "https://get.docker.com/" | sh;
     fi;
-    #
-    #   docker-compose  (WSL OS)
-    #
-    # Determine if docker-compose is not installed or needs to be updated
-    if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${DOCKER_COMPOSE_BINPATH}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
-      # Download the latest version of the docker-compose binary
-      URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
-      echo -e "\nInstalling/Updating docker-compose from source \"${URL_DOCKER_COMPOSE_LATEST}\"...\n";
-      curl -fsSL "${URL_DOCKER_COMPOSE_LATEST}" -o "${DOCKER_COMPOSE_BINPATH}";
-      # Set file permission as-intended
-      chmod 0755 "${DOCKER_COMPOSE_BINPATH}";
-      #
-      # docker-compose-switch  (WSL OS)
-      #
-      # DOCKER_COMPOSE_SW_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/compose-switch/releases/latest | xargs basename;);
-      # URL_DOCKER_COMPOSE_SW_LATEST="https://github.com/docker/compose-switch/releases/download/${DOCKER_COMPOSE_SW_LATEST_VERSION}/docker-compose-linux-$(dpkg --print-architecture)";
-      #
+  fi;
+  #
+  #   docker-compose  - install/update
+  #
+  # Determine if docker-compose is not installed or needs to be updated
+  if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${DOCKER_COMPOSE_BINPATH}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
+    # Alpine distro compatibility prerequisites
+    if [ -n "$(command -v apk 2>'/dev/null';)" ]; then
+      apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
     fi;
+    # Download the latest version of the docker-compose binary
+    URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
+    echo -e "\nInstalling/Updating docker-compose from source \"${URL_DOCKER_COMPOSE_LATEST}\"...\n";
+    curl -fsSL "${URL_DOCKER_COMPOSE_LATEST}" -o "${DOCKER_COMPOSE_BINPATH}";
+    # Set file permission as intended
+    chmod 0755 "${DOCKER_COMPOSE_BINPATH}";
     #
-    #   docker-wincred  (WSL OS)
+    # docker-compose  (non-x86_64)  -  https://github.com/docker/compose/issues/6831#issuecomment-558865087
+    #   |--> Compatibility for Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs
+    #
+    # if [ "$(uname -m)" != "x86_64" ]; then
+    #   echo "Calling [ apt-get -y update ]...";
+    #   apt-get -y update;
+    #   echo "Calling [ apt-get -y install python3; ]...";
+    #   apt-get -y install python3;
+    #   echo "Calling [ apt-get -y install python3-pip; ]...";
+    #   apt-get -y install python3-pip;
+    #   echo "Calling [ pip3 install --upgrade pip; ]...";
+    #   pip3 install --upgrade pip;
+    #   echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
+    #   python3 -m pip install -IU docker-compose;
+    # fi;
+  fi;
+  #
+  #   WSL-only actions
+  #
+  if [[ "${IS_WSL}" -eq 1 ]]; then
+    #
+    #   docker-wincred  - install/update
     #
     # Determine if docker-credential-wincred.exe is not installed or needs to be updated
     if [ -z "${DOCKER_WINCRED_CURRENT_VERSION}" ] || [[ "${DOCKER_WINCRED_CURRENT_PATH}" == "${DOCKER_WINCRED_BINPATH}" && "${DOCKER_WINCRED_CURRENT_VERSION}" != "${DOCKER_WINCRED_LATEST_VERSION}" ]]; then
@@ -94,60 +115,16 @@ else
       URL_DOCKER_WINCRED_LATEST="https://github.com/docker/docker-credential-helpers/releases/download/v${DOCKER_WINCRED_LATEST_VERSION}/docker-credential-wincred-v${DOCKER_WINCRED_LATEST_VERSION}-$(dpkg --print-architecture).zip";
       echo -e "\nInstalling/Updating docker-wincred from source \"${URL_DOCKER_WINCRED_LATEST}\"...\n";
       curl -fsSL "${URL_DOCKER_WINCRED_LATEST}" | zcat | tee "${DOCKER_WINCRED_BINPATH}" 1>'/dev/null';
-      # Set file permission as-intended
+      # Set file permission as intended
       chmod 0755 "${DOCKER_WINCRED_BINPATH}";
       # Ensure that the docker CLI uses the wincred helper for storing credentials
       echo -e '{"credsStore":"wincred.exe"}' | jq -jS > "${HOME}/.docker/config.json";
     fi;
     #
-    # WSL 2 Docker Service-Start Hotfix - Apply to '/etc/profile'
+    # Docker Service-Start Hotfix - Apply to '/etc/profile'  (apply only to WSL 2 instances)
     #
-    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL 2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
-    #
-  else # ------------------------------------------------------------
-    #
-    #   docker  (Non-WSL OS)
-    #
-    # Determine if docker is already installed
-    PACKAGE_ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^docker-ce\/" | wc -l);
-    if [[ "${PACKAGE_ALREADY_INSTALLED}" -eq 0 ]] && [ ! -f "${DOCKER_BINPATH}" ]; then
-      echo -e "\nInstalling/Updating docker from source \"get.docker.com\"...\n";
-      curl -sL "https://get.docker.com/" | sh;
-    fi;
-    #
-    #   docker-compose  (Non-WSL OS)
-    #
-    # Determine if docker-compose is already installed
-    if [ ! -f "${DOCKER_COMPOSE_BINPATH}" ]; then
-      if [ -n "$(command -v apk 2>'/dev/null';)" ]; then
-        # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
-        apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
-      fi;
-      if [ "$(uname -m)" == "x86_64" ]; then
-        #
-        # docker-compose (x86_64)  -  https://docs.docker.com/compose/install
-        #
-        URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
-        echo -e "\nInstalling/Updating docker-compose from source \"${URL_DOCKER_COMPOSE_LATEST}\"...\n";
-        curl -sL "${URL_DOCKER_COMPOSE_LATEST}" -o "${DOCKER_COMPOSE_BINPATH}";
-        # Set file permission as-intended
-        chmod 0755 "${DOCKER_COMPOSE_BINPATH}";
-      else
-        #
-        # docker-compose (Non-x86_64)  -  https://github.com/docker/compose/issues/6831#issuecomment-558865087
-        #   |--> Namely Raspberry Pis, which have ARM64 ("aarch64" machine hardware name) CPUs
-        #
-        echo "Calling [ apt-get -y update ]...";
-        apt-get -y update;
-        echo "Calling [ apt-get -y install python3; ]...";
-        apt-get -y install python3;
-        echo "Calling [ apt-get -y install python3-pip; ]...";
-        apt-get -y install python3-pip;
-        echo "Calling [ pip3 install --upgrade pip; ]...";
-        pip3 install --upgrade pip;
-        echo "Calling [ python3 -m pip install -IU docker-compose; ]...";
-        python3 -m pip install -IU docker-compose;
-      fi;
+    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then
+      sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL 2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1;
     fi;
   fi;
   # Enable docker locally

@@ -60,6 +60,7 @@ else
       # Add the docker apt package repository
       echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1> '/dev/null';
       # Install docker ce (community edition)
+      echo -e "\nInstalling/Updating docker from source \"download.docker.com/linux/ubuntu\"...\n";
       apt-get -y update; apt-get -y install "docker-ce" "docker-ce-cli" "containerd.io" "docker-compose-plugin";
     fi;
     #
@@ -68,6 +69,7 @@ else
     if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${BIN_DOCKER_COMPOSE}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-compose binary
       URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
+      echo -e "\nInstalling/Updating docker-compose from source \"github.com/docker/compose/releases\"...\n";
       curl -fsSL -o "${BIN_DOCKER_COMPOSE}" "${URL_DOCKER_COMPOSE_LATEST}";
       # Set file permission as-intended
       chmod 0755 "${BIN_DOCKER_COMPOSE}";
@@ -87,7 +89,8 @@ else
       DOCKER_WINCRED_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" "https://github.com/docker/docker-credential-helpers/releases/latest" | xargs basename;);
       # Download and extract docker-credential-wincred.exe via:
       URL_DOCKER_WINCRED_LATEST="https://github.com/docker/docker-credential-helpers/releases/download/${DOCKER_WINCRED_LATEST_VERSION}/docker-credential-wincred-${DOCKER_WINCRED_LATEST_VERSION}-$(dpkg --print-architecture).zip";
-      curl -fL "${URL_DOCKER_WINCRED_LATEST}" | zcat | tee "${BIN_DOCKER_WINCRED}" 1>'/dev/null';
+      echo -e "\nInstalling/Updating docker-wincred from source \"github.com/docker/docker-credential-helpers/releases\"...\n";
+      curl -fsSL "${URL_DOCKER_WINCRED_LATEST}" | zcat | tee "${BIN_DOCKER_WINCRED}" 1>'/dev/null';
       # Assigns execution permission to docker-credential-wincred.exe via
       chmod +x "${BIN_DOCKER_WINCRED}";
       # Ensure that the docker CLI uses the wincred helper for storing credentials by editing the docker config file (using nano) via:
@@ -105,6 +108,7 @@ else
     # Determine if docker is already installed
     PACKAGE_ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^docker-ce\/" | wc -l);
     if [[ "${PACKAGE_ALREADY_INSTALLED}" -eq 0 ]] && [ ! -f "${BIN_DOCKER}" ]; then
+      echo -e "\nInstalling/Updating docker from source \"get.docker.com\"...\n";
       curl -sL "https://get.docker.com/" | sh;
     fi;
     if [ -z "$(/usr/sbin/service docker status | grep 'Active: active (running)')" ]; then
@@ -124,6 +128,7 @@ else
         #
         # docker-compose (x86_64)  -  https://docs.docker.com/compose/install
         #
+        echo -e "\nInstalling/Updating docker-compose from source \"github.com/docker/compose/releases\"...\n";
         curl -sL "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o "${BIN_DOCKER_COMPOSE}";
         # Set file permission as-intended
         chmod 0755 "${BIN_DOCKER_COMPOSE}";

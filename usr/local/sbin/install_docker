@@ -66,8 +66,6 @@ else
     #
     #   docker-compose  (WSL OS)
     #
-    echo "DOCKER_COMPOSE_CURRENT_VERSION=[${DOCKER_COMPOSE_CURRENT_VERSION}]";
-    echo "DOCKER_COMPOSE_LATEST_VERSION=[${DOCKER_COMPOSE_LATEST_VERSION}]";
     if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${BIN_DOCKER_COMPOSE}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-compose binary
       URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
@@ -157,17 +155,18 @@ else
     systemctl enable docker --now;
   fi;
   # Show installed versions of docker & docker-compose
-  if [ -f "${BIN_DOCKER}" ]; then
+  if [ -f "${BIN_DOCKER}" ] || [ -f "${BIN_DOCKER_COMPOSE}" ] || [ -f "${BIN_DOCKER_WINCRED}" ]; then
     echo "";
-    echo "Local package found:   $("${BIN_DOCKER}" --version;)";
-  fi;
-  if [ -f "${BIN_DOCKER_COMPOSE}" ]; then
-    echo "";
-    echo "Local package found:   $("${BIN_DOCKER_COMPOSE}" --version;)";
-  fi;
-  if [ -f "${BIN_DOCKER_WINCRED}" ]; then
-    echo "";
-    echo "Local package found:   Docker Credential Wincred $("${BIN_DOCKER_WINCRED}" version;)";
+    echo " Getting package version(s)...";
+    if [ -f "${BIN_DOCKER}" ]; then
+      echo "   $("${BIN_DOCKER}" --version;)";
+    fi;
+    if [ -f "${BIN_DOCKER_COMPOSE}" ]; then
+      echo "   $("${BIN_DOCKER_COMPOSE}" --version;)";
+    fi;
+    if [ -f "${BIN_DOCKER_WINCRED}" ]; then
+      echo "   Docker Credential Wincred $("${BIN_DOCKER_WINCRED}" version;)";
+    fi;
   fi;
   echo "";
 fi;

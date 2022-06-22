@@ -96,7 +96,7 @@ else
       curl -fsSL "${URL_DOCKER_WINCRED_LATEST}" | zcat | tee "${DOCKER_WINCRED_BINPATH}" 1>'/dev/null';
       # Set file permission as-intended
       chmod 0755 "${DOCKER_WINCRED_BINPATH}";
-      # Ensure that the docker CLI uses the wincred helper for storing credentials by editing the docker config file (using nano) via:
+      # Ensure that the docker CLI uses the wincred helper for storing credentials
       echo -e '{"credsStore":"wincred.exe"}' | jq -jS > "${HOME}/.docker/config.json";
     fi;
     #

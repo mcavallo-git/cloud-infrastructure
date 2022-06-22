@@ -68,7 +68,7 @@ else
     #
     if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${BIN_DOCKER_COMPOSE}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-compose binary
-      URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
+      URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
       echo -e "\nInstalling/Updating docker-compose from source \"${URL_DOCKER_COMPOSE_LATEST}\"...\n";
       curl -fsSL "${URL_DOCKER_COMPOSE_LATEST}" -o "${BIN_DOCKER_COMPOSE}";
       # Set file permission as-intended
@@ -128,7 +128,7 @@ else
         #
         # docker-compose (x86_64)  -  https://docs.docker.com/compose/install
         #
-        URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
+        URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
         echo -e "\nInstalling/Updating docker-compose from source \"${URL_DOCKER_COMPOSE_LATEST}\"...\n";
         curl -sL "${URL_DOCKER_COMPOSE_LATEST}" -o "${BIN_DOCKER_COMPOSE}";
         # Set file permission as-intended

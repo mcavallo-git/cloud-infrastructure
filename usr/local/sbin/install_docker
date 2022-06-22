@@ -30,6 +30,15 @@ else
   BIN_DOCKER="/usr/bin/docker";
   BIN_DOCKER_COMPOSE="/usr/local/bin/docker-compose";
   BIN_DOCKER_WINCRED="/usr/local/bin/docker-credential-wincred.exe";
+  # Install prerequisite package(s)
+  if [ -z "$(command -v jq 2>'/dev/null';)" ]; then
+    apt-get -y update; apt-get -y install "jq";
+  fi;
+  # Get info regarding the [ latest ] version of docker-compose
+  DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
+  #
+  # Detect Linux vs WSL (Windows Subsystem for Linux) OSes
+  #
   if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then # ------------------------------------------------------------
     #
     #   WSL OS  -  Install docker
@@ -53,15 +62,9 @@ else
     #
     #   WSL OS  -  Install docker-compose
     #
-    # Install prerequisite package(s)
-    if [ -z "$(command -v jq 2>'/dev/null';)" ]; then
-      apt-get -y update; apt-get -y install "jq";
-    fi;
     # Get info regarding the [ current ] version of docker-compose
     DOCKER_COMPOSE_CURRENT_PATH="$(command -v docker-compose 2>'/dev/null';)";
     DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null';)";
-    # Get info regarding the [ latest ] version of docker-compose
-    DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
     if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${BIN_DOCKER_COMPOSE}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-compose binary
       URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";

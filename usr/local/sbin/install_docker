@@ -66,6 +66,8 @@ else
     #
     #   docker-compose  (WSL OS)
     #
+    echo "DOCKER_COMPOSE_CURRENT_VERSION=[${DOCKER_COMPOSE_CURRENT_VERSION}]";
+    echo "DOCKER_COMPOSE_LATEST_VERSION=[${DOCKER_COMPOSE_LATEST_VERSION}]";
     if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${BIN_DOCKER_COMPOSE}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-compose binary
       URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";

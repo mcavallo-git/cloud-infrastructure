@@ -41,22 +41,27 @@ else
       apt-get -y remove "docker" "docker-engine" "docker.io" "containerd" "runc";
       # Ensure that docker pre-requisites are installed
       apt-get -y update; apt-get -y install "apt-transport-https" "ca-certificates" "curl" "gnupg" "lsb-release";
+      # Add Docker’s official GPG key
+      # curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o "/usr/share/keyrings/docker-archive-keyring.gpg";
+      mkdir -p "/etc/apt/keyrings"; curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | sudo gpg --dearmor -o "/etc/apt/keyrings/docker.gpg";
       # Add the docker apt package repository
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1>'/dev/null';
-      # Add the docker apt package repository's assocated GPG key
-      curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o "/usr/share/keyrings/docker-archive-keyring.gpg";
+      # echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1>'/dev/null';
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee "/etc/apt/sources.list.d/docker.list" 1> '/dev/null';
       # Install docker ce (community edition)
-      apt-get -y update; sudo apt-get -y install "docker-ce" "docker-ce-cli" "containerd.io";
+      apt-get -y update; apt-get -y install "docker-ce" "docker-ce-cli" "containerd.io" "docker-compose-plugin";
     fi;
     #
     #   WSL OS  -  Install docker-compose
     #
-    # Determine if docker-compose is already installed
-    if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
-      # Install prerequisite package(s)
+    # Install prerequisite package(s)
+    if [ -z "$(command -v jq 2>'/dev/null';)" ]; then
       apt-get -y update; apt-get -y install "jq";
-      # Determine the latest version of docker-compose
-      DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
+    fi;
+    # Determine the latest version of docker-compose
+    DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
+    DOCKER_COMPOSE_CURRENT_PATH="$(command -v docker-compose 2>'/dev/null';)";
+    DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null';)";
+    if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [ "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]; then
       # Download the latest version of the docker-compose binary
       URL_DOCKER_COMPOSE_LATEST="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)";
       curl -fL -o "${BIN_DOCKER_COMPOSE}" "${URL_DOCKER_COMPOSE_LATEST}";
@@ -138,7 +143,6 @@ else
     #
     # Determine if docker-compose is already installed
     if [ ! -f "${BIN_DOCKER_COMPOSE}" ]; then
-
       if [ -n "$(command -v apk 2>'/dev/null';)" ]; then
         # Alpine Distro(s) --> Install Prerequisite-Packages [ py-pip, python-dev, libffi-dev, openssl-dev, gcc, libc-dev, & make ]
         apk update && apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make;
@@ -197,7 +201,7 @@ fi;
 #
 # Citation(s)
 #
-#   docs.docker.com  |  "Get Docker CE for Ubuntu"  |  https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce-1
+#   docs.docker.com  |  "Install Docker Engine on Ubuntu | Docker Documentation"  |  https://docs.docker.com/engine/install/ubuntu/
 #
 #   docs.docker.com  |  "Install Docker Compose"  |  https://docs.docker.com/compose/install/
 #

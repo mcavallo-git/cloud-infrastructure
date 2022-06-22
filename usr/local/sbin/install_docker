@@ -36,11 +36,11 @@ else
   fi;
   # docker - Get current version info
   DOCKER_CURRENT_PATH="$(command -v docker 2>'/dev/null';)";
-  DOCKER_CURRENT_VERSION="$(docker --version 2>'/dev/null' | sed -rne "s/^[^0-9]+([0-9\.]+)[,\s].+$/\1/p";)";
+  DOCKER_CURRENT_VERSION="$(docker --version 2>'/dev/null' | sed -rne "s/^[^0-9]+([0-9\.]+)[,\s].+$/\1/p" | tr -d 'v';)";
   # docker-compose - Get current/latest version info
   DOCKER_COMPOSE_CURRENT_PATH="$(command -v docker-compose 2>'/dev/null';)";
-  DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null';)";
-  DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r;);
+  DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null' | tr -d 'v';)";
+  DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r | tr -d 'v';);
   #
   # Detect Linux vs WSL (Windows Subsystem for Linux) OSes
   #

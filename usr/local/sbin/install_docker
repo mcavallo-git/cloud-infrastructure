@@ -140,14 +140,15 @@ else
   if [ -f "${DOCKER_BINPATH}" ] || [ -f "${DOCKER_COMPOSE_BINPATH}" ] || [ -f "${DOCKER_WINCRED_BINPATH}" ]; then
     echo -e "\n Getting package version(s)...\n";
     if [ -f "${DOCKER_BINPATH}" ]; then
-      echo -e "   $("${DOCKER_BINPATH}" --version;)\n";
+      echo -e "------------------------------\n$("${DOCKER_BINPATH}" version;)";
     fi;
     if [ -f "${DOCKER_COMPOSE_BINPATH}" ]; then
-      echo -e "   $("${DOCKER_COMPOSE_BINPATH}" --version;)\n";
+      echo -e "------------------------------\n$("${DOCKER_COMPOSE_BINPATH}" --version;)";
     fi;
     if [ -f "${DOCKER_WINCRED_BINPATH}" ]; then
-      echo -e "   Docker Credential Wincred $("${DOCKER_WINCRED_BINPATH}" version;)\n";
+      echo -e "------------------------------\nDocker Credential Wincred $("${DOCKER_WINCRED_BINPATH}" version;)";
     fi;
+    echo -e "------------------------------\n";
   fi;
 fi;
 

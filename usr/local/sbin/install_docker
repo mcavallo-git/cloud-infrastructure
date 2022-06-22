@@ -156,16 +156,15 @@ else
   fi;
   # Show installed versions of docker & docker-compose
   if [ -f "${BIN_DOCKER}" ] || [ -f "${BIN_DOCKER_COMPOSE}" ] || [ -f "${BIN_DOCKER_WINCRED}" ]; then
-    echo "";
-    echo " Getting package version(s)...";
+    echo -e "\n Getting package version(s)...\n";
     if [ -f "${BIN_DOCKER}" ]; then
-      echo "   $("${BIN_DOCKER}" --version;)";
+      echo -e "   $("${BIN_DOCKER}" --version;)\n";
     fi;
     if [ -f "${BIN_DOCKER_COMPOSE}" ]; then
-      echo "   $("${BIN_DOCKER_COMPOSE}" --version;)";
+      echo -e "   $("${BIN_DOCKER_COMPOSE}" --version;)\n";
     fi;
     if [ -f "${BIN_DOCKER_WINCRED}" ]; then
-      echo "   Docker Credential Wincred $("${BIN_DOCKER_WINCRED}" version;)";
+      echo -e "   Docker Credential Wincred $("${BIN_DOCKER_WINCRED}" version;)\n";
     fi;
   fi;
   echo "";

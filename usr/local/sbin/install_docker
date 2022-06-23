@@ -138,7 +138,7 @@ else
   fi;
   # Show installed versions of docker & docker-compose
   if [ -f "${DOCKER_BINPATH}" ] || [ -f "${DOCKER_COMPOSE_BINPATH}" ] || [ -f "${DOCKER_WINCRED_BINPATH}" ]; then
-    echo -e "\n Getting package version(s)...\n";
+    echo -e "\n Getting installed package version(s)...\n";
     if [ -f "${DOCKER_BINPATH}" ]; then
       echo -e "------------------------------\n$("${DOCKER_BINPATH}" version;)";
     fi;

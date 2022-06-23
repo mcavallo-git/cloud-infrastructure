@@ -41,7 +41,7 @@ else
   # Get info:  docker-compose
   DOCKER_COMPOSE_BINPATH="/usr/local/bin/docker-compose";
   DOCKER_COMPOSE_CURRENT_PATH="$(command -v docker-compose 2>'/dev/null';)";
-  DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null' | tr -d 'v';)";
+  DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose version --short 2>'/dev/null' | tr -d 'v';)";
   DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r | tr -d 'v';);
   # Get info:  docker-credential-wincred.exe
   DOCKER_WINCRED_BINPATH="/usr/local/bin/docker-credential-wincred.exe";

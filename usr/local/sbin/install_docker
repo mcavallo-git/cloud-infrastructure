@@ -27,30 +27,32 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
+  # ------------------------------
   # Install prerequisite package(s)
   if [ -z "$(command -v jq 2>'/dev/null';)" ]; then
     apt-get -y update; apt-get -y install "jq";
   fi;
-  # OS info
+  # Get info:  OS
   IS_WSL="$(uname -r 2>&1 | grep -i 'microsoft' 1>'/dev/null' 2>&1 && echo "1" || echo "0";)";
-  # docker info
+  # Get info:  docker
   DOCKER_BINPATH="/usr/bin/docker";
   DOCKER_CURRENT_PATH="$(command -v docker 2>'/dev/null';)";
   DOCKER_CURRENT_VERSION="$(docker --version 2>'/dev/null' | sed -rne "s/^[^0-9]+([0-9\.]+)[,\s].+$/\1/p" | tr -d 'v';)";
-  # docker-compose info
+  # Get info:  docker-compose
   DOCKER_COMPOSE_BINPATH="/usr/local/bin/docker-compose";
   DOCKER_COMPOSE_CURRENT_PATH="$(command -v docker-compose 2>'/dev/null';)";
   DOCKER_COMPOSE_CURRENT_VERSION="$(docker-compose --version --short 2>'/dev/null' | tr -d 'v';)";
   DOCKER_COMPOSE_LATEST_VERSION=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | jq .name -r | tr -d 'v';);
-  # docker-credential-wincred.exe info
+  # Get info:  docker-credential-wincred.exe
   DOCKER_WINCRED_BINPATH="/usr/local/bin/docker-credential-wincred.exe";
   DOCKER_WINCRED_CURRENT_PATH="$(command -v docker-credential-wincred.exe 2>'/dev/null';)";
   DOCKER_WINCRED_CURRENT_VERSION="$(docker-credential-wincred.exe version 2>'/dev/null' | tr -d 'v';)";
   DOCKER_WINCRED_LATEST_VERSION=$(curl -fsSL -o /dev/null -w "%{url_effective}" "https://github.com/docker/docker-credential-helpers/releases/latest" | xargs basename | tr -d 'v';);
+  # ------------------------------
   #
   #   docker  - install/update
   #
-  # Determine if docker is not installed
+  # Determine if package is not installed
   PACKAGE_ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^docker-ce\/" | wc -l;);
   if [[ "${PACKAGE_ALREADY_INSTALLED}" -eq 0 ]] && [ ! -f "${DOCKER_BINPATH}" ]; then
     # Ensure that no deprecated versions of docker are installed
@@ -70,10 +72,11 @@ else
       curl -sL "https://get.docker.com/" | sh;
     fi;
   fi;
+  # ------------------------------
   #
   #   docker-compose  - install/update
   #
-  # Determine if docker-compose is not installed or needs to be updated
+  # Determine if package is not installed (or needs to be updated)
   if [ -z "${DOCKER_COMPOSE_CURRENT_VERSION}" ] || [[ "${DOCKER_COMPOSE_CURRENT_PATH}" == "${DOCKER_COMPOSE_BINPATH}" && "${DOCKER_COMPOSE_CURRENT_VERSION}" != "${DOCKER_COMPOSE_LATEST_VERSION}" ]]; then
     # Alpine distro compatibility prerequisites
     if [ -n "$(command -v apk 2>'/dev/null';)" ]; then
@@ -102,14 +105,15 @@ else
     #   python3 -m pip install -IU docker-compose;
     # fi;
   fi;
+  # ------------------------------
   #
   #   WSL-only actions
   #
-  if [[ "${IS_WSL}" -eq 1 ]]; then
+  if [ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]; then
     #
     #   docker-wincred  - install/update
     #
-    # Determine if docker-credential-wincred.exe is not installed or needs to be updated
+    # Determine if package is not installed (or needs to be updated)
     if [ -z "${DOCKER_WINCRED_CURRENT_VERSION}" ] || [[ "${DOCKER_WINCRED_CURRENT_PATH}" == "${DOCKER_WINCRED_BINPATH}" && "${DOCKER_WINCRED_CURRENT_VERSION}" != "${DOCKER_WINCRED_LATEST_VERSION}" ]]; then
       # Download the latest version of the docker-credential-wincred.exe binary
       URL_DOCKER_WINCRED_LATEST="https://github.com/docker/docker-credential-helpers/releases/download/v${DOCKER_WINCRED_LATEST_VERSION}/docker-credential-wincred-v${DOCKER_WINCRED_LATEST_VERSION}-$(dpkg --print-architecture).zip";
@@ -121,7 +125,7 @@ else
       echo -e '{"credsStore":"wincred.exe"}' | jq -jS > "${HOME}/.docker/config.json";
     fi;
     #
-    # Docker Service-Start Hotfix - Apply to '/etc/profile'  (apply only to WSL 2 instances)
+    # Docker service start hotfix - Apply to '/etc/profile'  (applies only to WSL 2 instances)
     #
     if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then
       sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL 2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1;
@@ -144,7 +148,10 @@ else
     echo -e "\n Starting docker service...";
     /usr/sbin/service "docker" start;
   fi;
+  # ------------------------------
+  #
   # Show installed versions of docker & docker-compose
+  #
   if [ -f "${DOCKER_BINPATH}" ] || [ -f "${DOCKER_COMPOSE_BINPATH}" ] || [ -f "${DOCKER_WINCRED_BINPATH}" ]; then
     echo -e "\n Getting installed package version(s)...\n";
     if [ -f "${DOCKER_BINPATH}" ]; then

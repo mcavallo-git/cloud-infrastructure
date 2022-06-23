@@ -30,14 +30,14 @@ else
     fi;
   fi;
 
-  # Verify that taget service is enabled
-  if [ "$(systemctl is-enabled ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
-    systemctl enable ${SERVICE_NAME};
+  # Ensure that target service is enabled
+  if [[ "$(systemctl is-enabled "${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;)" != "0" ]]; then
+    systemctl enable "${SERVICE_NAME}.service" --now;  # --now also starts it immediately
   fi;
 
-  # Verify that taget service is active
-  if [ "$(systemctl is-active ${SERVICE_NAME} > /dev/null 2>&1; echo $?;)" != "0" ]; then
-    systemctl start ${SERVICE_NAME};
+  # Ensure that target service is active
+  if [[ "$(systemctl is-active "${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo $?;)" != "0" ]]; then
+    systemctl start "${SERVICE_NAME}.service";
   fi;
 
 fi;

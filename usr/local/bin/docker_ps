@@ -21,21 +21,9 @@ APPEND="\n${PS_DASHES}\n\n";
 fi;
 docker ps -a --format "${PS_FORMAT}" && echo -en "${APPEND}";
 
-
-# PS_FORMAT=""\
-# "-------------------------------------------------"\
-# "\n    DOCKER:  {{.Names}}     (ID={{.ID}})"\
-# "\n    Status:  {{.Status}}"\
-# "\n     Ports:  {{.Ports}}"\
-# "\n      Size:  {{.Size}}"\
-# "\n   Created:  {{.RunningFor}} on {{.CreatedAt}}"\
-# "";
-# docker ps -a --format "${PS_FORMAT}" && printf "\n";
-
-
-# ------------------------------------------------------------
-# EXIT HERE
 exit 0;
+
+
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
 # ------------------------------------------------------------
 #
@@ -96,4 +84,11 @@ CM="Size" && docker ps --format "table {{.${CM}}}";
 # Container status.
 CM="Status" && docker ps --format "table {{.${CM}}}";
 
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "bash - 'docker ps' output formatting: list only names of running containers - Stack Overflow"  |  https://stackoverflow.com/a/63807786
+#
 # ------------------------------------------------------------

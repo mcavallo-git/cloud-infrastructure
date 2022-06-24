@@ -4,6 +4,10 @@
 # Assume [ DISPLAY/LOG ] format when this script is called directly
 #
 PS_DASHES="-------------------------------------------------";
+if [[ -z "${1}" ]]; then
+PS_FORMAT="table {{.Image}}\t{{.Ports}}\t{{.Names}}";
+APPEND="";
+else
 PS_FORMAT=""\
 "\n${PS_DASHES}\n"\
 "\n     {{.Names}}   ({{.Status}})"\
@@ -13,7 +17,9 @@ PS_FORMAT=""\
 "\n          Ports:     {{.Ports}}"\
 "\n          Created:   {{.RunningFor}} on {{.CreatedAt}}"\
 "";
-docker ps -a --format "${PS_FORMAT}" && printf "\n${PS_DASHES}\n\n";
+APPEND="\n${PS_DASHES}\n\n";
+fi;
+docker ps -a --format "${PS_FORMAT}" && echo -en "${APPEND}";
 
 
 # PS_FORMAT=""\

@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_sqlcmd" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_sqlcmd?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_sqlcmd_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_sqlcmd"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------------------------------------
+  #
+  # Install sqlcmd & bcp (SQL Server command-line tools)
+  #
+  if [ $(which sqlcmd 2>'/dev/null' | wc -l;) -eq 0 ]; then
+    echo "Downloading/Installing sqlcmd && bcp...";
+    # Import the public repository GPG keys.
+    curl "https://packages.microsoft.com/keys/microsoft.asc" | apt-key add -;
+    # Register the Microsoft Ubuntu repository.
+    DISTRO_ID="$(lsb_release --short --id;)";  # ex) Ubuntu
+    DISTRO_RELEASE="$(lsb_release --short --release;)";  # ex) 20.04
+    curl "https://packages.microsoft.com/config/${DISTRO_ID,,}/${DISTRO_RELEASE}/prod.list" | tee "/etc/apt/sources.list.d/msprod.list";
+    # Update the sources list and run the installation command with the unixODBC developer package
+    apt-get -y update; apt-get -y install "mssql-tools" "unixodbc-dev";
+  fi;
+  # Show the path to sqlcmd
+  echo "";
+  echo "command -v sqlcmd = [ $(command -v sqlcmd 2>'/dev/null';) ]";
+  echo "";
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   docs.microsoft.com  |  "Install SQL Server command-line tools on Linux - SQL Server | Microsoft Docs"  |  https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools?view=sql-server-ver16#ubuntu
+#
+# ------------------------------------------------------------

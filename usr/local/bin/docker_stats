@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Determine sort order
+SORT_BY="CPU %";
+if [[ -n "${1}" ]]; then
+  if [[ "${1,,}" == *mem* ]] || [[ "${1,,}" == *ram* ]]; then
+    SORT_BY="MEM USAGE";
+  fi;
+fi;
+
+# Apply sorting on docker stats
+if [[ "${SORT_BY}" == "CPU %" ]]; then
+  # Sort by CPU usage
+  while [[ 1 -eq 1 ]]; do
+    DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
+    clear;
+    echo "$(date;)          Sorted by [ ${SORT_BY} ]";
+    echo -e "\n${DOCKER_STATS}";
+  done;
+else
+  # Sort by Memory usage
+  while [[ 1 -eq 1 ]]; do
+    DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
+    clear;
+    echo "$(date;)          Sorted by [ ${SORT_BY} ]";
+    echo -e "\n${DOCKER_STATS}";
+  done;
+fi;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "Sort by memory usage in docker stats - Stack Overflow"  |  https://stackoverflow.com/a/43932310
+#
+#   unix.stackexchange.com  |  "text processing - sort but keep header line at the top - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/11857
+#
+# ------------------------------------------------------------

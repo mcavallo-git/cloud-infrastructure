@@ -9,32 +9,35 @@ curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo
 fi;
 # ------------------------------------------------------------
 
-# Determine sort order
-SORT_BY="CPU";
+# Show only one sort
+SHOW_ONLY="";
 if [[ -n "${1}" ]]; then
   if [[ "${1,,}" == *mem* ]] || [[ "${1,,}" == *ram* ]]; then
-    SORT_BY="Memory";
+    SHOW_ONLY="MEM";
+  elif [[ "${1,,}" == *cpu* ]] || [[ "${1,,}" == *processor* ]]; then
+    SHOW_ONLY="CPU";
   fi;
 fi;
 
 # Apply sorting on docker stats
-if [[ "${SORT_BY}" == "CPU" ]]; then
-  # Sort by CPU usage
-  while [[ 1 -eq 1 ]]; do
-    DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
-    clear;
-    echo "$(date;)          Sorted by [ ${SORT_BY} usage ]";
-    echo -e "\n${DOCKER_STATS}";
-  done;
-else
-  # Sort by Memory usage
-  while [[ 1 -eq 1 ]]; do
-    DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
-    clear;
-    echo "$(date;)          Sorted by [ ${SORT_BY} usage ]";
-    echo -e "\n${DOCKER_STATS}";
-  done;
-fi;
+while [[ 1 -eq 1 ]]; do
+  STATS_UNSORTED="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}";)"
+  STATS_CPU_SORT="$(echo "Sorting: [ CPU usage ]";echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
+  STATS_MEM_SORT="$(echo "Sorting: [ MEM usage ]"; echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
+  clear;
+  date;
+  echo "";
+  if [[ "${SHOW_ONLY}" != "MEM" ]]; then
+    echo "${STATS_CPU_SORT}";
+  fi;
+  if [[ -z "${SHOW_ONLY}" ]]; then
+    echo "";
+  fi;
+  if [[ "${SHOW_ONLY}" != "CPU" ]]; then
+    echo "${STATS_MEM_SORT}";
+  fi;
+done;
+
 
 # ------------------------------------------------------------
 #

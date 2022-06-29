@@ -1,20 +1,29 @@
 #!/bin/bash
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_stats?t=$(date +'%s.%N')" | bash;  # Sort by CPU usage
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_stats?t=$(date +'%s.%N')" | bash -s -- "MEM";  # Sort by Memory usage
+
+fi;
+# ------------------------------------------------------------
 
 # Determine sort order
-SORT_BY="CPU %";
+SORT_BY="CPU";
 if [[ -n "${1}" ]]; then
   if [[ "${1,,}" == *mem* ]] || [[ "${1,,}" == *ram* ]]; then
-    SORT_BY="MEM USAGE";
+    SORT_BY="Memory";
   fi;
 fi;
 
 # Apply sorting on docker stats
-if [[ "${SORT_BY}" == "CPU %" ]]; then
+if [[ "${SORT_BY}" == "CPU" ]]; then
   # Sort by CPU usage
   while [[ 1 -eq 1 ]]; do
     DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
     clear;
-    echo "$(date;)          Sorted by [ ${SORT_BY} ]";
+    echo "$(date;)          Sorted by [ ${SORT_BY} usage ]";
     echo -e "\n${DOCKER_STATS}";
   done;
 else
@@ -22,7 +31,7 @@ else
   while [[ 1 -eq 1 ]]; do
     DOCKER_STATS="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
     clear;
-    echo "$(date;)          Sorted by [ ${SORT_BY} ]";
+    echo "$(date;)          Sorted by [ ${SORT_BY} usage ]";
     echo -e "\n${DOCKER_STATS}";
   done;
 fi;

@@ -22,8 +22,8 @@ fi;
 # Apply sorting on docker stats
 while [[ 1 -eq 1 ]]; do
   STATS_UNSORTED="$(docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}";)"
-  STATS_CPU_SORT="$(echo "Sorting: [ CPU usage ]";echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
-  STATS_MEM_SORT="$(echo "Sorting: [ MEM usage ]"; echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
+  STATS_CPU_SORT="$(echo "[ Sorted by CPU usage ]";echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 3 -h -r);)";
+  STATS_MEM_SORT="$(echo "[ Sorted by MEM usage ]"; echo "${STATS_UNSORTED}" | (read -r; printf "%s\n" "$REPLY"; sort -k 4 -h -r);)";
   clear;
   date;
   echo "";

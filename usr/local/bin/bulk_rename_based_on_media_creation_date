@@ -150,9 +150,11 @@ else
 
   for EACH_FILE_EXTENSION in "${FILE_EXTENSIONS_ARR[@]}"; do
 
-    if [ ${DRY_RUN} -eq 1 ]; then
+    if [ ${DRY_RUN} -eq 1 ]; then  # DRY RUN MODE
       echo "************************************************************";
+      echo "";
       echo "EACH_FILE_EXTENSION: ${EACH_FILE_EXTENSION}";
+      echo "";
     fi;
 
     for EACH_FILENAME_STARTSWITH in "${FILENAME_STARTSWITH_ARR[@]}"; do
@@ -160,7 +162,7 @@ else
       FILENAME_STARTSWITH="${EACH_FILENAME_STARTSWITH}";
       FILENAME_GLOBMATCH="${FILENAME_STARTSWITH}*.${EACH_FILE_EXTENSION}";
 
-      if [ ${DRY_RUN} -eq 1 ]; then
+      if [ ${DRY_RUN} -eq 1 ]; then  # DRY RUN MODE
         echo "============================================================";
         echo "FILENAME_STARTSWITH:  ${FILENAME_STARTSWITH}";
         echo "FILENAME_GLOBMATCH:   ${FILENAME_GLOBMATCH}";
@@ -174,15 +176,15 @@ else
 
           EACH_NEW_FILENAME="${FILENAME_STARTSWITH} ${EACH_CREATE_DATE}.${EACH_FILE_EXTENSION}";
 
-          if [ ${DRY_RUN} -ne 0 ]; then  # Running in dry-run mode
+          if [ ${DRY_RUN} -eq 1 ]; then  # DRY RUN MODE
 
             echo "------------------------------------------------------------";
             echo "EACH_FILENAME:        ${EACH_FILENAME}";
             echo "EACH_CREATE_DATE:     ${EACH_CREATE_DATE}";
             echo "EACH_NEW_FILENAME:    ${EACH_NEW_FILENAME}";
-            echo "           ! ! Skipping File-Rename (Dry-Run Mode) ! !";
+            echo "           ! ! Skipping File-Rename (Dry Run Mode) ! !";
 
-          else  # NOT running in dry-run mode
+          else  # ! ! NOT DRY RUN MODE ! !
 
             if [ -n "${EACH_CREATE_DATE}" ]; then  # If the created-on date resolved as-intended
 
@@ -207,5 +209,7 @@ else
     done;
 
   done;
+
+  echo "";
 
 fi;

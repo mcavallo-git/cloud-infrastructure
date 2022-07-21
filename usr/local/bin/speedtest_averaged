@@ -52,7 +52,7 @@ LOOP_ITERATIONS=${LOOP_ITERATIONS:-10};
 for i in $(seq ${LOOP_ITERATIONS}); do
   # Start a new speedtest
   echo -e "\n------------------------------";
-  echo -e "Running speedtest #${i}/${LOOP_ITERATIONS} ...\n";
+  echo -e "Running speedtest #${i}/${LOOP_ITERATIONS}...\n";
   EACH_SPEEDTEST="$(speedtest --simple;)";
   # Parse ping duration
   EACH_PING_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\0/p";)";

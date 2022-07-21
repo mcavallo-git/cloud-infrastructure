@@ -51,6 +51,7 @@ else
       # apt
       #
       if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+        export ACCEPT_EULA="${ACCEPT_EULA:-Y}";  # Auto-accept license terms for package "msqdbcsql17" (Microsoft ODBC driver for SQL Server)
         echo "";
         echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Command \"apt\" resolved to $(command -v apt 2>'/dev/null')";
         echo "";
@@ -213,6 +214,10 @@ fi;
 #
 # Citation(s)
 #
+#   github.com  |  "cloud-infrastructure/update_system at master · mcavallo-git/cloud-infrastructure · GitHub"  |  https://github.com/mcavallo-git/cloud-infrastructure/blob/master/usr/local/sbin/update_system
+#
 #   serverfault.com  |  "ubuntu - Automatically keep current version of config files when apt-get install - Server Fault"  |  https://serverfault.com/a/259238
+#
+#   unix.stackexchange.com  |  "centos - Can I automatically accept MS SQL license terms while installing the yum package? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/395837
 #
 # ------------------------------------------------------------

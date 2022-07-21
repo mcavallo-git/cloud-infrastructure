@@ -49,7 +49,7 @@ unset UPLOAD_RESULTS_ARR; declare -a UPLOAD_RESULTS_ARR; # [Re-]Instantiate bash
 LOOP_ITERATIONS=${LOOP_ITERATIONS:-10};
 for i in $(seq ${LOOP_ITERATIONS}); do
   # Start a new speedtest
-  echo -e "------------------------------\nSpeedtest # ${i}/${LOOP_ITERATIONS}";
+  echo -e "=== == == = =\nSpeedtest # ${i}/${LOOP_ITERATIONS}";
   EACH_SPEEDTEST="$(speedtest --simple;)";
   echo "${EACH_SPEEDTEST}";
   # Parse ping duration

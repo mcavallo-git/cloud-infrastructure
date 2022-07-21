@@ -106,8 +106,9 @@ UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --r
 UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
 echo -e "\n------------------------------";
-echo "Results:";
-echo "";
+
+echo -e "Results:";
+  echo -e "\n";
 
 echo -n "   Download:";
   echo -n "$(printf "%15s" "${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";)  (Avg)";

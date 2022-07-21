@@ -58,7 +58,7 @@ for i in $(seq ${LOOP_ITERATIONS}); do
     EACH_PING_VAL="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\1/p";)";
     PING_RESULTS_ARR+=("${EACH_PING_VAL}");
     PING_UNITS="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\2/p";)";
-    PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
     echo "$(printf "%-25s" "${EACH_PING_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "    (Avg Ping: ${PING_AVG} ${PING_UNITS})"; fi;)";
   fi;
   # Parse download speed
@@ -67,7 +67,7 @@ for i in $(seq ${LOOP_ITERATIONS}); do
     EACH_DOWNLOAD_VAL="$(echo "${EACH_DOWNLOAD_LINE}" | sed -rne "s/^Download:\s+([^\s]+)\s+(.+)\s*$/\1/p";)";
     DOWNLOAD_RESULTS_ARR+=("${EACH_DOWNLOAD_VAL}");
     DOWNLOAD_UNITS="$(echo "${EACH_DOWNLOAD_LINE}" | sed -rne "s/^Download:\s+([^\s]+)\s+(.+)\s*$/\2/p";)";
-    DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
     echo "$(printf "%-25s" "${EACH_DOWNLOAD_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})"; fi;)";
   fi;
   # Parse upload speed
@@ -76,7 +76,7 @@ for i in $(seq ${LOOP_ITERATIONS}); do
     EACH_UPLOAD_VAL="$(echo "${EACH_UPLOAD_LINE}" | sed -rne "s/^Upload:\s+([^\s]+)\s+(.+)\s*$/\1/p";)";
     UPLOAD_RESULTS_ARR+=("${EACH_UPLOAD_VAL}");
     UPLOAD_UNITS="$(echo "${EACH_UPLOAD_LINE}" | sed -rne "s/^Upload:\s+([^\s]+)\s+(.+)\s*$/\2/p";)";
-    UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
     echo "$(printf "%-25s" "${EACH_UPLOAD_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "  (Avg Upload: ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
   fi;
 done;

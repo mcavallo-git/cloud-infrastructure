@@ -305,7 +305,7 @@ else
 
     # ------------------------------
 
-    WIN32_HOMEDIR="";
+    WIN32_USERPROFILE="";
 
     DIR_REPO_BASE="";
 
@@ -744,19 +744,13 @@ else
         #  |--> Attempt to detect WSL shells, and (if shell is a WSL shell) resolve the Windows user who is running the current WSL shell
         #
         if [[ ${ARGS_CHECK_WSL} -eq 1 ]]; then
-          # WSL_CHECK_EXISTS="$(command -v get_username_windows_wsl 2>'/dev/null';)";
-          # if [[ -n "${WSL_CHECK_EXISTS}" ]]; then
-          #   echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment";
-          #   WIN32_USERNAME=$(get_username_windows_wsl);
-          #   WIN32_USER_ERRORS="$?";
-          # fi;
           WSL_CHECK_EXISTS="$(command -v wslvar 2>'/dev/null';)";
           if [[ -n "${WSL_CHECK_EXISTS}" ]]; then
             echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment";
-            WIN32_USERNAME=$(wslvar --sys "USERNAME";);
+            WIN32_USERPROFILE="$(wslpath -u "$(wslvar --sys "USERPROFILE" 2>'/dev/null';)" 2>'/dev/null';)";
             WIN32_USER_ERRORS="${?}";
           fi;
-          if [[ -n "${WIN32_USERNAME}" ]] && [[ -n "${WIN32_USER_ERRORS}" ]] && [[ "${WIN32_USER_ERRORS}" == "0" ]]; then
+          if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]] && [[ "${WIN32_USER_ERRORS}" == "0" ]]; then
             # ------------------------------
             #
             # Running in WSL (Windows Subsystem for Linux) shell on a Windows-based OS
@@ -764,13 +758,9 @@ else
             #
             if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Detected Windows Subsystem for Linux (WSL) Environment - Checking for local repo files"; fi;
             BENCHMARK_START=$(date +'%s.%N');
-            WIN32_HOMEDIR=$(find /mnt/*/Users/${WIN32_USERNAME} -mindepth 0 -maxdepth 0 -type d 2>'/dev/null';);
-            # WIN32_USR_LOCAL=$(find ${WIN32_HOMEDIR}/Documents -maxdepth 5 -name 'local' -type d | grep "/${GIT_REPO_NAME}/usr/local");
-            WIN32_USR_LOCAL=$(find "${WIN32_HOMEDIR}/Documents/"**"/${GIT_REPO_NAME}/usr/local" -maxdepth 0 -type d 2>'/dev/null' | head -n 1;);
+            WIN32_USR_LOCAL=$(find "${WIN32_USERPROFILE}/Documents/"**"/${GIT_REPO_NAME}/usr/local" -maxdepth 0 -type d 2>'/dev/null' | head -n 1;);
             if [[ -z "${WIN32_USR_LOCAL}" ]]; then
-              # echo "  |--> Warning:  Unable to locate directory matching '${GIT_REPO_NAME}/usr/local' within win32-user's documents @ '${WIN32_USERNAME}'";
-              # EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-              WIN32_HOMEDIR="";
+              WIN32_USERPROFILE="";
               WIN32_USR_LOCAL="";
             else
               DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
@@ -784,9 +774,8 @@ else
         if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
           echo "";
           echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
-          echo "Debug:  WIN32_HOMEDIR = [ ${WIN32_HOMEDIR} ]";
+          echo "Debug:  WIN32_USERPROFILE = [ ${WIN32_USERPROFILE} ]";
           echo "Debug:  WIN32_USR_LOCAL = [ ${WIN32_USR_LOCAL} ]";
-          echo "Debug:  WIN32_USERNAME = [ ${WIN32_USERNAME} ]";
           echo "Debug:  WIN32_USER_ERRORS = [ ${WIN32_USER_ERRORS} ]";
         fi;
         # ------------------------------
@@ -794,11 +783,11 @@ else
         # WSL shell
         #  |--> Create symbolic links back to windows user directories
         #
-        if [[ -n "${WIN32_HOMEDIR}" ]] && [[ -d "${WIN32_HOMEDIR}" ]]; then
+        if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]]; then
           #
           # Create symbolic link to WSL user's manuals directory
           #
-          WSL_DIR="${WIN32_HOMEDIR}/Documents/GitHub/Coding/man";
+          WSL_DIR="${WIN32_USERPROFILE}/Documents/GitHub/Coding/man";
           if [[ -d "${WSL_DIR}" ]]; then
             # Create link(s) to the Windows user's directory (who is masquerading as the current WSL User)
             if [[ -d "${HOME}" ]]; then
@@ -821,7 +810,7 @@ else
           #
           # Create symbolic link to WSL user's desktop
           #
-          WSL_DIR="${WIN32_HOMEDIR}/Desktop";
+          WSL_DIR="${WIN32_USERPROFILE}/Desktop";
           if [[ -d "${WSL_DIR}" ]]; then
             # Current User
             if [[ -d "${HOME}" ]]; then
@@ -842,7 +831,7 @@ else
           fi;
         fi;
         # ------------------------------
-        if [[ -z "${WIN32_HOMEDIR}" ]]; then
+        if [[ -z "${WIN32_USERPROFILE}" ]]; then
           #
           # Non-WSL shell
           #  |--> Check for required Linux filepath(s)

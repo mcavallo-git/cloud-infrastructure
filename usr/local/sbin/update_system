@@ -59,16 +59,19 @@ else
         echo "";
         echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo apt-get -y update; ]...";
         sudo apt-get -y update;
+        echo "";
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo apt list --upgradable; ]...";
+        sudo apt list --upgradable;
         if [[ -n "$(command -v update_unifi 2>'/dev/null';)" ]]; then
-          if [[ $(/bin/systemctl list-unit-files --no-legend --no-pager --full "unifi.service" | grep "^unifi.service" 1>'/dev/null' 2>&1; echo ${?};) -ne 0 ]]; then
+          if [[ $(/bin/systemctl list-unit-files --no-legend --no-pager --full "unifi.service" | grep "^unifi.service" 1>'/dev/null' 2>&1; echo ${?};) -eq 0 ]]; then
             echo "";
             echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo update_unifi; ]...";
             sudo update_unifi;
           fi;
         fi;
         echo "";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo apt list --upgradable; ]...";
-        sudo apt list --upgradable;
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo apt-get -y --fix-broken install; ]...";
+        sudo apt-get -y --fix-broken install;
         echo "";
         echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo apt-get -y dist-upgrade -o Dpkg::Options::=\"--force-confold\"; ]...";
         sudo apt-get -y dist-upgrade -o Dpkg::Options::="--force-confold";

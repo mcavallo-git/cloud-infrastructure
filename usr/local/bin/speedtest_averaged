@@ -20,15 +20,26 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
-# Ensure that prerequisite package(s) are installed
+# Ensure that "speedtest" command exists
 #
 COMMAND_NAME="speedtest";
 PACKAGE_NAME="speedtest-cli";
 if [ -z "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
   echo "";
   echo "Info:  Installing command \"${COMMAND_NAME}\"...";
-  apt-get -y update;
-  apt-get -y install "${PACKAGE_NAME}";
+  sudo apt-get -y update;
+  sudo apt-get -y install "${PACKAGE_NAME}";
+fi;
+#
+# Ensure that "datamash" command exists
+#
+COMMAND_NAME="datamash";
+PACKAGE_NAME="datamash";
+if [ -z "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
+  echo "";
+  echo "Info:  Installing command \"${COMMAND_NAME}\"...";
+  sudo apt-get -y update;
+  sudo apt-get -y install "${PACKAGE_NAME}";
 fi;
 
 unset PING_RESULTS; declare -a PING_RESULTS; # [Re-]Instantiate bash array

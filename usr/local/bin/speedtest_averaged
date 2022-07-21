@@ -106,7 +106,7 @@ UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --r
 UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
 echo "";
-echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
 echo -e "Results:";
   echo "";
@@ -123,7 +123,7 @@ echo -n "$(printf "%12s" "Upload:";)";
   echo -n "$(printf "%20s" "${UPLOAD_MIN} ${UPLOAD_UNITS}";) (Min)";
   echo -e "\n";
 
-echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+echo "          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
 
 echo -n "$(printf "%12s" "Ping:";)";
@@ -136,7 +136,7 @@ echo -n "$(printf "%12s" "Test Size:";)";
   echo -n "$(printf "%20s" "${LOOP_ITERATIONS} tests";) were initiated  -  ${FAILED_TESTS} tests either failed or had errors";
   echo -e "\n";
 
-echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
 # ------------------------------
 

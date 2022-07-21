@@ -80,6 +80,19 @@ for i in $(seq ${LOOP_ITERATIONS}); do
     echo "$(printf "%-25s" "${EACH_UPLOAD_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
   fi;
 done;
+
+# ------------------------------
+# Show final results
+
+PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+
+echo -e "\n------------------------------";
+echo -e "Averaged results (from ${LOOP_ITERATIONS} runs of speedtest)...\n";
+echo "Ping:     ${PING_AVG} ${PING_UNITS}";
+echo "Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";
+echo "Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS}";
 echo -e "\n------------------------------";
 
 

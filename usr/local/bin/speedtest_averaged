@@ -107,10 +107,10 @@ UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --r
 
 echo "";
 echo "------------------------------";
-echo " Speedtest Results:";
+echo "Results:";
 echo "";
-echo "   Number of tests ran:  $(printf "%5s" "${LOOP_ITERATIONS}";)";
-echo "                         $(printf "%5s" "${FAILED_TESTS}";) tests failed or had errors";
+echo "   Test size: $(printf "%5s" "${LOOP_ITERATIONS}";) tests were initiated";
+echo "              $(printf "%5s" "${FAILED_TESTS}";) tests failed or had errors";
 echo "";
 echo "   Download: $(printf "%10s" "${DOWNLOAD_AVG}";) ${DOWNLOAD_UNITS}  (Avg)";
 echo "             $(printf "%10s" "${DOWNLOAD_MAX}";) ${DOWNLOAD_UNITS}  (Max)";

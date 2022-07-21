@@ -108,14 +108,14 @@ UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --r
 echo "";
 echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
-echo -n "Results:";
+echo -n " Results:";
   echo -n "$(printf "%15s" "${LOOP_ITERATIONS} test(s)";) were initiated";
   echo -n "$(printf "%20s" "${FAILED_TESTS} test(s)";) either failed or had errors";
   echo -e "\n";
 echo "  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
 
-echo -n "  $(printf "%-12s" "Download:";)";
+echo -n "   $(printf "%-12s" "Download:";)";
   echo -n "$(printf "%15s" "${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";) (Avg)";
   echo -n "$(printf "%20s" "${DOWNLOAD_MAX} ${DOWNLOAD_UNITS}";) (Max)";
   echo -n "$(printf "%20s" "${DOWNLOAD_MIN} ${DOWNLOAD_UNITS}";) (Min)";
@@ -124,7 +124,7 @@ echo -n "  $(printf "%-12s" "Download:";)";
 echo "  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
 
-echo -n "  $(printf "%-12s" "Upload:";)";
+echo -n "   $(printf "%-12s" "Upload:";)";
   echo -n "$(printf "%15s" "${UPLOAD_AVG} ${UPLOAD_UNITS}";) (Avg)";
   echo -n "$(printf "%20s" "${UPLOAD_MAX} ${UPLOAD_UNITS}";) (Max)";
   echo -n "$(printf "%20s" "${UPLOAD_MIN} ${UPLOAD_UNITS}";) (Min)";
@@ -133,7 +133,7 @@ echo -n "  $(printf "%-12s" "Upload:";)";
 echo "  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
 
-echo -n "  $(printf "%-12s" "Ping:";)";
+echo -n "   $(printf "%-12s" "Ping:";)";
   echo -n "$(printf "%15s" "${PING_AVG} ${PING_UNITS}";) (Avg)";
   echo -n "$(printf "%20s" "${PING_MAX} ${PING_UNITS}";) (Max)";
   echo -n "$(printf "%20s" "${PING_MIN} ${PING_UNITS}";) (Min)";

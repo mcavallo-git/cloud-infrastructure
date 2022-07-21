@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/speedtest_averaged" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/speedtest_averaged?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/speedtest_averaged_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/speedtest_averaged"; fi;
+mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Ensure that prerequisite package(s) are installed
+#
+COMMAND_NAME="speedtest";
+PACKAGE_NAME="speedtest-cli";
+if [ -z "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
+  echo "";
+  echo "Info:  Installing command \"${COMMAND_NAME}\"...";
+  apt-get -y update;
+  apt-get -y install "${PACKAGE_NAME}";
+fi;
+
+unset PING_RESULTS; declare -a PING_RESULTS; # [Re-]Instantiate bash array
+unset DOWNLOAD_RESULTS; declare -a DOWNLOAD_RESULTS; # [Re-]Instantiate bash array
+unset UPLOAD_RESULTS; declare -a UPLOAD_RESULTS; # [Re-]Instantiate bash array
+
+LOOP_ITERATIONS=${LOOP_ITERATIONS:-10};
+for i in $(seq ${LOOP_ITERATIONS}); do
+  # Start a new speedtest
+  echo -e "------------------------------\nSpeedtest # ${i}/${LOOP_ITERATIONS}";
+  EACH_SPEEDTEST="$(speedtest --simple;)";
+  echo "${EACH_SPEEDTEST}";
+  # Parse ping duration
+  EACH_PING="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s([^\s]+)\s.*$/\1/p";)";
+  if [[ -n "${EACH_PING}" ]]; then
+    PING_RESULTS+=("${EACH_PING}");
+  fi;
+  # Parse download speed
+  EACH_DOWNLOAD="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Download:\s([^\s]+)\s.*$/\1/p";)";
+  if [[ -n "${EACH_DOWNLOAD}" ]]; then
+    DOWNLOAD_RESULTS+=("${EACH_DOWNLOAD}");
+  fi;
+  # Parse upload speed
+  EACH_UPLOAD="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Upload:\s([^\s]+)\s.*$/\1/p";)";
+  if [[ -n "${EACH_UPLOAD}" ]]; then
+    UPLOAD_RESULTS+=("${EACH_UPLOAD}");
+  fi;
+done;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+# 
+#   phoenixnap.com  |  "How to Test Network Speed in Linux {9 Tools} | phoenixNAP KB"  |  https://phoenixnap.com/kb/linux-network-speed-test
+#
+# ------------------------------------------------------------

@@ -108,8 +108,6 @@ UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --r
 echo -e "\n------------------------------";
 echo "Results:";
 echo "";
-echo "   Test size: ${LOOP_ITERATIONS} tests were initiated  -  ${FAILED_TESTS} tests failed or had errors";
-echo "";
 
 echo -n "   Download:";
   echo -n "$(printf "%15s" "${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";)  (Avg)";
@@ -123,10 +121,15 @@ echo -n "   Upload:  ";
   echo -n "$(printf "%15s" "${UPLOAD_MIN} ${UPLOAD_UNITS}";)  (Min)";
   echo -e "\n";
 
+echo "";
+
 echo -n "   Ping:    ";
   echo -n "$(printf "%15s" "${PING_AVG} ${PING_UNITS}";)  (Avg)";
   echo -n "$(printf "%15s" "${PING_MAX} ${PING_UNITS}";)  (Max)";
   echo -n "$(printf "%15s" "${PING_MIN} ${PING_UNITS}";)  (Min)";
+  echo -e "\n";
+
+echo -n "   Test size: ${LOOP_ITERATIONS} tests were initiated  -  ${FAILED_TESTS} tests failed or had errors";
   echo -e "\n";
 
 echo "------------------------------";

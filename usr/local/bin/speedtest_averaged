@@ -107,10 +107,9 @@ UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --r
 
 echo "";
 echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
-echo "";
 
 echo -e "Results:";
-  echo -e "\n";
+  echo "";
 
 echo -n "   Download:";
   echo -n "$(printf "%15s" "${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";)  (Avg)";
@@ -138,7 +137,7 @@ echo -n "   Test size:";
   echo -n "$(printf "%15s" "${FAILED_TESTS} tests";) failed or had errors";
   echo -e "\n";
 
-echo "------------------------------";
+echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
 
 # ------------------------------
 

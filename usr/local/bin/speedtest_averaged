@@ -42,6 +42,9 @@ if [ -z "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
   sudo apt-get -y install "${PACKAGE_NAME}";
 fi;
 
+PUBLIC_IPV4="$(curl -4 ihanhazip.com;)";
+echo "PUBLIC_IPV4 = [ ${PUBLIC_IPV4} ]";
+
 unset PING_RESULTS_ARR; declare -a PING_RESULTS_ARR; # [Re-]Instantiate bash array
 unset DOWNLOAD_RESULTS_ARR; declare -a DOWNLOAD_RESULTS_ARR; # [Re-]Instantiate bash array
 unset UPLOAD_RESULTS_ARR; declare -a UPLOAD_RESULTS_ARR; # [Re-]Instantiate bash array

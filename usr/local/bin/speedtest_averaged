@@ -105,8 +105,6 @@ UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --
 UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
 UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
-if [[ 1 -eq 1 ]]; then
-
 echo "";
 echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 echo "";
@@ -142,8 +140,6 @@ echo -n "  $(printf "%-12s" "Ping:";)";
   echo -e "\n";
 
 echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
-
-fi;
 
 # ------------------------------
 

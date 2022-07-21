@@ -14,7 +14,7 @@ fi;
 #
 LOGDIR="${HOME}/speedtest_averaged_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/speedtest_averaged"; fi;
 mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%dT%H%M%SZ';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
 exec 2>&1;
 #
@@ -57,15 +57,6 @@ for i in $(seq ${LOOP_ITERATIONS}); do
   echo -e "\n------------------------------";
   echo -e "Running speedtest # ${i}/${LOOP_ITERATIONS}...\n";
   EACH_SPEEDTEST="$(speedtest --simple;)";
-  # Parse ping duration
-  EACH_PING_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\0/p";)";
-  if [[ -n "${EACH_PING_LINE}" ]]; then
-    EACH_PING_VAL="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\1/p";)";
-    PING_RESULTS_ARR+=("${EACH_PING_VAL}");
-    PING_UNITS="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\2/p";)";
-    PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-    echo "$(printf "%-25s" "${EACH_PING_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Ping:     ${PING_AVG} ${PING_UNITS})"; fi;)";
-  fi;
   # Parse download speed
   EACH_DOWNLOAD_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Download:\s+([^\s]+)\s+(.+)\s*$/\0/p";)";
   if [[ -n "${EACH_DOWNLOAD_LINE}" ]]; then
@@ -84,6 +75,15 @@ for i in $(seq ${LOOP_ITERATIONS}); do
     UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
     echo "$(printf "%-25s" "${EACH_UPLOAD_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
   fi;
+  # Parse ping duration
+  EACH_PING_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\0/p";)";
+  if [[ -n "${EACH_PING_LINE}" ]]; then
+    EACH_PING_VAL="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\1/p";)";
+    PING_RESULTS_ARR+=("${EACH_PING_VAL}");
+    PING_UNITS="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s+([^\s]+)\s+(.+)\s*$/\2/p";)";
+    PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+    echo "$(printf "%-25s" "${EACH_PING_LINE}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Ping:     ${PING_AVG} ${PING_UNITS})"; fi;)";
+  fi;
   # Check if the run was a complete failure
   if [[ -z "${EACH_UPLOAD_LINE}" ]] && [[ -z "${EACH_DOWNLOAD_LINE}" ]] && [[ -z "${EACH_PING_LINE}" ]]; then
     FAILED_TESTS=$(( ${FAILED_TESTS:-0} + 1 ));
@@ -94,17 +94,35 @@ done;
 # Show final results
 
 PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+PING_MAX="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+PING_MIN="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
-echo -e "\n------------------------------";
-echo -e "Final speedtest results (averaged from above ${LOOP_ITERATIONS} speedtest iterations)...";
+DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+DOWNLOAD_MAX="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+DOWNLOAD_MIN="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
+
+UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
+
 echo "";
-echo "  Failed Tests:   ${FAILED_TESTS} out of ${LOOP_ITERATIONS} tests failed";
+echo "------------------------------";
+echo " Speedtest Results:";
 echo "";
-echo "  Ping:     ${PING_AVG} ${PING_UNITS}";
-echo "  Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";
-echo "  Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS}";
+echo "   Number of tests ran:  $(printf "%5s" "${LOOP_ITERATIONS}";)";
+echo "                         $(printf "%5s" "${FAILED_TESTS}";) tests failed or had errors";
+echo "";
+echo "   Download: $(printf "%10s" "${DOWNLOAD_AVG}";) ${DOWNLOAD_UNITS}  (Avg)";
+echo "             $(printf "%10s" "${DOWNLOAD_MAX}";) ${DOWNLOAD_UNITS}  (Max)";
+echo "             $(printf "%10s" "${DOWNLOAD_MIN}";) ${DOWNLOAD_UNITS}  (Min)";
+echo "";
+echo "   Upload:   $(printf "%10s" "${UPLOAD_AVG}";) ${UPLOAD_UNITS}  (Avg)";
+echo "             $(printf "%10s" "${UPLOAD_MAX}";) ${UPLOAD_UNITS}  (Max)";
+echo "             $(printf "%10s" "${UPLOAD_MIN}";) ${UPLOAD_UNITS}  (Min)";
+echo "";
+echo "   Ping:     $(printf "%10s" "${PING_AVG}";) ${PING_UNITS}  (Avg)";
+echo "             $(printf "%10s" "${PING_MAX}";) ${PING_UNITS}  (Max)";
+echo "             $(printf "%10s" "${PING_MIN}";) ${PING_UNITS}  (Min)";
 echo "";
 echo "------------------------------";
 

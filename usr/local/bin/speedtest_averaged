@@ -89,13 +89,13 @@ DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 
 UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
 
 echo -e "\n------------------------------";
-echo -e "Averaged results (from ${LOOP_ITERATIONS} runs of speedtest)...";
+echo -e "Final speedtest results (averaged from above ${LOOP_ITERATIONS} speedtest iterations)...";
 echo "";
-echo "Ping:     ${PING_AVG} ${PING_UNITS}";
+echo "  Ping:     ${PING_AVG} ${PING_UNITS}";
 echo "";
-echo "Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";
+echo "  Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS}";
 echo "";
-echo "Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS}";
+echo "  Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS}";
 echo "";
 echo "------------------------------";
 

@@ -42,9 +42,9 @@ if [ -z "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
   sudo apt-get -y install "${PACKAGE_NAME}";
 fi;
 
-unset PING_RESULTS; declare -a PING_RESULTS; # [Re-]Instantiate bash array
-unset DOWNLOAD_RESULTS; declare -a DOWNLOAD_RESULTS; # [Re-]Instantiate bash array
-unset UPLOAD_RESULTS; declare -a UPLOAD_RESULTS; # [Re-]Instantiate bash array
+unset PING_RESULTS_ARR; declare -a PING_RESULTS_ARR; # [Re-]Instantiate bash array
+unset DOWNLOAD_RESULTS_ARR; declare -a DOWNLOAD_RESULTS_ARR; # [Re-]Instantiate bash array
+unset UPLOAD_RESULTS_ARR; declare -a UPLOAD_RESULTS_ARR; # [Re-]Instantiate bash array
 
 LOOP_ITERATIONS=${LOOP_ITERATIONS:-10};
 for i in $(seq ${LOOP_ITERATIONS}); do
@@ -53,19 +53,31 @@ for i in $(seq ${LOOP_ITERATIONS}); do
   EACH_SPEEDTEST="$(speedtest --simple;)";
   echo "${EACH_SPEEDTEST}";
   # Parse ping duration
-  EACH_PING="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s([^\s]+)\s.*$/\1/p";)";
-  if [[ -n "${EACH_PING}" ]]; then
-    PING_RESULTS+=("${EACH_PING}");
+  EACH_PING_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Ping:\s([^\s]+)\s*([^\s]*)\s*$/\0/p";)";
+  if [[ -n "${EACH_PING_LINE}" ]]; then
+    EACH_PING_VAL="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s([^\s]+)\s*([^\s]*)\s*$/\1/p";)";
+    PING_RESULTS_ARR+=("${EACH_PING_VAL}");
+    PING_UNITS="$(echo "${EACH_PING_LINE}" | sed -rne "s/^Ping:\s([^\s]+)\s*([^\s]*)\s*$/\2/p";)";
+    PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    echo "${EACH_PING_LINE}   (average: ${PING_AVG} ${PING_UNITS})";
   fi;
   # Parse download speed
-  EACH_DOWNLOAD="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Download:\s([^\s]+)\s.*$/\1/p";)";
-  if [[ -n "${EACH_DOWNLOAD}" ]]; then
-    DOWNLOAD_RESULTS+=("${EACH_DOWNLOAD}");
+  EACH_DOWNLOAD_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Download:\s([^\s]+)\s*([^\s]*)\s*$/\0/p";)";
+  if [[ -n "${EACH_DOWNLOAD_LINE}" ]]; then
+    EACH_DOWNLOAD_VAL="$(echo "${EACH_DOWNLOAD_LINE}" | sed -rne "s/^Download:\s([^\s]+)\s*([^\s]*)\s*$/\1/p";)";
+    DOWNLOAD_RESULTS_ARR+=("${EACH_DOWNLOAD_VAL}");
+    DOWNLOAD_UNITS="$(echo "${EACH_DOWNLOAD_LINE}" | sed -rne "s/^Download:\s([^\s]+)\s*([^\s]*)\s*$/\2/p";)";
+    DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    echo "${EACH_DOWNLOAD_LINE}   (average: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})";
   fi;
   # Parse upload speed
-  EACH_UPLOAD="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Upload:\s([^\s]+)\s.*$/\1/p";)";
-  if [[ -n "${EACH_UPLOAD}" ]]; then
-    UPLOAD_RESULTS+=("${EACH_UPLOAD}");
+  EACH_UPLOAD_LINE="$(echo "${EACH_SPEEDTEST}" | sed -rne "s/^Upload:\s([^\s]+)\s*([^\s]*)\s*$/\0/p";)";
+  if [[ -n "${EACH_UPLOAD_LINE}" ]]; then
+    EACH_UPLOAD_VAL="$(echo "${EACH_UPLOAD_LINE}" | sed -rne "s/^Upload:\s([^\s]+)\s*([^\s]*)\s*$/\1/p";)";
+    UPLOAD_RESULTS_ARR+=("${EACH_UPLOAD_VAL}");
+    UPLOAD_UNITS="$(echo "${EACH_UPLOAD_LINE}" | sed -rne "s/^Upload:\s([^\s]+)\s*([^\s]*)\s*$/\2/p";)";
+    UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;)";
+    echo "${EACH_UPLOAD_LINE}   (average: ${UPLOAD_AVG} ${UPLOAD_UNITS})";
   fi;
 done;
 

@@ -105,25 +105,31 @@ UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --
 UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
 UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
-echo "";
-echo "------------------------------";
+echo -e "\n------------------------------";
 echo "Results:";
 echo "";
 echo "   Test size: $(printf "%5s" "${LOOP_ITERATIONS}";) tests were initiated";
 echo "              $(printf "%5s" "${FAILED_TESTS}";) tests failed or had errors";
 echo "";
-echo "   Download: $(printf "%10s" "${DOWNLOAD_AVG}";) ${DOWNLOAD_UNITS}  (Avg)";
-echo "             $(printf "%10s" "${DOWNLOAD_MAX}";) ${DOWNLOAD_UNITS}  (Max)";
-echo "             $(printf "%10s" "${DOWNLOAD_MIN}";) ${DOWNLOAD_UNITS}  (Min)";
-echo "";
-echo "   Upload:   $(printf "%10s" "${UPLOAD_AVG}";) ${UPLOAD_UNITS}  (Avg)";
-echo "             $(printf "%10s" "${UPLOAD_MAX}";) ${UPLOAD_UNITS}  (Max)";
-echo "             $(printf "%10s" "${UPLOAD_MIN}";) ${UPLOAD_UNITS}  (Min)";
-echo "";
-echo "   Ping:     $(printf "%10s" "${PING_AVG}";) ${PING_UNITS}  (Avg)";
-echo "             $(printf "%10s" "${PING_MAX}";) ${PING_UNITS}  (Max)";
-echo "             $(printf "%10s" "${PING_MIN}";) ${PING_UNITS}  (Min)";
-echo "";
+
+echo -n "   Download:";
+  echo -n "$(printf "%20s" "${DOWNLOAD_AVG}";) ${DOWNLOAD_UNITS}  (Avg)";
+  echo -n "$(printf "%20s" "${DOWNLOAD_MAX}";) ${DOWNLOAD_UNITS}  (Max)";
+  echo -n "$(printf "%20s" "${DOWNLOAD_MIN}";) ${DOWNLOAD_UNITS}  (Min)";
+  echo -e "\n";
+
+echo -n "   Upload:";
+  echo -n "$(printf "%20s" "${UPLOAD_AVG}";) ${UPLOAD_UNITS}  (Avg)";
+  echo -n "$(printf "%20s" "${UPLOAD_MAX}";) ${UPLOAD_UNITS}  (Max)";
+  echo -n "$(printf "%20s" "${UPLOAD_MIN}";) ${UPLOAD_UNITS}  (Min)";
+  echo -e "\n";
+
+echo -n "   Ping:";
+  echo -n "$(printf "%20s" "${PING_AVG}";) ${PING_UNITS}  (Avg)";
+  echo -n "$(printf "%20s" "${PING_MAX}";) ${PING_UNITS}  (Max)";
+  echo -n "$(printf "%20s" "${PING_MIN}";) ${PING_UNITS}  (Min)";
+  echo -e "\n";
+
 echo "------------------------------";
 
 # ------------------------------

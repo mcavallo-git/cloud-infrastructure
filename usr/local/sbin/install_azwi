@@ -1,0 +1,103 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_azwi" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_azwi?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+  # ------------------------------
+  #
+  # kompose - Install kompose (converts ('bakes') docker-compose YAML files to Kubernetes YAML files, which kubectl can then deploy to K8S (Kubneretes) clusters))
+  #
+  # Get the latest version of kompose
+  echo "------------------------------------------------------------";
+  echo "Getting the latest version of \"kompose\"...";
+  KOMPOSE_LATEST_VERSION=$(curl -sL "https://github.com/kubernetes/kompose/releases" | grep 'https://github.com/kubernetes/kompose/releases/download' | grep -i 'linux-amd64' | head -n 1 | sed -re "s/^.+https:\/\/github\.com\/kubernetes\/kompose\/releases\/download\/v([0-9\.]+)\/kompose-linux-amd64\s+.+$/\1/";);
+  echo "Latest version of \"kompose\":  [ ${KOMPOSE_LATEST_VERSION} ]";
+  # Determine if latest version of kompose is installed
+  if [[ -z "$(command -v kompose-${KOMPOSE_LATEST_VERSION} 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+    # kompose - Determine the local executable directory to place kompose into (which exists on the PATH)
+    BIN_DIR="/usr/local/bin";
+    BIN_PATH_TESTWRITE="${BIN_DIR}/test-write-permissions-$(date +'%Y%m%d_%H%M%S')";
+    # Note: touch is required as Git Bash (for Windows) doesn't accurately show filepath write-permissions, thereby requiring actually performing a write & reactively performing followup steps if it fails
+    touch "${BIN_PATH_TESTWRITE}" 1>'/dev/null' 2>&1;
+    if [ ! -f "${BIN_PATH_TESTWRITE}" ]; then
+      # If write failed, add path to user-specific directory already on said user's PATH env-var
+      BIN_DIR=$(echo ${PATH} | tr ':' "\n" | grep ${HOME} | head -n 1);
+      mkdir -p "${BIN_DIR}";
+    else
+      rm -f "${BIN_PATH_TESTWRITE}";
+    fi;
+    BIN_DIR_KOMPOSE_CLI="${BIN_DIR}/kompose";
+    BIN_DIR_KOMPOSE_VERSIONED_CLI="${BIN_DIR}/kompose-${KOMPOSE_LATEST_VERSION}";
+    echo "------------------------------------------------------------";
+    echo "Downloading \"kompose-${KOMPOSE_LATEST_VERSION}\" to path \"${BIN_DIR_KOMPOSE_VERSIONED_CLI}\"...";
+    if [ "$(uname -s)" == "Linux" ] || [[ "${OSTYPE}" == linux-gnu* ]]; then # Install kompose for Linux
+      curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-linux-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+    elif [[ "${OSTYPE}" == "darwin"* ]]; then # Install kompose for MacOS
+      curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-darwin-amd64" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+    else # Install kompose for Git Bash (Windows)
+      curl -sL "https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_LATEST_VERSION}/kompose-windows-amd64.exe" -o "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+    fi;
+    chmod +x "${BIN_DIR_KOMPOSE_VERSIONED_CLI}";
+    # kompose - create a symbolic link from "kompose" command to "kompose-(version)" command
+    ln -sf "${BIN_DIR_KOMPOSE_VERSIONED_CLI}" "${BIN_DIR_KOMPOSE_CLI}";
+    echo "------------------------------------------------------------";
+    echo "";
+    echo "To use kompose, either:"
+    echo " |";
+    echo " |--> Call [ cd \"\${DIRNAME_INPUT_DOCKER_COMPOSE}\"; kompose convert; ]";
+    echo " |    - Set \${DIRNAME_INPUT_DOCKER_COMPOSE} to the desired path of the docker-compose input file's parent/working directory";
+    echo " |    - kompose will output the Kubernetes Manifest file(s) to the same (input) parent/working directory path, \${DIRNAME_INPUT_DOCKER_COMPOSE}";
+    echo " |";
+    echo " |--> Call [ kompose convert -f \"\${FULLPATH_INPUT_DOCKER_COMPOSE}\" -o \"\${FULLPATH_OUTPUT_KUBERNETES_MANIFEST}\"; ]";
+    echo "      - Set \${FULLPATH_INPUT_DOCKER_COMPOSE} to the desired path of the input docker-compose file (to be converted)";
+    echo "      - Set \${FULLPATH_OUTPUT_KUBERNETES_MANIFEST} to the desired path of the Kubernetes Manifest file output by kompose";
+    echo "";
+  else
+    echo "------------------------------------------------------------";
+    echo "Skipping install (kompose-${KOMPOSE_LATEST_VERSION} already installed)";
+  fi;
+
+  # kompose - Show path to executables
+  echo "------------------------------------------------------------";
+  echo "Calling [ command -v kompose; ]...";
+  command -v kompose;
+
+  echo "------------------------------------------------------------";
+  echo "Calling [ command -v kompose-${KOMPOSE_LATEST_VERSION}; ]...";
+  command -v kompose-${KOMPOSE_LATEST_VERSION};
+
+  echo "------------------------------------------------------------";
+  echo "Calling [ kompose version; ]...";
+  kompose version
+
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   azure.github.io  |  "Azure AD Workload Identity CLI (azwi) - Azure AD Workload Identity"  |  https://azure.github.io/azure-workload-identity/docs/installation/azwi.html
+#
+#   azure.github.io  |  "Managed Clusters - Azure AD Workload Identity"  |  https://azure.github.io/azure-workload-identity/docs/installation/managed-clusters.html
+#
+#   docs.microsoft.com  |  "Use Azure Active Directory pod-managed identities in Azure Kubernetes Service (Preview) - Azure Kubernetes Service | Microsoft Docs"  |  https://docs.microsoft.com/en-us/azure/aks/use-azure-ad-pod-identity
+#
+#   www.the-aks-checklist.com  |  "AKS-Checklist.pdf"  |  https://www.the-aks-checklist.com/docs/AKS-Checklist.pdf
+#
+# ------------------------------------------------------------

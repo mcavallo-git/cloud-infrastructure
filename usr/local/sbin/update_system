@@ -22,10 +22,11 @@ exec 2>&1;
 #
 # Script must run as root or via sudo
 #
+EXIT_CODE=0;
 if [[ "$(id -un)" != "root" ]]; then
   echo "";
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
-  exit 1;
+  EXIT_CODE=1;
 else
   # ------------------------------------------------------------
   if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -33,8 +34,7 @@ else
     # Disabled for Fedora distros (RHEL/CentOS)
     #
     echo "System-Update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
-    exit 1;
-
+    EXIT_CODE=1;
   else
     #
     #  Linux - Fetch, Pull, & Install updates (system & package)
@@ -205,15 +205,15 @@ else
       #
       touch "/var/run/reboot-required";
     fi;
-    #
-    # Exit gracefully
-    #
-    echo "";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Finished \"${THIS_SCRIPT}\"";
-    echo "------------------------------------------------------------";
-    exit 0;
   fi;
 fi;
+#
+# Exit gracefully
+#
+echo "";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Finished \"${THIS_SCRIPT}\"";
+echo "------------------------------------------------------------";
+exit ${EXIT_CODE:-0};
 
 
 # ------------------------------------------------------------

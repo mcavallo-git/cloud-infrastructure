@@ -32,7 +32,7 @@ for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do
   EACH_PACKAGE="$(echo "${EACH_PREREQ_CMD_PKG}" | cut -d'|' -f2;)";
   if [ -z "$(command -v ${EACH_COMMAND} 2>'/dev/null';)" ]; then
     echo "";
-    echo "Info:  Installing prerequisite package \"${EACH_PACKAGE}\" (contains command \"${EACH_COMMAND}\")...";
+    echo "Info:  Installing package \"${EACH_PACKAGE}\" (contains command \"${EACH_COMMAND}\")...";
     if [[ "${APT_UPDATE_PERFORMED}" -eq 0 ]]; then
       sudo apt-get -y update;
       APT_UPDATE_PERFORMED=1;

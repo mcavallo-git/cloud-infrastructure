@@ -380,7 +380,7 @@ else
     WAN_TEST_CURL_FAILED=${?};
     WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
     WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);
-    if [[ "${WAN_TEST_FAILED}" == "1" ]]; then
+    if [[ "${WAN_TEST_FAILED}" -eq 1 ]]; then
       echo "";
       echo "! |--> Error:  WAN network (internet) connection is required to sync cloud-infrastructure modules, but is unable to be verified";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
@@ -393,9 +393,9 @@ else
       echo "! |--> Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     else
-      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Verified WAN (internet) network connection"; fi;
+      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Verified WAN (internet) network connection"; fi;
     fi;
-    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
       #
       # Handle benchmarking differently (e.g. more 'compatibly') before we've ensured that the command 'bc' has been installed
       #
@@ -406,7 +406,7 @@ else
       fi;
       echo "  |--> Finished after ${BENCHMARK_DELTA}s";
     fi;
-    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
       echo "";
       echo "Debug:  WAN_TEST_FQDN = [ ${WAN_TEST_FQDN} ]";
       echo "Debug:  WAN_TEST_CURL_FAILED = [ ${WAN_TEST_CURL_FAILED} ]";

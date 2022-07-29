@@ -1719,6 +1719,7 @@ else
               #
               if [[ "${SITES_ENABLED}" -gt 0 ]] && [[ -h "/etc/nginx/sites-enabled/default" ]]; then
                 # Disable the default NGINX virtual host (site) if at least one custom site is enabled
+                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ unlink \"/etc/nginx/sites-enabled/default\"; ]..."; fi;
                 unlink "/etc/nginx/sites-enabled/default";
               fi;
               #

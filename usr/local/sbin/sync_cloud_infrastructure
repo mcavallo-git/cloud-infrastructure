@@ -1652,25 +1652,33 @@ else
               find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
               if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-              # Check if running on Fedora
+              #
+              # File permissions for Fedora based distros
+              #
               if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
                 # Selinux - Whitelist/allow read actions on a specific file/directory filepath (otherwise Selinux (by-default) will prevent read requests on said filepath(s) for the local web service user (commonly 'wwww-data') and therefore fail web requests to servers hosted from this device
                 chcon -Rt httpd_sys_content_t "${DESTINATION_PATH}";
               fi;
-              # Ensure that the Diffie-Hellman parameter for DHE ciphersuites exists
+              #
+              # Diffie-Hellman parameter setup (required for DHE ciphersuites)
+              #
               DH_PARAM_FILEPATH="/etc/ssl/certs/dhparam.pem";
               DH_ENCRYPTION_BIT_STRENGTH=2048; # 2048 / 3072 / 4096 <-- Do not go lower than 2048 (as-of late 2019)
               if [[ ! -f "${DH_PARAM_FILEPATH}" ]]; then
                 echo "  |--> Creating Diffie-Hellman Parameters File @ \"${DH_PARAM_FILEPATH}\"...";
                 openssl dhparam -out "${DH_PARAM_FILEPATH}" ${DH_ENCRYPTION_BIT_STRENGTH};
               fi;
-              # Set the environment-specific web-server runtime user
+              #
+              # Web-server runtime user
+              #
               if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
                 sed -i 's|user www-data;|user www-data;|g' "/etc/nginx/nginx.conf";
               elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
                 sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
               fi;
+              #
               # Walk through all sites-available (from repo), resolve their WAN IPv4 address & compare it against the WAN IPv4 address of the current device - only sync if the two IPv4 addresses are a direct match
+              #
               find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
                 Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
                 Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";

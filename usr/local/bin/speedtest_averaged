@@ -102,6 +102,8 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
     fi;
   done;
 
+  echo  "------------------------------";
+  
   DOWNLOAD_AVG="$(echo "scale=2; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
   DOWNLOAD_MAX="$(echo "scale=2; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1;))/(1048576)" | bc -l;)";
   DOWNLOAD_MIN="$(echo "scale=2; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1;))/(1048576)" | bc -l;)";
@@ -116,13 +118,15 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
 
   # Show final results
   OUTPUT_JSON="{";
-  OUTPUT_JSON+="\"tests\":{\"ran\":\"${LOOP_ITERATIONS}\",\"failed\":\"${FAILED_TESTS}\"}";
-  OUTPUT_JSON+=",";
-  OUTPUT_JSON+="\"download\":{\"units\":\"${DOWNLOAD_UNITS}\",\"avg\":\"${DOWNLOAD_AVG}\",\"max\":\"${DOWNLOAD_MAX}\",\"min\":\"${DOWNLOAD_MIN}\"}";
-  OUTPUT_JSON+=",";
-  OUTPUT_JSON+="\"upload\":{\"units\":\"${UPLOAD_UNITS}\",\"avg\":\"${UPLOAD_AVG}\",\"max\":\"${UPLOAD_MAX}\",\"min\":\"${UPLOAD_MIN}\"}";
-  OUTPUT_JSON+=",";
-  OUTPUT_JSON+="\"ping\":{\"units\":\"${PING_UNITS}\",\"avg\":\"${PING_AVG}\",\"max\":\"${PING_MAX}\",\"min\":\"${PING_MIN}\"}";
+    OUTPUT_JSON+="\"tests\":{\"ran\":\"${LOOP_ITERATIONS}\",\"failed\":\"${FAILED_TESTS}\"}";
+    OUTPUT_JSON+=",";
+    OUTPUT_JSON+="\"results\":{";
+      OUTPUT_JSON+="\"download\":{\"units\":\"${DOWNLOAD_UNITS}\",\"avg\":\"${DOWNLOAD_AVG}\",\"max\":\"${DOWNLOAD_MAX}\",\"min\":\"${DOWNLOAD_MIN}\"}";
+      OUTPUT_JSON+=",";
+      OUTPUT_JSON+="\"upload\":{\"units\":\"${UPLOAD_UNITS}\",\"avg\":\"${UPLOAD_AVG}\",\"max\":\"${UPLOAD_MAX}\",\"min\":\"${UPLOAD_MIN}\"}";
+      OUTPUT_JSON+=",";
+      OUTPUT_JSON+="\"ping\":{\"units\":\"${PING_UNITS}\",\"avg\":\"${PING_AVG}\",\"max\":\"${PING_MAX}\",\"min\":\"${PING_MIN}\"}";
+    OUTPUT_JSON+="}";
   OUTPUT_JSON+="}";
   echo "${OUTPUT_JSON}" | jq;
 

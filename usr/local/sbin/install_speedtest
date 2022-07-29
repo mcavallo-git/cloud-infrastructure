@@ -31,6 +31,7 @@ else
   # Ensure that prerequisite packages are installed
   #
   unset PREREQ_CMD_PKG_ARR; declare -a PREREQ_CMD_PKG_ARR; # [Re-]Instantiate bash array
+  PREREQ_CMD_PKG_ARR+=("pip|python3");
   PREREQ_CMD_PKG_ARR+=("python3|python3");
   APT_UPDATE_PERFORMED=0;
   for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do
@@ -52,9 +53,13 @@ else
   if [[ "$(dpkg -l speedtest-cli 1>'/dev/null' 2>&1; echo ${?};)" -eq 0 ]]; then
     sudo apt-get -y remove "speedtest-cli";
   fi;
-
-  echo "Info:  Calling [ pip install \"speedtest-cli\"; ]...";
-  pip install "speedtest-cli";
+  #
+  # Install speedtest python3 package
+  #
+  if [[ "$(python -c "import speedtest" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
+    echo "Info:  Installing python3 package \"speedtest-cli\" (contains command \"speedtest\")...";
+    pip install "speedtest-cli";
+  fi;
 
   # # Verify that package is installed by getting the installed version from it
   # echo "";

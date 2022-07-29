@@ -56,7 +56,7 @@ else
   #
   # Install speedtest python3 package
   #
-  if [[ "$(python -c "import speedtest" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
+  if [[ "$(python3 -c "import speedtest" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
     echo "Info:  Installing python3 package \"speedtest-cli\" (contains command \"speedtest\")...";
     pip install "speedtest-cli";
   fi;

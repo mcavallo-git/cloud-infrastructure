@@ -322,7 +322,7 @@ else
     SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
     # ------------------------------
-    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
       echo "";
       echo "Debug:  ARGS = [ ${ARGS[*]} ]";
       echo "Debug:  ARGS_COUNT = [ ${ARGS_COUNT} ]";
@@ -458,24 +458,24 @@ else
             # Query Debian's Package-Manager for each package
             if [[ "$(dpkg -L "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             else
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           elif [[ -n "$(command -v rpm 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
             if [[ "$(rpm --quiet --query "${EACH_REQUIRED_PKG}" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             else
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           else # Other distros
             if [[ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]]; then
               MISSING_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package missing:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             else
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Package already installed:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           fi;
         fi;
@@ -535,7 +535,7 @@ else
             else
               # Package install success
               NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
             # Query RHEL's Package-Manager for each package
@@ -546,7 +546,7 @@ else
             else
               # Package install success
               NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           else # Other distros
             if [[ -z "$(command -v ${EACH_REQUIRED_PKG} 2>'/dev/null';)" ]]; then
@@ -556,7 +556,7 @@ else
             else
               # Package install success
               NEWLY_INSTALLED_PKGS_ARRAY+=("${EACH_REQUIRED_PKG}");
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Successfully installed package:  [ ${EACH_REQUIRED_PKG} ]"; fi;
             fi;
           fi;
         done;
@@ -571,10 +571,10 @@ else
         #
         # No package changes were made
         #
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> No package changes made (all required/prerequite packages are installed locally)"; fi;
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> No package changes made (all required/prerequite packages are installed locally)"; fi;
       fi;
-      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
-      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
         echo "";
         echo "Debug:  REQUIRED_PKGS_ARRAY[@] = [ ${REQUIRED_PKGS_ARRAY[*]} ]";
         echo "Debug:  MISSING_PKGS_ARRAY[@] = [ ${MISSING_PKGS_ARRAY[*]} ]";
@@ -594,7 +594,7 @@ else
         CHECKSUM_ERROR_UNSIGNED=4294967295;
         TOTAL_LINES_THISSCRIPT_REMOTE=$(curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | wc -l);
         TOTAL_LINES_THISSCRIPT_MINIMUM_REQUIRED=10;
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
           echo "";
           echo "Debug:  SYNC_CI_REMOTE = [ ${SYNC_CI_REMOTE} ]";
           echo "Debug:  TOTAL_LINES_THISSCRIPT_REMOTE = [ ${TOTAL_LINES_THISSCRIPT_REMOTE} ]";
@@ -627,7 +627,7 @@ else
 
       fi;
 
-      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
         echo "";
         echo "Debug:  UPDATE_SELF_REQUIRED = [ ${UPDATE_SELF_REQUIRED} ]";
       fi;
@@ -644,15 +644,15 @@ else
         ### DEPRECATED APPROACH (local callback) - Threw preposterous amounts of unintelligable errors when the source repo's script file differed from the local script file - likely due to the fact that the script file is running within itself locally while also updating itself
         ### if [[ 0 -eq 1 ]]; then
         ###   echo "Info:  Running self-update...";
-        ###   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
+        ###   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Info:  Downloading updated runtime from remote path \"${SYNC_CI_REMOTE}\" to local path \"${SYNC_CI_LOCAL}\""; fi;
         ###   BENCHMARK_START=$(date +'%s.%N');
         ###   # Download the latest version of this script
         ###   curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' > "${SYNC_CI_LOCAL}"; # remove commented & whitespace-only lines from script
         ###   chmod 0755 "${SYNC_CI_LOCAL}";
         ###   RECURSIVE_CALLBACK_COMMAND+="${SYNC_CI_LOCAL} --skip-self-update $@}";
-        ###   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...\n"; fi;
+        ###   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "      |--> Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]...\n"; fi;
         ###   eval " ${RECURSIVE_CALLBACK_COMMAND}"; # trigger the recursive callback
-        ###   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+        ###   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         ### fi;
         ### ------------------------------
 
@@ -691,37 +691,37 @@ else
           #
           # Fetch/Pull/Clone the Remote Repo
           echo -e "\nInfo:  Pulling the latest revision of the \"${GIT_REPO_NAME}\" repository using the \"${GIT_SOURCE_BRANCH}\" branch";
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Source (Repo URL):   ${GIT_SOURCE_REPO_URL}"; fi;
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Source (Repo URL):   ${GIT_SOURCE_REPO_URL}"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ ! -d "${GIT_LOCAL_PARENT_PATH}" ]]; then
             # Ensure that the directory designated to contain git repos exists (locally)
             mkdir -p "${GIT_LOCAL_PARENT_PATH}";
           fi;          # Clone the repo if it hasn't been synced, yet
           if [[ ! -d "${GIT_LOCAL_REPO_PATH}" ]]; then
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_PARENT_PATH}\" && git clone --quiet \"${GIT_SOURCE_REPO_URL}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_PARENT_PATH}\" && git clone --quiet \"${GIT_SOURCE_REPO_URL}\"; ]..."; fi;
             cd "${GIT_LOCAL_PARENT_PATH}" && \
             git clone --quiet "${GIT_SOURCE_REPO_URL}";
           fi;
           # Sync local workstation's commands with the repo's commands
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\" && git fetch --quiet && git reset --quiet --hard \"origin/${GIT_SOURCE_BRANCH}\" && git pull --quiet; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\" && git fetch --quiet && git reset --quiet --hard \"origin/${GIT_SOURCE_BRANCH}\" && git pull --quiet; ]..."; fi;
           cd "${GIT_LOCAL_REPO_PATH}" && \
           git fetch --quiet && \
           git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && \
           git pull --quiet;
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo files as-intended
           echo -e "\nInfo:  Setting ownership for directories within the local \"${GIT_REPO_NAME}\" repo clone";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type d -exec chmod 0700 "{}" ";"; # directories, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type d -print0 | xargs -0 chmod 0700; # directories, xargs + chmod
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo directories as-intended
           echo -e "\nInfo:  Setting ownership for files within the local \"${GIT_REPO_NAME}\"  repo clone";
           BENCHMARK_START=$(date +'%s.%N');
           # find "${GIT_LOCAL_REPO_PATH}" -type f -exec chmod 0600 "{}" ";"; # files, find + chmod
           find "${GIT_LOCAL_REPO_PATH}" -type f -print0 | xargs -0 chmod 0600; # files, xargs + chmod
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         fi;
         # ------------------------------
         #
@@ -735,13 +735,13 @@ else
             WIN32_USERPROFILE="$(wslpath -u "$(wslvar --sys "USERPROFILE" 2>'/dev/null';)" 2>'/dev/null';)";
             WIN32_USER_ERRORS="${?}";
           fi;
-          if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]] && [[ "${WIN32_USER_ERRORS}" == "0" ]]; then
+          if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]] && [[ "${WIN32_USER_ERRORS}" -eq 0 ]]; then
             # ------------------------------
             #
             # Running in WSL (Windows Subsystem for Linux) shell on a Windows-based OS
             #  |--> Locate source directory from amongst Win32 Host-User's files
             #
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Detected Windows Subsystem for Linux (WSL) Environment - Checking for local repo files"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Detected Windows Subsystem for Linux (WSL) Environment - Checking for local repo files"; fi;
             BENCHMARK_START=$(date +'%s.%N');
             WIN32_USR_LOCAL=$(find "${WIN32_USERPROFILE}/Documents/"**"/${GIT_REPO_NAME}/usr/local" -maxdepth 0 -type d 2>'/dev/null' | head -n 1;);
             if [[ -z "${WIN32_USR_LOCAL}" ]]; then
@@ -750,13 +750,13 @@ else
             else
               DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
               DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Using repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Using repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
             fi;
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
         fi;
         # ------------------------------
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
           echo "";
           echo "Debug:  WSL_CHECK_EXISTS = [ ${WSL_CHECK_EXISTS} ]";
           echo "Debug:  WIN32_USERPROFILE = [ ${WIN32_USERPROFILE} ]";
@@ -829,26 +829,26 @@ else
           DIR_REPO_BASE="$(dirname "${DIR_REPO_USR}";)";
           RET_CODE=$?;
           if [[ ${RET_CODE} -eq 0 ]]; then
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Using [ $(whoami) ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
           else 
             if [[ -n "${SUDO_USER}" ]]; then
               #  Linux OS - Locate source directory from amongst Non-Sudo User's files
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Repository not found within [ $(whoami) ] user's home-directory"; fi;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Checking for local repository files within [ ${SUDO_USER} ] user's home-directory"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Repository not found within [ $(whoami) ] user's home-directory"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Checking for local repository files within [ ${SUDO_USER} ] user's home-directory"; fi;
               SUDOER_HOME_DIR="$(getent passwd ${SUDO_USER} | cut --delimiter=: --fields=6)";
               SUDOER_USR_LOCAL=$(find ${SUDOER_HOME_DIR} -mindepth 2 -maxdepth 5 -name 'local' -type d 2>'/dev/null' | grep "/${GIT_REPO_NAME}/usr/local");
               DIR_REPO_USR="$(dirname ${SUDOER_USR_LOCAL})";
               DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
               RET_CODE=$?;
               if [[ ${RET_CODE} -eq 0 ]]; then
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Using [ ${SUDO_USER} ] user's repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
               fi;
             fi;
           fi;
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
         fi;
         # ------------------------------
-        if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
           echo "";
           echo "Debug:  DIR_REPO_BASE = [ ${DIR_REPO_BASE} ]";
           echo "Debug:  DIR_REPO_USR = [ ${DIR_REPO_USR} ]";
@@ -875,7 +875,7 @@ else
         fi;
         # ------------------------------
         if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" -ne 1 ]]; then
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'If' main statement block - No errors detected thus far  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'If' main statement block - No errors detected thus far  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
           #
           # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
           #  |--> Run the part of the sync job which actually performs the sync
@@ -887,16 +887,16 @@ else
           DESTINATION_PATH="/usr/local/bin";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0755"; DIR_PERMS="0755";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
           chown -R "root:root" "${DESTINATION_PATH}";
           find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /usr/local/sbin
@@ -905,16 +905,16 @@ else
           DESTINATION_PATH="/usr/local/sbin";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0755"; DIR_PERMS="0755";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" --exclude=\"${EXCLUDE_PATTERN}\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" --exclude=\"${EXCLUDE_PATTERN}\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" --exclude="${EXCLUDE_PATTERN}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
           chown -R "root:root" "${DESTINATION_PATH}";
           find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /etc/inputrc
@@ -925,7 +925,7 @@ else
               BENCHMARK_START=$(date +'%s.%N');
               echo -e "\nInfo:  Setting bell-style the bell sound effect in \"/etc/inputrc\")";
               sed -i".${START_TIMESTAMP}.bak" -r -e 's/^#\s*(set\s+bell-style\s+none\s*)$/\1/' '/etc/inputrc'; # Uncomment lines starting with  [ # set bell-style none ]
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------
@@ -939,7 +939,7 @@ else
               echo -e "\nInfo:  Disabling \"You have new mail in ...\" alerts (commenting MAIL=... in \"/etc/profile\")";
               sed -i".${START_TIMESTAMP}.bak" -r -e 's/^ *MAIL=".+"/#\0/p' "/etc/profile"; # Comment out all lines which set variable  [ MAIL ]  to anything OTHER THAN an empty string
               sed -i".${START_TIMESTAMP}.bak" -r -e '/^ *export ?.* MAIL ?.*/{' -e 'i\MAIL=""' -e '}' "/etc/profile"; # Remove MAIL from the  [ export ... ]  variables
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------
@@ -950,16 +950,16 @@ else
             DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0644";
-            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
             rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
             chown -R "root:root" "${DESTINATION_PATH}";
             find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
             if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             # Reference:  https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html
             update-ca-trust force-enable;
             update-ca-trust extract; # Update for Rhel/Centos
@@ -971,16 +971,16 @@ else
           DESTINATION_PATH="/etc/profile.d/required_paths.sh";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
           find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /etc/profile.d/bash_history_logging.sh
@@ -988,16 +988,16 @@ else
           DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
           chown -R "root:root" "${DESTINATION_PATH}";
           find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /etc/whitelist.d
@@ -1005,16 +1005,16 @@ else
           DESTINATION_PATH="/etc/whitelist.d";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0755";
-          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
           chown -R "root:root" "${DESTINATION_PATH}";
           find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
           find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
           if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /etc/ssh/sshd_config
@@ -1083,7 +1083,7 @@ else
                 echo "Info:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
                 echo "  |--> There must be at least one user (other than root) who can access this workstation via SSH, and has a home directory within [ /home/ ]";
                 echo "  |--> The updated SSH config will deny the root user from accessing this device via SSH (to prevent Brute-force/Dictionary SSH Attacks on this device)";
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> Debug:  Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Debug:  Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then
                 #
                 # Need at least one SSH-Key to exist in /etc/ssh/authorized_keys/.
@@ -1133,7 +1133,7 @@ else
                       && chmod 0644 "${SSHD_CONFIG_REPLACEMENT}" \
                       && cp -f "${SSHD_CONFIG_REPLACEMENT}" "${SSHD_CONFIG_LIVE}" \
                       && RESTART_SERVICE_SSH=1;
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                   fi;
                 elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
                   #
@@ -1193,7 +1193,7 @@ else
                   else
                     echo -e "\nInfo:  Skipped SSH config update - Already running the latest revision";
                   fi;
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 fi;
               fi;
               # ------------------------------
@@ -1223,7 +1223,7 @@ else
               if [[ "$(ufw status 1>'/dev/null' 2>&1; echo ${?};)" -eq 0 ]]; then
                 # Check if UFW is enabled or disabled
                 UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
                   echo "";
                   echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                 fi;
@@ -1231,7 +1231,7 @@ else
                   # UFW DISABLED - Show recommendations for general-practice setup
                   echo -e "\nWarning:  Firewall package UFW (uncomplicated firewall) is installed but disabled";
                   echo -e "  |--> Call this script with \"--debug\" for suggested resolution path";
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
                     echo "  |";
                     echo "  |--> Recommend applying the following ruleset, enabling UFW, then tweaking rules as-needed:";
                     echo "         ufw allow proto tcp from 10.0.0.0/8 to any port 22;     # Allow incoming SSH/SFTP requests from LAN IPv4 addresses (RFC-1918)";
@@ -1262,7 +1262,7 @@ else
                       ufw enable;
                       # Re-check UFW Enabled/Disabled Status
                       UFW_ENABLED=$(test -n "$(ufw status | grep 'Status' | grep 'inactive')" && echo 0 || echo 1;);
-                      if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then
+                      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
                         echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                       fi;
                     else
@@ -1289,12 +1289,12 @@ else
             if [[ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]]; then
               # Enable a cronjob to perform scheduled updates/syncs of the UFW firewall whitelist
               CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-              echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+              echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
                 && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
                 && RESTART_SERVICE_CRON=1;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
 
           fi;
@@ -1311,16 +1311,16 @@ else
             DESTINATION_PATH="/etc/cron.d/CRON_sync_cloud_infrastructure";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0644";
-            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+            echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
             BENCHMARK_START=$(date +'%s.%N');
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
             rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
             chown -R "root:root" "${DESTINATION_PATH}";
             find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
             find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
             if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
             dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-            if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             # ------------------------------
             #
             # /etc/cron.d/CRON_certbot_renew_all
@@ -1328,7 +1328,7 @@ else
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               if [[ -n "$(command -v certbot 2>'/dev/null';)" ]]; then
                 DESTINATION_PATH="/etc/cron.d/CRON_certbot_renew_all";
-                UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+                UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
                 REPLY="";
                 if [[ -f "${DESTINATION_PATH}" ]]; then
                   REPLY="y";
@@ -1346,14 +1346,14 @@ else
                   SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                   FILE_PERMS="0644"; DIR_PERMS="0644";
                   BENCHMARK_START=$(date +'%s.%N');
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                   rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                   chown -R "root:root" "${DESTINATION_PATH}";
                   find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
                   find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                   if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                   dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 else
                   echo "  |--> Denied - SSL/TLS certificate auto renewal disabled";
                 fi;
@@ -1365,7 +1365,7 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_journalctl_logfile_cleanup";
-              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
@@ -1383,14 +1383,14 @@ else
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
                 BENCHMARK_START=$(date +'%s.%N');
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
                 find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - Logfile auto cleanup disabled";
               fi;
@@ -1414,7 +1414,7 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_dns_config";
-              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
@@ -1432,14 +1432,14 @@ else
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
                 BENCHMARK_START=$(date +'%s.%N');
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
                 find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - DNS server sync disabled";
               fi;
@@ -1450,7 +1450,7 @@ else
             #
             if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
               DESTINATION_PATH="/etc/cron.d/CRON_update_system";
-              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
+              UPDATING_ECHO="$(echo -e "Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";)";
               REPLY="";
               if [[ -f "${DESTINATION_PATH}" ]]; then
                 REPLY="y";
@@ -1468,14 +1468,14 @@ else
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
                 BENCHMARK_START=$(date +'%s.%N');
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
                 find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - System & package weekly updates disabled";
               fi;
@@ -1490,16 +1490,16 @@ else
                 DESTINATION_PATH="/etc/cron.d/CRON_raspi_hw_monitor";
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+                echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                 BENCHMARK_START=$(date +'%s.%N');
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
                 chown -R "root:root" "${DESTINATION_PATH}";
                 find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
                 find "${DESTINATION_PATH}" -type f -exec chmod ${FILE_PERMS} '{}' \; ; # chmod files
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
             fi;
           fi;
@@ -1521,12 +1521,12 @@ else
               USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
             fi;
           done;
-          echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH enabled users...$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH enabled users...$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           BENCHMARK_START=$(date +'%s.%N');
           # Begin copying files to SSH enabled users' home directories
           for EACH_FILE in ${FILES_TO_COPY}; do
             if [[ ! -z "${EACH_FILE// }" ]]; then # Ignore blank/empty filenames
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  |--> \"~/${EACH_FILE}\""; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> \"~/${EACH_FILE}\""; fi;
               SRC_FULLPATH="${COPY_FROM_SOURCE}/${EACH_FILE}";
               for EACH_SSH_USER in ${LINUX_BASH_USERS}; do
                 EACH_PRIMARY_GROUP="$(id -gn ${EACH_SSH_USER})";
@@ -1548,12 +1548,12 @@ else
                     chown "${EACH_SSH_USER}:${EACH_PRIMARY_GROUP}" "${DEST_FULLPATH}";
                     chmod 600 "${DEST_FULLPATH}";
                   fi;
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}"); echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then USERNAME_RPAD="  "$(printf '%-'${USERNAMES_MOSTCHARS}'s' "|----> ${EACH_SSH_USER}"); echo "${USERNAME_RPAD}:  [ ${DEST_FULLPATH} ]"; fi;
                 fi;
               done;
             fi;
           done;
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
           #
           # /etc/cron.d/CRON_ddns_updater
@@ -1562,7 +1562,7 @@ else
             if [[ ${ARGS_SYNC_DDNS} -eq 1 ]]; then
               # Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
               CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
-              echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+              echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
 
               /usr/local/bin/ddns_setup \
@@ -1570,7 +1570,7 @@ else
                 && chmod 0644 "/etc/cron.d/CRON_ddns_updater" \
                 && RESTART_SERVICE_CRON=1;
 
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------
@@ -1591,9 +1591,9 @@ else
               DESTINATION_PATH="/etc/nginx"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
-              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+              echo -e "\nInfo:  Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
               rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
               chown -R "root:root" "${DESTINATION_PATH}";
               find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
@@ -1612,12 +1612,12 @@ else
                 if [[ "${CURRENT_LOGS_USER}" != "${NGINX_LOGS_USER}" ]]; then
                   NGINX_LOGS_GROUP="$(getent passwd "${NGINX_LOGS_USER}" | cut -d':' -f5;)";
                   CURRENT_LOGS_GROUP="$(stat -c "%G" "${DESTINATION_PATH}";)";
-                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" user:group ownership to \"${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}\"$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" user:group ownership to \"${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chown "${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}" "${DESTINATION_PATH}";
                 fi;
                 CURRENT_LOGS_PERMS="$(stat -c "%a" "${DESTINATION_PATH}";)";
                 if [[ "${CURRENT_LOGS_PERMS}" != "${DIR_PERMS}" ]]; then
-                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" file mode (access) permissions to \"${DIR_PERMS}\"$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" file mode (access) permissions to \"${DIR_PERMS}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
                 fi;
               fi;
@@ -1628,9 +1628,9 @@ else
               DESTINATION_PATH="/var/www/error"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then  echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then  echo -e "  |--> Updating \"${DESTINATION_PATH}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
               BENCHMARK_START=$(date +'%s.%N');
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
               rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
               chown -R "root:root" "${DESTINATION_PATH}";
               find "${DESTINATION_PATH}" -type d -exec chmod ${DIR_PERMS} '{}' \; ; # chmod directories
@@ -1676,13 +1676,13 @@ else
                 if [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device
                   #  |--> Set this FQDN to "Enabled" for the current NGINX server
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
                   SITES_ENABLED=$(( ${SITES_ENABLED:-0} + 1 ));
                 elif [[ "${Each_FQDN}" == "$(hostname --fqdn;)" ]] && [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN is equal to the hostname (as a FQDN) for the current device and the WAN IPv4 address of the hostname resolved to this device's IPv4 address, as well
                   #  |--> Set this FQDN to "Enabled" for the current NGINX server
-                  if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |\n  |--> $(if [[ -e "${Each_SitesEnabled}" ]]; then echo "Updating"; else echo "Enabling"; fi;) NGINX FQDN \"${Each_FQDN}\" via file \"${Each_SitesEnabled}\"\n  |--> Debug:  Exact match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                   ln -sf "${Each_SitesAvailable}" "${Each_SitesEnabled}";
                   SITES_ENABLED=$(( ${SITES_ENABLED:-0} + 1 ));
                 else
@@ -1690,7 +1690,7 @@ else
                   rm -f "${Each_SitesAvailable}";
                   if [[ -h "${Each_SitesEnabled}" ]] || [[ -f "${Each_SitesEnabled}" ]]; then
                     # If this NGINX site (FQDN) is enabled (but should be disabled as no matches were found between it and the current device), then disable it
-                    if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n  |--> Debug:  No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]\n  |--> Debug:  No match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
+                    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |\n  |--> Disabling NGINX FQDN \"${Each_FQDN}\" (removing/unlinking \"${Each_SitesEnabled}\")\n  |--> Debug:  No match found between [ the resolved WAN IPv4 address for target FQDN \"${Each_FQDN}\" ] and [ the resolved WAN IPv4 address of the current device ]\n  |--> Debug:  No match found between [ the target FQDN \"${Each_FQDN}\" ] and [ the hostname (formatted as a FQDN) of the current device ]"; fi;
                     if [[ -h "${Each_SitesEnabled}" ]]; then
                       unlink "${Each_SitesEnabled}";
                     elif [[ -f "${Each_SitesEnabled}" ]]; then
@@ -1704,17 +1704,17 @@ else
               #
               if [[ "${SITES_ENABLED}" -gt 0 ]] && [[ -h "/etc/nginx/sites-enabled/default" ]]; then
                 # Disable the default NGINX virtual host (site) if at least one custom site is enabled
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ unlink \"/etc/nginx/sites-enabled/default\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ unlink \"/etc/nginx/sites-enabled/default\"; ]..."; fi;
                 unlink "/etc/nginx/sites-enabled/default";
               fi;
               #
               # certbot - Reload NGINX whenever a Let's Encrypt HTTPS certificate is renewed via certbot
               #
               if [[ -d "/etc/letsencrypt/renewal-hooks/deploy" ]] && [[ ! -e "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx" ]] && [[ -f "/usr/local/sbin/reload_nginx" ]]; then
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ ln --symbolic --verbose --force \"/usr/local/sbin/reload_nginx\" \"/etc/letsencrypt/renewal-hooks/deploy/reload_nginx\"; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ ln --symbolic --verbose --force \"/usr/local/sbin/reload_nginx\" \"/etc/letsencrypt/renewal-hooks/deploy/reload_nginx\"; ]..."; fi;
                 ln --symbolic --verbose --force "/usr/local/sbin/reload_nginx" "/etc/letsencrypt/renewal-hooks/deploy/reload_nginx";
               fi;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           fi;
           # ------------------------------
@@ -1822,9 +1822,9 @@ else
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             fi;
             # crond  -->  Restart service
@@ -1833,9 +1833,9 @@ else
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             fi;
             if [[ ${CRON_SVC_FOUND} -eq 0 ]]; then
@@ -1851,9 +1851,9 @@ else
             SERVICE_NAME="jenkins";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
@@ -1868,7 +1868,7 @@ else
             SERVICE_NAME="nginx";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ eval \" /usr/local/sbin/reload_nginx\"; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ eval \" /usr/local/sbin/reload_nginx\"; ]..."; fi;
               eval " /usr/local/sbin/reload_nginx";
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
@@ -1883,9 +1883,9 @@ else
             SERVICE_NAME="sshd";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
@@ -1900,13 +1900,13 @@ else
             SERVICE_NAME="ufw";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]]; then
-                if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ ufw reload; ]..."; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ ufw reload; ]..."; fi;
                 ufw reload;
               fi;
-              if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
@@ -1919,7 +1919,7 @@ fi;
 if [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
         # elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 
         elif [[ -n "${EXIT_CODE}" ]] && [[ "${EXIT_CODE}" != "0" ]]; then
 
@@ -1927,7 +1927,7 @@ if [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
         else
 
-          if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 
         fi;
 
@@ -1973,7 +1973,7 @@ if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
 fi;
 
 echo "";
-echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime $(if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "at [ ${END_DATETIME}.${END_MICROSECONDS}$(date +'%z';) ] after [ ${END_BENCHMARK_DELTA}s ] "; fi;) (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
+echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime $(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "at [ ${END_DATETIME}.${END_MICROSECONDS}$(date +'%z';) ] after [ ${END_BENCHMARK_DELTA}s ] "; fi;) (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
 # ------------------------------
 #
@@ -1981,7 +1981,7 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 #
 
 # if [[ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]]; then
-#   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+#   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 #   exit ${EXIT_CODE:-0};
 # fi;
 
@@ -1993,11 +1993,11 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 
 echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
 
-# if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+# if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
 
 # eval " ${RECURSIVE_CALLBACK_COMMAND}"
 
-if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
+if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
 
 eval " ${RECURSIVE_CALLBACK_COMMAND}" &
 

@@ -41,9 +41,6 @@ for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do
   fi;
 done;
 
-PUBLIC_IPV4="$(curl -sL -4 icanhazip.com;)";
-echo -e "\nPUBLIC_IPV4 = [ ${PUBLIC_IPV4} ]";
-
 unset PING_RESULTS_ARR; declare -a PING_RESULTS_ARR; # [Re-]Instantiate bash array
 unset DOWNLOAD_RESULTS_ARR; declare -a DOWNLOAD_RESULTS_ARR; # [Re-]Instantiate bash array
 unset UPLOAD_RESULTS_ARR; declare -a UPLOAD_RESULTS_ARR; # [Re-]Instantiate bash array
@@ -121,6 +118,8 @@ elif [[ "${TEST_OUTPUT}" == "simple" ]]; then
   #
   # speedtest using "simple" output parsing
   #
+  PUBLIC_IPV4="$(curl -sL -4 icanhazip.com;)";
+  echo -e "\nPUBLIC_IPV4 = [ ${PUBLIC_IPV4} ]";
   if [[ 0 -eq 1 ]]; then
     for i in $(seq ${LOOP_ITERATIONS}); do
       # Start a new speedtest

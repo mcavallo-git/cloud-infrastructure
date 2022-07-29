@@ -51,9 +51,9 @@ EXIT_CODE=0; # sum of errors from specific required calls - returned as the fina
 
 UPDATE_SELF_REQUIRED=1; # Flag variable which determines if the self-update will run or not
 
-RECURSIVE_CALLBACK_ECHO="";
-
 RECURSIVE_CALLBACK_COMMAND="";
+
+# RECURSIVE_CALLBACK_ECHO="";
 
 # ------------------------------
 #
@@ -656,9 +656,9 @@ else
         ### fi;
         ### ------------------------------
 
-        # RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
-
         RECURSIVE_CALLBACK_COMMAND+="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
+
+        # RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
         # remove whitespace-only lines
         RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";

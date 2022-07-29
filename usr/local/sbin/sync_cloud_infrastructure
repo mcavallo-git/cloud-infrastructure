@@ -656,7 +656,7 @@ else
         ### fi;
         ### ------------------------------
 
-        RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
+        # RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
         RECURSIVE_CALLBACK_COMMAND+="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
 

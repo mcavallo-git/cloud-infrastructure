@@ -136,12 +136,12 @@ else
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Response timed out after ${READ_TIMEOUT}s - Exiting...";
       echo "";
       exit 1;
-    elif [ ${#USER_RESPONSE} -eq 0 ]; then
+    elif [ ${#INPUT_HOSTNAME} -eq 0 ]; then
       echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error:  Response's string length is zero (empty) - Exiting...";
       echo "";
       exit 1;
     else
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Response received: \"${USER_RESPONSE}\"";
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Response received: \"${INPUT_HOSTNAME}\"";
     fi;
   fi;
 

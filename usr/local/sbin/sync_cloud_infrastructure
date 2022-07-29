@@ -657,38 +657,22 @@ else
 
         RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
-        # if [[ -n "$(command -v eval 2>'/dev/null';)" ]]; then
-          # ------------------------------
-          #
-          # 'eval' DOES exist as a local command - build a recursive callback command to pass to it
-          #   |
-          #   |--> Call script directly from source as a remote URL (to avoid conflict updating/running the file which is already running and executing these commands)
-          #
-          RECURSIVE_CALLBACK_COMMAND+="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
-          # remove whitespace-only lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
-          # trim leading/trailing whitespace (from all lines)
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
-          # remove comment-only lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
-          # remove comments appended to the end of lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
-          # set the script to use the local bash shell
-          RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";
-          # EVAL COMMAND MOVED TO END OF SCRIPT
-        # else
-        #   ------------------------------
-          
-        #   'eval' does NOT exist as a local command - call the recursive callback command directly (via curL) without eval
-        #     |
-        #     |--> Call script directly from source (to avoid conflict updating/running the file which is already running and executing these commands)
-          
-        #   if [[ ${ARGS_DEBUG_MODE} -eq 1 ]]; then echo "      |--> Calling [ curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL \"${SYNC_CI_REMOTE}\" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; ]..."; fi;
-        #   echo "";
-        #   curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL "${SYNC_CI_REMOTE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e '/^\s*$/d' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | /bin/bash -s -- --skip-self-update $@; # trigger the recursive callback
-        # fi;
+        RECURSIVE_CALLBACK_COMMAND+="curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
 
-        # echo -e "\n==== Info:  Returned to parent runtime from recursive call  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
+        # remove whitespace-only lines
+        RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
+
+        # trim leading/trailing whitespace (from all lines)
+        RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
+
+        # remove comment-only lines
+        RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
+
+        # remove comments appended to the end of lines
+        RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
+
+        # set the script to use the local bash shell
+        RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";
 
       else
         # ------------------------------

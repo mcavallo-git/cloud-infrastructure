@@ -31,7 +31,7 @@ else
   # Ensure that prerequisite packages are installed
   #
   unset PREREQ_CMD_PKG_ARR; declare -a PREREQ_CMD_PKG_ARR; # [Re-]Instantiate bash array
-  PREREQ_CMD_PKG_ARR+=("pip|python3");
+  PREREQ_CMD_PKG_ARR+=("pip|python3-pip");
   PREREQ_CMD_PKG_ARR+=("python3|python3");
   APT_UPDATE_PERFORMED=0;
   for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do

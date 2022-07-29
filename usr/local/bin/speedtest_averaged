@@ -102,6 +102,7 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
     fi;
   done;
 
+  echo  "";
   echo  "------------------------------";
   
   DOWNLOAD_AVG="$(echo "scale=2; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";

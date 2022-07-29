@@ -69,31 +69,31 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
     echo -e "Running speedtest # ${i}/${LOOP_ITERATIONS}...\n";
     EACH_SPEEDTEST_OUTPUT="$(speedtest --secure --json;)";
     # Parse download speed
-    EACH_DOWNLOAD_BITRATE="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".download" | grep -v '^null$';)";
+    EACH_DOWNLOAD_BITRATE="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".download" | grep -v '^null$';)";
     if [[ -n "${EACH_DOWNLOAD_BITRATE}" ]]; then
       EACH_DOWNLOAD_MEGABIT=$(echo "scale=4; (${EACH_DOWNLOAD_BITRATE})/(1048576)" | bc -l;);
       DOWNLOAD_RESULTS_ARR+=("${EACH_DOWNLOAD_MEGABIT}");
       DOWNLOAD_AVG="$(echo "scale=4; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
-      echo "Download: $(printf "%-20s" "${EACH_DOWNLOAD_MEGABIT} ${DOWNLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})"; fi;)";
+      echo "Download: $(printf "%-25s" "${EACH_DOWNLOAD_MEGABIT} ${DOWNLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})"; fi;)";
     fi;
     # Parse upload speed
-    EACH_UPLOAD_BITRATE="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".upload" | grep -v '^null$';)";
+    EACH_UPLOAD_BITRATE="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".upload" | grep -v '^null$';)";
     if [[ -n "${EACH_UPLOAD_BITRATE}" ]]; then
       EACH_UPLOAD_MEGABIT=$(echo "scale=4; (${EACH_UPLOAD_BITRATE})/(1048576)" | bc -l;);
       UPLOAD_RESULTS_ARR+=("${EACH_UPLOAD_MEGABIT}");
       UPLOAD_AVG="$(echo "scale=4; ($(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
-      echo "Upload:   $(printf "%-20s" "${EACH_UPLOAD_MEGABIT} ${UPLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
+      echo "Upload:   $(printf "%-25s" "${EACH_UPLOAD_MEGABIT} ${UPLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
     fi;
     # Parse ping duration
-    EACH_PING_MS="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".ping" | grep -v '^null$';)";
+    EACH_PING_MS="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".ping" | grep -v '^null$';)";
     if [[ -n "${EACH_PING_MS}" ]]; then
       PING_RESULTS_ARR+=("${EACH_PING_MS}");
       PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-      echo "Ping:     $(printf "%-20s" "${EACH_PING_MS} ${PING_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${PING_AVG} ${PING_UNITS})"; fi;)";
+      echo "Ping:     $(printf "%-25s" "${EACH_PING_MS} ${PING_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${PING_AVG} ${PING_UNITS})"; fi;)";
     fi;
     # Get WAN IPv4 & ISP info
-    EACH_WAN_IP="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".client.ip" | grep -v '^null$';)";
-    EACH_ISP_NAME="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".client.isp" | grep -v '^null$';)";
+    EACH_WAN_IP="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".client.ip" | grep -v '^null$';)";
+    EACH_ISP_NAME="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".client.isp" | grep -v '^null$';)";
     if [[ -n "${EACH_WAN_IP}" ]] && [[ -n "${EACH_ISP_NAME}" ]]; then
       echo "WAN IP:   $(printf "%-20s" "${EACH_WAN_IP}";)  (ISP:  ${EACH_ISP_NAME})";
     fi;

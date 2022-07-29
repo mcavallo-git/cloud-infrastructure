@@ -73,23 +73,23 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
     if [[ -n "${EACH_DOWNLOAD_BITRATE}" ]]; then
       EACH_DOWNLOAD_MEGABIT=$(echo "scale=4; (${EACH_DOWNLOAD_BITRATE})/(1048576)" | bc -l;);
       DOWNLOAD_RESULTS_ARR+=("${EACH_DOWNLOAD_MEGABIT}");
-      DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-      echo "Download: $(printf "%-20s" "${EACH_DOWNLOAD_MEGABIT} ${DOWNLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Download: ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})"; fi;)";
+      DOWNLOAD_AVG="$(echo "scale=4; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
+      echo "Download: $(printf "%-20s" "${EACH_DOWNLOAD_MEGABIT} ${DOWNLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${DOWNLOAD_AVG} ${DOWNLOAD_UNITS})"; fi;)";
     fi;
     # Parse upload speed
     EACH_UPLOAD_BITRATE="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".upload" | grep -v '^null$';)";
     if [[ -n "${EACH_UPLOAD_BITRATE}" ]]; then
       EACH_UPLOAD_MEGABIT=$(echo "scale=4; (${EACH_UPLOAD_BITRATE})/(1048576)" | bc -l;);
       UPLOAD_RESULTS_ARR+=("${EACH_UPLOAD_MEGABIT}");
-      UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-      echo "Upload:   $(printf "%-20s" "${EACH_UPLOAD_MEGABIT} ${UPLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Upload:   ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
+      UPLOAD_AVG="$(echo "scale=4; ($(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
+      echo "Upload:   $(printf "%-20s" "${EACH_UPLOAD_MEGABIT} ${UPLOAD_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${UPLOAD_AVG} ${UPLOAD_UNITS})"; fi;)";
     fi;
     # Parse ping duration
     EACH_PING_MS="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".ping" | grep -v '^null$';)";
     if [[ -n "${EACH_PING_MS}" ]]; then
       PING_RESULTS_ARR+=("${EACH_PING_MS}");
       PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-      echo "Ping:     $(printf "%-20s" "${EACH_PING_MS} ${PING_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg Ping:     ${PING_AVG} ${PING_UNITS})"; fi;)";
+      echo "Ping:     $(printf "%-20s" "${EACH_PING_MS} ${PING_UNITS}";)  $(if [[ "${i}" -ne 1 ]]; then echo "(Avg:  ${PING_AVG} ${PING_UNITS})"; fi;)";
     fi;
     # Get WAN IPv4 & ISP info
     EACH_WAN_IP="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq ".client.ip" | grep -v '^null$';)";
@@ -102,6 +102,18 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
       FAILED_TESTS=$(( ${FAILED_TESTS:-0} + 1 ));
     fi;
   done;
+
+  DOWNLOAD_AVG="$(echo "scale=4; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
+  DOWNLOAD_MAX="$(echo "scale=4; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1;))/(1048576)" | bc -l;)";
+  DOWNLOAD_MIN="$(echo "scale=4; ($(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1;))/(1048576)" | bc -l;)";
+
+  UPLOAD_AVG="$(echo "scale=4; ($(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1;))/(1048576)" | bc -l;)";
+  UPLOAD_MAX="$(echo "scale=4; ($(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1;))/(1048576)" | bc -l;)";
+  UPLOAD_MIN="$(echo "scale=4; ($(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1;))/(1048576)" | bc -l;)";
+
+  PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+  PING_MAX="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+  PING_MIN="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
 # ------------------------------
 
@@ -149,6 +161,18 @@ elif [[ "${TEST_OUTPUT}" == "simple" ]]; then
     done;
   fi;
 
+  DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+  DOWNLOAD_MAX="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+  DOWNLOAD_MIN="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
+
+  UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+  UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+  UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
+
+  PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
+  PING_MAX="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
+  PING_MIN="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
+
 # ------------------------------
 
 else
@@ -160,18 +184,6 @@ fi;
 
 # ------------------------------
 # Show final results
-
-PING_AVG="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-PING_MAX="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
-PING_MIN="$(echo "${PING_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
-
-DOWNLOAD_AVG="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-DOWNLOAD_MAX="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
-DOWNLOAD_MIN="$(echo "${DOWNLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
-
-UPLOAD_AVG="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash mean 1 --round=2;)";
-UPLOAD_MAX="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash max 1 --round=2;)";
-UPLOAD_MIN="$(echo "${UPLOAD_RESULTS_ARR[@]}" | tr " " "\n" | datamash min 1 --round=2;)";
 
 echo "";
 echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";

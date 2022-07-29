@@ -417,7 +417,7 @@ else
     #
     # If no errors are found up-until this point, continue
     #
-    if [[ -z "${EXIT_CODE}" ]] || [[ "${EXIT_CODE}" == "0" ]]; then
+    if [[ -z "${EXIT_CODE}" ]] || [[ "${EXIT_CODE}" -eq 0 ]]; then
       # ------------------------------
       #
       # Packages / Prereqs  -  Make sure prerequisite-packages are installed

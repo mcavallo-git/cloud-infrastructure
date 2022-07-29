@@ -100,19 +100,19 @@ else
   IS_TTY_TERMINAL=$(if [[ "${TTY_VARS_MATCHED}" -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
   # ------------------------------
   READ_TIMEOUT=$((IS_TTY_TERMINAL*60));
-  SYNC_CONFIRMED=0;
+  DO_SYNC_CONFIRMED=0;
   if [[ -f "${SYNC_CI_LOCAL}" ]]; then
     #
     # The [ sync_cloud_infrastructure ] module DOES already exist (not initial sync)
     #
     echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
-    SYNC_CONFIRMED=1;
+    DO_SYNC_CONFIRMED=1;
   elif [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
     #
     # Non-TTY shell (backend request) - Do not require confirmation to sync modules
     #
     echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)";
-    SYNC_CONFIRMED=1;
+    DO_SYNC_CONFIRMED=1;
   else
     #
     # TTY shell + [ sync_cloud_infrastructure ] module does NOT yet exist (is initial sync)
@@ -125,15 +125,15 @@ else
     read -r -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
     echo "";
     if [[ -n "${REPLY}" ]] && [[ "$(echo "${REPLY}" | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
-      SYNC_CONFIRMED=1;
+      DO_SYNC_CONFIRMED=1;
       echo "  |--> Confirmed";
     else
-      SYNC_CONFIRMED=0;
+      DO_SYNC_CONFIRMED=0;
       echo "  |--> Denied";
     fi;
   fi;
 
-  if [[ "${SYNC_CONFIRMED}" -eq 0 ]]; then
+  if [[ "${DO_SYNC_CONFIRMED}" -eq 0 ]]; then
     # Do not sync cloud-infrastructure modules & exit this script with an error code, instead
     EXIT_CODE=1;
 

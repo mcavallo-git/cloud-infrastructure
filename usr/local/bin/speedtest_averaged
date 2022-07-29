@@ -25,6 +25,7 @@ exec 2>&1;
 unset PREREQ_CMD_PKG_ARR; declare -a PREREQ_CMD_PKG_ARR; # [Re-]Instantiate bash array
 PREREQ_CMD_PKG_ARR+=("datamash|datamash");
 PREREQ_CMD_PKG_ARR+=("jq|jq");
+PREREQ_CMD_PKG_ARR+=("python3|python3");
 # PREREQ_CMD_PKG_ARR+=("speedtest|speedtest-cli");
 APT_UPDATE_PERFORMED=0;
 for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do

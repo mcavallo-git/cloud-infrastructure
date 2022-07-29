@@ -27,40 +27,40 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
+  #
+  # Ensure that prerequisite packages are installed
+  #
+  unset PREREQ_CMD_PKG_ARR; declare -a PREREQ_CMD_PKG_ARR; # [Re-]Instantiate bash array
+  PREREQ_CMD_PKG_ARR+=("python3|python3");
+  APT_UPDATE_PERFORMED=0;
+  for EACH_PREREQ_CMD_PKG in "${PREREQ_CMD_PKG_ARR[@]}"; do
+    EACH_COMMAND="$(echo "${EACH_PREREQ_CMD_PKG}" | cut -d'|' -f1;)";
+    EACH_PACKAGE="$(echo "${EACH_PREREQ_CMD_PKG}" | cut -d'|' -f2;)";
+    if [ -z "$(command -v ${EACH_COMMAND} 2>'/dev/null';)" ]; then
+      echo "";
+      echo "Info:  Installing package \"${EACH_PACKAGE}\" (contains command \"${EACH_COMMAND}\")...";
+      if [[ "${APT_UPDATE_PERFORMED}" -eq 0 ]]; then
+        sudo apt-get -y update;
+        APT_UPDATE_PERFORMED=1;
+      fi;
+      sudo apt-get -y install "${EACH_PACKAGE}";
+    fi;
+  done;
 
-  COMMAND_NAME="speedtest";
+  echo "Info:  Calling [ pip install \"speedtest-cli\"; ]...";
+  pip install "speedtest-cli";
 
-  PACKAGE_NAME="speedtest-cli";
+  # # Verify that package is installed by getting the installed version from it
+  # echo "";
+  # echo "Info:  Calling [ ${COMMAND_NAME} --version; ]...";
+  # ${COMMAND_NAME} --version;
 
-  # Ensure that package is installed
-  if [ -n "$(command -v ${COMMAND_NAME} 2>'/dev/null';)" ]; then
-
-    # Package is already installed
-    echo "";
-    echo "Info:  Command \"${COMMAND_NAME}\" already exists with filepath \"$(command -v ${COMMAND_NAME};)\"";
-
-  else
-
-    apt-get -y update;
-    apt-get -y install "${PACKAGE_NAME}";
-
-    echo "";
-    echo "Info:  Calling [ command -v ${COMMAND_NAME}; ]...";
-    command -v ${COMMAND_NAME};
-
-  fi;
-
-  # Verify that package is installed by getting the installed version from it
-  echo "";
-  echo "Info:  Calling [ ${COMMAND_NAME} --version; ]...";
-  ${COMMAND_NAME} --version;
-
-  # Show basic usage for the package
-  echo "";
-  echo "Info:  To run a verbose speedtest, run [ speedtest; ]";
-  echo "";
-  echo "Info:  To run a quiet speedtest, run [ speedtest --simple; ]";
-  echo "";
+  # # Show basic usage for the package
+  # echo "";
+  # echo "Info:  To run a verbose speedtest, run [ speedtest; ]";
+  # echo "";
+  # echo "Info:  To run a quiet speedtest, run [ speedtest --simple; ]";
+  # echo "";
 
 fi;
 
@@ -68,6 +68,8 @@ fi;
 # ------------------------------------------------------------
 #
 # Citation(s)
+# 
+#   github.com  |  "GitHub - sivel/speedtest-cli: Command line interface for testing internet bandwidth using speedtest.net"  |  https://github.com/sivel/speedtest-cli#installation
 # 
 #   phoenixnap.com  |  "How to Test Network Speed in Linux {9 Tools} | phoenixNAP KB"  |  https://phoenixnap.com/kb/linux-network-speed-test
 #

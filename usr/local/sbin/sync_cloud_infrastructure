@@ -97,7 +97,7 @@ else
       TTY_VARS_MATCHED=$((TTY_VARS_MATCHED+1));
     fi;
   done;
-  IS_TTY_TERMINAL=$(if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
+  IS_TTY_TERMINAL=$(if [[ "${TTY_VARS_MATCHED}" -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then echo 1; else echo 0; fi;);
   # ------------------------------
   READ_TIMEOUT=$((IS_TTY_TERMINAL*60));
   SYNC_CONFIRMED=0;

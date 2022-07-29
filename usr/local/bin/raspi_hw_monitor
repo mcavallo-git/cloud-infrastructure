@@ -9,7 +9,7 @@
 # Log to logfile(s)
 #
 LOGDIR="${HOME}/raspi_hw_monitor_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/raspi_hw_monitor"; fi;
-mkdir -p "${LOGDIR}"; chown $(stat -c '%u:%g' $(dirname ${LOGDIR})) "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 
 
 # ------------------------------

@@ -1677,7 +1677,7 @@ else
                 sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
               fi;
               #
-              # Walk through all sites-available (from repo), resolve their WAN IPv4 address & compare it against the WAN IPv4 address of the current device - only sync if the two IPv4 addresses are a direct match
+              # /etc/nginx/sites-available  -  Walk through all sites-available (from repo), resolve their WAN IPv4 address & compare it against the WAN IPv4 address of the current device - only sync if the two IPv4 addresses are a direct match
               #
               find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
                 Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);

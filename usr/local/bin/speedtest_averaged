@@ -123,7 +123,7 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
   OUTPUT_JSON+="\"upload\":{\"avg\":\"${UPLOAD_AVG}\",\"max\":\"${UPLOAD_MAX}\",\"min\":\"${UPLOAD_MIN}\"}";
   OUTPUT_JSON+=",";
   OUTPUT_JSON+="\"ping\":{\"avg\":\"${PING_AVG}\",\"max\":\"${PING_MAX}\",\"min\":\"${PING_MIN}\"}";
-  OUTPUT_JSON="}";
+  OUTPUT_JSON+="}";
   echo "${OUTPUT_JSON}" | jq;
 
 # ------------------------------

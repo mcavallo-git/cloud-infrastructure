@@ -25,7 +25,7 @@ exec 2>&1;
 unset PREREQ_CMD_PKG_ARR; declare -a PREREQ_CMD_PKG_ARR; # [Re-]Instantiate bash array
 PREREQ_CMD_PKG_ARR+=("datamash|datamash");
 PREREQ_CMD_PKG_ARR+=("jq|jq");
-PREREQ_CMD_PKG_ARR+=("pip|python3");
+PREREQ_CMD_PKG_ARR+=("pip|python3-pip");
 PREREQ_CMD_PKG_ARR+=("python3|python3");
 # PREREQ_CMD_PKG_ARR+=("speedtest|speedtest-cli");
 APT_UPDATE_PERFORMED=0;
@@ -53,7 +53,7 @@ fi;
 #
 # Install speedtest python3 package
 #
-if [[ "$(python -c "import speedtest" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
+if [[ "$(python3 -c "import speedtest" 1>'/dev/null' 2>&1; echo ${?};)" -ne 0 ]]; then
   echo "Info:  Installing python3 package \"speedtest-cli\" (contains command \"speedtest\")...";
   pip install "speedtest-cli";
 fi;

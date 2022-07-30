@@ -1212,14 +1212,13 @@ else
           # Sync Timezone
           TZ="America/New_York";
           if [[ ${ARGS_SYNC_TIMEZONE} -eq 1 ]] && [[ "$(cat /etc/timezone;)" != "${TZ}" ]]; then
-              echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
-              echo -n "  |--> Set timezone to '${TZ}'?  (press 'y' to confirm)  ";
-              read -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
-              echo "";
-              if [[ $REPLY =~ ^[Yy]$ ]]; then
-                ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
-                echo $TZ > "/etc/timezone";
-              fi;
+            echo -e "\nInfo:  Request to set Timezone to \"${TZ}\"";
+            echo -n "  |--> Set timezone to '${TZ}'?  (press 'y' to confirm)  ";
+            read -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
+            echo "";
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+              ln -snf "/usr/share/zoneinfo/$TZ" "/etc/localtime";
+              echo $TZ > "/etc/timezone";
             fi;
           fi;
           # ------------------------------
@@ -1831,6 +1830,7 @@ else
             TO_DEL="${DELDIR}/error_stylesheet.css"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
             TO_DEL="${DELDIR}/f4109k-27.jpg"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
             TO_DEL="${DELDIR}/wave75.gif"; if [[ -h "${TO_DEL}" ]]; then unlink "${TO_DEL}"; elif [[ -f "${TO_DEL}" ]]; then rm -f "${TO_DEL}"; fi; # Added 20200114-161456
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  9
 
           # ------------------------------

@@ -1692,7 +1692,7 @@ else
               #
               SITES_ENABLED=0;
               find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
-                Each_FQDN="$(echo "$(basename "${Each_SitesAvailable}";)" | rev | cut -d. -f 1 --complement | rev;)";
+                Each_FQDN="$(basename "${Each_SitesAvailable}" | rev | cut -d. -f 1 --complement | rev;)";
                 Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
                 if [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device

@@ -304,7 +304,7 @@ else
     ARGS_SYNC_UFW=${ARGS_SYNC_UFW:-0};                    # Parsed from $@
 
     # String arguments
-    ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH};               # Parsed from $@
+    ARGS_GIT_BRANCH=${ARGS_GIT_BRANCH};                   # Parsed from $@
 
     # ------------------------------
 
@@ -1590,8 +1590,8 @@ else
           #
           # /etc/cron.d/CRON_ddns_updater
           #
-          if [[ ${ARGS_CRONJOB_REMOVE} -eq 0 ]]; then
-            if [[ ${ARGS_SYNC_DDNS} -eq 1 ]]; then
+          if [[ "${ARGS_CRONJOB_REMOVE}" -eq 0 ]]; then
+            if [[ "${ARGS_SYNC_DDNS}" -eq 1 ]]; then
               # Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
               CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
               echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
@@ -1610,7 +1610,7 @@ else
           #
           # /etc/nginx
           #
-          if [[ ${ARGS_SYNC_NGINX} -eq 1 ]]; then
+          if [[ "${ARGS_SYNC_NGINX}" -eq 1 ]]; then
             if [[ -z "$(command -v nginx 2>'/dev/null';)" ]]; then
               # NGINX does NOT exist locally
               echo -e "\nInfo:  Skipped NGINX config-sync - No local 'nginx' service exists";

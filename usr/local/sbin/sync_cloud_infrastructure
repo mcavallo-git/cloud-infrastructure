@@ -1574,6 +1574,7 @@ else
             fi;
           done;
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+
           # ------------------------------
           #
           # /etc/cron.d/CRON_ddns_updater
@@ -1683,8 +1684,7 @@ else
                 sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
               fi;
               #
-              # /etc/nginx/sites-available
-              # /etc/nginx/sites-enabled
+              # /etc/nginx/sites-available   &&  /etc/nginx/sites-enabled
               #   |--> Walk through all sites-available (from repo)
               #     |--> Resolve each site's DNS A Record
               #     |--> Resolve the current device's outgoing WAN IPv4 address
@@ -1692,7 +1692,7 @@ else
               #
               SITES_ENABLED=0;
               find "/etc/nginx/sites-available/" -mindepth 1 -maxdepth 1 -name "*.nginx" -type "f" -print0 | while IFS= read -r -d $'\0' Each_SitesAvailable; do
-                Each_FQDN=$(echo "$(basename ${Each_SitesAvailable})" | rev | cut -d. -f 1 --complement | rev);
+                Each_FQDN="$(echo "$(basename "${Each_SitesAvailable}";)" | rev | cut -d. -f 1 --complement | rev;)";
                 Each_SitesEnabled="/etc/nginx/sites-enabled/${Each_FQDN}";
                 if [[ "$(dig +short ${Each_FQDN};)" == "$(curl -s -4 https://icanhazip.com;)" ]] || [[ "$(dig +short ${Each_FQDN};)" == "$(hostname --all-ip-addresses | tr ' ' '\n' | grep -v ':' | grep -v '^$' | head -n 1;)" ]]; then
                   # The FQDN resolved to an IPv4 which matches the WAN IPv4 address of the current device

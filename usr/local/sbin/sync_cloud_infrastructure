@@ -1846,12 +1846,12 @@ else
           #
           # cron  -->  Restart service (if needed)
           #
-          if [[ ${RESTART_SERVICE_CRON} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+          if [[ "${RESTART_SERVICE_CRON}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             CRON_SVC_FOUND=0; CRON_SVC_NAMES="";
             # cron  -->  Restart service
             SERVICE_NAME="cron";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
@@ -1862,7 +1862,7 @@ else
             # crond  -->  Restart service
             SERVICE_NAME="crond";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
@@ -1870,7 +1870,7 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
             fi;
-            if [[ ${CRON_SVC_FOUND} -eq 0 ]]; then
+            if [[ "${CRON_SVC_FOUND}" -eq 0 ]]; then
               echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
             fi;
           fi;
@@ -1879,10 +1879,10 @@ else
           #
           # jenkins  -->  Restart service (if needed)
           #
-          if [[ ${RESTART_SERVICE_JENKINS} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+          if [[ "${RESTART_SERVICE_JENKINS}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="jenkins";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1896,10 +1896,10 @@ else
           #
           # nginx  -->  Restart service (if needed)
           #
-          if [[ ${RESTART_SERVICE_NGINX} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+          if [[ "${RESTART_SERVICE_NGINX}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="nginx";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ eval \" /usr/local/sbin/reload_nginx\"; ]..."; fi;
               eval " /usr/local/sbin/reload_nginx";
             else
@@ -1911,10 +1911,10 @@ else
           #
           # ssh  -->  Restart service (if needed)
           #
-          if [[ ${RESTART_SERVICE_SSH} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+          if [[ "${RESTART_SERVICE_SSH}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="sshd";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1928,10 +1928,10 @@ else
           #
           # ufw  -->  Restart service (if needed)
           #
-          if [[ ${RESTART_SERVICE_UFW} -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+          if [[ "${RESTART_SERVICE_UFW}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="ufw";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ ${SERVICE_RET_CODE} -eq 0 ]]; then
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]]; then
@@ -1972,7 +1972,7 @@ else
       if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
         echo "";
         echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
-        find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
+        find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \; ;
       fi;
       # ------------------------------
 

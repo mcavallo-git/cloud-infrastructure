@@ -379,7 +379,7 @@ else
     #
     echo -e "\nInfo:  Checking internet connectivity...";
     BENCHMARK_START=$(date +'%s.%N');
-    WAN_TEST_CURL_RESPONSE=$(curl -sLI "${WAN_TEST_FQDN}";);
+    WAN_TEST_CURL_RESPONSE=$(curl --connect-timeout 10 --max-time 10 -sLI "${WAN_TEST_FQDN}";);
     WAN_TEST_CURL_FAILED=${?};
     WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
     WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);

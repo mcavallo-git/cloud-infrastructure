@@ -488,7 +488,7 @@ else
       # Install missing packages
       #
       if [[ ${#MISSING_PKGS_ARRAY[@]} -ne 0 ]]; then
-        MISSING_PKGS_STRING=${MISSING_PKGS_ARRAY[@]};
+        MISSING_PKGS_STRING=${MISSING_PKGS_ARRAY[*]};
         if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then
           if [[ 1 -eq 1 ]]; then
             #

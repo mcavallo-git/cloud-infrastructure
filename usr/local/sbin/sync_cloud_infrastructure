@@ -122,7 +122,7 @@ else
     echo "";
     REPLY="";
     echo -n "Info:  Perform initial sync of cloud-infrastructure modules?  (press 'y' to confirm)  ";
-    read -r -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
+    read -p "" -n 1 -t ${READ_TIMEOUT} REPLY <'/dev/tty'; # Await single keypress
     echo "";
     if [[ -n "${REPLY}" ]] && [[ "$(echo "${REPLY}" | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
       DO_SYNC_CONFIRMED=1;

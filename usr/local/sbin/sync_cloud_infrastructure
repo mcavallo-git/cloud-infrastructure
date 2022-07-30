@@ -1991,6 +1991,8 @@ else
           echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
           find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \; ;
         fi;
+      else
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping log file cleanup check"; fi;
       fi;
 
     fi;

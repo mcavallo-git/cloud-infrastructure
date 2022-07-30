@@ -2010,24 +2010,26 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 # Recursive Callback - Trigger
 #
 
-if [[ -n "${RECURSIVE_CALLBACK_ECHO}" ]]; then
-
-  echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
-
-fi;
-
-if [[ "${RECURSIVE_CALLBACK_MODE}" == "foreground" ]]; then
+if [[ -n "${RECURSIVE_CALLBACK_COMMAND}" ]]; then
+  if [[ -n "${RECURSIVE_CALLBACK_ECHO}" ]]; then
+    echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
+  fi;
   #
-  # Recursive loopback call - Foreground job
+  # Recursive loopback call
   #
-  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
-  eval " ${RECURSIVE_CALLBACK_COMMAND}"
-else
-  #
-  # Recursive loopback call - Background job
-  #
-  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
-  eval " ${RECURSIVE_CALLBACK_COMMAND}" &
+  if [[ "${RECURSIVE_CALLBACK_MODE}" == "foreground" ]]; then
+    #
+    # Foreground job (terminal waits for recursive call to finish)
+    #
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
+    eval " ${RECURSIVE_CALLBACK_COMMAND}"
+  else
+    #
+    # Background job (terminal fires off recursive call and doesn't wait for it to finish)
+    #
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
+    eval " ${RECURSIVE_CALLBACK_COMMAND}" &
+  fi;
 fi;
 
 

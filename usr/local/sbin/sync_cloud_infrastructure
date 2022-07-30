@@ -676,16 +676,16 @@ else
           RECURSIVE_CALLBACK_COMMAND+="curl --connect-timeout 10 --max-time 10 -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -sL '${SYNC_CI_REMOTE}'";
 
           # remove whitespace-only lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
+          # RECURSIVE_CALLBACK_COMMAND+=" | sed -e '/^\s*$/d'";
 
           # trim leading/trailing whitespace (from all lines)
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
+          # RECURSIVE_CALLBACK_COMMAND+=" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'";
 
           # remove comment-only lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
+          # RECURSIVE_CALLBACK_COMMAND+=" | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p'";
 
           # remove comments appended to the end of lines
-          RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
+          # RECURSIVE_CALLBACK_COMMAND+=" | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/'";
 
           # set the script to use the local bash shell
           RECURSIVE_CALLBACK_COMMAND+=" | /bin/bash -s -- --skip-self-update $@";

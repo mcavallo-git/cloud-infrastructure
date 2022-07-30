@@ -1604,6 +1604,8 @@ else
 
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/cron.d/CRON_ddns_updater ]"; fi;
           fi;
 
           # ------------------------------
@@ -1748,6 +1750,8 @@ else
               fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/nginx ]"; fi;
           fi;
 
           # ------------------------------
@@ -1778,6 +1782,8 @@ else
                 fi;
               done;
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/cron.d/CRON_* ]"; fi;
           fi;
 
           # ------------------------------
@@ -1873,6 +1879,8 @@ else
             if [[ "${CRON_SVC_FOUND}" -eq 0 ]]; then
               echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ cron crond ]"; fi;
           fi;
 
           # ------------------------------
@@ -1890,6 +1898,8 @@ else
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ jenkins ]"; fi;
           fi;
 
           # ------------------------------
@@ -1905,6 +1915,8 @@ else
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ nginx ]"; fi;
           fi;
 
           # ------------------------------
@@ -1922,6 +1934,8 @@ else
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ ssh ]"; fi;
           fi;
 
           # ------------------------------
@@ -1943,6 +1957,8 @@ else
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ ufw ]"; fi;
           fi;
 
           # ------------------------------

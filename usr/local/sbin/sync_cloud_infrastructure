@@ -1961,8 +1961,6 @@ else
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ ufw ]"; fi;
           fi;
 
-          # ------------------------------
-
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;

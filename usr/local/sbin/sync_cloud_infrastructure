@@ -1968,7 +1968,7 @@ else
       # Cleanup log files outside of the retention policy's max-age
       #
       LOGDIR="${LOGDIR:-/var/log/sync_cloud_infrastructure}";
-      RETENTION_DAYS=60;
+      RETENTION_DAYS=30;
       if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
         echo "";
         echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";

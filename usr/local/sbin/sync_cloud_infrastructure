@@ -56,7 +56,7 @@ RECURSIVE_CALLBACK_MODE="foreground";
 
 RECURSIVE_CALLBACK_COMMAND="";
 
-# RECURSIVE_CALLBACK_ECHO="";
+RECURSIVE_CALLBACK_ECHO="";
 
 # ------------------------------
 #
@@ -642,6 +642,8 @@ else
         #  |
         #  |--> Recursively call the latest version of this script, making sure to use the same CLI parameters
         #
+
+        RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
         if [[ 0 -eq 1 ]]; then
           #

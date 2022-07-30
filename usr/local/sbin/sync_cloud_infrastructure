@@ -2011,21 +2011,21 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 #
 
 if [[ -n "${RECURSIVE_CALLBACK_COMMAND}" ]]; then
+  #
+  # Echo to the terminal that the recursive call is being made
+  #
   if [[ -n "${RECURSIVE_CALLBACK_ECHO}" ]]; then
     echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
   fi;
-  #
-  # Recursive loopback call
-  #
   if [[ "${RECURSIVE_CALLBACK_MODE}" == "foreground" ]]; then
     #
-    # Foreground job (terminal waits for recursive call to finish)
+    # Foreground recursive loopback call  (terminal waits for recursive call to finish)
     #
     if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\"; ]..."; fi;
     eval " ${RECURSIVE_CALLBACK_COMMAND}"
   else
     #
-    # Background job (terminal fires off recursive call and doesn't wait for it to finish)
+    # Background recursive loopback call   (terminal fires off recursive call and doesn't wait for it to finish)
     #
     if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "Debug:  Calling [ eval \" ${RECURSIVE_CALLBACK_COMMAND}\" & ]..."; fi;
     eval " ${RECURSIVE_CALLBACK_COMMAND}" &

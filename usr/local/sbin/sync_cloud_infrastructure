@@ -2008,7 +2008,11 @@ echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "rec
 # Recursive Callback - Trigger
 #
 
-echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
+if [[ -n "${RECURSIVE_CALLBACK_ECHO}" ]]; then
+
+  echo -e -n "${RECURSIVE_CALLBACK_ECHO}";
+
+fi;
 
 if [[ "${RECURSIVE_CALLBACK_MODE}" == "foreground" ]]; then
   #

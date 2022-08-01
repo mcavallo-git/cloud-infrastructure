@@ -113,7 +113,7 @@ if [[ "${TEST_OUTPUT}" == "json" ]]; then
     EACH_WAN_IP="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".client.ip" | grep -v '^null$';)";
     EACH_ISP_NAME="$(echo "${EACH_SPEEDTEST_OUTPUT:-{\}}" | jq -r ".client.isp" | grep -v '^null$';)";
     if [[ -n "${EACH_WAN_IP}" ]] && [[ -n "${EACH_ISP_NAME}" ]]; then
-      echo "WAN IP:   $(printf "%20s" "${EACH_WAN_IP}";)  (ISP: ${EACH_ISP_NAME})";
+      echo "WAN IP:   $(printf "%20s" "${EACH_WAN_IP}";)  (ISP:  ${EACH_ISP_NAME})";
     fi;
     # Check if the run was a complete failure
     if [[ -z "${EACH_DOWNLOAD_BITRATE}" ]] && [[ -z "${EACH_UPLOAD_BITRATE}" ]] && [[ -z "${EACH_PING_MS}" ]]; then

@@ -102,8 +102,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
 
     # ------------------------------
 
+    STOPGAP_DNS_SERVER="8.8.4.4";
+    RESOLV_CONF_REMOVE_STOPGAP=0;
+
     # If any pihole containers are already running locally
-    REVERT_RESOLV_CONF=0;
     if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
       # At least one pihole container already exists
       echo "";
@@ -112,13 +114,19 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       echo "";
       echo "Info:  Getting version from pihole container...";
       docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
-      if [[ $(sed -rne 's/^# (nameserver 8.8.4.4)$/\0/p' '/etc/resolv.conf' | wc -l 2>'/dev/null';) -gt 0 ]]; then
-        # Add Google DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
+      if [[ $(sed -rne "s/^# (nameserver ${STOPGAP_DNS_SERVER})$/\0/p" "/etc/resolv.conf" | wc -l 2>'/dev/null';) -gt 0 ]]; then
+        # Add stopgap DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
         echo "";
-        echo "Info:  Adding Google DNS server to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
-        sed -re 's/^# (nameserver 8.8.4.4)$/\1/' -i "/etc/resolv.conf";
-        REVERT_RESOLV_CONF=1;
+        echo "Info:  Adding Stopgap DNS server \"${STOPGAP_DNS_SERVER}\" to local DNS resolvers before removing current pihole container (which could ruin loopback DNS resolution, if active)";
+        sed -re "s/^# (nameserver ${STOPGAP_DNS_SERVER})$/\1/" -i "/etc/resolv.conf";
+        RESOLV_CONF_REMOVE_STOPGAP=1;
+      elif [[ $(sed -rne "s/^(nameserver ${STOPGAP_DNS_SERVER})$/\0/p" "/etc/resolv.conf" | wc -l 2>'/dev/null';) -gt 0 ]]; then
+        # Keep stopgap DNS server, but only until pi-Hole is working as-intended (then remove stopgap DNS server references)
+        echo "";
+        echo "Info:  Found DNS server \"${STOPGAP_DNS_SERVER}\" amongst local nameservers (will be removed after pi-hole container is spun up)";
+        RESOLV_CONF_REMOVE_STOPGAP=1;
       fi;
+
       # Remove existing pihole dockers
       echo "";
       echo "Info:  Removing existing pihole container(s)...";
@@ -143,10 +151,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
 
-      if [[ ${REVERT_RESOLV_CONF} -eq 1 ]]; then
+      if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then
         echo "";
-        echo "Info:  As pihole being offline may cause network name resolution failure, the google DNS entry has been left in local DNS resolvers";
-        echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove the local Google DNS entry via:  [ sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i \"/etc/resolv.conf\"; ]";
+        echo "Info:  As pihole being offline may cause network name resolution failure, the stopgap DNS server \"${STOPGAP_DNS_SERVER}\" has been left in local DNS resolvers";
+        echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove (comment-out) the local DNS server entry via:  [ sed -re 's/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/' -i \"/etc/resolv.conf\"; ]";
       fi;
 
       echo "";
@@ -175,10 +183,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       docker start "pihole" 1>'/dev/null';
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
-      if [[ ${REVERT_RESOLV_CONF} -eq 1 ]]; then
+      if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then
         echo "";
-        echo "Info:  Removing Google DNS server from local DNS resolvers...";
-        sed -re 's/^(nameserver 8.8.4.4)$/# \1/' -i "/etc/resolv.conf";
+        echo "Info:  Removing stopgap DNS server from local DNS resolvers...";
+        sed -re "s/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/" -i "/etc/resolv.conf";
       fi;
 
       echo "";

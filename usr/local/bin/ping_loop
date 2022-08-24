@@ -15,7 +15,7 @@ fi;
 
 
 # Allow environment variable(s) to override hardcoded runtime variables
-PING_TARGET="${PING_TARGET}";
+PING_TARGET="${PING_TARGET:-${1}}";
 
 
 # If no target is defined, request that the user enter the target hostname / ip address to ping continously (until more than an empty string is entered)

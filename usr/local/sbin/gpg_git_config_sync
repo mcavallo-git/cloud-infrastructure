@@ -749,7 +749,12 @@ fi;
     fi;
   done;
 
-  # EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
+  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
+
+  echo "";
+  echo "EXCLUDED_HOMEDIRS_NO_DUPES:";
+  echo "${EXCLUDED_HOMEDIRS_NO_DUPES}";
+  echo "";
 
   unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 

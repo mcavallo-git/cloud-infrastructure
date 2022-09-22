@@ -339,15 +339,15 @@ for EACH_DIRECTORY in "${SEARCH_DIRECTORIES[@]}"; do
 
   HAYSTACK=$(realpath "${EACH_DIRECTORY}");
   NEEDLE="git.exe";
-  echo "Info: Searching haystack \"${HAYSTACK}\" for needle \"${NEEDLE}\"...";
-  find "${HAYSTACK}" \
-  -type f \
-  -name "${NEEDLE}" \
-  -print0 \
-  2>'/dev/null' \
+  echo "------------------------------------------------------------";
+  echo "";
+  echo "Info: Searching for \"${NEEDLE}\" in \"${HAYSTACK}\"...";
+  echo "";
+
+  find "${HAYSTACK}" -type f -name "${NEEDLE}" -print0 2>'/dev/null' \
   | while IFS= read -r -d $'\0' EACH_GIT_EXE; do
 
-    echo "------------------------------";
+    echo "---";
     echo "EACH_GIT_EXE=\"${EACH_GIT_EXE}\"";
 
     EACH_GIT_LINUX=""; MM=$(realpath "${EACH_GIT_EXE}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_GIT_LINUX="${MM}";
@@ -814,6 +814,7 @@ fi;
     fi;
     EACH_REPO_URI="${EACH_REPO_FQDN}/${EACH_REPO_OWNER}/${EACH_REPO_NAME}";
 
+    echo "------------------------------------------------------------";
     echo "";
     echo "Updating \"${EACH_REPO_BASENAME}\" repository @ path \"${EACH_REPO_FULLPATH}\"...";
     echo "  |--> Repo Source-URI:  ${EACH_REPO_URI}";
@@ -936,12 +937,13 @@ fi;
         KEY="push.gpgsign";                                               git config --local --unset "${KEY}";
       fi;
       if [ "${SHOW_GIT_CONFIG_OUTPUTS}" -gt "1" ]; then
-        echo "------------------------------------------------------------";
+        echo "";
         echo "$(git config --local --list --show-origin)";
-        echo "------------------------------------------------------------";
       fi;
 
-      echo "Updated:  ${EACH_REPO_NAME}   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
+      echo "";
+      echo "Finished updating \"${EACH_REPO_NAME}\"   (config-file @ \"${GIT_CONFIGFILE_LOCAL}\")";
+      echo "";
 
       # for EACH_KEY in "${!ARR_CONTAINER_IDS[@]}"; do
       #   EACH_CONTAINER_ID="${ARR_CONTAINER_IDS[${EACH_KEY}]}";

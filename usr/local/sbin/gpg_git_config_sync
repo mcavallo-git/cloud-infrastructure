@@ -74,9 +74,9 @@ IS_MINGW=$(if [[ $(uname -s | grep -i MINGW | wc -l) -gt 0 ]] || [ "${OSTYPE}" =
 
 # GIT_EMAIL_WORK=""; # Commit Email (Work)
 
-# GIT_SSH_PERSONAL=""; # Commit SSH-Key (Personal)
+# GIT_SSH_PERSONAL=""; # Commit SSH Key (Personal)
 
-# GIT_SSH_WORK=""; # Commit SSH-Key (Work)
+# GIT_SSH_WORK=""; # Commit SSH Key (Work)
 
 # GPG_KEY_ID_PERSONAL=""; # GPG Credential 1 (Personal)
 
@@ -571,27 +571,27 @@ fi;
 
 # ------------------------------------------------------------
 
-# Personal Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
+# Personal Repos - Clear GPG commit key-ids when the associated ssh key doesn't exist
 # if [ ! -f "${GIT_SSH_PERSONAL}" ]; then
 #   GPG_KEY_ID_PERSONAL="";
 #   GPG_PASS_FILE_PERSONAL="";
 # fi;
 
-# # Work Repos - Clear GPG commit key-ids when the associated ssh-key doesn't exist
+# # Work Repos - Clear GPG commit key-ids when the associated ssh key doesn't exist
 # if [ ! -f "${GIT_SSH_WORK}" ]; then
 #   GPG_KEY_ID_WORK="";
 #   GPG_PASS_FILE_WORK="";
 # fi;
 
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
-#   #  PERSONAL SSH-KEY EXISTS
+#   #  PERSONAL SSH KEY EXISTS
 #   # GLOBAL_COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
 #   # GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}";
 #   GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_PERSONAL}";
 #   # GLOBAL_DEFAULT_GPG_KEY="${GPG_KEY_ID_PERSONAL}";
 
 # elif [ ! -f "${GIT_SSH_PERSONAL}" ] && [ -f "${GIT_SSH_WORK}" ]; then
-#   #  PERSONAL SSH-KEY DOESN'T EXIST BUT WORK SSH-KEY EXISTS
+#   #  PERSONAL SSH KEY DOESN'T EXIST BUT WORK SSH KEY EXISTS
 #   # GLOBAL_COMMIT_NAME="${COMMIT_NAME_WORK}";
 #   # GLOBAL_COMMIT_EMAIL="${GIT_EMAIL_WORK}";
 #   GLOBAL_COMMIT_SSH_KEY="${GIT_SSH_WORK}";
@@ -599,7 +599,7 @@ fi;
 
 # else 
 #   echo "";
-#   echo "Error: No SSH-Key(s) found for git-repos (work OR personal)";
+#   echo "Error: No SSH Key(s) found for git-repos (work OR personal)";
 #   sleep 60;
 #   exit 1;
 
@@ -671,24 +671,24 @@ fi;
 # Repositories  :::  Personal
 # ------------------------------------------------------------
 
-# SSH-Key, Email
+# SSH Key, Email
 # if [ -f "${GIT_SSH_PERSONAL}" ]; then
 #   COMMIT_NAME="${COMMIT_NAME_PERSONAL}";
 #   COMMIT_EMAIL="${GIT_EMAIL_PERSONAL}"; # Email
-#   SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH-Key
+#   SSH_KEY="${GIT_SSH_PERSONAL}"; # SSH Key
 #   if [ -n "${GPG_KEY_ID_PERSONAL}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_PERSONAL}"; # GPG-Key
 #   fi;
 # elif [ -f "${GIT_SSH_WORK}" ]; then
 #   COMMIT_NAME="${COMMIT_NAME_WORK}";
 #   COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
-#   SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
+#   SSH_KEY="${GIT_SSH_WORK}"; # SSH Key
 #   if [ -n "${GPG_KEY_ID_WORK}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
 #   fi;
 # else
 #   echo "";
-#   echo "Error: No SSH-Key(s) found for personal git-repos";
+#   echo "Error: No SSH Key(s) found for personal git-repos";
 #   echo "";
 #   sleep 60;
 #   exit 1;
@@ -838,9 +838,9 @@ fi;
         echo "";
         echo "TEST_SSH_KEY=\"${TEST_SSH_KEY}\"";
         if [ -z "${TEST_SSH_KEY}" ]; then
-          echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> No SSH Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
-          echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> Found SSH Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
           EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
           EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
           # SSH_KEY="${EACH_SSH_KEY_WIN32}";
@@ -877,9 +877,9 @@ fi;
         SSH_KEY_SYNTAX="id_rsa_${EACH_REPO_FQDN}_${TEST_EMAIL}_*.pem";
         TEST_SSH_KEY=$(find "${USERPROFILE}/.ssh/" -type f -iname "${SSH_KEY_SYNTAX}" | head -n 1 2>'/dev/null';);
         if [ -z "${TEST_SSH_KEY}" ]; then
-          echo "  |--> No SSH-Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> No SSH Key(s) found to match syntax \"${SSH_KEY_SYNTAX}\"";
         else
-          echo "  |--> Found SSH-Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
+          echo "  |--> Found SSH Key \"${TEST_SSH_KEY}\" matching syntax \"${SSH_KEY_SYNTAX}\"";
           EACH_SSH_KEY_WIN32=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_SSH_KEY_WIN32="${MM}";
           EACH_SSH_KEY_LINUX=""; MM=$(realpath "${TEST_SSH_KEY}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_SSH_KEY_LINUX="${MM}";
           # SSH_KEY="${EACH_SSH_KEY_WIN32}";
@@ -1072,13 +1072,13 @@ exit 0;
 # if [ -f "${GIT_SSH_WORK}" ]; then
 #   COMMIT_NAME="${COMMIT_NAME_WORK}";
 #   COMMIT_EMAIL="${GIT_EMAIL_WORK}"; # Email
-#   SSH_KEY="${GIT_SSH_WORK}"; # SSH-Key
+#   SSH_KEY="${GIT_SSH_WORK}"; # SSH Key
 #   if [ -n "${GPG_KEY_ID_WORK}" ]; then
 #     GPG_KEY_ID="${GPG_KEY_ID_WORK}"; # GPG-Key
 #   fi;
 # else
 #   echo "";
-#   echo "Error: No SSH-Key(s) found for work git-repos";
+#   echo "Error: No SSH Key(s) found for work git-repos";
 #   sleep 60;
 #   exit 1;
 # fi;

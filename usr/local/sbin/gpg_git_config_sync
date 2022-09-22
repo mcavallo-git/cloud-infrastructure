@@ -770,6 +770,8 @@ fi;
       fi;
     done;
 
+    echo "DIR_IS_EXCLUDED=[ ${DIR_IS_EXCLUDED} ],   EACH_HOMEDIR=[ ${EACH_HOMEDIR} ]";
+
     if [ ${DIR_IS_EXCLUDED} -eq 0 ]; then
       echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
       # Not an excluded directory - search it for directories with name ".git"

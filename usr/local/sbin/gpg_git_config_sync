@@ -704,6 +704,7 @@ fi;
   echo "------------------------------------------------------------";
   echo "";
   echo "Beginning Exclusions search...";
+  echo "";
 
   unset EXCLUDED_HOMEDIRS; declare -A EXCLUDED_HOMEDIRS; # [Re-]Instantiate bash array
 
@@ -748,13 +749,14 @@ fi;
     fi;
   done;
 
-  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
+  # EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 
   unset REPO_FULLPATHS; declare -A REPO_FULLPATHS; # [Re-]Instantiate bash array
 
   echo "------------------------------------------------------------";
   echo "";
   echo "Beginning Home-Dir search...";
+  echo "";
 
   # Get all dirs within current user's home-dir
   find "${USERPROFILE}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do

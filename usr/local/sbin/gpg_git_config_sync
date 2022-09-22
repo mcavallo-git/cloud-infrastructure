@@ -733,18 +733,20 @@ fi;
   REGKEY_ONEDRIVE_PERSONAL="Registry::HKEY_CURRENT_USER\Software\Microsoft\OneDrive\Accounts\Personal\ScopeIdToMountPointPathCache";   # OneDrive Personal
   PS1_ONEDRIVE_BUSINESS="(Get-Item ('${REGKEY_ONEDRIVE_BUSINESS}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_BUSINESS}') -Name (\$_) -ErrorAction SilentlyContinue }; ";
   PS1_ONEDRIVE_PERSONAL="(Get-Item ('${REGKEY_ONEDRIVE_PERSONAL}') -ErrorAction SilentlyContinue).Property | ForEach-Object { Get-ItemPropertyValue -Path ('${REGKEY_ONEDRIVE_PERSONAL}') -Name (\$_) -ErrorAction SilentlyContinue }; ";
-  DIRS_ONEDRIVE_BUSINESS=$(powershell -Command "${PS1_ONEDRIVE_BUSINESS}";);
-  DIRS_ONEDRIVE_PERSONAL=$(powershell -Command "${PS1_ONEDRIVE_PERSONAL}";);
+  DIRS_ONEDRIVE_BUSINESS="$(powershell -Command "${PS1_ONEDRIVE_BUSINESS}" 2>'/dev/null';)";
+  DIRS_ONEDRIVE_PERSONAL="$(powershell -Command "${PS1_ONEDRIVE_PERSONAL}" 2>'/dev/null';)";
   
   echo -e "${DIRS_ONEDRIVE_BUSINESS}""\n""${DIRS_ONEDRIVE_PERSONAL}" | while read -r EACH_PATH; do
-    # Verify each path exists before excluding it (otherwise it doesn't matter)
-    EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
-    EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
-    if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
-      EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
-      DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
-      if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${USERPROFILE}" ]; then
-        EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
+    if [[ -n "${EACH_PATH}" ]]; then
+      # Verify each path exists before excluding it (otherwise it doesn't matter)
+      EACH_PATH_WIN32=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; EACH_PATH_WIN32="${MM}";
+      EACH_PATH_LINUX=""; MM=$(realpath "${EACH_PATH}" 2>'/dev/null';); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; EACH_PATH_LINUX="${MM}";
+      if [ -n "${EACH_PATH_LINUX}" ] && [ -d "${EACH_PATH_LINUX}" ]; then
+        EXCLUDED_HOMEDIRS+=(["${EACH_PATH_LINUX}"]="");
+        DIRNAME_EACHPATH=$(dirname "${EACH_PATH_LINUX}");
+        if [ -d "${DIRNAME_EACHPATH}" ] && [ "${DIRNAME_EACHPATH}" != "${USERPROFILE}" ]; then
+          EXCLUDED_HOMEDIRS+=(["${DIRNAME_EACHPATH}"]="");
+        fi;
       fi;
     fi;
   done;

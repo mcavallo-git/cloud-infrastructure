@@ -765,7 +765,7 @@ fi;
 
     DIR_IS_EXCLUDED=0;
     for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-      if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+      if [ "$(realpath "${EACH_HOMEDIR}";)" == "$(realpath "${EACH_EXCLUDED_DIR}";)" ]; then
         DIR_IS_EXCLUDED=1;
       fi;
     done;

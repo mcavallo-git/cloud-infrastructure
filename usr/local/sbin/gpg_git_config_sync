@@ -759,11 +759,11 @@ fi;
   #   fi;
   # done;
 
-  EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
 
+  # EXCLUDED_HOMEDIRS_NO_DUPES=($(echo "${!EXCLUDED_HOMEDIRS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
   echo "";
-  echo "EXCLUDED_HOMEDIRS_NO_DUPES:";
-  echo "${EXCLUDED_HOMEDIRS_NO_DUPES}";
+  echo "EXCLUDED_HOMEDIRS:";
+  echo "${!EXCLUDED_HOMEDIRS[@]}" | tr " " "\n"
   echo "";
 
   # ------------------------------------------------------------

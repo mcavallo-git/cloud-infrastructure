@@ -86,13 +86,13 @@ else
     #
     # The [ sync_cloud_infrastructure ] module DOES already exist (not initial sync)
     #
-    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)";
+    if [[ 0 -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)"; fi;
     DO_SYNC_CONFIRMED=1;
   elif [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
     #
     # Non-TTY shell (backend request) - Do not require confirmation to sync modules
     #
-    echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)";
+    if [[ 0 -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)"; fi;
     DO_SYNC_CONFIRMED=1;
   else
     #

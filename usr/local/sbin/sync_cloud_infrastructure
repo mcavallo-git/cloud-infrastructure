@@ -627,7 +627,10 @@ else
 
         RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling the latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
-        if [[ 0 -eq 1 ]]; then
+        # DOWNLOAD_THEN_RUN="0";  # Run the updated version of this script by piping it directly from curl (but how will this script file get updated..?)
+        DOWNLOAD_THEN_RUN="1";  # Download the updated version of this script, replacing the current script with its contents
+
+        if [[ "${DOWNLOAD_THEN_RUN}" -eq 1 ]]; then
           #
           # Download the latest version of this script, overwriting itself in the process (may cause errors if the download bombs out midway, leaving the file malformed)
           #

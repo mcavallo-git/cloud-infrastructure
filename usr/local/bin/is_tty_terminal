@@ -14,30 +14,32 @@ fi;
 IS_TTY_TERMINAL=0;
 
 
-#
-# Method 1 - Use the built-in expression "-t"
-#  |
-#  |--> man test:  "-t fd True if file descriptor fd is open and refers to a terminal"
-#
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+  #
+  # Method 1 - Use the built-in expression "-t"
+  #  |
+  #  |--> man test:  "-t fd True if file descriptor fd is open and refers to a terminal"
+  #
   if [ -t 1 ]; then
     IS_TTY_TERMINAL=1;
-  else
-    IS_TTY_TERMINAL=0;
   fi;
 fi;
 
 
-# Method 2 - Check the kernel ring buffer for specific tty strings
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+  #
+  # Method 2 - Check the kernel ring buffer (via "dmesg") for specific tty strings
+  #
   if [[ "$(dmesg | grep -c tty0;)" -gt 0 ]] || [[ "$(sudo dmesg | grep -c tty0;)" -gt 0 ]]; then
     IS_TTY_TERMINAL=1;
   fi;
 fi;
 
 
-# Method 3 - Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+  #
+  # Method 3 - Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
+  #
   TTY_VAR_MATCHES_REQUIRED=5;
   TTY_VARS_MATCHED=0;
   unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array

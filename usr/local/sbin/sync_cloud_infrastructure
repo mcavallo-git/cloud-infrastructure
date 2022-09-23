@@ -1876,6 +1876,7 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"..."; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1887,6 +1888,7 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"..."; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1907,6 +1909,7 @@ else
             SERVICE_NAME="jenkins";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"..."; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1943,6 +1946,7 @@ else
             SERVICE_NAME="sshd";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"..."; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
@@ -1962,6 +1966,7 @@ else
             SERVICE_NAME="ufw";
             SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"..."; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart;
               if [[ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]]; then

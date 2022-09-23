@@ -1981,7 +1981,7 @@ else
           if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
             echo "";
             echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
-            find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \; ;
+            find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -v -- '{}' \; ;
           else
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  No logfiles found outside of the retention policy"; fi;
           fi;

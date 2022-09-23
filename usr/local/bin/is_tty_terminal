@@ -13,72 +13,53 @@ fi;
 
 IS_TTY_TERMINAL=0;
 
-if [[ "$(dmesg | grep tty0 | wc -l;)" -gt 0 ]] || [[ "$(sudo dmesg | grep tty0 | wc -l;)" -gt 0 ]]; then
-  # Current shell is a TTY Shell
-  IS_TTY_TERMINAL=1;
-else
-  # Current shell is NOT a TTY Shell
-  IS_TTY_TERMINAL=0;
+# Method 1 - Check the kernel ring buffer for specific tty strings
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+  if [[ "$(dmesg | grep tty0 | wc -l;)" -gt 0 ]] || [[ "$(sudo dmesg | grep tty0 | wc -l;)" -gt 0 ]]; then
+    IS_TTY_TERMINAL=1;
+  fi;
 fi;
 
-echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
 
-exit $((IS_TTY_TERMINAL ^= 1));
-
-
-# ------------------------------------------------------------
-if [[ 0 -eq 1 ]]; then
-#
-# DEPRECATED METHODOLOGY  -  Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
-#
-
-IS_TTY_TERMINAL=0;
-
-TTY_VAR_MATCHES_REQUIRED=5;
-
-TTY_VARS_MATCHED=0;
-
-unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
-TTY_VARS_ARR+=("EDITOR");
-TTY_VARS_ARR+=("GCC_COLORS");
-TTY_VARS_ARR+=("LESSCLOSE");
-TTY_VARS_ARR+=("LESSOPEN");
-TTY_VARS_ARR+=("LS_COLORS");
-TTY_VARS_ARR+=("OLDPWD");
-TTY_VARS_ARR+=("PROMPT_COMMAND");
-TTY_VARS_ARR+=("TERM");  # may be set to "dumb" on non-tty (backend-only) shells
-TTY_VARS_ARR+=("USER");
-TTY_VARS_ARR+=("VISUAL");
-TTY_VARS_ARR+=("XDG_DATA_DIRS");
-
-for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
-  if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nEACH_TTY_VAR_NAME = [ ${EACH_TTY_VAR_NAME} ]"; fi;
-  EACH_TTY_VAR_VALUE="";
-  declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
-  if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
-    TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
-    if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
-  else
-    if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = ~ empty/unset ~"; fi;
+# Method 2 - Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+  TTY_VAR_MATCHES_REQUIRED=5;
+  TTY_VARS_MATCHED=0;
+  unset TTY_VARS_ARR; declare -a TTY_VARS_ARR; # [Re-]Instantiate bash array
+  TTY_VARS_ARR+=("EDITOR");
+  TTY_VARS_ARR+=("GCC_COLORS");
+  TTY_VARS_ARR+=("LESSCLOSE");
+  TTY_VARS_ARR+=("LESSOPEN");
+  TTY_VARS_ARR+=("LS_COLORS");
+  TTY_VARS_ARR+=("OLDPWD");
+  TTY_VARS_ARR+=("PROMPT_COMMAND");
+  TTY_VARS_ARR+=("TERM");  # may be set to "dumb" on non-tty (backend-only) shells
+  TTY_VARS_ARR+=("USER");
+  TTY_VARS_ARR+=("VISUAL");
+  TTY_VARS_ARR+=("XDG_DATA_DIRS");
+  for EACH_TTY_VAR_NAME in "${TTY_VARS_ARR[@]}"; do
+    if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nEACH_TTY_VAR_NAME = [ ${EACH_TTY_VAR_NAME} ]"; fi;
+    EACH_TTY_VAR_VALUE="";
+    declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
+    if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
+      TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
+      if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
+    else
+      if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = ~ empty/unset ~"; fi;
+    fi;
+  done;
+  if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nCalling [ printenv | sort -u; ]..."; printenv | sort -u; fi;
+  if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
+    # Current shell is a TTY Shell
+    IS_TTY_TERMINAL=1;
   fi;
-done;
-
-if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nCalling [ printenv | sort -u; ]..."; printenv | sort -u; fi;
-
-EXIT_CODE=1;
-
-if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
-  IS_TTY_TERMINAL=1;
-  EXIT_CODE=0;
 fi;
 
 if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]"; fi;
 
 echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
 
-exit ${EXIT_CODE};
-
-fi;
+exit $((IS_TTY_TERMINAL ^= 1));
 
 
 # ------------------------------------------------------------

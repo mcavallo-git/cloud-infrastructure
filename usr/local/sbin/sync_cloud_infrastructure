@@ -13,17 +13,16 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 
 fi;
 # ------------------------------
+if [[ "$*" == *"--debug"* ]]; then ARGS_DEBUG_MODE=1; fi;
+if [[ "$*" == *"--skip-self-update"* ]]; then ARGS_SKIP_SELF_UPDATE=1; fi;
+# ------------------------------
 #
 # Log all shell output & error output to logfile
 #
 LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-if [[ "$*" != *"--skip-self-update"* ]]; then
-  # Avoid doubling-up/stacking logfile stream outputs (otherwise the recursive call will log every line to the logfile twice)
-  exec > >(tee -a "${LOGFILE}" );
-  exec 2>&1;
-fi;
+if [[ "${ARGS_SKIP_SELF_UPDATE}" != "1" ]]; then exec > >(tee -a "${LOGFILE}" ); exec 2>&1; fi; # Avoid doubling-up/stacking logfile stream outputs (otherwise the recursive call will log every line to the logfile twice)
 #
 # ------------------------------
 #
@@ -89,13 +88,13 @@ else
     #
     # The [ sync_cloud_infrastructure ] module DOES already exist (not initial sync)
     #
-    if [[ 0 -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)"; fi;
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (not initial sync)"; fi;
     DO_SYNC_CONFIRMED=1;
   elif [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
     #
     # Non-TTY shell (backend request) - Do not require confirmation to sync modules
     #
-    if [[ 0 -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)"; fi;
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Auto-confirming cloud-infrastructure module sync (no TTY detected)"; fi;
     DO_SYNC_CONFIRMED=1;
   else
     #

@@ -15,7 +15,7 @@ IS_TTY_TERMINAL=0;
 
 # Method 1 - Check the kernel ring buffer for specific tty strings
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
-  if [[ "$(dmesg | grep tty0 | wc -l;)" -gt 0 ]] || [[ "$(sudo dmesg | grep tty0 | wc -l;)" -gt 0 ]]; then
+  if [[ "$(dmesg | grep -c tty0;)" -gt 0 ]] || [[ "$(sudo dmesg | grep -c tty0;)" -gt 0 ]]; then
     IS_TTY_TERMINAL=1;
   fi;
 fi;
@@ -42,7 +42,7 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
     EACH_TTY_VAR_VALUE="";
     declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
     if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
-      TTY_VARS_MATCHED=$((${TTY_VARS_MATCHED}+1));
+      TTY_VARS_MATCHED=$((TTY_VARS_MATCHED+1));
       if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
     else
       if [ "${1}" == "verbose" ]; then echo "EACH_TTY_VAR_VALUE  = ~ empty/unset ~"; fi;

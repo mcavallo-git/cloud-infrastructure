@@ -355,23 +355,20 @@ else
     #
     # Check for a valid WAN (internet) connection
     #
-    echo -e "\nInfo:  Checking internet connectivity...";
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Checking internet connectivity..."; fi;
     BENCHMARK_START=$(date +'%s.%N');
     WAN_TEST_CURL_RESPONSE=$(curl --connect-timeout 10 --max-time 10 -sLI "${WAN_TEST_FQDN}";);
     WAN_TEST_CURL_FAILED=${?};
     WAN_TEST_HTTP_CODE=$(echo "${WAN_TEST_CURL_RESPONSE}" | grep '^HTTP' | tail -n 1 | cut -d' ' -f2;);
     WAN_TEST_FAILED=$(if [[ ${WAN_TEST_CURL_FAILED} -eq 0 ]] && [[ ${WAN_TEST_HTTP_CODE} -ge 200 ]] && [[ ${WAN_TEST_HTTP_CODE} -le 400 ]]; then echo 0; else echo 1; fi;);
     if [[ "${WAN_TEST_FAILED}" -eq 1 ]]; then
-      echo "";
-      echo "! |--> Error:  WAN network (internet) connection is required to sync cloud-infrastructure modules, but is unable to be verified";
+      echo -e "\n! Error:  WAN network (internet) connection is required to sync cloud-infrastructure modules, but is unable to be verified";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     elif [[ -z "${GIT_REPO_NAME}" ]]; then
-      echo "";
-      echo "! |--> Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
+      echo -e "\n! Error:  Required variable empty/unset:  \${GIT_REPO_NAME}";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     elif [[ -z "${GIT_REPO_OWNER}" ]]; then
-      echo "";
-      echo "! |--> Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
+      echo -e "\n! Error:  Required variable empty/unset:  \${GIT_REPO_OWNER}";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     else
       if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Verified WAN (internet) network connection"; fi;
@@ -568,7 +565,7 @@ else
       #
       if [[ "${ARGS_SKIP_SELF_UPDATE}" -eq 1 ]]; then
         UPDATE_SELF_REQUIRED=0;
-        echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')";
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')"; fi;
       else
         CHECKSUM_LOCAL=$(if [[ -f "${SYNC_CI_LOCAL}" ]]; then cat "${SYNC_CI_LOCAL}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;); # remove commented & whitespace-only lines from script
         CHECKSUM_REMOTE=$(curl --connect-timeout 10 --max-time 10 -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "${SYNC_CI_REMOTE}" | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1;); # remove commented & whitespace-only lines from script
@@ -815,7 +812,7 @@ else
           # Non-WSL shell
           #  |--> Check for required Linux filepath(s)
           #
-          echo -e "\nInfo:  Checking for local repository files within user [ $(whoami) ]'s home-directory";
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Checking for local repository files within user [ $(whoami) ]'s home-directory"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           WHOAMI_HOME_DIR="$(getent passwd "$(id -un;)" | cut --delimiter=: --fields=6;)";
           WHOAMI_USR_LOCAL=$(find "${WHOAMI_HOME_DIR}" -mindepth 2 -maxdepth 5 -name 'local' -type d 2>'/dev/null' | grep "/${GIT_REPO_NAME}/usr/local";);

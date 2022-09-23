@@ -13,9 +13,26 @@ fi;
 
 IS_TTY_TERMINAL=0;
 
+if [[ "$(dmesg | grep tty0 | wc -l;)" -gt 0 ]] || [[ "$(sudo dmesg | grep tty0 | wc -l;)" -gt 0 ]]; then
+  # Current shell is a TTY Shell
+  IS_TTY_TERMINAL=1;
+else
+  # Current shell is NOT a TTY Shell
+  IS_TTY_TERMINAL=0;
+fi;
+
+echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
+
+exit $((IS_TTY_TERMINAL ^= 1));
+
+
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then
 #
-# Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
+# DEPRECATED METHODOLOGY  -  Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
 #
+
+IS_TTY_TERMINAL=0;
 
 TTY_VAR_MATCHES_REQUIRED=5;
 
@@ -60,6 +77,8 @@ if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY
 echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
 
 exit ${EXIT_CODE};
+
+fi;
 
 
 # ------------------------------------------------------------

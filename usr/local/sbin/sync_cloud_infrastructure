@@ -14,7 +14,7 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 fi;
 # ------------------------------
 if [[ "$*" == *"--debug"* ]]; then ARGS_DEBUG_MODE=1; fi;
-if [[ "$*" == *"--skip-self-update"* ]]; then ARGS_SKIP_SELF_UPDATE=1; fi;
+if [[ "$*" == *"--skip-self-update"* ]]; then ARGS_IS_RECURSIVE_CALL=1; fi;
 # ------------------------------
 #
 # Log all shell output & error output to logfile
@@ -22,7 +22,7 @@ if [[ "$*" == *"--skip-self-update"* ]]; then ARGS_SKIP_SELF_UPDATE=1; fi;
 LOGDIR="${HOME}/sync_cloud_infrastructure_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/sync_cloud_infrastructure"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}" 2>'/dev/null'; chmod 0770 "${LOGDIR}" 2>'/dev/null';
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-if [[ "${ARGS_SKIP_SELF_UPDATE}" != "1" ]]; then exec > >(tee -a "${LOGFILE}" ); exec 2>&1; fi; # Avoid doubling-up/stacking logfile stream outputs (otherwise the recursive call will log every line to the logfile twice)
+if [[ "${ARGS_IS_RECURSIVE_CALL}" != "1" ]]; then exec > >(tee -a "${LOGFILE}" ); exec 2>&1; fi; # Avoid doubling-up/stacking logfile stream outputs (otherwise the recursive call will log every line to the logfile twice)
 #
 # ------------------------------
 #
@@ -65,8 +65,13 @@ RECURSIVE_CALLBACK_ECHO="";
 # Log the starting timestamp for the current runtime
 #
 
-echo "------------------------------";
-echo "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME}.${START_MICROSECONDS}$(date +'%z';) ]  (ID: ${START_SECONDS_NANOSECONDS})";
+if [[ "${ARGS_IS_RECURSIVE_CALL}" == "1" ]]; then 
+  echo "-- - - - - - -- - - - - - - --";
+else
+  echo "------------------------------";
+fi;
+
+echo "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME}.${START_MICROSECONDS}$(date +'%z';) ]  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
 # ------------------------------
 #
@@ -238,7 +243,7 @@ else
         fi;
 
         if [[ "${EACH_ARG}" == "--skip-self-update" ]]; then
-          ARGS_SKIP_SELF_UPDATE=1; # Parse skip-self-update calls
+          ARGS_IS_RECURSIVE_CALL=1; # Parse skip-self-update calls
         fi;
 
         if [[ "${EACH_ARG}" == "--ddns" ]]; then
@@ -275,7 +280,7 @@ else
     ARGS_CRONJOB_SYNC=${ARGS_CRONJOB_SYNC:-0};            # Parsed from $@
     ARGS_DEBUG_MODE=${ARGS_DEBUG_MODE:-0};                # Parsed from $@
     ARGS_FORCE_SELF_UPDATE=${ARGS_FORCE_SELF_UPDATE:-0};  # Parsed from $@
-    ARGS_SKIP_SELF_UPDATE=${ARGS_SKIP_SELF_UPDATE:-0};    # Parsed from $@
+    ARGS_IS_RECURSIVE_CALL=${ARGS_IS_RECURSIVE_CALL:-0};    # Parsed from $@
     ARGS_SYNC_DDNS=${ARGS_SYNC_DDNS:-0};                  # Parsed from $@
     ARGS_SYNC_JENKINS=${ARGS_SYNC_JENKINS:-0};            # Parsed from $@
     ARGS_SYNC_NGINX=${ARGS_SYNC_NGINX:-0};                # Parsed from $@
@@ -316,7 +321,7 @@ else
       echo "Debug:  ARGS_DEBUG_MODE = [ ${ARGS_DEBUG_MODE} ]";
       echo "Debug:  ARGS_GIT_BRANCH = [ ${ARGS_GIT_BRANCH} ]";
       echo "Debug:  ARGS_FORCE_SELF_UPDATE = [ ${ARGS_FORCE_SELF_UPDATE} ]";
-      echo "Debug:  ARGS_SKIP_SELF_UPDATE = [ ${ARGS_SKIP_SELF_UPDATE} ]";
+      echo "Debug:  ARGS_IS_RECURSIVE_CALL = [ ${ARGS_IS_RECURSIVE_CALL} ]";
       echo "Debug:  ARGS_SYNC_DDNS = [ ${ARGS_SYNC_DDNS} ]";
       echo "Debug:  ARGS_SYNC_JENKINS = [ ${ARGS_SYNC_JENKINS} ]";
       echo "Debug:  ARGS_SYNC_NGINX = [ ${ARGS_SYNC_NGINX} ]";
@@ -565,7 +570,7 @@ else
       #
       # Self-update - If changes exist between the local & the remote (source) runtime versions of this script, then update it and recursively call it
       #
-      if [[ "${ARGS_SKIP_SELF_UPDATE}" -eq 1 ]]; then
+      if [[ "${ARGS_IS_RECURSIVE_CALL}" -eq 1 ]]; then
         UPDATE_SELF_REQUIRED=0;
         if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Self-update skipped (script called with '--skip-self-update')"; fi;
       else
@@ -620,7 +625,7 @@ else
         #  |--> Recursively call the latest version of this script, making sure to use the same CLI parameters
         #
 
-        RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling the latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
+        RECURSIVE_CALLBACK_ECHO="\n---- Info:  Recursively calling the latest revision of this script  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))\n";
 
         if [[ 0 -eq 1 ]]; then
           #
@@ -869,13 +874,13 @@ else
         # ------------------------------
         if [[ "${EXIT_CODE}" == "0" ]] && [[ "${UPDATE_SELF_REQUIRED}" -ne 1 ]]; then
 
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'If' main statement block - No errors detected thus far  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'If' main statement block - No errors detected thus far  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
           #
           # No known/caught errors were thrown up-until this point - Assume prereq installs/packages/modules exist
           #  |--> Run the part of the sync job which actually performs the sync
           #
           # ------------------------------
-          echo -e "\nInfo:  Syncing binaries with source repository \"${GIT_REPO_NAME}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Syncing binaries with source repository \"${GIT_REPO_NAME}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           # ------------------------------
           #
           # /usr/local/bin
@@ -883,7 +888,7 @@ else
           DESTINATION_PATH="/usr/local/bin";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0755"; DIR_PERMS="0755";
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
@@ -901,7 +906,7 @@ else
           DESTINATION_PATH="/usr/local/sbin";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0755"; DIR_PERMS="0755";
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" --exclude=\"${EXCLUDE_PATTERN}\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" --exclude="${EXCLUDE_PATTERN}" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
@@ -946,7 +951,7 @@ else
             DESTINATION_PATH="/etc/pki/ca-trust/source/anchors";
             SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
             FILE_PERMS="0644"; DIR_PERMS="0644";
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
             BENCHMARK_START=$(date +'%s.%N');
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
             rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -967,7 +972,7 @@ else
           DESTINATION_PATH="/etc/profile.d/required_paths.sh";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -984,7 +989,7 @@ else
           DESTINATION_PATH="/etc/profile.d/bash_history_logging.sh";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0644";
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1001,7 +1006,7 @@ else
           DESTINATION_PATH="/etc/whitelist.d";
           SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
           FILE_PERMS="0644"; DIR_PERMS="0755";
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
           BENCHMARK_START=$(date +'%s.%N');
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
           rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
@@ -1286,7 +1291,7 @@ else
             if [[ ${ENABLE_CRON_DDNS_UPDATER} -ne 0 ]]; then
               # Enable a cronjob to perform scheduled updates/syncs of the UFW firewall whitelist
               CRON_DDNS_UFW_UPDATE="/etc/cron.d/CRON_ddns_ufw_update";
-              echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+              echo -e "\nInfo:  Updating \"${CRON_DDNS_UFW_UPDATE}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
               wget "https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${CRON_DDNS_UFW_UPDATE}" -O "${CRON_DDNS_UFW_UPDATE}" -q \
                 && chmod 0644 "${CRON_DDNS_UFW_UPDATE}" \
@@ -1311,7 +1316,7 @@ else
               CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0644";
-              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
               BENCHMARK_START=$(date +'%s.%N');
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
               rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1348,7 +1353,7 @@ else
                   CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
                   SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                   FILE_PERMS="0644"; DIR_PERMS="0644";
-                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+                  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
                   BENCHMARK_START=$(date +'%s.%N');
                   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                   rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1388,7 +1393,7 @@ else
                 CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
                 BENCHMARK_START=$(date +'%s.%N');
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1440,7 +1445,7 @@ else
                 CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
                 BENCHMARK_START=$(date +'%s.%N');
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1479,7 +1484,7 @@ else
                 CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
                 BENCHMARK_START=$(date +'%s.%N');
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1507,7 +1512,7 @@ else
                 CHECKSUM_BEFORE=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
                 SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
                 FILE_PERMS="0644"; DIR_PERMS="0644";
-                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+                if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
                 BENCHMARK_START=$(date +'%s.%N');
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
                 rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform file-sync
@@ -1542,7 +1547,7 @@ else
                 USERNAMES_MOSTCHARS=${EACH_USERNAME_LENGTH};
               fi;
             done;
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH enabled users...$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing bash-config & terminal-formatting files for SSH enabled users...$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
             BENCHMARK_START=$(date +'%s.%N');
             # Begin copying files to SSH enabled users' home directories
             for EACH_FILE in ${FILES_TO_COPY}; do
@@ -1585,7 +1590,7 @@ else
             if [[ "${ARGS_SYNC_DDNS}" -eq 1 ]]; then
               # Syncs the cronjob trigger to update a given DNS-Provider with current WAN IP
               CRON_UPDATE_DNS_A_RECORDS="/etc/cron.d/CRON_ddns_updater";
-              echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+              echo -e "\nInfo:  Updating \"${CRON_UPDATE_DNS_A_RECORDS}\" with changes from \"${GIT_REPO_NAME}\" repository$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
               BENCHMARK_START=$(date +'%s.%N');
 
               /usr/local/bin/ddns_setup \
@@ -1617,7 +1622,7 @@ else
               DESTINATION_PATH="/etc/nginx"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
-              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
               BENCHMARK_START=$(date +'%s.%N');
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
               rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
@@ -1638,12 +1643,12 @@ else
                 if [[ "${CURRENT_LOGS_USER}" != "${NGINX_LOGS_USER}" ]]; then
                   NGINX_LOGS_GROUP="$(getent passwd "${NGINX_LOGS_USER}" | cut -d':' -f5;)";
                   CURRENT_LOGS_GROUP="$(stat -c "%G" "${DESTINATION_PATH}";)";
-                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" user:group ownership to \"${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" user:group ownership to \"${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chown "${NGINX_LOGS_USER}:${CURRENT_LOGS_GROUP:-${NGINX_LOGS_GROUP}}" "${DESTINATION_PATH}";
                 fi;
                 CURRENT_LOGS_PERMS="$(stat -c "%a" "${DESTINATION_PATH}";)";
                 if [[ "${CURRENT_LOGS_PERMS}" != "${DIR_PERMS}" ]]; then
-                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" file mode (access) permissions to \"${DIR_PERMS}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+                  echo -e "  |--> Updating \"${DESTINATION_PATH}\" file mode (access) permissions to \"${DIR_PERMS}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
                   chmod "${DIR_PERMS}" "${DESTINATION_PATH}";
                 fi;
               fi;
@@ -1654,7 +1659,7 @@ else
               DESTINATION_PATH="/var/www/error"; if [[ ! -d "${DESTINATION_PATH}" ]]; then mkdir -p "${DESTINATION_PATH}"; fi;
               SOURCE_PATH="${DIR_REPO_BASE}${DESTINATION_PATH}"; if [[ -d "${SOURCE_PATH}" ]]; then SOURCE_PATH+="/"; fi;
               FILE_PERMS="0644"; DIR_PERMS="0755";
-              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Syncing \"${DESTINATION_PATH}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)"; fi;
               BENCHMARK_START=$(date +'%s.%N');
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ rsync --archive --inplace --checksum --quiet --exclude=\".gitkeep\" \"${SOURCE_PATH}\" \"${DESTINATION_PATH}\"; ]..."; fi;
               rsync --archive --inplace --checksum --quiet --exclude=".gitkeep" "${SOURCE_PATH}" "${DESTINATION_PATH}"; # Perform dir-sync
@@ -1959,15 +1964,15 @@ else
 
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
 
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Elif' main statement block - Skipped main 'If' in favor of recursive call handling it (UPDATE_SELF_REQUIRED=[${UPDATE_SELF_REQUIRED}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 
         elif [[ -n "${EXIT_CODE}" ]] && [[ "${EXIT_CODE}" -ne 0 ]]; then
 
-          echo -e "\nError:  One or more errors were found (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
+          echo -e "\nError:  One or more errors were found (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
         else
 
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  'Else' statement placeholder (to-be-updated) (EXIT_CODE=[${EXIT_CODE}])  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 
         fi;
 
@@ -2022,15 +2027,15 @@ if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
 fi;
 
 echo "";
-echo "== Info:  End of $(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS}$(date +'%z';) ] after [ ${END_BENCHMARK_DELTA}s ]  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))";
+echo "== Info:  End of $(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo "recursive "; fi;)\"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS}$(date +'%z';) ] after [ ${END_BENCHMARK_DELTA}s ]  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))";
 
 # ------------------------------
 #
 # Exit & return the value of EXIT_CODE back to caller
 #
 
-# if [[ ${ARGS_SKIP_SELF_UPDATE:-0} -eq 0 ]]; then
-#   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
+# if [[ ${ARGS_IS_RECURSIVE_CALL:-0} -eq 0 ]]; then
+#   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Calling [ exit ${EXIT_CODE:-0}; ]...  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;
 #   exit ${EXIT_CODE:-0};
 # fi;
 

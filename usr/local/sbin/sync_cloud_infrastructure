@@ -876,7 +876,7 @@ else
           #  |--> Run the part of the sync job which actually performs the sync
           #
           # ------------------------------
-          echo -e "\nInfo:  Syncing \"${GIT_REPO_NAME}\" files/directories$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
+          echo -e "\nInfo:  Syncing with source repository \"${GIT_REPO_NAME}\"$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_SKIP_SELF_UPDATE} -eq 1 ]]; then echo " - recursive call"; fi;))"; fi;)";
           # ------------------------------
           #
           # /usr/local/bin

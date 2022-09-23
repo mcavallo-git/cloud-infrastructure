@@ -5,8 +5,8 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### [ JOURNALCTL ] Remove old logfiles & limit journalctl's logfiles' net disk usage (trims oldest logs until "--vacuum-size" filesize requirement is met)  -  https://crontab.guru/#0_2_*_*_*
-0 2 * * * root journalctl --vacuum-time=90d --vacuum-size=1G;
-# 0 2 * * * root journalctl --vacuum-size=1G;
+# 0 2 * * * root journalctl --vacuum-time=90d --vacuum-size=1G;
+0 2 * * * root journalctl --vacuum-size=1G;
 
 # ------------------------------------------------------------
 #

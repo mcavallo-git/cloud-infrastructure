@@ -33,36 +33,23 @@ fi;
 
 # ------------------------------
 
-if [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
-  echo "------------------------------";
-  date;
-fi;
+
+if [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then echo -e "------------------------------\n$(date)"; fi;
+
+if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "-----\nCalling [ printenv | sort -u; ]..."; printenv | sort -u; fi;
 
 
+#
+# Method 1 - Use the built-in expression "-t"
+#  |
+#  |--> -t fd True if file descriptor fd is open and refers to a terminal  (taken from "man test")
+#
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
-  #
-  # Method 1 - Use the built-in expression "-t"
-  #  |
-  #  |--> -t fd True if file descriptor fd is open and refers to a terminal  (taken from "man test")
-  #
   if [ -t 1 ]; then
     IS_TTY_TERMINAL=1;
     METHOD_1=1;
   else
     METHOD_1=0;
-  fi;
-fi;
-
-
-if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
-  #
-  # Method 2 - Check the kernel ring buffer (via "dmesg") for specific tty strings
-  #
-  if [[ "$(dmesg | grep -c tty0;)" -gt 0 ]] || [[ "$(sudo dmesg | grep -c tty0;)" -gt 0 ]]; then
-    IS_TTY_TERMINAL=1;
-    METHOD_2=1;
-  else
-    METHOD_2=0;
   fi;
 fi;
 
@@ -98,26 +85,22 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
       if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "EACH_TTY_VAR_VALUE = ~ empty/unset ~"; fi;
     fi;
   done;
-  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "-----\nCalling [ printenv | sort -u; ]..."; printenv | sort -u; fi;
   if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
     # Current shell is a TTY Shell
     IS_TTY_TERMINAL=1;
-    METHOD_3=1;
+    METHOD_2=1;
   else
-    METHOD_3=0;
+    METHOD_2=0;
   fi;
-  if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "-----"; fi;
 fi;
 
 
 if [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
-  echo "";
+  echo "-----";
   echo "IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
-  echo "";
-  echo "  METHOD_1 = [ ${METHOD_1} ]";
-  echo "  METHOD_2 = [ ${METHOD_2} ]";
-  echo "  METHOD_3 = [ ${METHOD_3} ]";
-  echo "";
+  echo "METHOD_1 = [ ${METHOD_1} ]";
+  echo "METHOD_2 = [ ${METHOD_2} ]";
+  echo "-----";
 fi;
 
 

@@ -11,11 +11,15 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 fi;
 # ------------------------------------------------------------
 
+
 IS_TTY_TERMINAL=0;
 
-if [ "${1}" == "verbose" ]; then
+
+if [ "${1}" == "--verbose" ]; then
+  # Run in debug mode using argument "--verbose"
   ARGS_DEBUG_MODE=1;
 fi;
+
 
 
 if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then

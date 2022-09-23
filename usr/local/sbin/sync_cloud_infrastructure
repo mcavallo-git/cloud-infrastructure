@@ -66,9 +66,9 @@ RECURSIVE_CALLBACK_ECHO="";
 #
 
 if [[ "${ARGS_IS_RECURSIVE_CALL}" == "1" ]]; then 
-  echo "-- - - - - - -- - - - - - - --";
+  echo "- - - - - - - - - - - - - - -";
 else
-  echo "------------------------------";
+  echo "-----------------------------";
 fi;
 
 echo "-- Info:  Start of \"$(basename "${SYNC_CI_LOCAL}";)\" runtime at [ ${START_DATETIME}.${START_MICROSECONDS}$(date +'%z';) ]  (ID: ${START_SECONDS_NANOSECONDS}$(if [[ ${ARGS_IS_RECURSIVE_CALL} -eq 1 ]]; then echo " - recursive call"; fi;))";

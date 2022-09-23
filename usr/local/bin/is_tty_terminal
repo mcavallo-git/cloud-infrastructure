@@ -18,7 +18,7 @@ if [ "${1}" == "verbose" ]; then
 fi;
 
 
-if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
   #
   # Method 1 - Use the built-in expression "-t"
   #  |
@@ -85,7 +85,7 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
   fi;
 fi;
 
-if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
+if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
   echo "";
   echo "IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
   echo "";

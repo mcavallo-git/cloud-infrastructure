@@ -55,10 +55,9 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
   fi;
 fi;
 
+# Output the results
 if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]"; fi;
-
 echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
-
 exit $((IS_TTY_TERMINAL ^= 1));
 
 

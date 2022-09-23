@@ -9,24 +9,37 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 # curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/is_tty_terminal?t=$(date +'%s.%N')" | bash -s -- --verbose;
 
 fi;
-# ------------------------------------------------------------
+# ------------------------------
 
 
 IS_TTY_TERMINAL=0;
 
+ARGS_DEBUG_MODE=0;
+
+ARGS_VERBOSE_MODE=0;
+
+
+# ------------------------------
 
 if [ "${1}" == "--verbose" ]; then
-  # Run in debug mode using argument "--verbose"
+  # Run in verbose mode using argument "--verbose"
+  ARGS_VERBOSE_MODE=1;
+fi;
+
+
+if [ "${1}" == "--debug" ]; then
+  # Run in debug mode using argument "--debug"
+  ARGS_VERBOSE_MODE=1;
   ARGS_DEBUG_MODE=1;
 fi;
 
 
 
-if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
   #
   # Method 1 - Use the built-in expression "-t"
   #  |
-  #  |--> man test:  "-t fd True if file descriptor fd is open and refers to a terminal"
+  #  |--> -t fd True if file descriptor fd is open and refers to a terminal  (taken from "man test")
   #
   if [ -t 1 ]; then
     IS_TTY_TERMINAL=1;
@@ -37,7 +50,7 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
 fi;
 
 
-if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
   #
   # Method 2 - Check the kernel ring buffer (via "dmesg") for specific tty strings
   #
@@ -50,7 +63,7 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
 fi;
 
 
-if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then 
+if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then 
   #
   # Method 3 - Check for specific environment variables which are set (and contain a non-empty value) when the current shell is running-in/connected-to a tty shell
   #
@@ -89,15 +102,14 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]] || [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
   fi;
 fi;
 
-if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
+
+if [[ "${ARGS_VERBOSE_MODE}" -eq 1 ]]; then
   echo "";
   echo "IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
   echo "";
-  echo "METHOD_1 = [ ${METHOD_1} ]";
-  echo "";
-  echo "METHOD_2 = [ ${METHOD_2} ]";
-  echo "";
-  echo "METHOD_3 = [ ${METHOD_3} ]";
+  echo "  METHOD_1 = [ ${METHOD_1} ]";
+  echo "  METHOD_2 = [ ${METHOD_2} ]";
+  echo "  METHOD_3 = [ ${METHOD_3} ]";
   echo "";
 fi;
 

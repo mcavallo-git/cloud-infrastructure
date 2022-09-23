@@ -1319,7 +1319,7 @@ else
               if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
               dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
               CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-              if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+              if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
 
@@ -1356,7 +1356,7 @@ else
                   if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                   dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                   CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-                  if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+                  if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 else
                   echo "  |--> Denied - SSL/TLS certificate auto renewal disabled";
@@ -1396,7 +1396,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - Logfile auto cleanup disabled";
@@ -1448,7 +1448,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - DNS server sync disabled";
@@ -1487,7 +1487,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
                 echo "  |--> Denied - System & package weekly updates disabled";
@@ -1515,7 +1515,7 @@ else
                 if [[ "${FILE_PERMS}" == "${DIR_PERMS}" ]]; then chmod -R "${FILE_PERMS}" "${DESTINATION_PATH}"; fi; # Ensure permissions are set as-intended
                 dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
                 CHECKSUM_AFTER=$(if [[ -f "${DESTINATION_PATH}" ]]; then cat "${DESTINATION_PATH}" 2>'/dev/null' | sed -e '/^\s*$/d' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -rne 's/^(((#\!)|([^#]{2})).+)$/\1/p' | sed -re 's/^(.*(else|then|;))\s+#\s+[^;]+$/\1/' | cksum | cut -d" " -f1; else echo 0; fi;);
-                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo: Update(s) applied to \"${DESTINATION_PATH}\""; fi;
+                if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               fi;
             fi;

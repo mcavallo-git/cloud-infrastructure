@@ -8,17 +8,34 @@ curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, m
 
 fi;
 # ------------------------------------------------------------
+#
+# List Azure Public IPs for a given service + region
+#
+
+# Region + service-name tags/ips (in target Region)
+az network list-service-tags --location "eastus2" --query "values[? name=='AzureCloud.eastus2'].properties.addressPrefixes[]" --output "tsv";
 
 
-# NOTE: Syntax for latest IP-Range filename is last Monday's date (just before ".json" file extension on URLs):
-URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210816.json";
-URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210823.json";
-
-CIDRv4_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep -v ':';); echo -e "CIDRv4_EASTUS2=[\n${CIDRv4_EASTUS2}\n]";
-
-CIDRv6_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep ':';);    echo -e "CIDRv6_EASTUS2=[\n${CIDRv6_EASTUS2}\n]";
+# IPv4 service addresses only
+IPV4_ADDRESSES="$(az network list-service-tags --location "eastus2" --output "tsv" --query "values[? name=='AzureCloud.eastus2'].properties.addressPrefixes[] | [? ! contains(@,'::')]";)"; echo "${IPV4_ADDRESSES}";
 
 
+# IPv6 service addresses only
+IPV6_ADDRESSES="$(az network list-service-tags --location "eastus2" --output "tsv" --query "values[? name=='AzureCloud.eastus2'].properties.addressPrefixes[] | [? contains(@,'::')]";)"; echo "${IPV6_ADDRESSES}";
+
+
+# ------------------------------------------------------------
+#
+# Deprecated Approach:
+# 
+# ### NOTE: Syntax for latest IP-Range filename is last Monday's date (just before ".json" file extension on URLs):
+# URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210816.json";
+# URL_AZURE_IP_RANGES="https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20210823.json";
+#
+# CIDRv4_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep -v ':';); echo -e "CIDRv4_EASTUS2=[\n${CIDRv4_EASTUS2}\n]";
+#
+# CIDRv6_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.name == "AzureCloud.eastus2") | .properties.addressPrefixes | .[]' | grep ':';);    echo -e "CIDRv6_EASTUS2=[\n${CIDRv6_EASTUS2}\n]";
+#
 # ------------------------------------------------------------
 #
 # Citation(s)
@@ -26,6 +43,8 @@ CIDRv6_EASTUS2=$(curl -sL "${URL_AZURE_IP_RANGES}" | jq -r '.values[] | select(.
 #   docs.microsoft.com  |  "Microsoft-hosted agents for Azure Pipelines - Azure Pipelines | Microsoft Docs"  |  https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml
 #
 #   github.com  |  "Allow "raw" output of arrays · Issue #189 · stedolan/jq · GitHub"  |  https://github.com/stedolan/jq/issues/189#issuecomment-26078544
+#
+#   learn.microsoft.com  |  "az network | Microsoft Learn"  |  https://learn.microsoft.com/en-us/cli/azure/network#az-network-list-service-tags
 #
 #   www.microsoft.com  |  "Download Azure IP Ranges and Service Tags – Public Cloud from Official Microsoft Download Center"  |  https://www.microsoft.com/en-us/download/details.aspx?id=56519
 #

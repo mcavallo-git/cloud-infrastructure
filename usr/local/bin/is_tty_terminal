@@ -22,6 +22,9 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
   #
   if [ -t 1 ]; then
     IS_TTY_TERMINAL=1;
+    METHOD_1=1;
+  else
+    METHOD_1=0;
   fi;
 fi;
 
@@ -32,6 +35,9 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
   #
   if [[ "$(dmesg | grep -c tty0;)" -gt 0 ]] || [[ "$(sudo dmesg | grep -c tty0;)" -gt 0 ]]; then
     IS_TTY_TERMINAL=1;
+    METHOD_2=1;
+  else
+    METHOD_2=0;
   fi;
 fi;
 
@@ -69,13 +75,29 @@ if [[ "${IS_TTY_TERMINAL}" -eq 0 ]]; then
   if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
     # Current shell is a TTY Shell
     IS_TTY_TERMINAL=1;
+    METHOD_3=1;
+  else
+    METHOD_3=0;
   fi;
 fi;
 
-# Output the results
-if [ "${1}" == "verbose" ]; then echo -e "------------------------------\nIS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]"; fi;
-echo -n "${IS_TTY_TERMINAL}";  # Return 1 for tty shell, 0 for non-tty shell
-exit $((IS_TTY_TERMINAL ^= 1));
+if [ "${1}" == "verbose" ]; then
+  echo "";
+  echo "IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
+  echo "";
+  echo "METHOD_1 = [ ${METHOD_1} ]";
+  echo "";
+  echo "METHOD_2 = [ ${METHOD_2} ]";
+  echo "";
+  echo "METHOD_3 = [ ${METHOD_3} ]";
+  echo "";
+fi;
+
+
+echo -n "${IS_TTY_TERMINAL}";  # Return "1" if tty shell  /  "0" for non-tty shell
+
+
+exit $((IS_TTY_TERMINAL ^= 1));  # Exit cleanly (0) if tty shell  /  Exit with errors (1) if non-tty shell
 
 
 # ------------------------------------------------------------

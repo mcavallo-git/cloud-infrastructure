@@ -1969,26 +1969,26 @@ else
 
         fi;
 
-      fi;
+        # ------------------------------
+        #
+        # Cleanup log files outside of the retention policy
+        #
 
-      # ------------------------------
-      #
-      # Cleanup log files outside of the retention policy
-      #
-
-      if [[ 0 -eq 1 ]]; then
-        LOGDIR="${LOGDIR:-/var/log/sync_cloud_infrastructure}";
-        RETENTION_DAYS=60;
-        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Checking for log files older than [ ${RETENTION_DAYS} days old ] in directory [ ${LOGDIR} ]..."; fi;
-        if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
-          echo "";
-          echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
-          find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \; ;
+        if [[ 0 -eq 1 ]]; then
+          LOGDIR="${LOGDIR:-/var/log/sync_cloud_infrastructure}";
+          RETENTION_DAYS=60;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Checking for log files older than [ ${RETENTION_DAYS} days old ] in directory [ ${LOGDIR} ]..."; fi;
+          if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
+            echo "";
+            echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
+            find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \; ;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  No logfiles found outside of the retention policy"; fi;
+          fi;
         else
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  No logfiles found outside of the retention policy"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping log file cleanup check"; fi;
         fi;
-      else
-        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping log file cleanup check"; fi;
+
       fi;
 
     fi;

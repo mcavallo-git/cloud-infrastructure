@@ -259,7 +259,7 @@ echo "TEMPDIR_WIN32=\"${TEMPDIR_WIN32}\"";
 # ------------------------------------------------------------
 # Git Default Path(s)
 
-GIT_EXE_DEFAULT_BIN="${EXEPATH:-${PROGRAMFILES:-C:\\Program Files}\\Git\\bin}";
+GIT_EXE_DEFAULT_BIN="${PROGRAMFILES:-C:\\Program Files}\\Git\\bin";
 GIT_EXE_DEFAULT_BIN_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_BIN}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GIT_EXE_DEFAULT_BIN_LINUX="${MM}";
 GIT_EXE_DEFAULT_BIN_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_BIN}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DEFAULT_BIN_WIN32="${MM}";
 

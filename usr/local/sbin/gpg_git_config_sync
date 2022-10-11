@@ -259,9 +259,13 @@ echo "TEMPDIR_WIN32=\"${TEMPDIR_WIN32}\"";
 # ------------------------------------------------------------
 # Git Default Path(s)
 
-GIT_EXE_DEFAULT_DIR="${EXEPATH:-${PROGRAMFILES:-C:\\Program Files}\\Git}\usr\bin";
-GIT_EXE_DIR_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GIT_EXE_DIR_LINUX="${MM}";
-GIT_EXE_DIR_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_DIR}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DIR_WIN32="${MM}";
+GIT_EXE_DEFAULT_BIN="${EXEPATH:-${PROGRAMFILES:-C:\\Program Files}\\Git\\bin}";
+GIT_EXE_DEFAULT_BIN_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_BIN}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GIT_EXE_DEFAULT_BIN_LINUX="${MM}";
+GIT_EXE_DEFAULT_BIN_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_BIN}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DEFAULT_BIN_WIN32="${MM}";
+
+GIT_EXE_DEFAULT_USR_BIN="${GIT_EXE_DEFAULT_BIN}\\..\\usr\\bin";
+GIT_EXE_DEFAULT_USR_BIN_LINUX=""; MM=$(realpath "${GIT_EXE_DEFAULT_USR_BIN}"); MM="${MM/C:/${DISK_ROOT}}";     MM="${MM//\\/\/}"; GIT_EXE_DEFAULT_USR_BIN_LINUX="${MM}";
+GIT_EXE_DEFAULT_USR_BIN_WIN32=""; MM=$(realpath "${GIT_EXE_DEFAULT_USR_BIN}"); MM="${MM/${DISK_ROOT}\//C:\\}"; MM="${MM//\//\\}"; GIT_EXE_DEFAULT_USR_BIN_WIN32="${MM}";
 
 GIT_CONF_SYSTEM_PATHS_LINUX="${TEMP_FILES_LINUX}/git.config.system.${START_TIMESTAMP}.txt";
 GIT_CONF_SYSTEM_PATHS_WIN32="${TEMP_FILES_LINUX}\\git.config.system.${START_TIMESTAMP}.txt";
@@ -409,24 +413,21 @@ elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/../GNU/bin/pinentry.exe" ]; th
 elif [ -f "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry-basic.exe" ]; then GPG_PINENTRY_EXE=$(realpath "${DISK_ROOT}/Program Files (x86)/GnuPG/bin/pinentry-basic.exe");
 fi;
 
-echo "Info: GnuPG exe - Git  (gpg.exe) :  \"${GIT_EXE_DIR_LINUX}/gpg.exe\"";
+echo "Info: GnuPG exe - Git  (gpg.exe) :  \"${GIT_EXE_DEFAULT_USR_BIN_LINUX}/gpg.exe\"";
 echo "Info: GnuPG exe - Gpg4win  (gpg.exe) :  \"${GPG4WIN_GPG_EXE_LINUX}\"";
 echo "Info: GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
 
 for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
   EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
-  if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ]; then # 
-    if [ -L "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
-      EACH_FILE_OUTPUT=$(ls -al "${GPG4WIN_EXE_DIR_LINUX}" | awk '{print $9,$10,$11}' | grep "${EACH_FILE}");
-      # echo "Pass - ${EACH_FILE_OUTPUT}";
-    else
-      if [ -f "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" ]; then
+  if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ] && [ ! -L "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then # 
+    if [ -f "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then # 
+      if [ -f "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then
         echo "";
-        mv --verbose "${GIT_EXE_DIR_LINUX}/${EACH_FILE}" "${GIT_EXE_DIR_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
+        mv --verbose "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}.$(date +'%Y%m%d-%H%M%S').bak";
       fi;
       # Redirect Git's [ gpg.exe ] runtime to, instead, refer to Gpg4win's [ gpg.exe ] runtime
       echo "";
-      echo "MKLINK \"${GIT_EXE_DIR_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
+      echo "MKLINK \"${GIT_EXE_DEFAULT_USR_BIN_WIN32}\\${EACH_FILE}\" \"${GPG4WIN_EXE_DIR_WIN32}\\${EACH_FILE}\" " | CMD; # MKLINK Syntax: [ MKLINK "NEW_LINK" "EXISTING_TARGET" ]
     fi;
   fi;
 done;

@@ -760,22 +760,24 @@ fi;
   echo "Beginning Home-Dir search...";
   echo "";
 
+  REPOS_DIR="${REPOS_DIR:-${USERPROFILE}}";
+
   # Get all dirs within current user's home-dir
-  find "${USERPROFILE}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
+  find "${REPOS_DIR}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
 
     DIR_IS_EXCLUDED=0;
     for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-      if [ "$(realpath "${EACH_HOMEDIR}";)" == "$(realpath "${EACH_EXCLUDED_DIR}";)" ]; then
+      if [ "$(realpath "${EACH_DIR}";)" == "$(realpath "${EACH_EXCLUDED_DIR}";)" ]; then
         DIR_IS_EXCLUDED=1;
       fi;
     done;
 
     if [[ ${DIR_IS_EXCLUDED} -eq 1 ]]; then
-      echo "(Skipped)  Directory excluded: \"${EACH_HOMEDIR}\""
+      echo "(Skipped)  Directory excluded: \"${EACH_DIR}\""
     else
-      echo "Directory NOT excluded: \"${EACH_HOMEDIR}\" - Searching it for .git config(s)..."
+      echo "Directory NOT excluded: \"${EACH_DIR}\" - Searching it for .git config(s)..."
       # Not an excluded directory - search it for directories with name ".git"
-      find "${EACH_HOMEDIR}" \
+      find "${EACH_DIR}" \
       -maxdepth 4 \
       -type d \
       -name ".git" \
@@ -970,7 +972,7 @@ fi;
       # EACH_REPO_BASENAME
 
       # for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do
-      #   if [ "${EACH_HOMEDIR}" == "${EACH_EXCLUDED_DIR}" ]; then
+      #   if [ "${EACH_REPO_FULLPATH}" == "${EACH_EXCLUDED_DIR}" ]; then
       #     DIR_IS_EXCLUDED=1;
       #   fi;
       # done;

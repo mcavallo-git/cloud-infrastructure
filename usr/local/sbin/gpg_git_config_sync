@@ -418,7 +418,6 @@ echo "Info: GnuPG exe - Gpg4win  (gpg.exe) :  \"${GPG4WIN_GPG_EXE_LINUX}\"";
 echo "Info: GnuPG pinentry exe (pinentry.exe) :  \"${GPG_PINENTRY_EXE}\"";
 
 for EACH_FILE in $(ls "${GPG4WIN_EXE_DIR_LINUX}" | grep .exe); do
-  EACH_FULLPATH="${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}";
   if [ -f "${GPG4WIN_EXE_DIR_LINUX}/${EACH_FILE}" ] && [ ! -L "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then # 
     if [ -f "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then # 
       if [ -f "${GIT_EXE_DEFAULT_USR_BIN_LINUX}/${EACH_FILE}" ]; then

@@ -763,7 +763,7 @@ fi;
   REPOS_DIR="${REPOS_DIR:-${USERPROFILE}}";
 
   # Get all dirs within current user's home-dir
-  find "${REPOS_DIR}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_HOMEDIR; do
+  find "${REPOS_DIR}" -mindepth 1 -maxdepth 1 -type d | while read -r EACH_DIR; do
 
     DIR_IS_EXCLUDED=0;
     for EACH_EXCLUDED_DIR in "${!EXCLUDED_HOMEDIRS[@]}"; do

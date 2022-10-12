@@ -89,10 +89,10 @@ else
         #
         # Copy the certificates to the export directory
         #
-        cp -fv "${CERTBOT_CERTS_DIR}/cert.pem" "${OUT_DIR}/cert.pem";  # CERTIFICATE
-        cp -fv "${CERTBOT_CERTS_DIR}/chain.pem" "${OUT_DIR}/chain.pem";  # CABUNDLE
-        cp -fv "${CERTBOT_CERTS_DIR}/fullchain.pem" "${OUT_DIR}/fullchain.pem";  # CERT + CABUNDLE
-        cp -fv "${CERTBOT_CERTS_DIR}/privkey.pem" "${OUT_DIR}/privkey.pem";  # PRIVATE KEY
+        cp -fv "${CERTBOT_CERTS_DIR}/cert.pem" "${OUT_DIR}/cert.pem"; echo "";  # CERTIFICATE
+        cp -fv "${CERTBOT_CERTS_DIR}/chain.pem" "${OUT_DIR}/chain.pem"; echo "";  # CABUNDLE
+        cp -fv "${CERTBOT_CERTS_DIR}/fullchain.pem" "${OUT_DIR}/fullchain.pem"; echo "";  # CERT + CABUNDLE
+        cp -fv "${CERTBOT_CERTS_DIR}/privkey.pem" "${OUT_DIR}/privkey.pem"; echo "";  # PRIVATE KEY
         #
         # Convert PEM certs to a consolidated PFX certificate
         #

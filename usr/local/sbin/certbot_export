@@ -96,7 +96,7 @@ else
         #
         # Convert PEM certs to a consolidated PFX certificate
         #
-        echo "Cnverting PEM --> PFX certificate :  '${OUT_DIR}/$(basename "$OUT_DIR";).pfx'";
+        echo "Cnverting PEM --> PFX certificate :  '$(basename "$OUT_DIR";).pfx'";
         echo "";
         openssl pkcs12 -export -in "${OUT_DIR}/fullchain.pem" -inkey "${OUT_DIR}/privkey.pem" -out "${OUT_DIR}/$(basename "$OUT_DIR";).pfx"; # Convert certificate to PFX
         #

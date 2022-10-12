@@ -31,9 +31,13 @@ if [[ "$(id -un)" != "root" ]]; then
   EXIT_CODE=1;
 else
   DN="${DN:-${1}}";
+  #
   # Get domain name of certificate to export
+  #
   if [[ -z "${DN}" ]]; then
+    #
     # List certbot certificate domains
+    #
     certbot certificates;
     READ_TIMEOUT=60;
     read -p "Export certificates for which domain:  " -a DN -t ${READ_TIMEOUT} <'/dev/tty'; READ_EXIT_CODE=${?};
@@ -52,17 +56,23 @@ else
   else
     CERTBOT_CERTS_DIR="/etc/letsencrypt/live/${DN}";
     if [[ ! -d "${CERTBOT_CERTS_DIR}" ]]; then
+      #
       # Error - No certs found for domain
+      #
       echo "Error - No certs found for domain ${DN}";
       EXIT_CODE=1;
     else
       CERT_EXPIRATION_DATE="$(cat "${CERTBOT_CERTS_DIR}/fullchain.pem" 2>'/dev/null' | openssl x509 -dates -noout 2>'/dev/null' | sed -rne "s/^notAfter=(.+)$/\1/p";)";
       if [[ -z "${CERT_EXPIRATION_DATE}" ]]; then
+        #
         # Error - Unable to resolve expiration date
+        #
         echo "Error - Unable to resolve expiration date for domain certificate ${DN}";
         EXIT_CODE=1;
       else
+        #
         # Setup the export directory
+        #
         CERT_EXPIRATION_FORMATTED="$(date --utc --date="${CERT_EXPIRATION_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
         if [[ -z "${OUT_DIR}" ]]; then
           if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
@@ -76,19 +86,26 @@ else
         echo -e "------------------------------------------------------------\n";
         echo "Exporting certificates for domain ${DN}...";
         echo "";
+        #
+        # Copy the certificates to the export directory
+        #
         cp -fv "${CERTBOT_CERTS_DIR}/cert.pem" "${OUT_DIR}/cert.pem";  # CERTIFICATE
         cp -fv "${CERTBOT_CERTS_DIR}/chain.pem" "${OUT_DIR}/chain.pem";  # CABUNDLE
         cp -fv "${CERTBOT_CERTS_DIR}/fullchain.pem" "${OUT_DIR}/fullchain.pem";  # CERT + CABUNDLE
         cp -fv "${CERTBOT_CERTS_DIR}/privkey.pem" "${OUT_DIR}/privkey.pem";  # PRIVATE KEY
+        #
+        # Convert PEM certs to a consolidated PFX certificate
+        #
         openssl pkcs12 -export -in "${OUT_DIR}/fullchain.pem" -inkey "${OUT_DIR}/privkey.pem" -out "${OUT_DIR}/$(basename "$OUT_DIR";).pfx"; # Convert certificate to PFX
-
+        #
+        # Report the exported certificates' filepath
+        #
         echo "";
         echo "  Export Directory:  ${OUT_DIR}";
         if [[ -n "$(command -v wslpath 2>'/dev/null';)" ]]; then
           echo "";
           echo "  Export Directory (Win):  $(wslpath "${OUT_DIR}";)";
         fi;
-
       fi;
     fi;
   fi;

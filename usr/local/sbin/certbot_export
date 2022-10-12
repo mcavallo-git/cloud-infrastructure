@@ -74,15 +74,21 @@ else
         fi;
         mkdir --parents --verbose "${OUT_DIR}";
         echo -e "------------------------------------------------------------\n";
-        echo "Exporting certificates:";
-        echo "  Domain:     ${DN}";
-        echo "  Directory:  ${OUT_DIR}";
+        echo "Exporting certificates for domain ${DN}...";
         echo "";
         cp -fv "${CERTBOT_CERTS_DIR}/cert.pem" "${OUT_DIR}/cert.pem";  # CERTIFICATE
         cp -fv "${CERTBOT_CERTS_DIR}/chain.pem" "${OUT_DIR}/chain.pem";  # CABUNDLE
         cp -fv "${CERTBOT_CERTS_DIR}/fullchain.pem" "${OUT_DIR}/fullchain.pem";  # CERT + CABUNDLE
         cp -fv "${CERTBOT_CERTS_DIR}/privkey.pem" "${OUT_DIR}/privkey.pem";  # PRIVATE KEY
         openssl pkcs12 -export -in "${OUT_DIR}/fullchain.pem" -inkey "${OUT_DIR}/privkey.pem" -out "${OUT_DIR}/$(basename "$OUT_DIR";).pfx"; # Convert certificate to PFX
+
+        echo "";
+        echo "  Export Directory:  ${OUT_DIR}";
+        if [[ -n "$(command -v wslpath 2>'/dev/null';)" ]]; then
+          echo "";
+          echo "  Export Directory (Win):  $(wslpath "${OUT_DIR}";)";
+        fi;
+
       fi;
     fi;
   fi;

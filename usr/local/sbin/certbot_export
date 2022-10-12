@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/certbot_export" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+#
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
+
+DN="example.com"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_export?t=$(date +'%s.%N')" | bash -s -- "${DN}";
+
+fi;
+#
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/certbot_export_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/certbot_export"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+EXIT_CODE=0;
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  EXIT_CODE=1;
+else
+  DN="${DN:-${1}}";
+  # Get domain name of certificate to export
+  if [[ -z "${DN}" ]]; then
+    # List certbot certificate domains
+    certbot certificates;
+    READ_TIMEOUT=60;
+    read -p "Export certificates for which domain:  " -a DN -t ${READ_TIMEOUT} <'/dev/tty'; READ_EXIT_CODE=${?};
+    if [[ "${READ_EXIT_CODE}" -gt 128 ]]; then
+      echo "Error:  Response timed out after ${READ_TIMEOUT}s";  # ERROR - USER INPUT TIMED OUT
+    elif [[ -z "${DN}" ]]; then
+      echo "Warning:  Empty response received";  # WARNING - USER INPUT IS EMPTY
+    else
+      echo "Info:  Response received:  \"${DN}\"";  # INFO - USER INPUT IS NON-EMPTY
+    fi;
+  fi;
+
+  if [[ -z "${DN}" ]]; then
+    echo "Error:  No domain selected";
+    EXIT_CODE=1;
+  else
+    CERTBOT_CERTS_DIR="/etc/letsencrypt/live/${DN}";
+    if [[ ! -d "${CERTBOT_CERTS_DIR}" ]]; then
+      # Error - No certs found for domain
+      echo "Error - No certs found for domain ${DN}";
+      EXIT_CODE=1;
+    else
+      CERT_EXPIRATION_DATE="$(cat "${CERTBOT_CERTS_DIR}/fullchain.pem" 2>'/dev/null' | openssl x509 -dates -noout 2>'/dev/null' | sed -rne "s/^notAfter=(.+)$/\1/p";)";
+      if [[ -z "${CERT_EXPIRATION_DATE}" ]]; then
+        # Error - Unable to resolve expiration date
+        echo "Error - Unable to resolve expiration date for domain certificate ${DN}";
+        EXIT_CODE=1;
+      else
+        # Setup the export directory
+        CERT_EXPIRATION_FORMATTED="$(date --utc --date="${CERT_EXPIRATION_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
+        if [[ -z "${OUT_DIR}" ]]; then
+          if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
+            OUT_DIR="$(wslpath -u "$(wslvar --sys 'USERPROFILE';)/Desktop/wildcard.${DN}.expires-${CERT_EXPIRATION_FORMATTED}";)";
+          else
+            OUT_DIR="${HOME}";
+          fi;
+          OUT_DIR="${OUT_DIR}/wildcard.${DN}.expires-${CERT_EXPIRATION_FORMATTED}";
+        fi;
+        mkdir --parents --verbose "${OUT_DIR}";
+        echo -e "------------------------------------------------------------\n";
+        echo "Exporting certificates:";
+        echo "  Domain:     ${DN}";
+        echo "  Directory:  ${OUT_DIR}";
+        echo "";
+        cp -fv "${CERTBOT_CERTS_DIR}/cert.pem" "${OUT_DIR}/cert.pem";  # CERTIFICATE
+        cp -fv "${CERTBOT_CERTS_DIR}/chain.pem" "${OUT_DIR}/chain.pem";  # CABUNDLE
+        cp -fv "${CERTBOT_CERTS_DIR}/fullchain.pem" "${OUT_DIR}/fullchain.pem";  # CERT + CABUNDLE
+        cp -fv "${CERTBOT_CERTS_DIR}/privkey.pem" "${OUT_DIR}/privkey.pem";  # PRIVATE KEY
+        openssl pkcs12 -export -in "${OUT_DIR}/fullchain.pem" -inkey "${OUT_DIR}/privkey.pem" -out "${OUT_DIR}/$(basename "$OUT_DIR";).pfx"; # Convert certificate to PFX
+      fi;
+    fi;
+  fi;
+fi;
+
+exit ${EXIT_CODE}; # Exit cleanly

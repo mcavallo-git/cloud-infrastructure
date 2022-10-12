@@ -104,7 +104,7 @@ else
         echo "  Export Directory:  ${OUT_DIR}";
         if [[ -n "$(command -v wslpath 2>'/dev/null';)" ]]; then
           echo "";
-          echo "  Export Directory (Win):  $(wslpath "${OUT_DIR}";)";
+          echo "  Export Directory (Win):  $(wslpath -w "${OUT_DIR}";)";
         fi;
       fi;
     fi;

@@ -76,7 +76,7 @@ else
         CERT_EXPIRATION_FORMATTED="$(date --utc --date="${CERT_EXPIRATION_DATE}" +'%Y-%m-%dT%H-%M-%SZ';)";
         if [[ -z "${OUT_DIR}" ]]; then
           if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
-            OUT_DIR="$(wslpath -u "$(wslvar --sys 'USERPROFILE';)/Desktop/wildcard.${DN}.expires-${CERT_EXPIRATION_FORMATTED}";)";
+            OUT_DIR="$(wslpath -u "$(wslvar --sys 'USERPROFILE';)/Desktop";)";
           else
             OUT_DIR="${HOME}";
           fi;

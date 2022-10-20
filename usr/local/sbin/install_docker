@@ -125,7 +125,7 @@ else
       echo -e '{"credsStore":"wincred.exe"}' | jq -jS > "${HOME}/.docker/config.json";
     fi;
     #
-    # Docker service start hotfix - Apply to '/etc/profile'  (applies only to WSL 2 instances)
+    # Setup auto-start for service [ docker ]
     #
     sudo /bin/sh -c " echo 'if [ \$(/usr/sbin/service docker status 2>&1 | grep -c -i \"not running\";) -ne 0 ]; then\n  # Auto-start service [ docker ] whenever a bash terminal is opened\n  \"$(if [ -n "$(command -v wsl.exe 2>'/dev/null';)" ]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(realpath "$(wslpath -u "$(wslvar -s "windir";)";)/System32/wsl.exe";)"; fi;)\" -d \$(/usr/bin/wslpath -w / | cut -d\\\\\\ -f4;) -u root -e /usr/sbin/service docker start 1>/dev/null 2>&1;\nfi;' > '/etc/profile.d/wsl_autostart_docker.sh'"; # Apply service auto-start
   fi;

@@ -127,9 +127,7 @@ else
     #
     # Docker service start hotfix - Apply to '/etc/profile'  (applies only to WSL 2 instances)
     #
-    if [[ "$(cat '/etc/profile' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat '/etc/bash.bashrc' 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -i 'service docker status' | wc -l;)" -eq 0 ]]; then
-      sudo echo -e "\nif [[ \$(/usr/sbin/service docker status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ###\n  ###  WSL 2 Docker Service-Start Hotfix\n  ###   |--> Ensure the docker service is started whenever a WSL terminal is opened \n  ###   |--> Leverages '/etc/profile', a built-in Linux shellscript that will run when you open a new WSL terminal\n  ###  \n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service docker start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1;
-    fi;
+    sudo /bin/sh -c " echo 'if [ \$(/usr/sbin/service docker status 2>&1 | grep -c -i \"not running\";) -ne 0 ]; then\n  # Auto-start service [ docker ] whenever a bash terminal is opened\n  \"$(if [ -n "$(command -v wsl.exe 2>'/dev/null';)" ]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(realpath "$(wslpath -u "$(wslvar -s "windir";)";)/System32/wsl.exe";)"; fi;)\" -d \$(/usr/bin/wslpath -w / | cut -d\\\\\\ -f4;) -u root -e /usr/sbin/service docker start 1>/dev/null 2>&1;\nfi;' > '/etc/profile.d/wsl_autostart_docker.sh'"; # Apply service auto-start
   fi;
   # Automatically start docker daemon (service) at startup
   if [[ "$(systemctl status 1>'/dev/null' 2>&1; echo ${?};)" -eq 0 ]]; then

@@ -39,15 +39,13 @@ else
 
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
     #
-    # WSL environment detected
+    # WSL environment detected - Apply service auto-start
     #
-    # Get fullpath to wsl.exe
-    WSL_EXE="$(WIN_EXE="wsl.exe"; if [[ -n "$(command -v ${WIN_EXE} 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "${WIN_EXE}";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(realpath "$(wslpath -u "$(wslvar -s "windir";)";)/System32/${WIN_EXE}";)"; fi;)";
-    # Apply service auto-start
     echo "";
     echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
     echo "";
-    echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Auto-start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n  \"${WSL_EXE}\" -d \$(/usr/bin/wslpath -w '/' | cut -d'\' -f4;) -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${FULLPATH_SERVICE_AUTOSTART}";
+    WSL_EXE="$(WIN_EXE="wsl.exe"; if [[ -n "$(command -v ${WIN_EXE} 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "${WIN_EXE}";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(realpath "$(wslpath -u "$(wslvar -s "windir";)";)/System32/${WIN_EXE}";)"; fi;)"; # Get absolute path to wsl.exe
+    sudo /bin/sh -c " echo '\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Auto-start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n  \"${WSL_EXE}\" -d \$(/usr/bin/wslpath -w / | cut -d\\\\\\ -f4;) -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n' > '${FULLPATH_SERVICE_AUTOSTART}'"; # Apply service auto-start
   else
     #
     # Error - Non-WSL environment detected

@@ -49,7 +49,6 @@ else
     echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
     echo "";
     echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Auto-start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n  ${WSL_EXE} -d ${WSL_DISTRO_NAME} -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${FULLPATH_SERVICE_AUTOSTART}";
-    # chmod -R "0755" "${FULLPATH_SERVICE_AUTOSTART}";
   else
     #
     # Error - Non-WSL environment detected

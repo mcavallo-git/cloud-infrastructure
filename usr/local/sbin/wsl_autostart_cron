@@ -23,8 +23,6 @@ EXIT_CODE=0;
 
 SERVICE_NAME="cron";
 
-SERVICE_FILE="/etc/profile.d/wsl_autostart_cron.sh";
-
 # ------------------------------
 #
 # Script must run as root (or via sudo)
@@ -34,6 +32,7 @@ if [[ "$(id -un)" != "root" ]]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
+  SERVICE_FILE="/etc/profile.d/wsl_autostart_cron.sh";
   ACTION_DESCRIPTION="Apply auto-start for service '${SERVICE_NAME}' via file '${SERVICE_FILE}'";
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
     #

@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/hotfix_wsl_docker" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/hotfix_wsl_docker?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/hotfix_wsl_docker_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/hotfix_wsl_docker"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+# ------------------------------
+
+EXIT_CODE=0;
+
+SERVICE_NAME="docker";
+
+# ------------------------------
+#
+# Script must run as root (or via sudo)
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+else
+  ACTION_DESCRIPTION="Apply WSL 2 hotfix for Service '${SERVICE_NAME}' to '/etc/profile'";
+  if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
+    # Continue - WSL Environment detected
+    READ_TIMEOUT=60;
+    USER_RESPONSE="";
+    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; READ_EXIT_CODE=${?};
+    echo "";
+    if [[ "${READ_EXIT_CODE}" -gt 128 ]]; then
+      # Failed - User input timed out
+      echo "Error:  Response timed out after ${READ_TIMEOUT}s";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    elif [[ -z "${USER_RESPONSE}" ]]; then
+      # Denied - User input is empty
+      echo "Warning:  Denied  (empty response received)";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
+      # Denied - User input failed regex test
+      echo "Warning:  Denied  (response '${USER_RESPONSE}' received)";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+    else
+      # Confirmed - User input is non-empty & passed regex test
+      echo "Info:  Confirmed  (response '${USER_RESPONSE}' received)";
+      echo " |";
+      echo " |--> Performing action [ ${ACTION_DESCRIPTION} ]...";
+      # Apply WSL 2 service auto-start hotfix
+      if [[ "$(cat "/etc/profile" 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat "/etc/bash.bashrc" 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ### WSL 2 hotfix - Start service \"${SERVICE_NAME}\" whenever a WSL terminal is opened\n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
+    fi;
+  else
+    # Error - Non-WSL Environment detected
+    echo "";
+    echo "Error:  Non-WSL environment/OS detected";
+    echo " |";
+    echo " |--> Skipping action [ ${ACTION_DESCRIPTION} ]";
+    echo "";
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+  fi;
+fi;
+
+# ------------------------------
+
+# Exit cleanly
+exit ${EXIT_CODE:-0};
+
+# ------------------------------------------------------------

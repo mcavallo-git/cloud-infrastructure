@@ -33,9 +33,9 @@ if [[ "$(id -un)" != "root" ]]; then
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
 
-  FILEPATH_ETC_PROFILED="/etc/profile.d/wsl_autostart_${SERVICE_NAME}";
+  FULLPATH_SERVICE_AUTOSTART="/etc/profile.d/wsl_autostart_${SERVICE_NAME}";
 
-  ACTION_DESCRIPTION="Apply auto-start for service '${SERVICE_NAME}' via file '${FILEPATH_ETC_PROFILED}'";
+  ACTION_DESCRIPTION="Apply auto-start for service '${SERVICE_NAME}' via file '${FULLPATH_SERVICE_AUTOSTART}'";
 
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
     #
@@ -47,7 +47,7 @@ else
     echo "";
     echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
     echo "";
-    echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n ${WSL_EXE} -d \${WSL_DISTRO_NAME} -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${FILEPATH_ETC_PROFILED}";
+    echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n ${WSL_EXE} -d \${WSL_DISTRO_NAME} -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${FULLPATH_SERVICE_AUTOSTART}";
   else
     #
     # Error - Non-WSL environment detected

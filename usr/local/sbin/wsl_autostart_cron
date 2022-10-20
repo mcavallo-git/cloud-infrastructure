@@ -42,7 +42,7 @@ else
     # WSL environment detected
     #
     # Get fullpath to wsl.exe
-    WSL_EXE="$(if [[ -n "$(command -v wsl.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
+    WSL_EXE="$(WIN_EXE="wsl.exe"; if [[ -n "$(command -v ${WIN_EXE} 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "${WIN_EXE}";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/${WIN_EXE} -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(realpath "$(wslpath -u "$(wslvar -s "windir";)";)/System32/${WIN_EXE}";)"; fi;)";
     # Apply service auto-start
     echo "";
     echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";

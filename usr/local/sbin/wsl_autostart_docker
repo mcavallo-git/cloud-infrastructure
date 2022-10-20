@@ -1,18 +1,18 @@
 #!/bin/bash
 #
-# LOCAL_SBIN="/usr/local/sbin/hotfix_wsl_docker" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+# LOCAL_SBIN="/usr/local/sbin/wsl_autostart_docker" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/hotfix_wsl_docker?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/wsl_autostart_docker?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/hotfix_wsl_docker_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/hotfix_wsl_docker"; fi;
+LOGDIR="${HOME}/wsl_autostart_docker_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/wsl_autostart_docker"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";

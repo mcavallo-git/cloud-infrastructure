@@ -42,11 +42,13 @@ else
     # WSL environment detected
     #
     # Get fullpath to wsl.exe
+    WSL_DISTRO_NAME="${WSL_DISTRO_NAME:-$(IFS='\'; FULLPATH_ROOT_DIR=($(wslpath -w /)); echo "${FULLPATH_ROOT_DIR[${#FULLPATH_ROOT_DIR[@]}-1]}";)}";
     WSL_EXE="$(if [[ -n "$(command -v wsl.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
     # Apply service auto-start
     echo "";
     echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
     echo "";
+
     echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Auto-start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n ${WSL_EXE} -d ${WSL_DISTRO_NAME} -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${FULLPATH_SERVICE_AUTOSTART}";
     chmod -R "0755" "${FULLPATH_SERVICE_AUTOSTART}";
   else
@@ -62,9 +64,13 @@ else
   fi;
 fi;
 
-# ------------------------------
-
 # Exit cleanly
 exit ${EXIT_CODE:-0};
 
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   github.com  |  "Q: Identify distro from within distro, under WSL · Issue #4479 · microsoft/WSL · GitHub"  |  https://github.com/microsoft/WSL/issues/4479#issuecomment-876698799
+#
 # ------------------------------------------------------------

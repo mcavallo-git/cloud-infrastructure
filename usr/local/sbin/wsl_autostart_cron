@@ -23,6 +23,8 @@ EXIT_CODE=0;
 
 SERVICE_NAME="cron";
 
+SERVICE_FILE="/etc/profile.d/wsl_autostart_cron.sh";
+
 # ------------------------------
 #
 # Script must run as root (or via sudo)
@@ -32,35 +34,21 @@ if [[ "$(id -un)" != "root" ]]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
-  ACTION_DESCRIPTION="Apply WSL 2 hotfix for Service '${SERVICE_NAME}' to '/etc/profile'";
+  ACTION_DESCRIPTION="Apply auto-start for service '${SERVICE_NAME}' via file '${SERVICE_FILE}'";
   if [[ -n "$(uname -r 2>&1 | grep -i 'microsoft' 2>&1;)" ]]; then
-    # Continue - WSL Environment detected
-    READ_TIMEOUT=60;
-    USER_RESPONSE="";
-    read -p "Perform action [ ${ACTION_DESCRIPTION} ], now?  (press 'y' to confirm)  " -a USER_RESPONSE -n 1 -t ${READ_TIMEOUT} <'/dev/tty'; READ_EXIT_CODE=${?};
+    # WSL environment detected
+
+    # Get fullpath to wsl.exe
+    WSL_EXE="$(if [[ -n "$(command -v wsl.exe 2>'/dev/null';)" ]]; then echo "$(realpath "$(command -v "wsl.exe";)" 2>'/dev/null';)"; elif [[ -f "$(find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1;)" ]]; then find /mnt/*/Windows/System32/wsl.exe -mindepth 0 -maxdepth 0 -type f | head -n 1; else echo "$(wslpath -u "$(wslvar -s "ComSpec";)";)"; fi;)";
+
+    # Apply service auto-start
     echo "";
-    if [[ "${READ_EXIT_CODE}" -gt 128 ]]; then
-      # Failed - User input timed out
-      echo "Error:  Response timed out after ${READ_TIMEOUT}s";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    elif [[ -z "${USER_RESPONSE}" ]]; then
-      # Denied - User input is empty
-      echo "Warning:  Denied  (empty response received)";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    elif [[ ! "${USER_RESPONSE}" =~ ^[Yy]$ ]]; then
-      # Denied - User input failed regex test
-      echo "Warning:  Denied  (response '${USER_RESPONSE}' received)";
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
-    else
-      # Confirmed - User input is non-empty & passed regex test
-      echo "Info:  Confirmed  (response '${USER_RESPONSE}' received)";
-      echo " |";
-      echo " |--> Performing action [ ${ACTION_DESCRIPTION} ]...";
-      # Apply WSL 2 service auto-start hotfix
-      if [[ "$(cat "/etc/profile" 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat "/etc/bash.bashrc" 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat ${HOME}/.profile 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]] && [[ "$(cat ${HOME}/.bashrc 2>'/dev/null' | grep -c -i "service ${SERVICE_NAME} start";)" -eq 0 ]]; then sudo echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>'/dev/null' 2>&1; echo \${?};) -ne 0 ]]; then\n  ### WSL 2 hotfix - Start service \"${SERVICE_NAME}\" whenever a WSL terminal is opened\n  wsl.exe -d "\${WSL_DISTRO_NAME}" -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>'/dev/null' 2>&1;\nfi;\n" | sudo tee -a "/etc/profile" 1>'/dev/null' 2>&1; fi;
-    fi;
+    echo "Info:  Performing action [ ${ACTION_DESCRIPTION} ]...";
+    echo "";
+    echo -e "\nif [[ \$(/usr/sbin/service ${SERVICE_NAME} status 1>/dev/null 2>&1; echo \${?};) -ne 0 ]]; then\n  # Start service [ ${SERVICE_NAME} ] whenever a bash terminal is opened\n ${WSL_EXE} -d \${WSL_DISTRO_NAME} -u root -e /usr/sbin/service ${SERVICE_NAME} start 1>/dev/null 2>&1;\nfi;\n" > "${SERVICE_FILE}";
+
   else
-    # Error - Non-WSL Environment detected
+    # Error - Non-WSL environment detected
     echo "";
     echo "Error:  Non-WSL environment/OS detected";
     echo " |";

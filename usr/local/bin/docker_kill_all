@@ -33,7 +33,7 @@ else
 fi;
 
 
-# Prune Images
+# Docker Images - Prune (Remove) all Unused Images
 count_prunable_images=$(docker images --all --quiet | wc -l);
 count_prunable_skipOS_images=$(docker images --all | grep -v 'IMAGE' | grep -v 'centos' | grep -v  'openjdk' | grep -v  'postgres' | grep -v  'sonarqube' | awk '{print $3}' | wc -l);
 printf "[ ${count_prunable_images:-0} ] Dangling Images - ";

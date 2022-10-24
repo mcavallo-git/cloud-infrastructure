@@ -6,7 +6,7 @@
 #
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-DN="example.com"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_renew_wildcard?t=$(date +'%s.%N')" | bash -s -- "${DN}";
+DN="example.com"; curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/certbot_renew_wildcard?t=$(date +'%s.%N')" | bash -s -- "${DN}";
 
 fi;
 #
@@ -36,6 +36,6 @@ else
   #           |
   #           |--> e.g. you have to just recreate the wildcard certificate to renew it
   #
-  DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${1}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
+  DL="${HOME}"; if [ -w "/usr/local/sbin" ]; then DL="/usr/local/sbin"; fi; RUNSSL="${DL}/certbot_add_wildcard"; if [ ! -x "${RUNSSL}" ]; then wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/certbot_add_wildcard" -O "${RUNSSL}" -q; chmod 0755 "${RUNSSL}"; fi; ${RUNSSL} "${1}"; test -x /usr/local/sbin/reload_nginx && /usr/local/sbin/reload_nginx;
 fi;
 

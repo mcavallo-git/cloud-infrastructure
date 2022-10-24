@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_pihole?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_pihole?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
@@ -93,7 +93,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     # ------------------------------
 
     # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
-    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/docker-compose.pihole.yml";
+    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
     COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
     echo "";
     echo "Info:  Downloading pihole docker-compose script...";
@@ -130,7 +130,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       # Remove existing pihole dockers
       echo "";
       echo "Info:  Removing existing pihole container(s)...";
-      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
+      curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
       # docker_sniper "pihole";
 
       # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
@@ -335,7 +335,7 @@ fi;
 if [[ 0 -eq 1 ]]; then
 
   # Bash into the docker
-  docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/bin/docker_bash_X ]
+  docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/docker_bash_X ]
 
   #
   # Set pihole file permissions as-intended

@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_unifi?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_unifi?t=$(date +'%s.%N')" | bash;
 
 fi;
 #
@@ -97,8 +97,8 @@ else
         mkdir -p "/var/lib/docker-compose/unifi";
 
         echo "";
-        echo "Info:  Calling  [ curl -sL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
-        curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
+        echo "Info:  Calling  [ curl -sL \"https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/unifi/docker-compose.yml\" -o \"/var/lib/docker-compose/unifi/docker-compose.yml\"; ]...";
+        curl -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/unifi/docker-compose.yml" -o "/var/lib/docker-compose/unifi/docker-compose.yml";
 
         echo "";
         echo "Info:  Calling  [ docker-compose -f \"/var/lib/docker-compose/unifi/docker-compose.yml\" up -d; ]...";
@@ -111,7 +111,7 @@ else
 
           # Install [ latest-version'ed ] Unifi Controller via Bash convenience script
           SOURCE_URL="https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh";
-          FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/master/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
+          FALLBACK_URL="https://raw.githubusercontent.com/mcavallo-git/Coding/main/ubiquiti/convenience-scripts/unifi-controller/unifi-update.sh";
           SOURCE_URL="${FALLBACK_URL}";
           TMP_FILE="/tmp/unifi-install.sh";
           echo "";

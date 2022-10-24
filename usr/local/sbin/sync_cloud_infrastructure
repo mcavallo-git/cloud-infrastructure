@@ -6,10 +6,10 @@
 if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 
 # Option 1:  Sync basic + utility methods (only)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash;
 
 # Option 2 (--all):  Sync basic + utility + optional methods using opt-In methodology (will ask user per-module before installing them)
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/sync_cloud_infrastructure?t=$(date +'%s.%N')" | bash -s -- --all;
 
 fi;
 # ------------------------------
@@ -37,7 +37,7 @@ START_DATETIME="$(date --date="@${START_EPOCHSECONDS}" +'%Y-%m-%d %H:%M:%S';)";
 START_TIMESTAMP="$(date --date="@${START_EPOCHSECONDS}" +'%Y%m%d_%H%M%S';)";
 
 DEFAULT_GIT_SOURCE_REPO_URL="https://github.com/mcavallo-git/cloud-infrastructure.git";
-DEFAULT_GIT_SOURCE_BRANCH="master";
+DEFAULT_GIT_SOURCE_BRANCH="main";
 SYNC_CI_LOCAL="/usr/local/sbin/sync_cloud_infrastructure";
 
 WAN_TEST_FQDN="${WAN_TEST_FQDN:-www.example.com}";

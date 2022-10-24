@@ -87,10 +87,10 @@ server {
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^good-credit.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
   if ($uri ~* "^/good-credit$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/images/archive/credit-score-factors.jpg";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
 
 
@@ -212,7 +212,7 @@ server {
   #
   #                 ~ [regex match, case-sensitive]
   if ($map_uri_type ~ "^((shellscript)|(shellscript-bin)|(shellscript-sbin)|(shellscript-sync))$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master${map_uri_sh}?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main${map_uri_sh}?t=$msec";
   }
 
 
@@ -226,27 +226,27 @@ server {
   #        ~* [regex match, case-insensitive]
   location ~* "^/codesign$" {
     if ($subdomain ~* "^ps.$") {  # PowerShell code signing (nginx catch 1-of-2)
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
     }
   }
   #        ~* [regex match, case-insensitive]
   location ~* "^/ps$" {
     if ($subdomain ~* "^codesign.$") {  # PowerShell code signing (nginx catch 2-of-2)
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
     }
   }
   # Fallthrough PowerShell script/module requests
   if ($subdomain ~* "^ps.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
   }
   if ($uri ~* "^/ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
   }
   if ($subdomain ~* "^sync-ps.$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
   }
   if ($uri ~* "^/sync-ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/master/sync.ps1?t=$msec";
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
   }
 
 
@@ -257,11 +257,11 @@ server {
   location / {
     #                    ~* [regex match, case-insensitive]
     if ($http_user_agent ~* "^curl") {
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
+      return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/sync_cloud_infrastructure?t=$msec";
     }
     #                    !~* [inversed regex, case-insensitive]
     if ($http_user_agent !~* "^curl") {
-      return 302 "https://github.com/mcavallo-git/Coding/blob/master/README.md#readme";
+      return 302 "https://github.com/mcavallo-git/Coding/blob/main/README.md#readme";
     }
   }
 

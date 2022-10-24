@@ -6,7 +6,7 @@
 if [[ 0 -eq 1 ]]; then
 
 # Download & run this script on-the-fly:
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/gpg_git_config_sync?$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/gpg_git_config_sync?$(date +'%s.%N')" | bash;
 
 # Run the local copy of this script:
 bash "${USERPROFILE}\Documents\GitHub\cloud-infrastructure\usr\local\sbin\gpg_git_config_sync";
@@ -612,7 +612,7 @@ fi;
 
 ###  Download the "git_config_all" script, which will scour the current drive for all git exe's, then
 ###  perform config-updates on each exe's global & system config-files with the values given (below)
-# GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/git_config_all" && \
+# GIT_CONFIG_ALL_REPO="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/git_config_all" && \
 # GIT_CONFIG_ALL_LOCAL="${USERPROFILE}/.gpg_git/git_config_all" && \
 # mkdir -p $(dirname "${GIT_CONFIG_ALL_LOCAL}") && \
 # curl --silent --output "${GIT_CONFIG_ALL_LOCAL}" "${GIT_CONFIG_ALL_REPO}";

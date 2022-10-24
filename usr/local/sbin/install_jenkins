@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
 
-# wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_jenkins" -O "/usr/local/sbin/install_jenkins" -q && chmod 0755 "/usr/local/sbin/install_jenkins" && /usr/local/sbin/install_jenkins;
+# wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_jenkins" -O "/usr/local/sbin/install_jenkins" -q && chmod 0755 "/usr/local/sbin/install_jenkins" && /usr/local/sbin/install_jenkins;
 
 curl -sL mcavallo.com | bash; install_jenkins --force;
 
@@ -130,7 +130,7 @@ else
 
     # ------------------------------------------------------------
     # Install Java
-    wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q;
+    wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q;
     chmod 0755 "/usr/local/sbin/install_java";
     /usr/local/sbin/install_java;
 
@@ -152,7 +152,7 @@ else
 
     # ------------------------------------------------------------
     # Install Java
-    wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q;
+    wget "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_java" -O "/usr/local/sbin/install_java" -q;
     chmod 0755 "/usr/local/sbin/install_java";
     /usr/local/sbin/install_java;
 
@@ -291,7 +291,7 @@ else
     if [ ${RETURN_CODE_READ} -gt 128 ]; then
       echo -e "Response timed out after ${READ_TIMEOUT}s";
     elif [ -n "${REPLY}" ] && [[ $REPLY =~ ^[Yy]$ ]]; then
-      CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/master/etc/default/jenkins";
+      CLOUD_SYNC_URL="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/etc/default/jenkins";
       echo -e "\n""Info:  Downloading & Syncing Jenkins config from \"cloud-infrastructure\" repository";
       echo -e "  |--> Backing-up existing Jenkins config-file to \"${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak\"""\n";
       mv "${JENKINS_CONFIG_PATH}" "${JENKINS_CONFIG_PATH}.${START_TIMESTAMP}.bak";

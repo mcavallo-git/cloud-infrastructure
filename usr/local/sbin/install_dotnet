@@ -8,7 +8,7 @@ if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash;
 
 # Force Install/Reinstall
-curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash -s -- --force;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo env FORCE_INSTALL_DOTNET="true" bash;
 
 fi;
 # ------------------------------------------------------------
@@ -31,8 +31,7 @@ if [[ "$(id -un)" != "root" ]]; then
   exit 1;
 else
   # ------------------------------------------------------------
-  # echo "Args=\"$@\"";
-  if [ -n "$(command -v dotnet 2>'/dev/null';)" ] && [[ "${1}" != "--force" ]]; then
+  if [ -n "$(command -v dotnet 2>'/dev/null';)" ] && [[ "${FORCE_INSTALL_DOTNET}" != "true" ]]; then
     echo "";
     echo "Info:  dotnet already installed - listing installed SDKs...";
     dotnet --list-sdks;

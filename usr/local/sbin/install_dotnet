@@ -38,8 +38,8 @@ else
       #
 
       # MIGRATE TO MICROSOFT CONVENIENCE SCRIPT @ https://dot.net/v1/dotnet-install.sh
-      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash;  # Install latest-LTS dotnet build
-      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash -s -- -c Current;  # Install latest non-LTS dotnet build
+      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash;  # Install latest-LTS version of dotnet
+      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash -s -- -c Current;  # Install latest non-LTS version of dotnet
 
       # Get local distro's major version
       OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p';);

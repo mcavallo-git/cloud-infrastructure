@@ -3,6 +3,12 @@
 # LOCAL_SBIN="/usr/local/sbin/install_dotnet" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
 #
 # ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash;
+
+fi;
+# ------------------------------------------------------------
 #
 # Log all shell output & error output to logfile
 #

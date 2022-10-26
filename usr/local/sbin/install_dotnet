@@ -37,8 +37,9 @@ else
       # Add/update the [ Microsoft's Linux Software Repository ] onto the list of known/trusted package repos
       #
 
-      # MIGRATE TO MICROSOFT CONVENIENCE SCRIPT:
-      #   https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install
+      # MIGRATE TO MICROSOFT CONVENIENCE SCRIPT @ https://dot.net/v1/dotnet-install.sh
+      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash;  # Install latest-LTS dotnet build
+      #   curl -sL "https://dot.net/v1/dotnet-install.sh" | sudo bash -s -- -c Current;  # Install latest non-LTS dotnet build
 
       # Get local distro's major version
       OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p';);
@@ -115,8 +116,10 @@ fi;
 #
 # Citation(s)
 #
-#   docs.microsoft.com  |  "Linux Software Repository for Microsoft Products | Microsoft Docs"  |  https://docs.microsoft.com/en-us/windows-server/administration/linux-package-repository-for-microsoft-software
-#
 #   dotnet.microsoft.com  |  "Install .NET on Linux Distributions | Microsoft Docs"  |  https://docs.microsoft.com/en-us/dotnet/core/install/linux
+#
+#   learn.microsoft.com  |  "Install .NET on Linux without using a package manager - .NET | Microsoft Learn"  |  https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install
+#
+#   learn.microsoft.com  |  "Linux Software Repository for Microsoft Products | Microsoft Learn"  |  https://learn.microsoft.com/en-us/windows-server/administration/linux-package-repository-for-microsoft-software
 #
 # ------------------------------------------------------------

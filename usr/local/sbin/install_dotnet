@@ -37,6 +37,9 @@ else
       # Add/update the [ Microsoft's Linux Software Repository ] onto the list of known/trusted package repos
       #
 
+      # MIGRATE TO MICROSOFT CONVENIENCE SCRIPT:
+      #   https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install
+
       # Get local distro's major version
       OS_VERSION_MAJOR=$(cat /etc/*release | grep -i VERSION_ID | sed --regexp-extended --quiet --expression='s/^VERSION_ID="([0-9]+)\.([0-9]+)"$/\1/p';);
       # Get local distro's minor version

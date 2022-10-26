@@ -5,11 +5,9 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
 
-curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -s 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet' | sudo bash;
+curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -s 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet' | sudo bash;  # Install dotnet core (if not already installed)
 
-# Force Install/Reinstall
-sudo /bin/bash -c "export FORCE_INSTALL_DOTNET='true'; curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -s 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet' | bash;"; # Force Install/Reinstall
-
+sudo /bin/bash -c "export FORCE_INSTALL_DOTNET='true'; curl -H 'Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' -s 'https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet' | bash;"; # Force install/reinstall dotnet core
 
 fi;
 # ------------------------------------------------------------

@@ -5,10 +5,10 @@
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash;
 
 # Force Install/Reinstall
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash -s -- --force;
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_dotnet?t=$(date +'%s.%N')" | sudo bash -s -- --force;
 
 fi;
 # ------------------------------------------------------------

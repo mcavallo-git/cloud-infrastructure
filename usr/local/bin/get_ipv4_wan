@@ -58,19 +58,23 @@ IPV6_RESOLUTION_SERVER="";
 
 # Get current WAN IPv4
 for EACH_IPV4_RESOLVER in "${IPV4_RESOLVERS[@]}"; do
-  EACH_TEST_IPV4_WAN=$(curl -4 -L -s "${EACH_IPV4_RESOLVER}";);
-  if [ -z "${EACH_TEST_IPV4_WAN}" ]; then
-    IPV4_RESOLUTION_SERVER="${EACH_IPV4_RESOLVER}";
-    IPV4_WAN="${EACH_TEST_IPV4_WAN}"
+  if [ -z "${IPV4_WAN}" ]; then
+    EACH_TEST_IPV4_WAN="$(curl -4 -L -s "${EACH_IPV4_RESOLVER}";)";
+    if [ -n "${EACH_TEST_IPV4_WAN}" ]; then
+      IPV4_RESOLUTION_SERVER="${EACH_IPV4_RESOLVER}";
+      IPV4_WAN="${EACH_TEST_IPV4_WAN}";
+    fi;
   fi;
 done;
 
 # Get current WAN IPv6
 for EACH_IPV6_RESOLVER in "${IPV6_RESOLVERS[@]}"; do
-  EACH_TEST_IPV6_WAN=$(curl -6 -L -s "${EACH_IPV6_RESOLVER}";);
-  if [ -z "${EACH_TEST_IPV6_WAN}" ]; then
-    IPV6_RESOLUTION_SERVER="${EACH_IPV6_RESOLVER}";
-    IPV6_WAN="${EACH_TEST_IPV6_WAN}"
+  if [ -z "${IPV6_WAN}" ]; then
+    EACH_TEST_IPV6_WAN="$(curl -6 -L -s "${EACH_IPV6_RESOLVER}";)";
+    if [ -n "${EACH_TEST_IPV6_WAN}" ]; then
+      IPV6_RESOLUTION_SERVER="${EACH_IPV6_RESOLVER}";
+      IPV6_WAN="${EACH_TEST_IPV6_WAN}";
+    fi;
   fi;
 done;
 

@@ -26,67 +26,83 @@ fi;
 # Determine WAN IPv4
 #
 
-# REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
-
 # External servers to resolve WAN-IP through
 
 # IPv4 Resolvers
-IP_RESOLVERS+=("https://ipv4.icanhazip.com");
-IP_RESOLVERS+=("https://v4.ident.me");
-IP_RESOLVERS+=("https://ipinfo.io/ip");
-IP_RESOLVERS+=("https://ipecho.net/plain");
+IPV4_RESOLVERS+=("https://ipv4.icanhazip.com");
+IPV4_RESOLVERS+=("https://v4.ident.me");
+IPV4_RESOLVERS+=("https://ipinfo.io/ip");
+IPV4_RESOLVERS+=("https://ipecho.net/plain");
 
 # IPv6 Resolvers
-IP_RESOLVERS+=("https://ipv6.icanhazip.com");
-IP_RESOLVERS+=("https://v6.ident.me");
-IP_RESOLVERS+=("https://bot.whatismyipaddress.com");
-IP_RESOLVERS+=("https://checkip.amazonaws.com");
+IPV6_RESOLVERS+=("https://ipv6.icanhazip.com");
+IPV6_RESOLVERS+=("https://v6.ident.me");
+IPV6_RESOLVERS+=("https://bot.whatismyipaddress.com");
+IPV6_RESOLVERS+=("https://checkip.amazonaws.com");
 
-THIS_WAN_IPv4="";
-RESPONSE_SRVR="";
-LENGTH_WAN_IP=0;
+# ------------------------------
+
+EXIT_CODE=0;
+
+IPV4_WAN="";
+IPV4_RESOLUTION_SERVER="";
+
+IPV6_WAN="";
+IPV6_RESOLUTION_SERVER="";
+
+# REGEX_IPV4='(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))';
+
+# ------------------------------
 
 # Get current WAN IPv4
-for EACH_RESOLVER in "${IP_RESOLVERS[@]}"; do
-  if [ -z "${THIS_WAN_IPv4}" ] || [[ ${LENGTH_WAN_IP} -gt 15 ]]; then
-    RESPONSE_SRVR="${EACH_RESOLVER}";
-    THIS_WAN_IPv4=$(curl -L -s "${EACH_RESOLVER}");
-    LENGTH_WAN_IP=$(echo -n "${THIS_WAN_IPv4}" | wc -c);
+for EACH_IPV4_RESOLVER in "${IPV4_RESOLVERS[@]}"; do
+  EACH_TEST_IPV4_WAN=$(curl -4 -L -s "${EACH_IPV4_RESOLVER}";);
+  if [ -z "${EACH_TEST_IPV4_WAN}" ]; then
+    IPV4_RESOLUTION_SERVER="${EACH_IPV4_RESOLVER}";
+    IPV4_WAN="${EACH_TEST_IPV4_WAN}"
   fi;
 done;
 
-# Output Status: PASS or FAIL
-if [ -z "${THIS_WAN_IPv4}" ] || (( ${LENGTH_WAN_IP} > 15 )); then
-  # Error: Clear Variables
-  RESPONSE_SRVR="";
-  THIS_WAN_IPv4="";
-  LENGTH_WAN_IP="";
+# Get current WAN IPv6
+for EACH_IPV6_RESOLVER in "${IPV6_RESOLVERS[@]}"; do
+  EACH_TEST_IPV6_WAN=$(curl -6 -L -s "${EACH_IPV6_RESOLVER}";);
+  if [ -z "${EACH_TEST_IPV6_WAN}" ]; then
+    IPV6_RESOLUTION_SERVER="${EACH_IPV6_RESOLVER}";
+    IPV6_WAN="${EACH_TEST_IPV6_WAN}"
+  fi;
+done;
+
+# ------------------------------
+
+# Output Results
+if [ -z "${IPV4_WAN}" ] && [ -z "${IPV6_WAN}" ]; then
   # Error: Show Message
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Unable to resolve WAN-IP";
-  # Error: Throw 'bad' return-code
-  exit 1;
+  echo "Error:  Unable to resolve WAN IPv4/IPv6";
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
   # Success
   if [ "${1}" == "verbose" ]; then
   # "Verbose" output
     echo "";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Resolved WAN-IP to \"${THIS_WAN_IPv4}\" via \"${RESPONSE_SRVR}\" ";
+    echo "IPV4_WAN:  [ ${IPV4_WAN} ]";
+    echo "IPV6_WAN:  [ ${IPV6_WAN} ]";
+    echo "";
+    echo "IPV4_RESOLUTION_SERVER:  [ ${IPV4_RESOLUTION_SERVER} ]";
+    echo "IPV6_RESOLUTION_SERVER:  [ ${IPV6_RESOLUTION_SERVER} ]";
     echo "";
   elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]; then
     # "Quiet" output (NO trailing newline)
-    echo -n "${THIS_WAN_IPv4}";
+    echo -n "${IPV4_WAN}";
   else
     # "Normal" output (output w/ newline)
-    echo "${THIS_WAN_IPv4}";
+    echo "${IPV4_WAN}";
   fi;
-  # Exit w/ 'good' return-code
-  exit 0;
 fi;
 
-#------------------------------------------------------------
-#
-# Citation(s)
-#
-#   domain  |  "title"  |  url
-#
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
+# Exit cleanly
+
+exit ${EXIT_CODE:-0};
+
+# ------------------------------------------------------------

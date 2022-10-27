@@ -40,27 +40,27 @@ else
   # Default packages
   #
   unset APT_PACKAGES_ARR; declare -a APT_PACKAGES_ARR; # [Re-]Instantiate bash array
-  APT_PACKAGES_ARR+=("apt-rdepends");
-  APT_PACKAGES_ARR+=("bc");  # Math
+  APT_PACKAGES_ARR+=("apt-rdepends");  # Recursive package dependencies
+  APT_PACKAGES_ARR+=("apt-transport-https");  # HTTP apt download handler
+  APT_PACKAGES_ARR+=("bc");  # Precision calculator language
   APT_PACKAGES_ARR+=("certbot");  # Let's Encrypt Certificates
-  APT_PACKAGES_ARR+=("default-jdk-headless");
-  APT_PACKAGES_ARR+=("default-jre-headless");
-  APT_PACKAGES_ARR+=("dos2unix");    # CRLF -> LF
-  APT_PACKAGES_ARR+=("git");
-  APT_PACKAGES_ARR+=("ifupdown");
-  APT_PACKAGES_ARR+=("multitail");
-  APT_PACKAGES_ARR+=("nginx-full");  # NGINX
-  APT_PACKAGES_ARR+=("nmap");
-  APT_PACKAGES_ARR+=("python-certbot-nginx");  # NGINX certbot integration
+  # APT_PACKAGES_ARR+=("default-jdk-headless");  # Java JDK
+  # APT_PACKAGES_ARR+=("default-jre-headless");  # Java JRE
+  APT_PACKAGES_ARR+=("dos2unix");  # CRLF/LF File Converter
+  APT_PACKAGES_ARR+=("git");  # Git SCM
+  APT_PACKAGES_ARR+=("ifupdown");  # Includes [ ifup, ifdown, ifquery ]
+  APT_PACKAGES_ARR+=("multitail");  # Tail multiple files
+  # APT_PACKAGES_ARR+=("nginx-full");  # HTTP and reverse proxy server, mail proxy server
+  APT_PACKAGES_ARR+=("nmap");  # Network port scanner
+  # APT_PACKAGES_ARR+=("python-certbot-nginx");  # NGINX Certbot plugin
   APT_PACKAGES_ARR+=("p7zip-full");  # 7-Zip
   APT_PACKAGES_ARR+=("p7zip-rar");  # 7-Zip
-  APT_PACKAGES_ARR+=("resolvconf");
-  APT_PACKAGES_ARR+=("software-properties-common");
-  # APT_PACKAGES_ARR+=("sslscan");
-  APT_PACKAGES_ARR+=("ufw");  # Firewall
-  APT_PACKAGES_ARR+=("vim-common");  # vim exitor
+  APT_PACKAGES_ARR+=("resolvconf");  # resolvectl - domain/hostnames/ipv4/ipv6 resolver
+  APT_PACKAGES_ARR+=("software-properties-common");  # Includes [ python, python3, ca-certificates ]
+  APT_PACKAGES_ARR+=("ufw");  # Netfilter firewall
+  APT_PACKAGES_ARR+=("vim-common");  # Programmer's text editor
   APT_PACKAGES_ARR+=("wget");  # Network downloader
-  APT_PACKAGES_ARR+=("yui-compressor");  # 
+  APT_PACKAGES_ARR+=("yui-compressor");  # Javascript/CSS Minifier
 
   if [[ "${INSTALL_OPTIONAL_PACKAGES}" == "true" ]]; then
     #

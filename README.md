@@ -13,7 +13,7 @@ This file (on GitHub):
 <!-- ------------------------------------------------------------ -->
 
 <strong>Bash (Shellscript) Module Sync to [ <a href="https://github.com/mcavallo-git/cloud-infrastructure/tree/main/">mcavallo-git/cloud-infrastructure</a> ] GitHub Repo</strong>
-<details><summary><i>Show/Hide Content</i></summary>
+<details open><summary><i>Show/Hide Content</i></summary>
 	<p>
 		<ol>
 			<li>Prereq: Debian- or Fedora-based Linux environment (Ubuntu, Raspbian, CentOS, RHEL, etc.)</li>

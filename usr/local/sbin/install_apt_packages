@@ -23,31 +23,66 @@ if [[ "$(id -un)" != "root" ]]; then
 else
   # ------------------------------------------------------------
 
-  APT_PACKAGES=();
+  # Parse any non-empty inline-arguments passed to this function
+  ARGS=("$@");
+  ARGS_COUNT=${#ARGS[@]};
+  for (( i=0;i<ARGS_COUNT;i++ )); do
+    EACH_ARG=${ARGS[${i}]};
+    if [[ -n "${EACH_ARG}" ]]; then
+      if [[ "${EACH_ARG}" == "--optional" ]]; then
+        INSTALL_OPTIONAL_PACKAGES="true";
+      fi;
+    fi;
+  done;
 
-  APT_PACKAGES+=("apt-rdepends");
-  APT_PACKAGES+=("bc");
-  APT_PACKAGES+=("certbot");
-  APT_PACKAGES+=("default-jdk-headless");
-  APT_PACKAGES+=("default-jre-headless");
-  APT_PACKAGES+=("dos2unix");
-  APT_PACKAGES+=("git");
-  APT_PACKAGES+=("ifupdown");
-  APT_PACKAGES+=("multitail");
-  APT_PACKAGES+=("nginx-full");
-  APT_PACKAGES+=("nmap");
-  APT_PACKAGES+=("python-certbot-nginx");
-  APT_PACKAGES+=("p7zip-full");
-  APT_PACKAGES+=("p7zip-rar");
-  APT_PACKAGES+=("resolvconf");
-  APT_PACKAGES+=("software-properties-common");
-  # APT_PACKAGES+=("sslscan");
-  APT_PACKAGES+=("ufw");
-  APT_PACKAGES+=("vim-common");
-  APT_PACKAGES+=("wget");
-  APT_PACKAGES+=("yui-compressor");
+  # ------------------------------------------------------------
+  #
+  # Default packages
+  #
+  unset APT_PACKAGES_ARR; declare -a APT_PACKAGES_ARR; # [Re-]Instantiate bash array
+  APT_PACKAGES_ARR+=("apt-rdepends");
+  APT_PACKAGES_ARR+=("bc");  # Math
+  APT_PACKAGES_ARR+=("certbot");  # Let's Encrypt Certificates
+  APT_PACKAGES_ARR+=("default-jdk-headless");
+  APT_PACKAGES_ARR+=("default-jre-headless");
+  APT_PACKAGES_ARR+=("dos2unix");    # CRLF -> LF
+  APT_PACKAGES_ARR+=("git");
+  APT_PACKAGES_ARR+=("ifupdown");
+  APT_PACKAGES_ARR+=("multitail");
+  APT_PACKAGES_ARR+=("nginx-full");  # NGINX
+  APT_PACKAGES_ARR+=("nmap");
+  APT_PACKAGES_ARR+=("python-certbot-nginx");  # NGINX certbot integration
+  APT_PACKAGES_ARR+=("p7zip-full");  # 7-Zip
+  APT_PACKAGES_ARR+=("p7zip-rar");  # 7-Zip
+  APT_PACKAGES_ARR+=("resolvconf");
+  APT_PACKAGES_ARR+=("software-properties-common");
+  # APT_PACKAGES_ARR+=("sslscan");
+  APT_PACKAGES_ARR+=("ufw");  # Firewall
+  APT_PACKAGES_ARR+=("vim-common");  # vim exitor
+  APT_PACKAGES_ARR+=("wget");  # Network downloader
+  APT_PACKAGES_ARR+=("yui-compressor");  # 
 
-  UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
+  if [[ "${INSTALL_OPTIONAL_PACKAGES}" == "true" ]]; then
+    #
+    # Optional packages
+    #
+    APT_PACKAGES_ARR+=("python-pip");  # Python
+    APT_PACKAGES_ARR+=("docker");  # Docker
+    APT_PACKAGES_ARR+=("docker-compose");  # Docker
+    # APT_PACKAGES_ARR+=("jenkins");  # CI/CD
+    APT_PACKAGES_ARR+=("mysql-client");  # MySQL
+    APT_PACKAGES_ARR+=("mysql-server");  # MySQL
+    APT_PACKAGES_ARR+=("mysqldump");  # MySQL
+    APT_PACKAGES_ARR+=("sendmail");  # SMTP
+    APT_PACKAGES_ARR+=("nodejs");  # Node.JS
+    APT_PACKAGES_ARR+=("ws");  # Node.JS Websockets
+    APT_PACKAGES_ARR+=("socket.io");  # Node.JS Websockets Assist
+    APT_PACKAGES_ARR+=("npm");  # Node.JS
+  fi;
+
+  # ------------------------------------------------------------
+
+  UNIQUE_APT_PACKAGES=($(echo "${APT_PACKAGES_ARR[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ';));
   for EACH_PKG in "${UNIQUE_APT_PACKAGES[@]}"; do
     ALREADY_INSTALLED=$(echo "$(apt list --installed 2>'/dev/null';)" | grep -h "^${EACH_PKG}\/" | wc -l);
     if [ "${ALREADY_INSTALLED}" != "0" ]; then
@@ -73,28 +108,5 @@ else
     fi;
   done;
 
-  OPTIONAL_PACKAGES=();
-
-  # Containers
-  OPTIONAL_PACKAGES+=("python-pip");
-  OPTIONAL_PACKAGES+=("docker");
-  OPTIONAL_PACKAGES+=("docker-compose");
-
-  # CD-CD
-  OPTIONAL_PACKAGES+=("jenkins");
-
-  # Database
-  OPTIONAL_PACKAGES+=("mysql-client");
-  OPTIONAL_PACKAGES+=("mysql-server");
-  OPTIONAL_PACKAGES+=("mysqldump");
-
-  # SMTP
-  OPTIONAL_PACKAGES+=("sendmail");
-
-  # Node
-  OPTIONAL_PACKAGES+=("nodejs");
-  OPTIONAL_PACKAGES+=("ws"); # Websockets (for NodeJS)
-  OPTIONAL_PACKAGES+=("socket.io"); # Websockets Assist (for Node.JS)
-  OPTIONAL_PACKAGES+=("npm");
-
+  # ------------------------------------------------------------
 fi;

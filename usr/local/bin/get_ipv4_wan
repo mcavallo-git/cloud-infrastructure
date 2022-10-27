@@ -29,12 +29,14 @@ fi;
 # External servers to resolve WAN-IP through
 
 # IPv4 Resolvers
+unset IPV4_RESOLVERS; declare -a IPV4_RESOLVERS; # [Re-]Instantiate bash array
 IPV4_RESOLVERS+=("https://ipv4.icanhazip.com");
 IPV4_RESOLVERS+=("https://v4.ident.me");
 IPV4_RESOLVERS+=("https://ipinfo.io/ip");
 IPV4_RESOLVERS+=("https://ipecho.net/plain");
 
 # IPv6 Resolvers
+unset IPV6_RESOLVERS; declare -a IPV6_RESOLVERS; # [Re-]Instantiate bash array
 IPV6_RESOLVERS+=("https://ipv6.icanhazip.com");
 IPV6_RESOLVERS+=("https://v6.ident.me");
 IPV6_RESOLVERS+=("https://bot.whatismyipaddress.com");

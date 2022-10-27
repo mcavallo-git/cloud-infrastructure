@@ -6,10 +6,7 @@ This file (on GitHub):
 
 --- ------------------------------------------------------------- -->
 
-<h3 id="cloud-infrastructure">
-  Cloud Infrastructure<br />
-  &nbsp;&nbsp;&nbsp;&nbsp;<sub>↳ <p id="readme">Shellscripts to enhance backend auditing & versatility</p></sub>
-</h3>
+<h1 id="cloud-infrastructure">Cloud Infrastructure</h1>
 
 <hr />
 

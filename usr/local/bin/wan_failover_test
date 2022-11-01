@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/wan_failover_test" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/wan_failover_test?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/wan_failover_test_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/wan_failover_test"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+
+fi;
+
+# ------------------------------
+
+for i in {1..100000}; do
+  curl -sL -4 "https://ipinfo.io" 2>'/dev/null' \
+  | jq \
+    --compact-output \
+    --sort-keys \
+    --arg i "${i}" \
+    --arg date "$(date +'%Y-%m-%d';)" \
+    --arg time "$(date +'%H:%M:%S';).$(date +'%N' | cut -c1-3;)" \
+    '{ip:.ip,org:.org} | ."_date" = $date | ."_time" = $time | ."__i" = $i' \
+  ;
+done;
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   askubuntu.com  |  "How can I find my Internet Service Provider (ISP) using a bash script? - Ask Ubuntu"  |  https://askubuntu.com/a/958364
+#
+# ------------------------------------------------------------

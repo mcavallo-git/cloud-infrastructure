@@ -25,18 +25,31 @@ fi;
 # ------------------------------
 
 # Get WAN (outgoing) info
-WAN_INFO="$(curl -sL -4 "https://ipinfo.io" 2>'/dev/null' | jq 2>'/dev/null';)";
+WAN_FULL_INFO="$(curl -sL -4 "https://ipinfo.io" 2>'/dev/null' | jq 2>'/dev/null';)";
+
+# Get individual components (keep for one-off reference)
+if [[ 0 -eq 1 ]]; then
+  WAN_IP="$(curl -sL -4 "https://ipinfo.io/ip" 2>'/dev/null';)";  echo "WAN_IP=[ ${WAN_IP} ]";
+  WAN_HOSTNAME="$(curl -sL -4 "https://ipinfo.io/hostname" 2>'/dev/null';)";  echo "WAN_HOSTNAME=[ ${WAN_HOSTNAME} ]";
+  WAN_CITY="$(curl -sL -4 "https://ipinfo.io/city" 2>'/dev/null';)";  echo "WAN_CITY=[ ${WAN_CITY} ]";
+  WAN_REGION="$(curl -sL -4 "https://ipinfo.io/region" 2>'/dev/null';)";  echo "WAN_REGION=[ ${WAN_REGION} ]";
+  WAN_COUNTRY="$(curl -sL -4 "https://ipinfo.io/country" 2>'/dev/null';)";  echo "WAN_COUNTRY=[ ${WAN_COUNTRY} ]";
+  WAN_LOC="$(curl -sL -4 "https://ipinfo.io/loc" 2>'/dev/null';)";  echo "WAN_LOC=[ ${WAN_LOC} ]";
+  WAN_ORG="$(curl -sL -4 "https://ipinfo.io/org" 2>'/dev/null';)";  echo "WAN_ORG=[ ${WAN_ORG} ]";
+  WAN_POSTAL="$(curl -sL -4 "https://ipinfo.io/postal" 2>'/dev/null';)";  echo "WAN_POSTAL=[ ${WAN_POSTAL} ]";
+  WAN_TIMEZONE="$(curl -sL -4 "https://ipinfo.io/timezone" 2>'/dev/null';)";  echo "WAN_TIMEZONE=[ ${WAN_TIMEZONE} ]";
+fi;
 
 # ------------------------------
 
 # Output Results
-if [ -z "${WAN_INFO}" ]; then
+if [ -z "${WAN_FULL_INFO}" ]; then
   # Error: Show Message
   echo "Error:  Unable to get WAN network info";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 else
   # Success
-  echo "${WAN_INFO}" | jq;
+  echo "${WAN_FULL_INFO}" | jq;
 fi;
 
 # ------------------------------------------------------------

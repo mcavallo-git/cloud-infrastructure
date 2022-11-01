@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/get_wan_info" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/get_wan_info?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+
+if [ -n "$1" ] && [[ "$1" == *"log"* ]]; then # log this script's output
+
+LOGDIR="${HOME}/get_wan_info_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/get_wan_info"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+
+fi;
+
+# ------------------------------
+
+# Get WAN (outgoing) info
+WAN_INFO="$(curl -sL -4 "https://ipinfo.io" 2>'/dev/null' | jq 2>'/dev/null';)";
+
+# ------------------------------
+
+# Output Results
+if [ -z "${WAN_INFO}" ]; then
+  # Error: Show Message
+  echo "Error:  Unable to get WAN network info";
+  EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
+else
+  # Success
+  echo "${WAN_INFO}" | jq;
+fi;
+
+# ------------------------------------------------------------
+
+# Exit cleanly
+
+exit ${EXIT_CODE:-0};
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   askubuntu.com  |  "How can I find my Internet Service Provider (ISP) using a bash script? - Ask Ubuntu"  |  https://askubuntu.com/a/958364
+#
+# ------------------------------------------------------------

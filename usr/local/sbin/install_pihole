@@ -27,7 +27,7 @@ exec 2>&1;
 # Free-up port 53 by stopping service [ systemd-resolved ] from listening on it
 #  |
 #  |--> Update "/etc/systemd/resolved.conf"
-#  |     |--> Uncomment "DNS=" line and set to "DNS=8.8.4.4"
+#  |     |--> Uncomment "DNS=" line and set to "DNS=8.8.8.8"
 #  |     |--> Uncomment "FallbackDNS=" line and set to "FallbackDNS=1.1.1.1"
 #  |     |--> Uncomment "DNSStubListener=" line and set to "DNSStubListener=no"
 #  |
@@ -102,7 +102,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
 
     # ------------------------------
 
-    STOPGAP_DNS_SERVER="8.8.4.4";
+    STOPGAP_DNS_SERVER="8.8.8.8";
     RESOLV_CONF_REMOVE_STOPGAP=0;
 
     # If any pihole containers are already running locally

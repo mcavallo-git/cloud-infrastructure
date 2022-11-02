@@ -24,19 +24,33 @@ fi;
 
 # ------------------------------
 #
-# Run a loop which polls for the WAN IPv4 Address and ISP Name, and append on the current date, time, and iteration loop
+# Run a loop which polls for the WAN IP address, ISP name & the current date/time - only report it when the WAN IP / ISP Name changes
 #
 
 for i in {1..100000}; do
-  curl -sL -4 "https://ipinfo.io" 2>'/dev/null' \
-  | jq \
-    --compact-output \
-    --sort-keys \
-    --arg i "${i}" \
-    --arg date "$(date +'%Y-%m-%d';)" \
-    --arg time "$(date +'%H:%M:%S';).$(date +'%N' | cut -c1-3;)" \
-    '{ip:.ip,org:.org} | ."_date" = $date | ."_time" = $time | ."__i" = $i' \
-  ;
+  WAN_FULL_INFO="$(curl -sL -4 "https://ipinfo.io" 2>'/dev/null' | jq 2>'/dev/null';)";
+  WAN_IP="$(echo "${WAN_FULL_INFO}" | jq -r '.ip' 2>'/dev/null';)";
+  WAN_ORG="$(echo "${WAN_FULL_INFO}" | jq -r '.org' 2>'/dev/null';)";
+  if [[ "${WAN_IP}" != "${LAST_WAN_IP}" ]] || [[ "${WAN_ORG}" != "${LAST_WAN_ORG}" ]]; then
+    echo "";
+    echo "{}" | jq \
+      --compact-output \
+      --sort-keys \
+      --arg i "${i}" \
+      --arg ip "${WAN_IP}" \
+      --arg org "${WAN_ORG}" \
+      --arg _date "$(date +'%Y-%m-%d';)" \
+      --arg _time "$(date +'%H:%M:%S';).$(date +'%N' | cut -c1-3;)" \
+      '."_date" = $_date | ."_time" = $_time | ."ip" = $ip | ."org" = $org' \
+    ;
+    WAITING_REPORTED="false";
+  elif [[ "${WAITING_REPORTED}" != "true" ]]; then
+    echo "";
+    echo "Waiting for an update to WAN IP Address / ISP Name...";
+    WAITING_REPORTED="true";
+  fi;
+  LAST_WAN_IP="${WAN_IP}";
+  LAST_WAN_ORG="${WAN_ORG}";
   sleep 0.15 2>'/dev/null';
 done;
 

@@ -24,7 +24,7 @@ fi;
 
 # ------------------------------
 #
-# Run a loop which polls for the WAN IP address, ISP name & the current date/time - only report it when the WAN IP / ISP Name changes
+# Run a loop which polls for the WAN IP, ISP name & the current date/time - only report it when the WAN IP / ISP Name changes
 #
 
 for i in {1..100000}; do
@@ -46,7 +46,7 @@ for i in {1..100000}; do
     WAITING_REPORTED="false";
   elif [[ "${WAITING_REPORTED}" != "true" ]]; then
     echo "";
-    echo "Waiting for an update to WAN IP Address / ISP Name...";
+    echo "Waiting for an update to WAN IP / ISP Name...";
     WAITING_REPORTED="true";
   fi;
   LAST_WAN_IP="${WAN_IP}";

@@ -85,28 +85,22 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
 
     # ------------------------------
 
-    # Set the working directory
-    echo "";
-    echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
-    cd "${CONFIG_DIR}";
-
-    # ------------------------------
-
-    # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
-    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
-    COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
-    echo "";
-    echo "Info:  Downloading pihole docker-compose script...";
-    curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
-    chmod 0600 "${COMPOSE_FILE}";
-
-    # ------------------------------
-
     STOPGAP_DNS_SERVER="8.8.8.8";
+
     RESOLV_CONF_REMOVE_STOPGAP=0;
 
-    # If any pihole containers are already running locally
+    PIHOLE_ALREADY_EXISTS=0;
     if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
+      PIHOLE_ALREADY_EXISTS=1;
+    fi;
+
+    WAN_CONNECTION_EXISTS="$(dig +timeout=1 +short "example.com" 2>'/dev/null' | grep -v "^$" | grep -v "^;;"| wc -l;)";
+
+    # ------------------------------
+
+    # Pihole docker already running
+    if [[ "${PIHOLE_ALREADY_EXISTS}" -eq 1 ]]; then
+      PIHOLE_ALREADY_EXISTS=1;
       # At least one pihole container already exists
       echo "";
       echo "Info:  At least one pihole container already exists";
@@ -114,6 +108,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       echo "";
       echo "Info:  Getting version from pihole container...";
       docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
+    fi;
+
+    # Add DNS server to /etc/resolv.conf
+    if [[ "${PIHOLE_ALREADY_EXISTS}" -eq 1 ]] || [[ "${WAN_CONNECTION_EXISTS}" -eq 0 ]]; then
       if [[ $(sed -rne "s/^# (nameserver ${STOPGAP_DNS_SERVER})$/\0/p" "/etc/resolv.conf" | wc -l 2>'/dev/null';) -gt 0 ]]; then
         # Add stopgap DNS to local DNS resolvers before removing current pihole container (and ruining loopback DNS resolution, if active)
         echo "";
@@ -126,13 +124,13 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
         echo "Info:  Found DNS server \"${STOPGAP_DNS_SERVER}\" amongst local nameservers (will be removed after pi-hole container is spun up)";
         RESOLV_CONF_REMOVE_STOPGAP=1;
       fi;
+    fi;
 
-      # Remove existing pihole dockers
+    # Remove existing pihole docker(s)
+    if [[ "${PIHOLE_ALREADY_EXISTS}" -eq 1 ]]; then
       echo "";
       echo "Info:  Removing existing pihole container(s)...";
       curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/docker_sniper?t=$(date +'%s.%N')" | bash -s -- "pihole";
-      # docker_sniper "pihole";
-
       # Wait for local DNS resolution to recognize and update itself around the pihole DNS server going AWOL
       echo "";
       echo "Info:  Sleeping for 30 seconds (to allow network resolution changes to propogate)...";
@@ -140,22 +138,37 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     fi;
 
     # ------------------------------
+
+    # Set the working directory
+    echo "";
+    echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
+    cd "${CONFIG_DIR}";
+
+    # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
+    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
+    COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
+    echo "";
+    echo "Info:  Downloading pihole docker-compose script...";
+    curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
+    chmod 0600 "${COMPOSE_FILE}";
+
     # Spin up the pihole docker container
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
     docker-compose up --detach;
 
+    # Remove DNS server from /etc/resolv.conf (only if it was added earlier)
+    if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then
+      echo "";
+      echo "Info:  As pihole being offline may cause network name resolution failure, the stopgap DNS server \"${STOPGAP_DNS_SERVER}\" has been left in local DNS resolvers";
+      echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove (comment-out) the local DNS server entry via:  [ sed -re 's/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/' -i \"/etc/resolv.conf\"; ]";
+    fi;
+
     # Verify that the docker container was created as-intended
     if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
-
-      if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then
-        echo "";
-        echo "Info:  As pihole being offline may cause network name resolution failure, the stopgap DNS server \"${STOPGAP_DNS_SERVER}\" has been left in local DNS resolvers";
-        echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove (comment-out) the local DNS server entry via:  [ sed -re 's/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/' -i \"/etc/resolv.conf\"; ]";
-      fi;
 
       echo "";
       echo "Error:  Pi-hole docker not found";

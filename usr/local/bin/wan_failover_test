@@ -23,6 +23,9 @@ exec 2>&1;
 fi;
 
 # ------------------------------
+#
+# Run a loop which polls for the WAN IPv4 Address and ISP Name, and append on the current date, time, and iteration loop
+#
 
 for i in {1..100000}; do
   curl -sL -4 "https://ipinfo.io" 2>'/dev/null' \

@@ -34,6 +34,7 @@ for i in {1..100000}; do
     --arg time "$(date +'%H:%M:%S';).$(date +'%N' | cut -c1-3;)" \
     '{ip:.ip,org:.org} | ."_date" = $date | ."_time" = $time | ."__i" = $i' \
   ;
+  sleep 0.15 2>'/dev/null';
 done;
 
 # ------------------------------------------------------------

@@ -21,7 +21,7 @@ MINIMUM_FULLPATH_LENGTH="${2:-${MINIMUM_FULLPATH_LENGTH:-150}}";
 # Find the longest filenames within target directory
 echo "------------------------------";
 echo "";
-echo "Searching directory [ ${SEARCH_DIRECTORY} ] for fullpaths with greater than or equal to [ ${MINIMUM_FULLPATH_LENGTH} ] characters...";
+echo "Searching directory [ ${SEARCH_DIRECTORY} ] for fullpaths >= ${MINIMUM_FULLPATH_LENGTH} characters in length...";
 echo "";
 
 if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then

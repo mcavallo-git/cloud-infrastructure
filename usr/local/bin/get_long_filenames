@@ -16,7 +16,7 @@ echo "";
 echo "Searching directory [ ${SEARCH_DIRECTORY} ] for long filenames...";
 echo "";
 
-HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; ;)"; \
+HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
 echo "${HARDWARE_FULLPATHS}" | awk '{ print length, $0 }' | sort -n -s | tail -n "${RESULTS_SHOWN}";
 
 echo "";

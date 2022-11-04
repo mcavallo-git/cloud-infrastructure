@@ -5,7 +5,7 @@
 # ------------------------------------------------------------
 
 # Allow inline argument #1 to specify the path to be searched
-SEARCH_DIRECTORY="$(realpath "${1:-${REPOS_DIR:-$(pwd)}}";)";
+SEARCH_DIRECTORY="$(realpath "${1:-${SEARCH_DIRECTORY:-$(pwd)}}";)";
 
 # Limit results shown to a default value of results
 RESULTS_SHOWN="${2:-${RESULTS_SHOWN:-50}}";

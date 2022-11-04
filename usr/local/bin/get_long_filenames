@@ -2,6 +2,14 @@
 #
 # LOCAL_BIN="/usr/local/bin/get_long_filenames" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
 #
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
+
+curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -ssL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/get_long_filenames?t=$(date +'%s.%N')" | bash -s -- "${REPOS_DIR}";
+
+
+fi;
 # ------------------------------------------------------------
 
 # Allow inline argument #1 to specify the path to be searched
@@ -18,12 +26,12 @@ echo "";
 
 if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
   # Running on a WSL Linux distro, convert filepaths to Windows filepaths
-  HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
+  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
 else
   # Running on a Non-WSL Linux distro, keep filepaths in Linux filepath syntax
-  HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec realpath "{}" \; 2>'/dev/null';)";
+  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -exec realpath "{}" \; 2>'/dev/null';)";
 fi;
-echo "${HARDWARE_FULLPATHS}" | awk '{ print length, $0 }' | sort -n -s | tail -n "${RESULTS_SHOWN}";
+echo "${FULLPATHS_SORTED}" | awk '{ print length, $0 }' | sort -n -s | tail -n "${RESULTS_SHOWN}";
 
 echo "";
 echo "------------------------------";

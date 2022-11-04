@@ -19,11 +19,7 @@ SEARCH_DIRECTORY="$(realpath "${1:-${SEARCH_DIRECTORY:-$(pwd)}}";)";
 MINIMUM_FULLPATH_LENGTH="${2:-${MINIMUM_FULLPATH_LENGTH:-150}}";
 
 # Find the longest filenames within target directory
-echo "------------------------------";
-echo "";
-echo "Searching directory [ ${SEARCH_DIRECTORY} ] for fullpaths >= ${MINIMUM_FULLPATH_LENGTH} characters in length...";
-echo "";
-
+# echo "Searching directory [ ${SEARCH_DIRECTORY} ] for fullpaths >= ${MINIMUM_FULLPATH_LENGTH} characters in length...";
 if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
   # Running on a WSL Linux distro, convert filepaths to Windows filepaths
   FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -type f -exec wslpath -w "{}" \; 2>'/dev/null';)";
@@ -32,9 +28,6 @@ else
   FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -type f -exec realpath "{}" \; 2>'/dev/null';)";
 fi;
 echo "${FULLPATHS_SORTED}" | awk "(length >= ${MINIMUM_FULLPATH_LENGTH}){print length, \$0}" | sort -n -s;
-
-echo "";
-echo "------------------------------";
 
 
 # ------------------------------------------------------------

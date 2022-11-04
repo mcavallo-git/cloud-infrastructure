@@ -16,7 +16,13 @@ echo "";
 echo "Searching directory [ ${SEARCH_DIRECTORY} ] for long filenames...";
 echo "";
 
-HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
+if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
+  # Running on a WSL Linux distro, convert filepaths to Windows filepaths
+  HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
+else
+  # Running on a Non-WSL Linux distro, keep filepaths in Linux filepath syntax
+  HARDWARE_FULLPATHS="$(find "${SEARCH_DIRECTORY}/" -exec realpath "{}" \; 2>'/dev/null';)";
+fi;
 echo "${HARDWARE_FULLPATHS}" | awk '{ print length, $0 }' | sort -n -s | tail -n "${RESULTS_SHOWN}";
 
 echo "";

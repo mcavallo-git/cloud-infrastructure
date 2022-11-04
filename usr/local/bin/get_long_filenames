@@ -15,26 +15,34 @@ fi;
 # Allow inline argument #1 to specify the path to be searched
 SEARCH_DIRECTORY="$(realpath "${1:-${SEARCH_DIRECTORY:-$(pwd)}}";)";
 
-# Limit results shown to a default value of results
-RESULTS_SHOWN="${2:-${RESULTS_SHOWN:-50}}";
+# Limit results by requiring a minimum fullpath length of X characters
+MINIMUM_FULLPATH_LENGTH="${2:-${MINIMUM_FULLPATH_LENGTH:-150}}";
 
 # Find the longest filenames within target directory
 echo "------------------------------";
 echo "";
-echo "Searching directory [ ${SEARCH_DIRECTORY} ] for long filenames...";
+echo "Searching directory [ ${SEARCH_DIRECTORY} ] for files with fullpaths >= [ ${MINIMUM_FULLPATH_LENGTH} ] characters...";
 echo "";
 
 if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]]; then
   # Running on a WSL Linux distro, convert filepaths to Windows filepaths
-  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -exec wslpath -w "{}" \; 2>'/dev/null';)";
+  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -type f -exec wslpath -w "{}" \; 2>'/dev/null';)";
 else
   # Running on a Non-WSL Linux distro, keep filepaths in Linux filepath syntax
-  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -exec realpath "{}" \; 2>'/dev/null';)";
+  FULLPATHS_SORTED="$(find "${SEARCH_DIRECTORY}/" -type f -exec realpath "{}" \; 2>'/dev/null';)";
 fi;
-echo "${FULLPATHS_SORTED}" | awk '{ print length, $0 }' | sort -n -s | tail -n "${RESULTS_SHOWN}";
+echo "${FULLPATHS_SORTED}" | awk "(length >= ${MINIMUM_FULLPATH_LENGTH}){print length, \$0}" | sort -n -s;
 
 echo "";
 echo "------------------------------";
 
 
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   stackoverflow.com  |  "awk partly string match (if column/word partly matches) - Stack Overflow"  |  https://stackoverflow.com/a/17001897
+#
+#   unix.stackexchange.com  |  "bash - Filter and save in-place, lines with value less than or equal <= X in a specific column and with header - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/392316
+#
 # ------------------------------------------------------------

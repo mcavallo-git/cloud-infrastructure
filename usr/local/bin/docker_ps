@@ -29,11 +29,10 @@ exit 0;
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
 # ------------------------------------------------------------
 
-
-# Show disk sizes of all containers
+# Show disk sizes for all containers
 docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Size}}\t{{.Status}}";
 
-# Show disk sizes of all containers
+# Show source images for all containers
 docker ps -a --format "table {{.Image}}\t{{.Names}}\t{{.Size}}";
 
 

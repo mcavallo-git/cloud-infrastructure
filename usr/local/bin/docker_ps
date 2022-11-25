@@ -5,7 +5,7 @@
 #
 PS_DASHES="-------------------------------------------------";
 if [[ -z "${1}" ]]; then
-PS_FORMAT="table {{.Image}}\t{{.Ports}}\t{{.Names}}";
+PS_FORMAT="table {{.ID}}\t{{.Names}}\t{{.Size}}\t{{.Status}}";
 APPEND="";
 else
 PS_FORMAT=""\
@@ -16,6 +16,7 @@ PS_FORMAT=""\
 "\n          Size:      {{.Size}}"\
 "\n          Ports:     {{.Ports}}"\
 "\n          Command:   {{.Command}}"\
+"\n          Status:    {{.Status}}"\
 "\n          Created:   {{.RunningFor}} on {{.CreatedAt}}"\
 "";
 APPEND="\n${PS_DASHES}\n\n";
@@ -27,17 +28,25 @@ exit 0;
 
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
 # ------------------------------------------------------------
+
+
+# Show disk sizes of all containers
+docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Size}}\t{{.Status}}";
+
+# Show disk sizes of all containers
+docker ps -a --format "table {{.Image}}\t{{.Names}}\t{{.Size}}";
+
+
+# ------------------------------
 #
-# DISPLAY/LOG FORMAT
-#   SHOW RESULTS AS A TABLE (WITH COLUMN HEADERS)
+# Format output as a table (for general ad-hoc troubleshooting/inspection)
 #
-PS_FORMAT="{{.ID}}" && docker ps --format "table ${PS_FORMAT}";
+docker ps --format "table {{.ID}}";
 
 #
-# FOREACH-PROCESSING FORMAT
-#   SHOW RESULTS AS ROWS (for storing into a variable and walking-through with a for-each loop)
+# Format output as a list (for automation, e.g. storing list output into a variable and/or walking through it a for-each loop)
 #
-PS_FORMAT="{{.ID}}" && docker ps --format "${PS_FORMAT}";
+docker ps --format "{{.ID}}";
 
 
 # ------------------------------------------------------------

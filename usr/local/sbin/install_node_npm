@@ -36,16 +36,24 @@ else
   DASH_NL="------------------------------------------------------------\n";
 
   # Install Linux packages node (Node.JS) & npm (Node Package Manager)
-  if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
-    echo -e "${DASH_NL}Running Node.JS convenience script (to obtain package repository details & add it to the keyring)...";
-    curl -fsSL "https://deb.nodesource.com/setup_${NODE_JS_INSTALL_VERSION}.x" | bash -;
-    echo -e "\nInstalling nodejs & npm...";
-    apt-get -y update;
-    apt-get -y install "nodejs";
-    # apt-get -y install "npm";  # Included in 'nodejs' install from source
-  else
-    echo -e "${DASH_NL}Skipped nodejs install - Command 'node' already exists locally";
-    echo -e "\nSkipped npm install - Command 'npm' already exists locally";
+  if [ -z "$(command -v apk;)" ]; then
+    # Alpine Linux Distros
+    if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
+      apk add --update nodejs npm;
+    fi;
+  elif [ -z "$(command -v apt;)" ]; then
+    # Debian Linux Distros
+    if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
+      echo -e "${DASH_NL}Running Node.JS convenience script (to obtain package repository details & add it to the keyring)...";
+      curl -fsSL "https://deb.nodesource.com/setup_${NODE_JS_INSTALL_VERSION}.x" | bash -;
+      echo -e "\nInstalling nodejs & npm...";
+      apt-get -y update;
+      apt-get -y install "nodejs";
+      # apt-get -y install "npm";  # Included in 'nodejs' install from source
+    else
+      echo -e "${DASH_NL}Skipped nodejs install - Command 'node' already exists locally";
+      echo -e "\nSkipped npm install - Command 'npm' already exists locally";
+    fi;
   fi;
   
   echo -e "${DASH_NL}Getting version of 'node' running locally:  $(node --version;)";
@@ -85,6 +93,8 @@ fi;
 #   github.com  |  "distributions/README.md at master · nodesource/distributions · GitHub"  |  https://github.com/nodesource/distributions/blob/master/README.md
 #
 #   github.com  |  "npm install --prefix: still available? · Issue #11007 · npm/npm · GitHub"  |  https://github.com/npm/npm/issues/11007#issuecomment-246246764
+#
+#   superuser.com  |  "How to install npm in alpine linux - Super User"  |  https://superuser.com/a/1424979
 #
 #   www.npmjs.com  |  "https://www.npmjs.com/package/n"  |  https://www.npmjs.com/package/n
 #

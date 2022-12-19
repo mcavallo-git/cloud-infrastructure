@@ -15,9 +15,14 @@ server {
   ssl_certificate "/etc/letsencrypt/live/curl.rest/fullchain.pem";
   ssl_certificate_key "/etc/letsencrypt/live/curl.rest/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/curl.rest/chain.pem";
+  # ------------------------------
+  location ~* "(^/(bin|sbin))" {
+    return 302 https://sh.mcavallo.com/usr/local${request_uri};
+  }
   location / {
     return 302 https://sh.mcavallo.com${request_uri};
   }
+  # ------------------------------
   include "/etc/nginx/nginx_error_locations.conf";
 }
 

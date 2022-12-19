@@ -30,7 +30,7 @@ server {
     proxy_pass https://sh.mcavallo.com/usr/local/sbin${request_uri};
   }
   location @forward {
-    return 302 https://sh.mcavallo.com${request_uri};
+    proxy_pass https://sh.mcavallo.com${request_uri};
   }
   location / {
     return 302 https://sh.mcavallo.com${request_uri};

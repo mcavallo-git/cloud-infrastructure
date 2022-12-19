@@ -77,10 +77,10 @@ server {
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^git.$") {
-    return 302 "https://github.com/mcavallo-git/repositories";
+    return 302 "https://github.com/mcavallo-git?tab=repositories";
   }
   if ($uri ~* "^/git$") {
-    return 302 "https://github.com/mcavallo-git/repositories";
+    return 302 "https://github.com/mcavallo-git?tab=repositories";
   }
 
 
@@ -153,10 +153,10 @@ server {
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
   if ($subdomain ~* "^repos.$") {
-    return 302 "https://github.com/mcavallo-git/repositories";
+    return 302 "https://github.com/mcavallo-git?tab=repositories";
   }
   if ($uri ~* "^/repos$") {
-    return 302 "https://github.com/mcavallo-git/repositories";
+    return 302 "https://github.com/mcavallo-git?tab=repositories";
   }
 
 

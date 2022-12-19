@@ -22,7 +22,7 @@ server {
   include "/etc/nginx/nginx_error_locations.conf";
   access_log "/var/log/nginx/access_mcavallo.com.log" excessive;
 
-  if ($scheme != "https") {
+  if (${scheme} != "https") {
     return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
   }
 

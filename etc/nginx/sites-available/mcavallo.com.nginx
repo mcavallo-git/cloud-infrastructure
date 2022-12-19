@@ -37,7 +37,7 @@ server {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
   if ($map_subdomain_uri ~* "^(meta){1,2}$") {
-    try_files "/etc/whitelist.d/meta.json" =404;
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/etc/whitelist.d/meta.json";
   }
   if ($map_subdomain_uri ~* "^(linux){1,2}$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
@@ -94,7 +94,7 @@ server {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
   if ($map_subdomain ~* "^(meta){1,2}$") {
-    try_files "/etc/whitelist.d/meta.json" =404;
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/etc/whitelist.d/meta.json";
   }
   if ($map_subdomain ~* "^(linux){1,2}$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";

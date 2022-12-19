@@ -15,9 +15,25 @@ server {
   ssl_certificate "/etc/letsencrypt/live/rhel.sh/fullchain.pem";
   ssl_certificate_key "/etc/letsencrypt/live/rhel.sh/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/rhel.sh/chain.pem";
-  location / {
-    return 302 https://${map_subdomain_dot}mcavallo.com${request_uri};
+  # ------------------------------
+  #        ~* [regex match, case-insensitive]
+  location ~* "^/[^\/]+$" {
+    if ($map_uri_type !~* "^$") {
+      return 302 https://${map_subdomain_dot}mcavallo.com${request_uri};
+    }
+    if ($map_uri_type ~* "^$") {
+      return 302 https://sh.mcavallo.com/usr/local/bin${request_uri};
+    }
   }
+  location / {
+    if ($map_subdomain_dot !~* "^$") {
+      return 302 https://${map_subdomain_dot}mcavallo.com${request_uri};
+    }
+    if ($map_subdomain_dot ~* "^$") {
+      return 302 https://sh.mcavallo.com${request_uri};
+    }
+  }
+  # ------------------------------
   include "/etc/nginx/nginx_error_locations.conf";
 }
 

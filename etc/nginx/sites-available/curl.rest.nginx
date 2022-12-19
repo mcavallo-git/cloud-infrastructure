@@ -15,6 +15,7 @@ server {
   ssl_certificate "/etc/letsencrypt/live/curl.rest/fullchain.pem";
   ssl_certificate_key "/etc/letsencrypt/live/curl.rest/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/curl.rest/chain.pem";
+  # ------------------------------
   #        ~* [regex match, case-insensitive]
   location ~* "^/[^\/]+$" {
     if ($map_uri_type !~* "^$") {
@@ -32,6 +33,7 @@ server {
       return 302 https://sh.mcavallo.com${request_uri};
     }
   }
+  # ------------------------------
   include "/etc/nginx/nginx_error_locations.conf";
 }
 

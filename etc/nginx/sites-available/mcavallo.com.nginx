@@ -65,19 +65,19 @@ server {
   if ($map_subdomain_uri ~* "^(spotify){1,2}$") {
     return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}/?1$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/(playlist/)?)?1$") {
     return 302 "https://open.spotify.com/playlist/3SfJ6rFJsjcPuHeFKpBGPu?si=yIz9vG9KT-ucNEL6fu3JHQ";  #  Spotify Playlist [ Driving ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}/?2$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/(playlist/)?)?2$") {
     return 302 "https://open.spotify.com/playlist/7rnogAsAA7QO7RErbd0XM6?si=b4e007d3490e435a";  #  Spotify Playlist [ Shindig, ya dig ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}/?3$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/(playlist/)?)?3$") {
     return 302 "https://open.spotify.com/playlist/0f6ikyxba7qXRDxmv6pLvH?si=4e94462a954b4626";  #  Spotify Playlist [ Electronica - Chill ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}/?4$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/(playlist/)?)?4$") {
     return 302 "https://open.spotify.com/playlist/7HeDI1N5X1FuB5joKnk2Fm?si=5f73c987a59746b4";  #  Spotify Playlist [ Electronica - Hype ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}/?5$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/(playlist/)?)?5$") {
     return 302 "https://open.spotify.com/playlist/20OcRbSy40B1qTVI3mVs4A?si=3eb7033e12314b0a";  #  Spotify Playlist [ Electronica - Retro ]
   }
   if ($map_subdomain_uri ~* "^(venmo){1,2}$") {

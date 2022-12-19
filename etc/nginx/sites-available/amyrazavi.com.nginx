@@ -26,16 +26,16 @@ server {
   if ($map_subdomain_uri ~* "^(spotify){1,2}$") {
     return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?1$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?(1|lunatics|raving-lunatics)$") {
     return 302 "https://open.spotify.com/playlist/4PNNKXLxpecKR5RRtWl4gM?si=47ac07d233124b83";  #  Spotify Playlist [ Raving Lunatics ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?2$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?(2|shower|shower-hollerin)$") {
     return 302 "https://open.spotify.com/playlist/6mYwZqVLsbduB5Nta874vb?si=03d594b249664cce";  #  Spotify Playlist [ Shower Hollerin' ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?3$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?(3|dance|wanna-dance)$") {
     return 302 "https://open.spotify.com/playlist/6Ctl8ygAgkMvsszmfq2BRj?si=561e738fbdf34fa6";  #  Spotify Playlist [ Wanna Dance? ]
   }
-  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?4$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}(/?(playlist/)?)?(4|workout)$") {
     return 302 "https://open.spotify.com/playlist/5v9ceIifWZ04TkmHvV2Gg4?si=ce4bd58b1fb74f7a";  #  Spotify Playlist [ Workout ]
   }
   if ($map_subdomain_uri ~* "^(venmo){1,2}$") {

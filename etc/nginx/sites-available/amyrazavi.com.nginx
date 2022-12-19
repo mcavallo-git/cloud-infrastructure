@@ -10,7 +10,7 @@ server {
   listen [::]:443 ssl http2;
   server_name amyrazavi.com *.amyrazavi.com;
   include "/etc/nginx/nginx_error_locations.conf";
-  access_log "/var/log/nginx/access_amyrazavi.com.log" thin;
+  access_log "/var/log/nginx/access_amyrazavi.com.log" excessive;
   if ($scheme != "https") {
     return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
   }

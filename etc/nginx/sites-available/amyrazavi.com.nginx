@@ -20,74 +20,33 @@ server {
 
   # ------------------------------------------------------------
   #                ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^cash$") {
+  if ($map_subdomain_uri ~* "^(cash|cashapp|pay){1,2}$") {
     return 302 "https://cash.me/hithereitsamy";
   }
-  if ($request_uri ~* "^/cash$") {
-    return 302 "https://cash.me/hithereitsamy";
-  }
-  if ($map_subdomain ~* "^cashapp$") {
-    return 302 "https://cash.me/hithereitsamy";
-  }
-  if ($request_uri ~* "^/cashapp$") {
-    return 302 "https://cash.me/hithereitsamy";
-  }
-
-
-  # # ------------------------------------------------------------
-  # #                ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^pay$") {
-    return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-  }
-  if ($request_uri ~* "^/pay$") {
-    return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-  }
-  # if ($map_subdomain ~* "^paypal$") {
-  #   return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-  # }
-  # if ($request_uri ~* "^/paypal$") {
-  #   return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
-  # }
-
-
-  # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^spotify$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}$") {
     return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
   }
-  if ($request_uri ~* "^/spotify$") {
-    return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/1$") {
+    return 302 "https://open.spotify.com/playlist/4PNNKXLxpecKR5RRtWl4gM?si=47ac07d233124b83";  #  Spotify Playlist [ Raving Lunatics ]
   }
-  if ($request_uri ~* "^/spotify/1$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/2$") {
     return 302 "https://open.spotify.com/playlist/6mYwZqVLsbduB5Nta874vb?si=03d594b249664cce";  #  Spotify Playlist [ Shower Hollerin' ]
   }
-  if ($request_uri ~* "^/spotify/2$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/3$") {
     return 302 "https://open.spotify.com/playlist/6Ctl8ygAgkMvsszmfq2BRj?si=561e738fbdf34fa6";  #  Spotify Playlist [ Wanna Dance? ]
   }
-  if ($request_uri ~* "^/spotify/3$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/4$") {
     return 302 "https://open.spotify.com/playlist/5v9ceIifWZ04TkmHvV2Gg4?si=ce4bd58b1fb74f7a";  #  Spotify Playlist [ Workout ]
   }
-
-
-  # ------------------------------------------------------------
-  #                ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^venmo$") {
+  if ($map_subdomain_uri ~* "^(venmo){1,2}$") {
     return 302 "https://venmo.com/hello_itsamy";
   }
-  if ($request_uri ~* "^/venmo$") {
-    return 302 "https://venmo.com/hello_itsamy";
-  }
-
 
   # ------------------------------------------------------------
   # Fallthrough Request Handler
   #  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
   #
-  #                ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^$") {
-    return 302 "https://cash.me/hithereitsamy";
-  }
-  if ($request_uri ~* "^/$") {
+  location / {
     return 302 "https://cash.me/hithereitsamy";
   }
 

@@ -20,13 +20,13 @@ server {
 
   # ------------------------------------------------------------
   #                ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^cash$") {
+  if ($map_subdomain ~* "^cash$") {
     return 302 "https://cash.me/hithereitsamy";
   }
   if ($request_uri ~* "^/cash$") {
     return 302 "https://cash.me/hithereitsamy";
   }
-  if ($subdomain ~* "^cashapp$") {
+  if ($map_subdomain ~* "^cashapp$") {
     return 302 "https://cash.me/hithereitsamy";
   }
   if ($request_uri ~* "^/cashapp$") {
@@ -36,13 +36,13 @@ server {
 
   # # ------------------------------------------------------------
   # #                ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^pay$") {
+  if ($map_subdomain ~* "^pay$") {
     return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
   }
   if ($request_uri ~* "^/pay$") {
     return 302 "https://cash.me/hithereitsamy"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
   }
-  # if ($subdomain ~* "^paypal$") {
+  # if ($map_subdomain ~* "^paypal$") {
   #   return 302 "https://www.paypal.me/______"; # Note: Use syntax  [ https://paypal.me/______/25 ] to request $25 (example)
   # }
   # if ($request_uri ~* "^/paypal$") {
@@ -52,7 +52,7 @@ server {
 
   # ------------------------------------------------------------
   #                ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^spotify$") {
+  if ($map_subdomain ~* "^spotify$") {
     return 302 "https://open.spotify.com/user/hello_itsamy";  #  Spotify Profile
   }
   if ($request_uri ~* "^/spotify$") {
@@ -71,7 +71,7 @@ server {
 
   # ------------------------------------------------------------
   #                ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^venmo$") {
+  if ($map_subdomain ~* "^venmo$") {
     return 302 "https://venmo.com/hello_itsamy";
   }
   if ($request_uri ~* "^/venmo$") {
@@ -84,7 +84,7 @@ server {
   #  - Is overridden by any matched nginx statements which occurred earlier in the current nginx server {...} directive's block
   #
   #                ~* [regex match, case-insensitive]
-  if ($subdomain ~* "^$") {
+  if ($map_subdomain ~* "^$") {
     return 302 "https://cash.me/hithereitsamy";
   }
   if ($request_uri ~* "^/$") {

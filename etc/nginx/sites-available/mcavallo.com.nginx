@@ -88,6 +88,42 @@ server {
   }
 
   # ------------------------------------------------------------
+  #                      ~* [regex match, case-insensitive]
+  if ($map_subdomain ~* "^(cash|cashapp){1,2}$") {
+    return 302 "https://cash.me/mcavallo";
+  }
+  if ($map_subdomain ~* "^(cloud-infrastructure){1,2}$") {
+    return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
+  }
+  if ($map_subdomain ~* "^(cv|linkedin|resume){1,2}$") {
+    return 302 "https://linkedin.com/in/matt-cavallo";
+  }
+  if ($map_subdomain ~* "^(git|repos){1,2}$") {
+    return 302 "https://github.com/mcavallo-git?tab=repositories";
+  }
+  if ($map_subdomain ~* "^(good-credit){1,2}$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
+  }
+  if ($map_subdomain ~* "^(meta){1,2}$") {
+    return 200 "udm.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
+  }
+  if ($map_subdomain ~* "^(linux){1,2}$") {
+    return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
+  }
+  if ($map_subdomain ~* "^(pay|paypal){1,2}$") {
+    return 302 "https://www.paypal.me/cavalol"; # Note: Use [ https://paypal.me/cavalol/X ] to request $X
+  }
+  if ($map_subdomain ~* "^(pc|pcpartpicker){1,2}$") {
+    return 302 "https://pcpartpicker.com/b/bH7TwP";
+  }
+  if ($map_subdomain ~* "^(ps|sync-ps){1,2}$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
+  }
+  if ($map_subdomain ~* "^(spotify){1,2}$") {
+    return 302 "https://open.spotify.com/user/italianbasegard";  # Spotify Profile
+  }
+
+  # ------------------------------------------------------------
   # Shellscript Requests (commonly Linux-based bash scripts)
   #
   #   curl -sL https://mcavallo.com/sh | bash -s -- --all;

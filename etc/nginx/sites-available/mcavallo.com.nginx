@@ -1,16 +1,5 @@
 # ------------------------------------------------------------
 #
-#==--  Determine if request will need to be redirected
-#
-# 
-# map "$hostname:$request_uri" $map_uri_type {
-#   default 0;
-#   "~*mcavallo.com:meta$" meta;  # ~* [regex match, case-insensitive]
-# }
-# 
-# 
-# ------------------------------------------------------------
-#
 #==--  mcavallo.com
 #==--  *.mcavallo.com
 #
@@ -48,7 +37,7 @@ server {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
   if ($map_subdomain_uri ~* "^(meta){1,2}$") {
-    return 200 "udm.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
+    try_files "/etc/whitelist.d/meta.json" =404;
   }
   if ($map_subdomain_uri ~* "^(linux){1,2}$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
@@ -105,7 +94,7 @@ server {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
   if ($map_subdomain ~* "^(meta){1,2}$") {
-    return 200 "udm.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
+    try_files "/etc/whitelist.d/meta.json" =404;
   }
   if ($map_subdomain ~* "^(linux){1,2}$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";

@@ -31,168 +31,58 @@ server {
   ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
 
   # ------------------------------------------------------------
-  #                 ~ [regex match, case-sensitive]
-  if ($map_uri_type ~ "^meta$") {
-    return 200 "udm.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
-  }
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
+  #                      ~* [regex match, case-insensitive]
   if ($map_subdomain_uri ~* "^(cash|cashapp){1,2}$") {
     return 302 "https://cash.me/mcavallo";
   }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^cloud-infrastructure$") {
+  if ($map_subdomain_uri ~* "^(cloud-infrastructure){1,2}$") {
     return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
   }
-  if ($uri ~* "^/cloud-infrastructure$") {
-    return 302 "https://github.com/mcavallo-git/cloud-infrastructure";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^cv$") {
-    return 302 "https://linkedin.mcavallo.com";
-  }
-  if ($uri ~* "^/cv$") {
-    return 302 "https://linkedin.mcavallo.com";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^git$") {
-    return 302 "https://github.com/mcavallo-git?tab=repositories";
-  }
-  if ($uri ~* "^/git$") {
-    return 302 "https://github.com/mcavallo-git?tab=repositories";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^good-credit$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
-  }
-  if ($uri ~* "^/good-credit$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^linkedin$") {
+  if ($map_subdomain_uri ~* "^(cv|linkedin|resume){1,2}$") {
     return 302 "https://linkedin.com/in/matt-cavallo";
   }
-  if ($uri ~* "^/linkedin$") {
-    return 302 "https://linkedin.com/in/matt-cavallo";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^linux$") {
-    return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
-  }
-  if ($uri ~* "^/linux$") {
-    return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^pay$") {
-    return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-  }
-  if ($uri ~* "^/pay$") {
-    return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-  }
-  if ($map_subdomain ~* "^paypal$") {
-    return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-  }
-  if ($uri ~* "^/paypal$") {
-    return 302 "https://www.paypal.me/cavalol"; # Note: Use syntax  [ https://paypal.me/cavalol/25 ] to request $25 (example)
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^pc$") {
-    return 302 "https://pcpartpicker.com/b/bH7TwP";
-  }
-  if ($uri ~* "^/pc$") {
-    return 302 "https://pcpartpicker.com/b/bH7TwP";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^resume$") {
-    return 302 "https://cv.mcavallo.com";
-  }
-  if ($uri ~* "^/resume$") {
-    return 302 "https://cv.mcavallo.com";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^repos$") {
+  if ($map_subdomain_uri ~* "^(git|repos){1,2}$") {
     return 302 "https://github.com/mcavallo-git?tab=repositories";
   }
-  if ($uri ~* "^/repos$") {
-    return 302 "https://github.com/mcavallo-git?tab=repositories";
+  if ($map_subdomain_uri ~* "^(good-credit){1,2}$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/images/archive/credit-score-factors.jpg";
   }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^spotify$") {
+  if ($map_subdomain_uri ~* "^(meta){1,2}$") {
+    return 200 "udm.mcavallo.net\nusg.mcavallo.net\nlt.mcavallo.work\nws.mcavallo.work";
+  }
+  if ($map_subdomain_uri ~* "^(linux){1,2}$") {
+    return 302 "https://github.com/mcavallo-git/cloud-infrastructure#cloud-infrastructure";
+  }
+  if ($map_subdomain_uri ~* "^(pay|paypal){1,2}$") {
+    return 302 "https://www.paypal.me/cavalol"; # Note: Use [ https://paypal.me/cavalol/X ] to request $X
+  }
+  if ($map_subdomain_uri ~* "^(ps|sync-ps){1,2}$") {
+    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
+  }
+  if ($map_subdomain_uri ~* "^(spotify){1,2}$") {
     return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
   }
-  if ($uri ~* "^/spotify$") {
-    return 302 "https://open.spotify.com/user/italianbasegard";  #  Spotify Profile
-  }
-  if ($uri ~* "^/spotify/1$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/1$") {
     return 302 "https://open.spotify.com/playlist/3SfJ6rFJsjcPuHeFKpBGPu?si=yIz9vG9KT-ucNEL6fu3JHQ";  #  Spotify Playlist [ Driving ]
   }
-  if ($uri ~* "^/spotify/2$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/2$") {
     return 302 "https://open.spotify.com/playlist/7rnogAsAA7QO7RErbd0XM6?si=b4e007d3490e435a";  #  Spotify Playlist [ Shindig, ya dig ]
   }
-  if ($uri ~* "^/spotify/3$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/3$") {
     return 302 "https://open.spotify.com/playlist/0f6ikyxba7qXRDxmv6pLvH?si=4e94462a954b4626";  #  Spotify Playlist [ Electronica - Chill ]
   }
-  if ($uri ~* "^/spotify/4$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/4$") {
     return 302 "https://open.spotify.com/playlist/7HeDI1N5X1FuB5joKnk2Fm?si=5f73c987a59746b4";  #  Spotify Playlist [ Electronica - Hype ]
   }
-  if ($uri ~* "^/spotify/5$") {
+  if ($map_subdomain_uri ~* "^(spotify){1,2}/5$") {
     return 302 "https://open.spotify.com/playlist/20OcRbSy40B1qTVI3mVs4A?si=3eb7033e12314b0a";  #  Spotify Playlist [ Electronica - Retro ]
   }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^venmo$") {
+  if ($map_subdomain_uri ~* "^(venmo){1,2}$") {
     return 302 "https://venmo.com/cavalol";
   }
-  if ($uri ~* "^/venmo$") {
-    return 302 "https://venmo.com/cavalol";
-  }
-
-
-  # ------------------------------------------------------------
-  #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^youtube$") {
+  if ($map_subdomain_uri ~* "^(youtube){1,2}$") {
     return 302 "https://youtu.be/1CJIw-Rxleo";
   }
-  if ($uri ~* "^/youtube$") {
-    return 302 "https://youtu.be/1CJIw-Rxleo";
-  }
-
 
   # ------------------------------------------------------------
   # Shellscript Requests (commonly Linux-based bash scripts)
@@ -203,41 +93,6 @@ server {
   if ($map_uri_type ~ "^((shellscript)|(shellscript-bin)|(shellscript-sbin)|(shellscript-sync))$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main${map_uri_sh}?t=$msec";
   }
-
-
-  # ------------------------------------------------------------
-  # PowerShell Script/Module Requests (commonly Windows-based powershell scripts, i.e. not intended to be used in a [ PowerShell Core for Linux ] environment)
-  #
-  #   $ProtoBak=[System.Net.ServicePointManager]::SecurityProtocol; [System.Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Clear-DnsClientCache; Set-ExecutionPolicy "RemoteSigned" -Scope "CurrentUser" -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ps.mcavallo.com')); [System.Net.ServicePointManager]::SecurityProtocol=$ProtoBak;
-  #
-  #   $ProtoBak=[System.Net.ServicePointManager]::SecurityProtocol; [System.Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Clear-DnsClientCache; Set-ExecutionPolicy -ExecutionPolicy "Bypass" -Scope "CurrentUser" -Force; $SyncTemp="${Env:TEMP}\sync.$($(Date).Ticks).ps1"; New-Item -Force -ItemType "File" -Path ("${SyncTemp}") -Value (($(New-Object Net.WebClient).DownloadString("https://ps.mcavallo.com/ps?t=$((Date).Ticks)"))) | Out-Null; . "${SyncTemp}"; Remove-Item "${SyncTemp}"; [System.Net.ServicePointManager]::SecurityProtocol=$ProtoBak;
-  #
-  #        ~* [regex match, case-insensitive]
-  location ~* "^/codesign$" {
-    if ($map_subdomain ~* "^ps$") {  # PowerShell code signing (nginx catch 1-of-2)
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
-    }
-  }
-  #        ~* [regex match, case-insensitive]
-  location ~* "^/ps$" {
-    if ($map_subdomain ~* "^codesign$") {  # PowerShell code signing (nginx catch 2-of-2)
-      return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/powershell/PowerShell%20-%20Set-AuthenicodeSignature%20(replacement%20for%20signtool.exe%20-%20code-signing%20using%20local%20machine%20certificate%20store).ps1?t=$msec";
-    }
-  }
-  # Fallthrough PowerShell script/module requests
-  if ($map_subdomain ~* "^ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
-  }
-  if ($uri ~* "^/ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
-  }
-  if ($map_subdomain ~* "^sync-ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
-  }
-  if ($uri ~* "^/sync-ps$") {
-    return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";
-  }
-
 
   # ------------------------------------------------------------
   # Fallthrough Request Handler

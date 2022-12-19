@@ -23,15 +23,12 @@ server {
   # server_name ~^(?<subdomain>.+\.)?mcavallo\.com$;
   include "/etc/nginx/nginx_error_locations.conf";
   access_log "/var/log/nginx/access_mcavallo.com.log" excessive;
-
   if ($scheme != "https") {
     return 301 https://$host$request_uri; # Force request-upgrade from HTTP(80) to HTTPS(443)
   }
-
   ssl_certificate "/etc/letsencrypt/live/mcavallo.com/fullchain.pem";
   ssl_certificate_key "/etc/letsencrypt/live/mcavallo.com/privkey.pem";
   ssl_trusted_certificate "/etc/letsencrypt/live/mcavallo.com/chain.pem";
-
 
   # ------------------------------------------------------------
   #                 ~ [regex match, case-sensitive]

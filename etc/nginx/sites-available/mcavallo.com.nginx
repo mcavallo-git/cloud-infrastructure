@@ -38,16 +38,7 @@ server {
 
   # ------------------------------------------------------------
   #              ~* [regex match, case-insensitive]
-  if ($map_subdomain ~* "^cash$") {
-    return 302 "https://cash.me/mcavallo";
-  }
-  if ($uri ~* "^/cash$") {
-    return 302 "https://cash.me/mcavallo";
-  }
-  if ($map_subdomain ~* "^cashapp$") {
-    return 302 "https://cash.me/mcavallo";
-  }
-  if ($uri ~* "^/cashapp$") {
+  if ($map_subdomain_uri ~* "^(cash|cashapp){1,2}$") {
     return 302 "https://cash.me/mcavallo";
   }
 

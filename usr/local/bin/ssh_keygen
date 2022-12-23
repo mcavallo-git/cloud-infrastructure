@@ -64,7 +64,7 @@ fi;
 
 # Determine the output directory
 OUTDIR_BASE="";
-WSL_CHECK_EXISTS="$(command -v wslvar 2>'/dev/null';)";
+# Check for Windows Subsystem for Linux commands
 if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]] && [[ -n "$(wslvar --sys USERPROFILE;)" ]] && [[ -d "$(wslpath -u "$(wslvar --sys USERPROFILE;)/Desktop";)" ]]; then
   WINDOWS_DESKTOP="$(wslpath -u "$(wslvar --sys USERPROFILE;)/Desktop";)";
   REPLY="";

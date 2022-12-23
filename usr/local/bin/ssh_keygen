@@ -38,7 +38,7 @@ if [ -n "${USER_NAME}" ]; then
 elif [ "$(id -un)" == "root" ]; then
   # Running as root --> Ask user which username to create SSH keys for
   echo "";
-  read -p "Create SSH-Key for which User?:  " -t 60 <'/dev/tty';
+  read -p "Create SSH key for which User?:  " -t 60 <'/dev/tty';
   USER_NAME="${REPLY}";
 else
   # Not running as root --> Create SSH keys for current user

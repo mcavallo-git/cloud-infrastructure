@@ -62,6 +62,23 @@ if [ -z "${USER_PASSWD_INFO}" ]; then
   exit 1;
 fi;
 
+# Determine the output directory
+OUTDIR_BASE="";
+WSL_CHECK_EXISTS="$(command -v wslvar 2>'/dev/null';)";
+if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]] && [[ -n "$(wslvar --sys USERPROFILE;)" ]] && [[ -d "$(wslpath -u "$(wslvar --sys USERPROFILE;)/Desktop";)" ]]; then
+  WINDOWS_DESKTOP="$(wslpath -u "$(wslvar --sys USERPROFILE;)/Desktop";)";
+  REPLY="";
+  echo "";
+  echo -n "  Save SSH key to windows desktop? (press 'y' to confirm)  ";
+  read -p "" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
+  if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
+    OUTDIR_BASE="${WINDOWS_DESKTOP}";
+    echo "  |--> Confirmed - Setting output directory to Windows Desktop";
+  else
+    echo "  |--> Denied";
+  fi;
+fi;
+
 # Check if User's home-directory exists
 USER_HOME="$(echo ${USER_PASSWD_INFO} | cut -d: -f6)";
 if [ ! -d "${USER_HOME}" ]; then
@@ -69,6 +86,11 @@ if [ ! -d "${USER_HOME}" ]; then
   echo "Error:  Home-Directory not found for user \"${USER_NAME}\" - Exiting ...";
   echo "";
   exit 1;
+fi;
+
+USER_HOME="$(eval echo ~${USER_NAME})";
+if [[ -z "${OUTDIR_BASE}" ]]; then
+  OUTDIR_BASE="${USER_HOME}";
 fi;
 
 # Get fqdn (hostname & domainname) for this device
@@ -86,13 +108,12 @@ fi;
 
 # Runtime variables
 #  |--> (DO NOT EDIT VARS ON THE FOLLOWING LINES --> INSTEAD, EDIT THEIR DEPENDENCIES AT THE TOP)
-USER_HOME="$(eval echo ~${USER_NAME})";
 
 # KEY_BASENAME="ssh_key_${USER_NAME}_${START_TIMESTAMP}";
 # KEY_BASENAME="id_rsa_${THIS_FQDN}_${USER_NAME}_${START_TIMESTAMP}";
 KEY_BASENAME="id_rsa_${USER_NAME}@${THIS_FQDN}_${START_TIMESTAMP}";
 
-KEY_DIRNAME="${USER_HOME}/ssh_created_keys/${THIS_FQDN}";
+KEY_DIRNAME="${OUTDIR_BASE}/ssh_created_keys/${THIS_FQDN}";
 KEY_FULLPATH_NOEXT="${KEY_DIRNAME}/${KEY_BASENAME}";
 
 PRIVATE_KEY_PATH="${KEY_FULLPATH_NOEXT}.pem";

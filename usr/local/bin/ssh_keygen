@@ -69,7 +69,7 @@ if [[ -n "$(command -v wslvar 2>'/dev/null';)" ]] && [[ -n "$(wslvar --sys USERP
   WINDOWS_DESKTOP="$(wslpath -u "$(wslvar --sys USERPROFILE;)/Desktop";)";
   REPLY="";
   echo "";
-  echo -n "Save SSH key to Windows Desktop? (press 'y' to confirm)  ";
+  echo -n "Save SSH key to Windows Desktop ?  (press 'y' to confirm)  ";
   read -p "" -n 1 -t 60 REPLY <'/dev/tty'; # Await single keypress
   if [[ -z "${REPLY}" ]] || [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" != "y" ]]; then
     echo "";

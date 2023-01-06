@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_unzip" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_unzip?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_unzip_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_unzip"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "$(id -un)" != "root" ]]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+# ------------------------------------------------------------
+# Install InfoZIP's "unzip" package
+
+  if [ $(command -v unzip 2>'/dev/null' | wc -l;) -eq 0 ]; then
+    if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
+      apt-get -y update;
+      apt-get -y install unzip;
+    elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
+      yum -y check-update;
+      yum -y install "unzip";
+    fi;
+  fi;
+
+  unzip -v;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+# 
+#   linux.die.net  |  "unzip(1) - Linux man page"  |  https://linux.die.net/man/1/unzip
+# 
+#   packages.debian.org  |  "Debian -- Details of package unzip in sid"  |  https://packages.debian.org/sid/unzip
+# 
+# ------------------------------------------------------------

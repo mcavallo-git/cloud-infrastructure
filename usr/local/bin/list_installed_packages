@@ -6,7 +6,7 @@
 
 RET_CODE=1;
 
-INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;
+INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;)";
 
 if [ -n "${INSTALLED_PACKAGES}" ]; then
   if [ $# -gt 0 ]; then

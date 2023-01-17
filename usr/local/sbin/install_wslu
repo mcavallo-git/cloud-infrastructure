@@ -27,26 +27,19 @@ if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
-
   #
-  # Non-exhaustive set of commands which come included in package `wslu` (as-of 2023-01-17):
-  #   - wslfetch 
-  #   - wslsys
-  #   - wslupath
-  #   - wslusc
-  #   - wslvar
-  #   - wslview
+  # wslu - Non-exhaustive set of included commands (as-of 2023-01-17):
+  #  - wslfetch 
+  #  - wslsys
+  #  - wslupath
+  #  - wslusc
+  #  - wslvar
+  #  - wslview
   #
-
-  if [ -n "$(command -v wslu 2>'/dev/null';)" ]; then
-    # Verify that wslu is installed by getting the installed version from it
-    echo "";
-    echo "Calling [ sudo apt-get update -y; sudo apt-get install -y wslu; ]...";
-    sudo apt-get update -y; sudo apt-get install -y wslu;
-  fi;
-
+  echo "";
+  echo "Calling [ sudo apt-get update -y; sudo apt-get install -y wslu; ]...";
+  sudo apt-get update -y; sudo apt-get install -y wslu;
 fi;
-
 
 # ------------------------------------------------------------
 #

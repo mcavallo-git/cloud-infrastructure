@@ -6,11 +6,7 @@
 
 RET_CODE=1;
 
-if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-  INSTALLED_PACKAGES="$(apt list --installed;)";
-elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-  INSTALLED_PACKAGES="$(yum list installed;)";
-fi;
+INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;
 
 if [ -n "${INSTALLED_PACKAGES}" ]; then
   if [ $# -gt 0 ]; then
@@ -47,5 +43,7 @@ exit ${RET_CODE};
 # Citation(s)
 #
 #   access.redhat.com  |  "rh_yum_cheatsheet_1214_jcs_print-1.pdf"  |  https://access.redhat.com/sites/default/files/attachments/rh_yum_cheatsheet_1214_jcs_print-1.pdf
+#
+#   www.cyberciti.biz  |  "How to use yum command on CentOS/RHEL"  |  https://www.cyberciti.biz/faq/rhel-centos-fedora-linux-yum-command-howto/
 #
 # ------------------------------------------------------------

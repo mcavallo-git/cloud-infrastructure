@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# LOCAL_SBIN="/usr/local/sbin/install_wslu" && echo "" > "${LOCAL_SBIN}" && vi "${LOCAL_SBIN}" && chmod 0755 "${LOCAL_SBIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/sbin/install_wslu?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/install_wslu_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/install_wslu"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%d';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Script must run as root or via sudo
+#
+if [[ "${OSTYPE}" == "linux-gnu"* || "$(uname -s)" == "Linux" ]] && [ "$(id -un)" != "root" ]; then
+  echo "";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
+  exit 1;
+else
+
+  #
+  # Non-exhaustive set of commands which come included in package `wslu` (as-of 2023-01-17):
+  #   - wslfetch 
+  #   - wslsys
+  #   - wslupath
+  #   - wslusc
+  #   - wslvar
+  #   - wslview
+  #
+
+  if [ -n "$(command -v wslu 2>'/dev/null';)" ]; then
+    # Verify that wslu is installed by getting the installed version from it
+    echo "";
+    echo "Calling [ sudo apt-get update -y; sudo apt-get install -y wslu; ]...";
+    sudo apt-get update -y; sudo apt-get install -y wslu;
+  fi;
+
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+# 
+#   github.com  |  "wslvar and wslpath do not work in tmux · Issue #8706 · microsoft/WSL · GitHub"  |  https://github.com/microsoft/WSL/issues/8706
+#
+# ------------------------------------------------------------

@@ -510,7 +510,7 @@ if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
     mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
     GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
     # Cleanup empty directories
-    if [[ "$(find "${REPOS_TEMP_DIR}" -type "d" -empty -print 2>'/dev/null'| wc -l;)" -gt 0 ]]; do
+    if [[ "$(find "${REPOS_TEMP_DIR}" -type "d" -empty -print 2>'/dev/null'| wc -l;)" -gt 0 ]]; then
       find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
     fi;
   else

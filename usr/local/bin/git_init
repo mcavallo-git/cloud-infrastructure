@@ -137,19 +137,19 @@ echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git Setup/Config";
 
 # Set default git repos dir
 if [[ "$(id -un)" != "root" ]]; then
-  ALL_REPOS_DIR="${HOME}/git";
+  REPOS_TEMP_DIR="${HOME}/git";
 else
-  ALL_REPOS_DIR="/var/lib/git";
+  REPOS_TEMP_DIR="/var/lib/git";
 fi;
 
 # Ensure that the git repo parent dir exists
-if [ ! -d "${ALL_REPOS_DIR}" ]; then
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Creating default Git directory \"${ALL_REPOS_DIR}\"";
-  mkdir -p "${ALL_REPOS_DIR}";
+if [ ! -d "${REPOS_TEMP_DIR}" ]; then
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Creating default Git directory \"${REPOS_TEMP_DIR}\"";
+  mkdir -p "${REPOS_TEMP_DIR}";
 fi;
 
 # Determine the default privileges (user:group) to set for other git-repo dirs
-MATCH_CHOWN=$(dirname "${ALL_REPOS_DIR}");
+MATCH_CHOWN=$(dirname "${REPOS_TEMP_DIR}");
 GIT_CHOWN_UID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $3}');
 GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
 # if [ "${GIT_CHOWN_UID}" != 0 ]; then
@@ -163,11 +163,11 @@ GIT_CHOWN_GID=$(ls -ldn $(realpath "${MATCH_CHOWN}") | awk '{print $4}');
 CHECKOUT_BRANCH="${CHECKOUT_BRANCH:-${REPO_BRANCH:-${REMOTE_BRANCH:-${BRANCH:-${DEFAULT_BRANCH}}}}}";
 
 # Verify that the git repos-dir has correct ownership & access-privileges set
-if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${ALL_REPOS_DIR}" ]; then
+if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${REPOS_TEMP_DIR}" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Setting Git parent directory's file permissions to \"0700\"";
-  chmod 0700 "${ALL_REPOS_DIR}";
+  chmod 0700 "${REPOS_TEMP_DIR}";
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
-  chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
+  chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${REPOS_TEMP_DIR}";
 fi;
 
 # Add desired variable(s) to the environment
@@ -192,7 +192,7 @@ if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT
 
 GIT_SSH_OPTIONS="";
 
-GIT_HOST_DIR="${ALL_REPOS_DIR}/${REMOTE_HOST}";
+GIT_HOST_DIR="${REPOS_TEMP_DIR}/${REMOTE_HOST}";
 if [ ! -d "${GIT_HOST_DIR}" ]; then
   mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
 fi;
@@ -510,6 +510,10 @@ if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
     mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
     GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
+    # Cleanup empty directories
+    if [[ "$(find "${REPOS_TEMP_DIR}" -type "d" -empty -print 2>'/dev/null'| wc -l;)" -gt 0 ]]; do
+      find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
+    fi;
   else
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Directory already exists (unable to relocate git work tree to):";
     echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)         |--> \"${WINDOWS_GITHUB_WORK_TREE}\"";
@@ -517,11 +521,10 @@ if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 fi;
 
-
+# chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${REPOS_TEMP_DIR}";
+# chmod -R 0700 "${REPOS_TEMP_DIR}";
 chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 chmod -R 0700 "${GIT_WORK_TREE}";
-# chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
-# chmod -R 0700 "${ALL_REPOS_DIR}";
 
 # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
 # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
@@ -537,6 +540,7 @@ cd "${GIT_WORK_TREE}" && git fetch --all;
 # ------------------------------
 #
 # Remove undesired variables from the environment
+#
 if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1"; fi;
 if [ -n "${GIT_CURL_VERBOSE}" ]; then unset GIT_CURL_VERBOSE; fi; # export GIT_CURL_VERBOSE="1"; fi;
 if [ -n "${GIT_TERMINAL_PROMPT}" ]; then unset GIT_TERMINAL_PROMPT; fi; # export GIT_TERMINAL_PROMPT="0"; fi;
@@ -544,7 +548,6 @@ if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; 
 if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
 if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
 if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config"; fi;
-
 
 # ------------------------------
 #
@@ -576,5 +579,7 @@ fi;
 #   stackoverflow.com  |  "web hosting - Unable to negotiate with XX.XXX.XX.XX: no matching host key type found. Their offer: ssh-dss - Stack Overflow"  |  https://stackoverflow.com/a/34209177
 #
 #   stackoverflow.com  |  "garbage collection - Understanding git gc --auto - Stack Overflow"  |  https://stackoverflow.com/a/16342938
+#
+#   unix.stackexchange.com  |  "linux - how can I recursively delete empty directories in my home directory? - Unix & Linux Stack Exchange"  |  https://unix.stackexchange.com/a/46326
 #
 # ------------------------------------------------------------

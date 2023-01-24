@@ -523,30 +523,16 @@ chmod -R 0700 "${GIT_WORK_TREE}";
 # chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";
 # chmod -R 0700 "${ALL_REPOS_DIR}";
 
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\";";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) !!! PLEASE RUN THE FOLLOWING COMMAND !!!";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)    cd \"${GIT_WORK_TREE}\" && git fetch --all;";
+# echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
 
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) !!! PLEASE RUN THE FOLLOWING COMMAND !!!";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)    cd \"${GIT_WORK_TREE}\" && git fetch --all;";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
-# cd "${GIT_WORK_TREE}" && git fetch --all;
-
-echo "------------------------------------------------------------";
-echo "------------------------------------------------------------";
-echo "Calling [ printenv | sort -u; ]";
-/usr/bin/printenv | sort -u;
-echo "------------------------------------------------------------";
-echo "------------------------------------------------------------";
-echo "Calling [ printenv | sort -u | grep '^GIT'; ]";
-/usr/bin/printenv | sort -u | grep '^GIT';
-echo "------------------------------------------------------------";
-echo "------------------------------------------------------------";
-echo "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]";
 cd "${GIT_WORK_TREE}" && git fetch --all;
-echo "------------------------------------------------------------";
-echo "------------------------------------------------------------";
 
 # ------------------------------
 #

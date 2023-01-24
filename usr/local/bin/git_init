@@ -517,6 +517,17 @@ if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 fi;
 
+echo "------------------------------------------------------------";
+echo "------------------------------------------------------------";
+echo "Calling [ printenv | sort -u; ]";
+/usr/bin/printenv | sort -u;
+echo "------------------------------------------------------------";
+echo "------------------------------------------------------------";
+echo "Calling [ printenv | sort -u | grep '^GIT'; ]";
+/usr/bin/printenv | sort -u | grep '^GIT';
+echo "------------------------------------------------------------";
+echo "------------------------------------------------------------";
+
 chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
 chmod -R 0700 "${GIT_WORK_TREE}";
 # chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${ALL_REPOS_DIR}";

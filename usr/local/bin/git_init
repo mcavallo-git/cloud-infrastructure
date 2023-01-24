@@ -78,8 +78,7 @@ echo "------------------------------------------------------------";
 echo "";
 
 # Fail-out if git is not installed & could not be installed
-which git > /dev/null 2>&1; MODULE_FOUND_ERROR_CODE=$?;
-if [ ${MODULE_FOUND_ERROR_CODE} -ne 0 ]; then 
+if [[ -z "$(command -v git 2>'/dev/null';)" ]]; then
   FAIL_MSG="${FAIL_MSG}$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Git runtime not installed.\n";
 fi;
 

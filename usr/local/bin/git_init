@@ -338,7 +338,10 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   if [ ! -d "$(dirname "${USER_SSH_CONFIG}";)" ]; then
     mkdir -p "$(dirname "${USER_SSH_CONFIG}";)"; chmod 0700 "$(dirname "${USER_SSH_CONFIG}";)";
   fi;
-
+  if [ -f "${USER_SSH_CONFIG}" ]; then
+    __echo_logger "---> Calling [ chmod 0600 \"${USER_SSH_CONFIG}\"; ]";
+    chmod 0600 "${USER_SSH_CONFIG}"
+  fi;
   # Gather SSH Public Keys for target Hostname
   # __echo_logger "---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
   # ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts"; # Enforce public-key checking
@@ -350,8 +353,8 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   echo -e "${SSH_CONFIG_APPEND}" >> "${USER_SSH_CONFIG}";
   __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
   __echo_logger "$(cat -n "${USER_SSH_CONFIG}";)";
-  __echo_logger "---> Calling [ chmod 0400 \"${USER_SSH_CONFIG}\"; ]";
-  chmod 0400 "${USER_SSH_CONFIG}";
+  __echo_logger "---> Calling [ chmod 0600 \"${USER_SSH_CONFIG}\"; ]";
+  chmod 0600 "${USER_SSH_CONFIG}";
   __echo_logger "${LINE_BREAK}";
 
   # Prep the undo to the ssh config file

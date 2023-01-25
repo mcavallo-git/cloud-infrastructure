@@ -39,7 +39,7 @@ __echo_logger() {
   local FORCE_ECHO="${2}";
   local LOWERCASE_ECHO_STRING="$(echo "${ECHO_STRING}" | awk '{print tolower($0)}';)";
   local TIMESTAMP="$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-  if [[ "${GIT_INIT_DEBUG}" -ne "0" ]] || [[ "${LOWERCASE_ECHO_STRING}" == *"error"* ]] || [[ "${FORCE_ECHO}" == "echo" ]]; then
+  if [[ "${GIT_INIT_DEBUG}" -ne "0" ]] || [[ "${LOWERCASE_ECHO_STRING}" == *"error"* ]] || [[ "${FORCE_ECHO}" == "FORCE-ECHO" ]]; then
     # Always show echoes if the verbosity is high, if the output contains error message(s) or if the force-option is set
     echo -e "${TIMESTAMP} ${ECHO_STRING}";
   else
@@ -358,7 +358,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #   unset GIT_SSH_COMMAND;
   fi;
 
-  __echo_logger "---> git init" "force";
+  __echo_logger "---> git init" "FORCE-ECHO";
   cd "${GIT_WORK_TREE}";
 
   # [config --global]  init.defaultbranch
@@ -368,16 +368,16 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
   fi;
 
-  __echo_logger "---> git init" "force";
+  __echo_logger "---> git init" "FORCE-ECHO";
   ${GIT_CLI} init;
 
   # [config --global]  init.defaultbranch  (ROLLBACK)
   if [ -n "${DEFAULT_BRANCH}" ]; then  # Rollback the default branch (once repo is initialized with said default branch)
     if [ -n "${PRE_EXISTING_INIT_DEFAULTBRANCH}" ]; then
-      __echo_logger "---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"" "force";
+      __echo_logger "---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"" "FORCE-ECHO";
       git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
     else
-      __echo_logger "---> git config --global --unset init.defaultbranch" "force";
+      __echo_logger "---> git config --global --unset init.defaultbranch" "FORCE-ECHO";
       git config --global --unset init.defaultbranch;
     fi;
   fi;
@@ -385,10 +385,10 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # [config] remote.origin.url
   LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
   if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
-    __echo_logger "---> git remote set-url origin \"${ORIGIN_GIT}\";";
+    __echo_logger "---> git remote set-url origin \"${ORIGIN_GIT}\";" "FORCE-ECHO";
     ${GIT_CLI} remote set-url origin "${ORIGIN_GIT}";
   else
-    __echo_logger "---> git remote add origin \"${ORIGIN_GIT}\"";
+    __echo_logger "---> git remote add origin \"${ORIGIN_GIT}\"" "FORCE-ECHO";
     ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
   fi;
 
@@ -406,7 +406,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # [config]  user.name
   if [ -n "${COMMIT_USER_FULLNAME}" ]; then
     CURRENT_LOCAL_GIT_FULLNAME=$(${GIT_CLI} config user.name);
-    __echo_logger "---> git config user.name \"${COMMIT_USER_FULLNAME}\"";
+    __echo_logger "---> git config user.name \"${COMMIT_USER_FULLNAME}\"" "FORCE-ECHO";
     ${GIT_CLI} config user.name "${COMMIT_USER_FULLNAME}";
     if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
@@ -416,7 +416,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # [config]  user.email
   if [ -n "${COMMIT_USER_EMAIL}" ]; then
     CURRENT_LOCAL_GIT_USER_EMAIL=$(${GIT_CLI} config user.email);
-    __echo_logger "---> git config user.email \"${COMMIT_USER_EMAIL}\"";
+    __echo_logger "---> git config user.email \"${COMMIT_USER_EMAIL}\"" "FORCE-ECHO";
     ${GIT_CLI} config user.email "${COMMIT_USER_EMAIL}";
     if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
@@ -431,7 +431,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   fi;
 
   # fetch all
-  __echo_logger "---> git fetch --all";
+  __echo_logger "---> git fetch --all" "FORCE-ECHO";
   ${GIT_CLI} fetch --all;
 
   # new clones - automatically checkout default branch, first
@@ -441,22 +441,22 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     # get default branch(es)
     if [ -n "${CHECKOUT_BRANCH}" ]; then
       TRY_BRANCH="${CHECKOUT_BRANCH}";
-      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]" "FORCE-ECHO";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"" "FORCE-ECHO";
       else
         __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="main";
-      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]" "FORCE-ECHO";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"" "FORCE-ECHO";
         __echo_logger "---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
         CHECKOUT_BRANCH="${TRY_BRANCH}";
       else
@@ -465,19 +465,20 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="master";
-      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]" "FORCE-ECHO";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"" "FORCE-ECHO";
         __echo_logger "---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
         CHECKOUT_BRANCH="${TRY_BRANCH}";
       else
         __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
     fi;
-    __echo_logger "---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
-    __echo_logger "---> git pull -v";
+    __echo_logger "---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
+    __echo_logger "";
+    __echo_logger "---> git pull -v" "FORCE-ECHO";
     ${GIT_CLI} pull -v;
   fi;
 
@@ -490,12 +491,12 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
       # checkout specific branch if not already on it
       if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
-        __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}";
+        __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}" "FORCE-ECHO";
         ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
       else
-        __echo_logger "Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
+        __echo_logger "Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
       fi;
-      __echo_logger "---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+      __echo_logger "---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
       ${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
     else
       if [[ 0 -eq 1 ]]; then
@@ -506,7 +507,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     fi;
   else
-    __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}";
+    __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}" "FORCE-ECHO";
     ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
   fi;
 
@@ -516,25 +517,25 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
     # pull the desired branch
-    __echo_logger "---> git pull -v";
-    ${GIT_CLI} pull -v;
+    __echo_logger "---> git pull -v" "FORCE-ECHO";
+    __echo_logger "$(${GIT_CLI} pull -v;)";
 
-    if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then
-      # show final git config
-      __echo_logger "---> git config --list --show-origin"; ${GIT_CLI} config --list;
-      __echo_logger "${LINE_BREAK}";
-    fi;
+    # show final git config
+    __echo_logger "---> git config --list --show-origin";
+    __echo_logger "$(${GIT_CLI} config --list;)";
+    __echo_logger "${LINE_BREAK}";
 
+    # show final git status
     __echo_logger "---> git status";
-    ${GIT_CLI} status;
+    __echo_logger "$(${GIT_CLI} status;)";
     __echo_logger "${LINE_BREAK}";
 
     if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
       if [ ! -d "${WINDOWS_GITHUB_WORK_TREE}" ]; then
-        __echo_logger "Info: Attempting to relocate the git repository's root directory...";
+        __echo_logger "Info: Relocating the git repository's root directory...";
         __echo_logger "       |--> from \"${GIT_WORK_TREE}\"";
         __echo_logger "       |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
-        __echo_logger "---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
+        __echo_logger "---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"" "FORCE-ECHO";
         mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
         GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
         # Cleanup empty directories
@@ -542,17 +543,16 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
           find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
         fi;
       else
-        __echo_logger "Error: Directory already exists (unable to relocate git work tree to):";
-        __echo_logger "        |--> \"${WINDOWS_GITHUB_WORK_TREE}\"";
+        __echo_logger "Error: Directory already exists (unable to relocate git work tree to):  \"${WINDOWS_GITHUB_WORK_TREE}\"";
       fi;
-      __echo_logger "${LINE_BREAK}";
+      __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     fi;
 
     chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
     chmod -R 0700 "${GIT_WORK_TREE}";
 
-    __echo_logger "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]";
-    __echo_logger "${LINE_BREAK}";
+    __echo_logger "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]" "FORCE-ECHO";
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     cd "${GIT_WORK_TREE}" && git fetch --all;
 
   fi;

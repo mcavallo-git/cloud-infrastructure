@@ -16,7 +16,7 @@ if [ -n "${PACKAGE_NAME}" ]; then
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     echo -e "${DASH_NL}Info:  Calling [ apt-cache policy \"${PACKAGE_NAME}\"; ]...";
     apt-cache policy "${PACKAGE_NAME}";
-    echo -e "${DASH_NL}Info:  For increased verbosity, call:  apt-cache showpkg \"${PACKAGE_NAME}\";";
+    echo -e "${DASH_NL}Info:  For increased verbosity (including reverse dependencies), call:  apt-cache showpkg \"${PACKAGE_NAME}\";";
   else
     echo e "${DASH_NL}Error:  Incompatible environment - exiting...";
   fi;

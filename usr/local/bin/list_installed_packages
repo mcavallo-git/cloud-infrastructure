@@ -10,18 +10,21 @@ EXIT_CODE=1;
 
 INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;)";
 
+echo "";
+
 if [ -n "${INSTALLED_PACKAGES}" ]; then
   if [ $# -gt 0 ]; then
     #
     # Determine if package name exists/is-installed as a local package
     #
-    CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${PACKAGE_NAME})\.(x86_64|noarch)\s+.+$/\1/p";);
-    if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
+    CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${PACKAGE_NAME})(\.|\/).+$/\0/p";);
+    if [ -n "${CHECK_FOR_LOCAL_PKG}" ]; then
+      echo "Info:  Package \"${PACKAGE_NAME}\" exists locally with details:";
+      echo "${CHECK_FOR_LOCAL_PKG}";
+      EXIT_CODE=0;
+    else
       echo "Info:  Package \"${PACKAGE_NAME}\" not found, locally";
       EXIT_CODE=1;
-    else
-      echo "Info:  Package \"${PACKAGE_NAME}\" already exists locally";
-      EXIT_CODE=0;
     fi;
   else
     if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -36,6 +39,8 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
 else
   echo "Error:  Incompatible environment - exiting...";
 fi;
+
+echo "";
 
 exit ${EXIT_CODE};
 

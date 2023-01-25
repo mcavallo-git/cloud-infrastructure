@@ -553,7 +553,8 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
     __echo_logger "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]" "FORCE-ECHO";
     __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
-    cd "${GIT_WORK_TREE}" && git fetch --all;
+    cd "${GIT_WORK_TREE}";
+    __echo_logger "$(git fetch --all;)";
 
   fi;
 
@@ -561,13 +562,15 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #
   # Remove undesired variables from the environment
   #
-  if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1"; fi;
-  if [ -n "${GIT_CURL_VERBOSE}" ]; then unset GIT_CURL_VERBOSE; fi; # export GIT_CURL_VERBOSE="1"; fi;
-  if [ -n "${GIT_TERMINAL_PROMPT}" ]; then unset GIT_TERMINAL_PROMPT; fi; # export GIT_TERMINAL_PROMPT="0"; fi;
-  if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; # export GIT_CEILING_DIRECTORIES="${GIT_LOCAL_CEILING}"; fi;
-  if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
-  if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
   if [ -n "${GIT_CONFIG}" ]; then unset GIT_CONFIG; fi; # export GIT_CONFIG="${GIT_DIR}/config"; fi;
+  if [ -n "${GIT_CONFIG_NOSYSTEM}" ]; then unset GIT_CONFIG_NOSYSTEM; fi; # "${GIT_CONFIG_NOSYSTEM="1"; fi;
+  if [ -n "${GIT_CEILING_DIRECTORIES}" ]; then unset GIT_CEILING_DIRECTORIES; fi; # export GIT_CEILING_DIRECTORIES="${GIT_LOCAL_CEILING}"; fi;
+  if [ -n "${GIT_CURL_VERBOSE}" ]; then unset GIT_CURL_VERBOSE; fi; # export GIT_CURL_VERBOSE="1"; fi;
+  if [ -n "${GIT_DIR}" ]; then unset GIT_DIR; fi; # export GIT_DIR="${GIT_WORK_TREE}/.git"; fi;
+  if [ -n "${GIT_TERMINAL_PROMPT}" ]; then unset GIT_TERMINAL_PROMPT; fi; # export GIT_TERMINAL_PROMPT="0"; fi;
+
+  if [ -n "${GIT_SSH_OPTIONS}" ]; then export GIT_SSH_OPTIONS="${GIT_SSH_OPTIONS}"; fi;
+  if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
 
 fi;
 

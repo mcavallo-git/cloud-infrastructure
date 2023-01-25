@@ -346,6 +346,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # Disable StrictHostKeyChecking for target Hostname
   __echo_logger "---> Disabling StrictHostKeyChecking for SSH connections to host \"${REMOTE_HOST}\"...";
   SSH_CONFIG_APPEND="\n# git_init - Disable StrictHostKeyChecking for \"${REMOTE_HOST}\" (git repo provider)\nHost ${REMOTE_HOST}\n  StrictHostKeyChecking no";  # \n  UserKnownHostsFile /dev/null
+  __echo_logger "---> Calling [ echo -e \"${SSH_CONFIG_APPEND}\" >> \"${USER_SSH_CONFIG}\"; ]";
   echo -e "${SSH_CONFIG_APPEND}" >> "${USER_SSH_CONFIG}";
   __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
   __echo_logger "$(cat -n "${USER_SSH_CONFIG}";)";
@@ -609,7 +610,12 @@ fi;
 # Revert temporary ssh configuration(s)
 #
 if [[ -n "${SED_PATTERN_SSH_CONFIG_UNDO}" ]] && [[ -n "${USER_SSH_CONFIG}" ]] && [[ -f "${USER_SSH_CONFIG}" ]]; then
+  __echo_logger "---> Reverting temporary ssh configuration(s)";
+  __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
+  __echo_logger "---> Calling [ sed -z \"${SED_PATTERN_SSH_CONFIG_UNDO}\" \"${USER_SSH_CONFIG}\" -i; ]";
   sed -z "${SED_PATTERN_SSH_CONFIG_UNDO}" "${USER_SSH_CONFIG}" -i;
+  __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
+  __echo_logger "${LINE_BREAK}";
 fi;
 
 # ------------------------------

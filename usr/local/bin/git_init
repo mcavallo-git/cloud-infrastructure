@@ -353,6 +353,11 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   chmod 0400 "${USER_SSH_CONFIG}";
   __echo_logger "${LINE_BREAK}";
 
+  # Prep the undo to the ssh config file
+  SED_PATTERN_SSH_CONFIG_UNDO="s/${SSH_CONFIG_APPEND}//";
+
+  # ------------------------------
+
   # Clone repo (if non existent)
   FIRST_CLONE_OF_REPO="0";
   if [ ! -d "${GIT_GITDIR}" ]; then
@@ -597,6 +602,14 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   if [ -n "${GIT_SSH_OPTIONS}" ]; then export GIT_SSH_OPTIONS="${GIT_SSH_OPTIONS}"; fi;
   if [ -n "${GIT_WORK_TREE}" ]; then export GIT_WORK_TREE="${GIT_WORK_TREE}"; fi;
 
+fi;
+
+# ------------------------------
+#
+# Revert temporary ssh configuration(s)
+#
+if [[ -n "${SED_PATTERN_SSH_CONFIG_UNDO}" ]] && [[ -n "${USER_SSH_CONFIG}" ]] && [[ -f "${USER_SSH_CONFIG}" ]]; then
+  sed -z "${SED_PATTERN_SSH_CONFIG_UNDO}" "${USER_SSH_CONFIG}" -i;
 fi;
 
 # ------------------------------

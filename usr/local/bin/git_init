@@ -55,15 +55,15 @@ export GIT_INIT_DEBUG="${GIT_INIT_DEBUG:-0}";
 INITIAL_PWD="$(pwd)";
 LINE_BREAK="------------------------------";
 
-
 # ------------------------------
 #
 # Welcome the User
 #
-__echo_logger "${LINE_BREAK}";
-__echo_logger "git_init - git repository configuration script";
-__echo_logger " |--> Logfile (for this session):  ${LOGFILE}";
-__echo_logger "${LINE_BREAK}";
+__echo_logger "${LINE_BREAK}" "FORCE-ECHO";
+__echo_logger "git_init - git repository configuration script" "FORCE-ECHO";
+__echo_logger " |--> Logfile (for this session):  ${LOGFILE}" "FORCE-ECHO";
+__echo_logger "${LINE_BREAK}" "FORCE-ECHO";
+
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
   source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
@@ -406,7 +406,6 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     __echo_logger "---> git remote add origin \"${ORIGIN_GIT}\"" "FORCE-ECHO";
     ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
   fi;
-  __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
   # [config]  core.sshcommand
   # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
@@ -427,7 +426,6 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
     fi;
-    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # [config]  user.email
@@ -438,8 +436,9 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
     fi;
-    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
+
+  __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
   # [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
   REPO_PRUNE_ACTIVE=$(${GIT_CLI} config remote.origin.prune);

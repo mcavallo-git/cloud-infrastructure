@@ -32,9 +32,9 @@ exec 2>&1;
 
 # ------------------------------
 #
-#   echo_logger  -  function which simplifies logging outputs to a file/terminal based on a given verbosity level
+#   __echo_logger  -  function which simplifies logging outputs to a file/terminal based on a given verbosity level
 #
-echo_logger() {
+__echo_logger() {
   local ECHO_STRING="${1}";
   local FORCE_ECHO="${2}";
   local LOWERCASE_ECHO_STRING="$(echo "${ECHO_STRING}" | awk '{print tolower($0)}';)";
@@ -59,10 +59,10 @@ LINE_BREAK="------------------------------";
 #
 # Welcome the User
 #
-echo_logger "${LINE_BREAK}";
-echo_logger "git_init - git repository configuration script";
-echo_logger " |--> Logfile (for this session):  ${LOGFILE}";
-echo_logger "${LINE_BREAK}";
+__echo_logger "${LINE_BREAK}";
+__echo_logger "git_init - git repository configuration script";
+__echo_logger " |--> Logfile (for this session):  ${LOGFILE}";
+__echo_logger "${LINE_BREAK}";
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
   source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
@@ -77,31 +77,31 @@ fi;
 if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
   if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
     # Ubuntu
-    echo_logger "Git not installed (Ubuntu Linux) - Attempting to install via:";
-    echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
-      apt -qq -y update && apt -qq -y install --ignore-missing git;
-    echo_logger "${LINE_BREAK}";
+    __echo_logger "Git not installed (Ubuntu Linux) - Attempting to install via:";
+    __echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
+    apt -qq -y update && apt -qq -y install --ignore-missing git;
+    __echo_logger "${LINE_BREAK}";
   else
     if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then
       # Debian
-      echo_logger "Git not installed (Debian Linux) - Attempting to install via:";
-      echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
-        apt -qq -y update && apt -qq -y install --ignore-missing git;
-      echo_logger "${LINE_BREAK}";
+      __echo_logger "Git not installed (Debian Linux) - Attempting to install via:";
+      __echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
+      apt -qq -y update && apt -qq -y install --ignore-missing git;
+      __echo_logger "${LINE_BREAK}";
     else
       if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then
         # CentOS
-        echo_logger "Git not installed (CentOS Linux) - Attempting to install via:";
-        echo_logger "---> yum -y update && yum -y install --skip-broken git;";
+        __echo_logger "Git not installed (CentOS Linux) - Attempting to install via:";
+        __echo_logger "---> yum -y update && yum -y install --skip-broken git;";
           yum -y update && yum -y install --skip-broken git;
-        echo_logger "${LINE_BREAK}";
+        __echo_logger "${LINE_BREAK}";
       else
         if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then
           # Alpine
-          echo_logger "Git not installed (Alpine Linux) - Attempting to install via:";
-          echo_logger "---> apk update && apk add git;";
+          __echo_logger "Git not installed (Alpine Linux) - Attempting to install via:";
+          __echo_logger "---> apk update && apk add git;";
             apk update && apk add git;
-          echo_logger "${LINE_BREAK}";
+          __echo_logger "${LINE_BREAK}";
         fi;
       fi;
     fi;
@@ -112,7 +112,7 @@ fi;
 
 # Fail-out if git is not installed & could not be installed
 if [ -z "$(command -v git 2>'/dev/null';)" ]; then
-  echo_logger "Error: Git runtime not installed.\n";
+  __echo_logger "Error: Git runtime not installed.\n";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 fi;
 
@@ -121,7 +121,7 @@ if [ -z "${REMOTE_HOST}" ]; then
   read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 <'/dev/tty';
   REMOTE_HOST="${REPLY}";
   if [ -z "${REMOTE_HOST}" ]; then
-    echo_logger "Error: Required variable \$REMOTE_HOST is empty.\n";
+    __echo_logger "Error: Required variable \$REMOTE_HOST is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -131,7 +131,7 @@ if [ -z "${REMOTE_OWNER}" ]; then
   read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 <'/dev/tty';
   REMOTE_OWNER="${REPLY}";
   if [ -z "${REMOTE_OWNER}" ]; then
-    echo_logger "Error: Required variable \$REMOTE_OWNER is empty.\n";
+    __echo_logger "Error: Required variable \$REMOTE_OWNER is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -141,7 +141,7 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
   read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 <'/dev/tty';
   REMOTE_REPOSITORY="${REPLY}";
   if [ -z "${REMOTE_REPOSITORY}" ]; then
-    echo_logger "Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
+    __echo_logger "Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -152,10 +152,10 @@ if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
   read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 <'/dev/tty';
   REMOTE_PRIVATE_KEY="${REPLY}";
   if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
-    echo_logger "Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
+    __echo_logger "Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
-    echo_logger "Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
+    __echo_logger "Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -172,7 +172,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
   # Ensure that the git repo parent dir exists
   if [ ! -d "${REPOS_TEMP_DIR}" ]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Creating default Git directory \"${REPOS_TEMP_DIR}\"";
+    __echo_logger "Info: Creating default Git directory \"${REPOS_TEMP_DIR}\"";
     mkdir -p "${REPOS_TEMP_DIR}";
   fi;
 
@@ -192,12 +192,12 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
   # Verify that the git repos-dir has correct ownership & access-privileges set
   if [ -n "${GIT_CHOWN_UID}" ] && [ -n "${GIT_CHOWN_GID}" ] && [ -d "${REPOS_TEMP_DIR}" ]; then
-    if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Setting Git parent directory's file permissions to \"0700\""; fi;
-    chmod 0700 "${REPOS_TEMP_DIR}";
-    if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}"; fi;
-    if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\""; fi;
-    chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${REPOS_TEMP_DIR}";
-    if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}"; fi;
+    __echo_logger "Info: Setting Git parent directory's file permissions to \"0700\"";
+      chmod 0700 "${REPOS_TEMP_DIR}";
+    __echo_logger "${LINE_BREAK}";
+    __echo_logger "Info: Setting Git parent directory's file ownership to \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\"";
+      chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${REPOS_TEMP_DIR}";
+    __echo_logger "${LINE_BREAK}";
   fi;
 
   # Add desired variable(s) to the environment
@@ -295,40 +295,37 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #
   # Final runtime values - echo them so that they're shown to the user & saved to the logfile (for possible future reference)
   #
-  
-  if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug: Runtime Variables:";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) COMMIT_USER_EMAIL=\"${COMMIT_USER_EMAIL}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) COMMIT_USER_FULLNAME=\"${COMMIT_USER_FULLNAME}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_HOST=\"${REMOTE_HOST}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_OWNER=\"${REMOTE_OWNER}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REPO_BRANCH=\"${REPO_BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) REMOTE_BRANCH=\"${REMOTE_BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) BRANCH=\"${BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) DEFAULT_BRANCH=\"${DEFAULT_BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) PRE_EXISTING_INIT_DEFAULTBRANCH=\"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ORIGIN_GIT=\"${ORIGIN_GIT}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
-    # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
-    # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CLI=\"${GIT_CLI}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
-  fi;
+  __echo_logger "${LINE_BREAK}";
+  __echo_logger "";
+  __echo_logger "Debug: Runtime Variables:";
+  __echo_logger "";
+  __echo_logger "COMMIT_USER_EMAIL=\"${COMMIT_USER_EMAIL}\"";
+  __echo_logger "COMMIT_USER_FULLNAME=\"${COMMIT_USER_FULLNAME}\"";
+  __echo_logger "";
+  __echo_logger "REMOTE_HOST=\"${REMOTE_HOST}\"";
+  __echo_logger "REMOTE_OWNER=\"${REMOTE_OWNER}\"";
+  __echo_logger "REMOTE_REPOSITORY=\"${REMOTE_REPOSITORY}\"";
+  __echo_logger "";
+  __echo_logger "CHECKOUT_BRANCH=\"${CHECKOUT_BRANCH}\"";
+  __echo_logger "REPO_BRANCH=\"${REPO_BRANCH}\"";
+  __echo_logger "REMOTE_BRANCH=\"${REMOTE_BRANCH}\"";
+  __echo_logger "BRANCH=\"${BRANCH}\"";
+  __echo_logger "DEFAULT_BRANCH=\"${DEFAULT_BRANCH}\"";
+  __echo_logger "";
+  __echo_logger "PRE_EXISTING_INIT_DEFAULTBRANCH=\"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
+  __echo_logger "";
+  __echo_logger "ORIGIN_GIT=\"${ORIGIN_GIT}\"";
+  __echo_logger "";
+  __echo_logger "GIT_CHOWN_UID=\"${GIT_CHOWN_UID}\"";
+  __echo_logger "GIT_CHOWN_GID=\"${GIT_CHOWN_GID}\"";
+  __echo_logger "GIT_CHOWN_USERNAME=\"${GIT_CHOWN_USERNAME}\"";
+  __echo_logger "GIT_CHOWN_GROUPNAME=\"${GIT_CHOWN_GROUPNAME}\"";
+  __echo_logger "";
+  __echo_logger "GIT_CLI=\"${GIT_CLI}\"";
+  __echo_logger "GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
+  __echo_logger "GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
+  __echo_logger "";
+  __echo_logger "${LINE_BREAK}";
 
   # ------------------------------
   #
@@ -341,11 +338,11 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   fi;
 
   # Gather SSH Public Keys for target Hostname
-  # echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
+  # __echo_logger "---> Pulling public key(s) from host \"${REMOTE_HOST}\":";
   # ssh-keyscan "${REMOTE_HOST}" >> "${HOME}/.ssh/known_hosts"; # Enforce public-key checking
 
   # Disable StrictHostKeyChecking for target Hostname
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Disabling StrictHostKeyChecking for SSH connections to host \"${REMOTE_HOST}\"...";
+  __echo_logger "---> Disabling StrictHostKeyChecking for SSH connections to host \"${REMOTE_HOST}\"...";
   # ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}";
   ssh -o StrictHostKeyChecking=no -T "${REMOTE_HOST}";
 
@@ -353,7 +350,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   FIRST_CLONE_OF_REPO="0";
   if [ ! -d "${GIT_GITDIR}" ]; then
     FIRST_CLONE_OF_REPO="1";
-  #   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
+  #   __echo_logger "---> ${GIT_CLI_NOCONF} clone ${ORIGIN_GIT}";
   #   cd "${GIT_LOCAL_CEILING}";
   #   export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
   #   # export GIT_SSH_COMMAND="ssh -4 -i '${REMOTE_PRIVATE_KEY}'";
@@ -361,26 +358,26 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #   unset GIT_SSH_COMMAND;
   fi;
 
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git init";
+  __echo_logger "---> git init" "force";
   cd "${GIT_WORK_TREE}";
 
   # [config --global]  init.defaultbranch
   if [ -n "${DEFAULT_BRANCH}" ]; then # Set the default branch (before initialization of repo, which creates the repo w/ the default branch)
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${DEFAULT_BRANCH//refs\/heads\//}\"";
+    __echo_logger "---> git config --global init.defaultbranch \"${DEFAULT_BRANCH//refs\/heads\//}\"";
     git config --global init.defaultbranch "${DEFAULT_BRANCH//refs\/heads\//}";
     # ${GIT_CLI} symbolic-ref HEAD "refs/heads/${DEFAULT_BRANCH//refs\/heads\//}";
   fi;
 
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git init";
+  __echo_logger "---> git init" "force";
   ${GIT_CLI} init;
 
   # [config --global]  init.defaultbranch  (ROLLBACK)
   if [ -n "${DEFAULT_BRANCH}" ]; then  # Rollback the default branch (once repo is initialized with said default branch)
     if [ -n "${PRE_EXISTING_INIT_DEFAULTBRANCH}" ]; then
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"";
+      __echo_logger "---> git config --global init.defaultbranch \"${PRE_EXISTING_INIT_DEFAULTBRANCH}\"" "force";
       git config --global init.defaultbranch "${PRE_EXISTING_INIT_DEFAULTBRANCH}";
     else
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --global --unset init.defaultbranch";
+      __echo_logger "---> git config --global --unset init.defaultbranch" "force";
       git config --global --unset init.defaultbranch;
     fi;
   fi;
@@ -388,10 +385,10 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # [config] remote.origin.url
   LOCAL_CURRENT_ORIGINS=$(${GIT_CLI} remote);
   if [ -n "${LOCAL_CURRENT_ORIGINS}" ]; then # remote origin
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote set-url origin \"${ORIGIN_GIT}\";";
+    __echo_logger "---> git remote set-url origin \"${ORIGIN_GIT}\";";
     ${GIT_CLI} remote set-url origin "${ORIGIN_GIT}";
   else
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git remote add origin \"${ORIGIN_GIT}\"";
+    __echo_logger "---> git remote add origin \"${ORIGIN_GIT}\"";
     ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
   fi;
 
@@ -409,107 +406,107 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # [config]  user.name
   if [ -n "${COMMIT_USER_FULLNAME}" ]; then
     CURRENT_LOCAL_GIT_FULLNAME=$(${GIT_CLI} config user.name);
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config user.name \"${COMMIT_USER_FULLNAME}\"";
+    __echo_logger "---> git config user.name \"${COMMIT_USER_FULLNAME}\"";
     ${GIT_CLI} config user.name "${COMMIT_USER_FULLNAME}";
     if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)       |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
+      __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
     fi;
   fi;
 
   # [config]  user.email
   if [ -n "${COMMIT_USER_EMAIL}" ]; then
     CURRENT_LOCAL_GIT_USER_EMAIL=$(${GIT_CLI} config user.email);
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config user.email \"${COMMIT_USER_EMAIL}\"";
+    __echo_logger "---> git config user.email \"${COMMIT_USER_EMAIL}\"";
     ${GIT_CLI} config user.email "${COMMIT_USER_EMAIL}";
     if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)       |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
+      __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
     fi;
   fi;
 
   # [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
   REPO_PRUNE_ACTIVE=$(${GIT_CLI} config remote.origin.prune);
   if [ "${REPO_PRUNE_ACTIVE}" != "true" ]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config remote.origin.prune true";
+    __echo_logger "---> git config remote.origin.prune true";
     ${GIT_CLI} config remote.origin.prune true;
   fi;
 
   # fetch all
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git fetch --all";
+  __echo_logger "---> git fetch --all";
   ${GIT_CLI} fetch --all;
 
   # new clones - automatically checkout default branch, first
   BRANCH_CHECKED_OUT=0;
   if [ "${FIRST_CLONE_OF_REPO}" == "1" ]; then
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> FIRST_CLONE_OF_REPO == 1";
+    __echo_logger "---> FIRST_CLONE_OF_REPO == 1";
     # get default branch(es)
     if [ -n "${CHECKOUT_BRANCH}" ]; then
       TRY_BRANCH="${CHECKOUT_BRANCH}";
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
       else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="main";
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
         CHECKOUT_BRANCH="${TRY_BRANCH}";
       else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="master";
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Successfully checked out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Info: Setting variable \${CHECKOUT_BRANCH} to value \"${TRY_BRANCH}\"";
         CHECKOUT_BRANCH="${TRY_BRANCH}";
       else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
+        __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
     fi;
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git pull -v";
+    __echo_logger "---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"";
+    __echo_logger "---> git pull -v";
     ${GIT_CLI} pull -v;
   fi;
 
   # get current branch
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git branch | grep '*' | awk '{print \$2}'  # (get current branch)";
+  __echo_logger "---> git branch | grep '*' | awk '{print \$2}'  # (get current branch)";
   LOCAL_CURRENT_BRANCH=$(${GIT_CLI} branch | grep '*' | awk '{print $2}');
-  echo "${LOCAL_CURRENT_BRANCH}";
+  __echo_logger "     LOCAL_CURRENT_BRANCH=\"${LOCAL_CURRENT_BRANCH}\"";
   if [ -n "${LOCAL_CURRENT_BRANCH}" ]; then
     REMOTE_BRANCH_EXISTS=$(${GIT_CLI} branch -a | awk '{print $1}' | grep -w remotes/origin/${CHECKOUT_BRANCH});
     if [ -n "${REMOTE_BRANCH_EXISTS}" ]; then
       # checkout specific branch if not already on it
       if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout --force ${CHECKOUT_BRANCH}";
+        __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}";
         ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
       else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
+        __echo_logger "Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"";
       fi;
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
+      __echo_logger "---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"";
       ${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
     else
       if [[ 0 -eq 1 ]]; then
         # Create the checkout branch locally - ERROR PRONE - STICK TO FETCHING & PULLING THE REMOTE BRANCH
         ${GIT_CLI} checkout -b "${CHECKOUT_BRANCH}";
       fi;
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
+      __echo_logger "Error: Branch \"${CHECKOUT_BRANCH}\" not found on remote.";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
     fi;
   else
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git checkout --force ${CHECKOUT_BRANCH}";
+    __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}";
     ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
   fi;
 
@@ -519,25 +516,25 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
     # pull the desired branch
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git pull -v";
+    __echo_logger "---> git pull -v";
     ${GIT_CLI} pull -v;
 
     if [[ "${GIT_INIT_DEBUG}" -ne 0 ]]; then
       # show final git config
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git config --list --show-origin"; ${GIT_CLI} config --list;
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+      __echo_logger "---> git config --list --show-origin"; ${GIT_CLI} config --list;
+      __echo_logger "${LINE_BREAK}";
     fi;
 
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> git status";
+    __echo_logger "---> git status";
     ${GIT_CLI} status;
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+    __echo_logger "${LINE_BREAK}";
 
     if [ -d "${WINDOWS_GITHUB_LOCAL_CEILING}" ]; then
       if [ ! -d "${WINDOWS_GITHUB_WORK_TREE}" ]; then
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: Attempting to relocate the git repository's root directory...";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> from \"${GIT_WORK_TREE}\"";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)        |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
+        __echo_logger "Info: Attempting to relocate the git repository's root directory...";
+        __echo_logger "       |--> from \"${GIT_WORK_TREE}\"";
+        __echo_logger "       |--> to \"${WINDOWS_GITHUB_WORK_TREE}\"";
+        __echo_logger "---> mv \"${GIT_WORK_TREE}\" \"${WINDOWS_GITHUB_WORK_TREE}\"";
         mv "${GIT_WORK_TREE}" "${WINDOWS_GITHUB_WORK_TREE}";
         GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
         # Cleanup empty directories
@@ -545,17 +542,17 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
           find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
         fi;
       else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Directory already exists (unable to relocate git work tree to):";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)         |--> \"${WINDOWS_GITHUB_WORK_TREE}\"";
+        __echo_logger "Error: Directory already exists (unable to relocate git work tree to):";
+        __echo_logger "        |--> \"${WINDOWS_GITHUB_WORK_TREE}\"";
       fi;
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+      __echo_logger "${LINE_BREAK}";
     fi;
 
     chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
     chmod -R 0700 "${GIT_WORK_TREE}";
 
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]";
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+    __echo_logger "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]";
+    __echo_logger "${LINE_BREAK}";
     cd "${GIT_WORK_TREE}" && git fetch --all;
 
   fi;
@@ -581,8 +578,8 @@ fi;
 LOGDIR="${LOGDIR:-/var/log/git_init}";
 RETENTION_DAYS=60;
 if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
-  echo "";
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
+  __echo_logger "";
+  __echo_logger "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
   find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
 fi;
 
@@ -591,7 +588,7 @@ fi;
 # Exit Gracefully
 #
 if [[ "${EXIT_CODE}" -ne 0 ]]; then
-  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info: One or more errors occurred - Exiting after 20s...";
+  __echo_logger "Info: One or more errors occurred - Exiting after 20s...";
   sleep 20;
 fi;
 if [[ 0 -eq 1 ]]; then

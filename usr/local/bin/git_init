@@ -60,24 +60,28 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
     echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Ubuntu Linux) - Attempting to install via:";
     echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apt -y update && apt -y install --ignore-missing git;";
     apt -qq -y update && apt -qq -y install --ignore-missing git;
+    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
   else
     if [ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]; then
       # Debian
       echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Debian Linux) - Attempting to install via:";
       echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apt -y update && apt -y install --ignore-missing git;";
       apt -qq -y update && apt -qq -y install --ignore-missing git;
+      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
     else
       if [ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]; then
         # CentOS
         echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (CentOS Linux) - Attempting to install via:";
         echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> yum -y update && yum -y install --skip-broken git;";
         yum -y update && yum -y install --skip-broken git;
+        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
       else
         if [ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]; then
           # Alpine
           echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Alpine Linux) - Attempting to install via:";
           echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apk update && apk add git;";
           apk update && apk add git;
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
         fi;
       fi;
     fi;

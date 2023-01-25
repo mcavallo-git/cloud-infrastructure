@@ -4,19 +4,21 @@
 #
 # ------------------------------------------------------------
 
+PACKAGE_NAME="${1}";
+
 EXIT_CODE=1;
 
 echo "";
-if [ -z "$1" ]; then
+if [ -z "${PACKAGE_NAME}" ]; then
   echo "Error:  Argument #1 missing (packagename)";
   echo " |";
   echo " |--> Example call:  list_dependent_packages nginx";
 else
   if [[ -n "$(command -v apt-cache 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
     echo "";
-    echo "Info:  Calling [ apt-cache rdepends \"${1}\"; ]...";
+    echo "Info:  Calling [ apt-cache rdepends \"${PACKAGE_NAME}\"; ]...";
     EXIT_CODE=0;
-    apt-cache rdepends "${1}";
+    apt-cache rdepends "${PACKAGE_NAME}";
   else
     echo "Error:  Incompatible environment/OS (Debian required)";
   fi;

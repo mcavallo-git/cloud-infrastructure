@@ -4,6 +4,8 @@
 #
 # ------------------------------------------------------------
 
+PACKAGE_NAME="${1}";
+
 RET_CODE=1;
 
 INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;)";
@@ -11,14 +13,14 @@ INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>
 if [ -n "${INSTALLED_PACKAGES}" ]; then
   if [ $# -gt 0 ]; then
     #
-    # Determine if argument $1 (if given) exists/is-installed as a local package
+    # Determine if package name exists/is-installed as a local package
     #
-    CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${1})\.(x86_64|noarch)\s+.+$/\1/p";);
+    CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${PACKAGE_NAME})\.(x86_64|noarch)\s+.+$/\1/p";);
     if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
-      echo "Info:  Package \"${1}\" not found, locally";
+      echo "Info:  Package \"${PACKAGE_NAME}\" not found, locally";
       RET_CODE=1;
     else
-      echo "Info:  Package \"${1}\" already exists locally";
+      echo "Info:  Package \"${PACKAGE_NAME}\" already exists locally";
       RET_CODE=0;
     fi;
   else

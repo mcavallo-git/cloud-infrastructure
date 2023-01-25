@@ -4,16 +4,18 @@
 #
 # ------------------------------------------------------------
 
+PACKAGE_NAME="${1}";
+
 echo "";
-if [ -n "$1" ]; then
+if [ -n "${PACKAGE_NAME}" ]; then
 
   # Use first argument passed to script as a string to match the available packages against
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-    apt-cache search "$1" | sort | grep -i "$1";
-    echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep --color=auto -i "$1" | wc -l;
+    apt-cache search "${PACKAGE_NAME}" | sort | grep -i "${PACKAGE_NAME}";
+    echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep --color=auto -i "${PACKAGE_NAME}" | wc -l;
   elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-    yum list available "*$1*" | sort | grep -i "$1";
-    echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep --color=auto -i "$1" | wc -l;
+    yum list available "*${PACKAGE_NAME}*" | sort | grep -i "${PACKAGE_NAME}";
+    echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep --color=auto -i "${PACKAGE_NAME}" | wc -l;
   else
     echo "Error:  Incompatible environment - exiting...";
   fi;
@@ -23,10 +25,10 @@ else
   # No argument(s) passed - Show all available packages
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     apt-cache search '' | sort;
-    echo ""; echo -n "Total Packages Found:  "; apt-cache search "$1" | sort | wc -l;
+    echo ""; echo "Total Packages Found:  $(apt-cache search "${PACKAGE_NAME}" | sort | wc -l;)";
   elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     yum list available | sort;
-    echo ""; echo -n "Total Packages Found:  "; yum list available | sort | wc -l;
+    echo ""; echo "Total Packages Found:  $(yum list available | sort | wc -l;)";
   else
     echo "Error:  Incompatible environment - exiting...";
   fi;

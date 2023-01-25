@@ -540,6 +540,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
         GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
         # Cleanup empty directories
         if [[ "$(find "${REPOS_TEMP_DIR}" -type "d" -empty -print 2>'/dev/null'| wc -l;)" -gt 0 ]]; then
+          cd "${HOME}";
           find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
         fi;
       else

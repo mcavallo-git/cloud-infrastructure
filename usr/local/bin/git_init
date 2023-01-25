@@ -359,7 +359,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #   unset GIT_SSH_COMMAND;
   fi;
 
-  __echo_logger "---> git init" "FORCE-ECHO";
+  __echo_logger "---> cd \"${GIT_WORK_TREE}";
   cd "${GIT_WORK_TREE}";
 
   # [config --global]  init.defaultbranch
@@ -371,6 +371,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
   __echo_logger "---> git init" "FORCE-ECHO";
   ${GIT_CLI} init;
+  __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
   # [config --global]  init.defaultbranch  (ROLLBACK)
   if [ -n "${DEFAULT_BRANCH}" ]; then  # Rollback the default branch (once repo is initialized with said default branch)
@@ -381,6 +382,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       __echo_logger "---> git config --global --unset init.defaultbranch" "FORCE-ECHO";
       git config --global --unset init.defaultbranch;
     fi;
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # [config] remote.origin.url
@@ -392,6 +394,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     __echo_logger "---> git remote add origin \"${ORIGIN_GIT}\"" "FORCE-ECHO";
     ${GIT_CLI} remote add origin "${ORIGIN_GIT}";
   fi;
+  __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
   # [config]  core.sshcommand
   # ${GIT_CLI} config core.sshcommand "ssh -4 -i '${REMOTE_PRIVATE_KEY}' -o StrictHostKeyChecking=no -F /dev/null";
@@ -412,6 +415,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     if [ "${COMMIT_USER_FULLNAME}" != "${CURRENT_LOCAL_GIT_FULLNAME}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_FULLNAME}\"";
     fi;
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # [config]  user.email
@@ -422,6 +426,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
     if [ "${COMMIT_USER_EMAIL}" != "${CURRENT_LOCAL_GIT_USER_EMAIL}" ]; then
       __echo_logger "      |--> Info:  Previous value = \"${CURRENT_LOCAL_GIT_USER_EMAIL}\"";
     fi;
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # [config]  remote.origin.prune  +  auto-pruning (upon fetching / pulling)
@@ -434,6 +439,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   # fetch all
   __echo_logger "---> git fetch --all" "FORCE-ECHO";
   ${GIT_CLI} fetch --all;
+  __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
   # new clones - automatically checkout default branch, first
   BRANCH_CHECKED_OUT=0;
@@ -450,6 +456,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       else
         __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
+      __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="main";
@@ -463,10 +470,11 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       else
         __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
+      __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     fi;
     if [[ ${BRANCH_CHECKED_OUT} -eq 0 ]]; then
       TRY_BRANCH="master";
-      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]" "FORCE-ECHO";
+      __echo_logger "---> Info: Attempting to checkout branch \"${TRY_BRANCH}\" via [ git checkout --track \"origin/${TRY_BRANCH}\"; ]";
       ${GIT_CLI} checkout --track "origin/${TRY_BRANCH}"; CHECKOUT_ERROR_CODE=$?;
       if [[ ${CHECKOUT_ERROR_CODE} -eq 0 ]]; then
         BRANCH_CHECKED_OUT=1;
@@ -476,11 +484,12 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       else
         __echo_logger "---> Error: Failed to check out branch \"${TRY_BRANCH}\"";
       fi;
+      __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     fi;
     __echo_logger "---> Info: Pulling branch \"${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
-    __echo_logger "";
-    __echo_logger "---> git pull -v" "FORCE-ECHO";
+    __echo_logger "      |---> git pull -v" "FORCE-ECHO";
     ${GIT_CLI} pull -v;
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # get current branch
@@ -494,11 +503,13 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       if [ "${CHECKOUT_BRANCH}" != "${LOCAL_CURRENT_BRANCH}" ]; then
         __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}" "FORCE-ECHO";
         ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
+        __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
       else
         __echo_logger "Info: SKIPPING CHECKOUT - Already on branch \"${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
       fi;
       __echo_logger "---> git reset --hard \"origin/${CHECKOUT_BRANCH}\"" "FORCE-ECHO";
       ${GIT_CLI} reset --hard "origin/${CHECKOUT_BRANCH}";
+      __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     else
       if [[ 0 -eq 1 ]]; then
         # Create the checkout branch locally - ERROR PRONE - STICK TO FETCHING & PULLING THE REMOTE BRANCH
@@ -510,6 +521,7 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   else
     __echo_logger "---> git checkout --force ${CHECKOUT_BRANCH}" "FORCE-ECHO";
     ${GIT_CLI} checkout --force "${CHECKOUT_BRANCH}";
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
   fi;
 
   # ------------------------------
@@ -519,7 +531,8 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
     # pull the desired branch
     __echo_logger "---> git pull -v" "FORCE-ECHO";
-    __echo_logger "$(${GIT_CLI} pull -v;)";
+    ${GIT_CLI} pull -v;
+    __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
 
     # show final git config
     __echo_logger "---> git config --list --show-origin";
@@ -551,13 +564,16 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
       __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
     fi;
 
+    # Set file/directory ownership over the git repo
+    __echo_logger "---> Calling [ chown -R \"${GIT_CHOWN_UID}:${GIT_CHOWN_GID}\" \"${GIT_WORK_TREE}\"; ]";
     chown -R "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
+    __echo_logger "---> Calling [ chmod -R 0700 \"${GIT_WORK_TREE}\"; ]";
     chmod -R 0700 "${GIT_WORK_TREE}";
 
+    # fetch the latest commits from the repo in its final location
     __echo_logger "Calling [ cd \"${GIT_WORK_TREE}\" && git fetch --all; ]" "FORCE-ECHO";
+    cd "${GIT_WORK_TREE}" && git fetch --all;
     __echo_logger "${LINE_BREAK}" "FORCE-ECHO";
-    cd "${GIT_WORK_TREE}";
-    __echo_logger "$(git fetch --all;)";
 
   fi;
 

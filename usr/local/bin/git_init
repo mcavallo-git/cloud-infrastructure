@@ -32,7 +32,7 @@ exec 2>&1;
 
 # ------------------------------
 
-LINE_BREAK="------------------------------------------------------------";
+LINE_BREAK="------------------------------";
 
 #
 # Welcome the User
@@ -86,9 +86,9 @@ if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
   fi;
 fi;
 
-echo "";
-echo "------------------------------------------------------------";
-echo "";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
 
 # Fail-out if git is not installed & could not be installed
 if [[ -z "$(command -v git 2>'/dev/null';)" ]]; then
@@ -272,7 +272,7 @@ PRE_EXISTING_INIT_DEFAULTBRANCH="$(git config --global "init.defaultbranch";)";
 #
 # Final runtime values - echo them so that they're shown to the user & saved to the logfile (for possible future reference)
 #
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ------------------------------------------------------------";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Debug: Runtime Variables:";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
@@ -302,7 +302,7 @@ echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_CLI=\"${GIT_CLI}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_SSH_COMMAND=\"${GIT_SSH_COMMAND}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) GIT_WORK_TREE=\"${GIT_WORK_TREE}\"";
 echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ------------------------------------------------------------";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
 
 # ------------------------------
 #

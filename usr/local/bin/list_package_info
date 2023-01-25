@@ -14,27 +14,27 @@ if [ -n "${PACKAGE_NAME}" ]; then
 
   # Use first argument passed to script as a string to match the available packages against
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-    echo -e "${DASH_NL}Calling [ apt-cache policy \"${PACKAGE_NAME}\"; ]...";
+    echo -e "${DASH_NL}Info:  Calling [ apt-cache policy \"${PACKAGE_NAME}\"; ]...";
     apt-cache policy "${PACKAGE_NAME}";
-    echo -e "${DASH_NL}Calling [ apt-cache showpkg \"${PACKAGE_NAME}\"; ]...";
+    echo -e "${DASH_NL}Info:  Calling [ apt-cache showpkg \"${PACKAGE_NAME}\"; ]...";
     apt-cache showpkg "${PACKAGE_NAME}";
   else
-    echo "Error:  Incompatible environment - exiting...";
+    echo e "${DASH_NL}Error:  Incompatible environment - exiting...";
   fi;
 
 else
 
   # No argument(s) passed - Show all available package repos
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-    echo -e "${DASH_NL}Calling [ apt-cache policy; ]...";
+    echo -e "${DASH_NL}Info:  Calling [ apt-cache policy; ]...";
     apt-cache policy;
     echo ""; echo -e "${DASH_NL}Total package repositories found:  $(apt-cache policy | grep -i '  origin ' | wc -l;)";
   else
-    echo "Error:  Incompatible environment - exiting...";
+    echo e "${DASH_NL}Error:  Incompatible environment - exiting...";
   fi;
 
 fi;
-echo "";
+echo -e "${DASH_NL}";
 
 
 # ------------------------------------------------------------

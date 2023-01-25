@@ -6,7 +6,7 @@
 
 PACKAGE_NAME="${1}";
 
-RET_CODE=1;
+EXIT_CODE=1;
 
 INSTALLED_PACKAGES="$(apt list --installed 2>'/dev/null' || rpm --query --all 2>'/dev/null' | sort;)";
 
@@ -18,10 +18,10 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
     CHECK_FOR_LOCAL_PKG=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^(${PACKAGE_NAME})\.(x86_64|noarch)\s+.+$/\1/p";);
     if [ -z "${CHECK_FOR_LOCAL_PKG}" ]; then
       echo "Info:  Package \"${PACKAGE_NAME}\" not found, locally";
-      RET_CODE=1;
+      EXIT_CODE=1;
     else
       echo "Info:  Package \"${PACKAGE_NAME}\" already exists locally";
-      RET_CODE=0;
+      EXIT_CODE=0;
     fi;
   else
     if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
@@ -31,13 +31,13 @@ if [ -n "${INSTALLED_PACKAGES}" ]; then
       INSTALLED_PACKAGES=$(echo "${INSTALLED_PACKAGES}" | sed -rne "s/^([a-zA-Z0-9\.\_\-]+)\.(x86_64|noarch)\s+.+$/\1/p";);
     fi;
     echo "${INSTALLED_PACKAGES}";
-    RET_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above
+    EXIT_CODE=2; # Don't report a success unnecesarilly (to avoid mixups with the single-package search, above
   fi;
 else
   echo "Error:  Incompatible environment - exiting...";
 fi;
 
-exit ${RET_CODE};
+exit ${EXIT_CODE};
 
 
 # ------------------------------------------------------------

@@ -27,7 +27,7 @@ if [[ "$(id -un)" != "root" ]]; then
   echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Script must run as user \"root\" or via \"sudo\" command";
   exit 1;
 else
-  RET_CODE=1;
+
   if [ -n "$(which mc)" ]; then
     echo "Info: Skipping install of [ mc ] command - Calling [ which mc ] returned [ $(which mc) ";
 

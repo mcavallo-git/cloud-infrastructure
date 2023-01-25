@@ -52,6 +52,7 @@ __echo_logger() {
 
 EXIT_CODE=0;
 export GIT_INIT_DEBUG="${GIT_INIT_DEBUG:-0}";
+INITIAL_PWD="$(pwd)";
 LINE_BREAK="------------------------------";
 
 
@@ -540,7 +541,8 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
         GIT_WORK_TREE="${WINDOWS_GITHUB_WORK_TREE}";
         # Cleanup empty directories
         if [[ "$(find "${REPOS_TEMP_DIR}" -type "d" -empty -print 2>'/dev/null'| wc -l;)" -gt 0 ]]; then
-          cd "${HOME}";
+          # Leave any directories that may be deleted
+          if [[ -d "${INITIAL_PWD}" ]]; then cd "${INITIAL_PWD}"; else cd "${HOME}"; fi;
           find "${REPOS_TEMP_DIR}" -type "d" -empty -delete;
         fi;
       else

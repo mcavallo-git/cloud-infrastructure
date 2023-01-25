@@ -225,20 +225,20 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
   GIT_HOST_DIR="${REPOS_TEMP_DIR}/${REMOTE_HOST}";
   if [ ! -d "${GIT_HOST_DIR}" ]; then
-    mkdir -p "${GIT_HOST_DIR}" && chmod 700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
+    mkdir -p "${GIT_HOST_DIR}" && chmod 0700 "${GIT_HOST_DIR}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_HOST_DIR}";
   fi;
 
   GIT_LOCAL_CEILING="${GIT_HOST_DIR}/${REMOTE_OWNER}";
   WINDOWS_GITHUB_LOCAL_CEILING="${HOME}/Documents/GitHub";
   if [ ! -d "${GIT_LOCAL_CEILING}" ]; then
-    mkdir -p "${GIT_LOCAL_CEILING}" && chmod 700 "${GIT_LOCAL_CEILING}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_LOCAL_CEILING}";
+    mkdir -p "${GIT_LOCAL_CEILING}" && chmod 0700 "${GIT_LOCAL_CEILING}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_LOCAL_CEILING}";
   fi;
 
   GIT_WORK_TREE="${GIT_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
   WINDOWS_GITHUB_WORK_TREE="${WINDOWS_GITHUB_LOCAL_CEILING}/${REMOTE_REPOSITORY}";
   GIT_WORK_TREE_REL=".";
   if [ ! -d "${GIT_WORK_TREE}" ]; then
-    mkdir -p "${GIT_WORK_TREE}" && chmod 700 "${GIT_WORK_TREE}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
+    mkdir -p "${GIT_WORK_TREE}" && chmod 0700 "${GIT_WORK_TREE}" && chown "${GIT_CHOWN_UID}:${GIT_CHOWN_GID}" "${GIT_WORK_TREE}";
   fi;
 
   GIT_GITDIR="${GIT_WORK_TREE}/.git";
@@ -334,8 +334,9 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
   #
 
   # Create default-directory for SSH's configs
-  if [ ! -d "${HOME}/.ssh" ]; then
-    mkdir -p "${HOME}/.ssh"; chmod 700 "${HOME}/.ssh";
+  USER_SSH_CONFIG="${HOME}/.ssh/config";
+  if [ ! -d "$(dirname "${USER_SSH_CONFIG}";)" ]; then
+    mkdir -p "$(dirname "${USER_SSH_CONFIG}";)"; chmod 0700 "$(dirname "${USER_SSH_CONFIG}";)";
   fi;
 
   # Gather SSH Public Keys for target Hostname
@@ -344,8 +345,13 @@ if [[ "${EXIT_CODE}" -eq 0 ]]; then
 
   # Disable StrictHostKeyChecking for target Hostname
   __echo_logger "---> Disabling StrictHostKeyChecking for SSH connections to host \"${REMOTE_HOST}\"...";
-  # ssh -o StrictHostKeyChecking=no -T "${ORIGIN_GIT}";
-  ssh -o StrictHostKeyChecking=no -T "${REMOTE_HOST}";
+  SSH_CONFIG_APPEND="\n# git_init - Disable StrictHostKeyChecking for \"${REMOTE_HOST}\" (git repo provider)\nHost ${REMOTE_HOST}\n  StrictHostKeyChecking no";  # \n  UserKnownHostsFile /dev/null
+  echo -e "${SSH_CONFIG_APPEND}" >> "${USER_SSH_CONFIG}";
+  __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
+  __echo_logger "$(cat -n "${USER_SSH_CONFIG}";)";
+  __echo_logger "---> Calling [ chmod 0400 \"${USER_SSH_CONFIG}\"; ]";
+  chmod 0400 "${USER_SSH_CONFIG}";
+  __echo_logger "${LINE_BREAK}";
 
   # Clone repo (if non existent)
   FIRST_CLONE_OF_REPO="0";

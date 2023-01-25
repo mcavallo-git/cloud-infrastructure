@@ -31,24 +31,20 @@ exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script start
 exec 2>&1;
 
 # ------------------------------
-
-ECHO_LOGGER() {
+#
+#   echo_logger  -  function which simplifies logging outputs to a file/terminal based on a given verbosity level
+#
+echo_logger() {
   local ECHO_STRING="${1}";
   local FORCE_ECHO="${2}";
+  local LOWERCASE_ECHO_STRING="$(echo "${ECHO_STRING}" | awk '{print tolower($0)}';)";
   local TIMESTAMP="$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)";
-  # Set string comparisons to be case INsensitive
-  ROLLBACK_SHOPT_NOCASEMATCH="$(shopt | grep '^nocasematch ' | awk '{print $2}';)";
-  shopt -s nocasematch;
-  if [[ "${GIT_INIT_DEBUG}" -ne "0" ]] || [[ "${FORCE_ECHO}" == "force" ]] || [[ "${ECHO_STRING}" == *"error"* ]]; then
-    # Always show echoes if the verbosity is high, if its forced to be echoed, or if the output contains error message(s)
-    echo "${TIMESTAMP} ${ECHO_STRING}";
+  if [[ "${GIT_INIT_DEBUG}" -ne "0" ]] || [[ "${LOWERCASE_ECHO_STRING}" == *"error"* ]] || [[ "${FORCE_ECHO}" == "echo" ]]; then
+    # Always show echoes if the verbosity is high, if the output contains error message(s) or if the force-option is set
+    echo -e "${TIMESTAMP} ${ECHO_STRING}";
   else
     # Output to logfile, only
-    echo "${TIMESTAMP} ${ECHO_STRING}" >> "${LOGFILE}";
-  fi;
-  # Restore string comparison case sensitivity setting
-  if [[ "${ROLLBACK_SHOPT_NOCASEMATCH}" == "off" ]]; then
-    shopt -u nocasematch;
+    echo -e "${TIMESTAMP} ${ECHO_STRING}" >> "${LOGFILE}";
   fi;
 };
 
@@ -63,10 +59,10 @@ LINE_BREAK="------------------------------";
 #
 # Welcome the User
 #
-ECHO_LOGGER "${LINE_BREAK}";
-ECHO_LOGGER "git_init - git repository configuration script";
-ECHO_LOGGER " |--> Logfile (for this session):  ${LOGFILE}";
-ECHO_LOGGER "${LINE_BREAK}";
+echo_logger "${LINE_BREAK}";
+echo_logger "git_init - git repository configuration script";
+echo_logger " |--> Logfile (for this session):  ${LOGFILE}";
+echo_logger "${LINE_BREAK}";
 
 if [ -n "${1}" ] && [ -f "${1}" ]; then
   source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
@@ -81,31 +77,31 @@ fi;
 if [ -z "$(which git 2>'/dev/null';)" ] && [ "$(id -un)" == "root" ]; then
   if [[ $(cat /etc/*release | grep -i ubuntu | wc -l) -gt 0 ]]; then
     # Ubuntu
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Ubuntu Linux) - Attempting to install via:";
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apt -y update && apt -y install --ignore-missing git;";
-    apt -qq -y update && apt -qq -y install --ignore-missing git;
-    echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+    echo_logger "Git not installed (Ubuntu Linux) - Attempting to install via:";
+    echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
+      apt -qq -y update && apt -qq -y install --ignore-missing git;
+    echo_logger "${LINE_BREAK}";
   else
     if [[ $(cat /etc/*release | grep -i debian | wc -l) -gt 0 ]]; then
       # Debian
-      echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Debian Linux) - Attempting to install via:";
-      echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apt -y update && apt -y install --ignore-missing git;";
-      apt -qq -y update && apt -qq -y install --ignore-missing git;
-      echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+      echo_logger "Git not installed (Debian Linux) - Attempting to install via:";
+      echo_logger "---> apt -y update && apt -y install --ignore-missing git;";
+        apt -qq -y update && apt -qq -y install --ignore-missing git;
+      echo_logger "${LINE_BREAK}";
     else
       if [[ $(cat /etc/*release | grep -i centos | wc -l) -gt 0 ]]; then
         # CentOS
-        echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (CentOS Linux) - Attempting to install via:";
-        echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> yum -y update && yum -y install --skip-broken git;";
-        yum -y update && yum -y install --skip-broken git;
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+        echo_logger "Git not installed (CentOS Linux) - Attempting to install via:";
+        echo_logger "---> yum -y update && yum -y install --skip-broken git;";
+          yum -y update && yum -y install --skip-broken git;
+        echo_logger "${LINE_BREAK}";
       else
         if [[ $(cat /etc/*release | grep -i alpine | wc -l) -gt 0 ]]; then
           # Alpine
-          echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git not installed (Alpine Linux) - Attempting to install via:";
-          echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ---> apk update && apk add git;";
-          apk update && apk add git;
-          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+          echo_logger "Git not installed (Alpine Linux) - Attempting to install via:";
+          echo_logger "---> apk update && apk add git;";
+            apk update && apk add git;
+          echo_logger "${LINE_BREAK}";
         fi;
       fi;
     fi;
@@ -116,7 +112,7 @@ fi;
 
 # Fail-out if git is not installed & could not be installed
 if [ -z "$(command -v git 2>'/dev/null';)" ]; then
-  echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Git runtime not installed.\n";
+  echo_logger "Error: Git runtime not installed.\n";
   EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
 fi;
 
@@ -125,7 +121,7 @@ if [ -z "${REMOTE_HOST}" ]; then
   read -p "  Remote Host/IPv4?  (e.g. github.com)  :  " -t 60 <'/dev/tty';
   REMOTE_HOST="${REPLY}";
   if [ -z "${REMOTE_HOST}" ]; then
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Required variable \$REMOTE_HOST is empty.\n";
+    echo_logger "Error: Required variable \$REMOTE_HOST is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -135,7 +131,7 @@ if [ -z "${REMOTE_OWNER}" ]; then
   read -p "  Remote Repo's Owner? (username/company-name which owns repo)  :  " -t 60 <'/dev/tty';
   REMOTE_OWNER="${REPLY}";
   if [ -z "${REMOTE_OWNER}" ]; then
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Required variable \$REMOTE_OWNER is empty.\n";
+    echo_logger "Error: Required variable \$REMOTE_OWNER is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -145,7 +141,7 @@ if [ -z "${REMOTE_REPOSITORY}" ]; then
   read -p "  Remote Repo's Basename? (e.g. name of the repository)  :  " -t 60 <'/dev/tty';
   REMOTE_REPOSITORY="${REPLY}";
   if [ -z "${REMOTE_REPOSITORY}" ]; then
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
+    echo_logger "Error: Required variable \$REMOTE_REPOSITORY is empty.\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;
@@ -156,10 +152,10 @@ if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
   read -p "  Private-Key for Remote Repo? (e.g. fullpath to RSA key)  :  " -t 60 <'/dev/tty';
   REMOTE_PRIVATE_KEY="${REPLY}";
   if [ -z "${REMOTE_PRIVATE_KEY}" ]; then
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
+    echo_logger "Error: Required variable \$REMOTE_PRIVATE_KEY is empty.\n"; 
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   elif [ ! -f "${REMOTE_PRIVATE_KEY}" ]; then
-    echo -e "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
+    echo_logger "Error: File not found: \$REMOTE_PRIVATE_KEY=\"${REMOTE_PRIVATE_KEY}\".\n";
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 ));
   fi;
 fi;

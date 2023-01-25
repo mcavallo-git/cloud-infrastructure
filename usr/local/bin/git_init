@@ -612,9 +612,11 @@ fi;
 if [[ -n "${SED_PATTERN_SSH_CONFIG_UNDO}" ]] && [[ -n "${USER_SSH_CONFIG}" ]] && [[ -f "${USER_SSH_CONFIG}" ]]; then
   __echo_logger "---> Reverting temporary ssh configuration(s)";
   __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
+  __echo_logger "$(cat -n "${USER_SSH_CONFIG}";)";
   __echo_logger "---> Calling [ sed -z \"${SED_PATTERN_SSH_CONFIG_UNDO}\" \"${USER_SSH_CONFIG}\" -i; ]";
   sed -z "${SED_PATTERN_SSH_CONFIG_UNDO}" "${USER_SSH_CONFIG}" -i;
   __echo_logger "---> Calling [ cat -n \"${USER_SSH_CONFIG}\"; ]";
+  __echo_logger "$(cat -n "${USER_SSH_CONFIG}";)";
   __echo_logger "${LINE_BREAK}";
 fi;
 

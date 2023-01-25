@@ -32,6 +32,19 @@ exec 2>&1;
 
 # ------------------------------
 
+LINE_BREAK="------------------------------------------------------------";
+
+#
+# Welcome the User
+#
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) git_init - git repository configuration script";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)   Logfile (for this session):";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';)      ${LOGFILE}";
+echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ";
+
 if [ -n "${1}" ] && [ -f "${1}" ]; then
   source "${1}"; # First inline parameter ( $1 ) is the path to another shell script which sets/instantiates all required config variables
 fi;
@@ -128,11 +141,6 @@ if [ -n "${FAIL_MSG}" ]; then
   sleep 20;
   exit 1;
 fi;
-
-# Welcome the User
-LINE_BREAK="------------------------------------------------------------";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ${LINE_BREAK}";
-echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Git Setup/Config";
 
 # Set default git repos dir
 if [[ "$(id -un)" != "root" ]]; then
@@ -556,7 +564,7 @@ LOGDIR="${LOGDIR:-/var/log/git_init}";
 RETENTION_DAYS=60;
 if [[ -d "${LOGDIR}" ]] && [[ "$(find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} | wc -l;)" -gt 0 ]]; then
   echo "";
-  echo "Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
+  echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Info:  Cleaning logs older than [ ${RETENTION_DAYS} days old ] from directory \"${LOGDIR}\"";
   find "${LOGDIR}" -type f -mtime +${RETENTION_DAYS} -exec rm -- '{}' \;;
 fi;
 

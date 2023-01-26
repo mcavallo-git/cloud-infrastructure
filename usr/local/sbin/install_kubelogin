@@ -43,6 +43,7 @@ else
     apt-get -y update; apt-get -y install wget;
   fi;
   # Install kubelogin
+  echo "";
   if [[ -z "$(command -v kubelogin 2>'/dev/null';)" ]]; then
     KUBELOGIN_DOWNLOAD_URL="https://github.com/Azure/kubelogin/releases/download/v0.0.25/kubelogin-linux-amd64.zip";
     OUTFILE="/install/kubelogin/$(basename "${KUBELOGIN_DOWNLOAD_URL}";)";
@@ -52,22 +53,24 @@ else
     if [[ -f "${OUTFILE}" ]] && [[ "${WGET_EXIT_CODE}" -eq 0 ]]; then
       unzip -qq "${OUTFILE}" -d "$(dirname "${OUTFILE}";)/"
       mv --no-clobber "$(dirname "${OUTFILE}";)/bin/linux_amd64/kubelogin" "${KUBELOGIN_BIN_PATH}";
+      echo "Installed kubelogin executable to path \"${KUBELOGIN_BIN_PATH}\"";
     else
       echo "Error while attempting to download package archive";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;
-    if [[ -f "${KUBELOGIN_BIN_PATH}" ]]; then
-      echo "";
-      echo "Downloaded kubelogin executable to path \"${KUBELOGIN_BIN_PATH}\"";
-      echo "";
-      echo "Calling [ kubelogin --version; ]...";
-      kubelogin --version;
-      echo "";
-    else
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
-    fi;
     rm -rf "$(dirname "${OUTFILE}";)";
+  else
+    echo "kubelogin already exists with path [ $(command -v kubelogin;) ]";
   fi;
+  # Check to make sure package exists
+  if [[ -n "$(command -v kubelogin 2>'/dev/null';)" ]]; then
+    echo "";
+    echo "Calling [ kubelogin --version; ]...";
+    kubelogin --version;
+  else
+    EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
+  fi;
+  echo "";
   exit ${EXIT_CODE};
   # ------------------------------
 fi;

@@ -52,7 +52,6 @@ else
     if [[ -f "${OUTFILE}" ]] && [[ "${WGET_EXIT_CODE}" -eq 0 ]]; then
       unzip -qq "${OUTFILE}" -d "$(dirname "${OUTFILE}";)/"
       mv --no-clobber "$(dirname "${OUTFILE}";)/bin/linux_amd64/kubelogin" "${KUBELOGIN_BIN_PATH}";
-      break;
     else
       echo "Error while attempting to download package archive";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";

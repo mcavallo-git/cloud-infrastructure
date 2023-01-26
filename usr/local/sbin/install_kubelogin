@@ -57,7 +57,12 @@ else
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;
     if [[ -f "${KUBELOGIN_BIN_PATH}" ]]; then
+      echo "";
       echo "Downloaded kubelogin executable to path \"${KUBELOGIN_BIN_PATH}\"";
+      echo "";
+      echo "Calling [ kubelogin --version; ]...";
+      kubelogin --version;
+      echo "";
     else
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;

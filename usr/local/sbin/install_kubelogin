@@ -60,12 +60,13 @@ else
     fi;
     rm -rf "$(dirname "${OUTFILE}";)";
   else
-    echo "kubelogin already exists with path [ $(command -v kubelogin;) ]";
+    echo "Package [ kubelogin ] already exists with path [ $(command -v kubelogin;) ]";
   fi;
   # Check to make sure package exists
   if [[ -n "$(command -v kubelogin 2>'/dev/null';)" ]]; then
     echo "";
     echo "Calling [ kubelogin --version; ]...";
+    echo "";
     kubelogin --version;
   else
     EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";

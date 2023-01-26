@@ -48,18 +48,14 @@ else
     OUTFILE="/install/kubelogin/$(basename "${KUBELOGIN_DOWNLOAD_URL}";)";
     KUBELOGIN_BIN_PATH="/usr/local/bin/kubelogin";
     mkdir -p "$(dirname "${OUTFILE}";)";
-    for DOWNLOAD_ATTEMPT in {1..10}; do
-      echo "\$DOWNLOAD_ATTEMPT = ${DOWNLOAD_ATTEMPT}";
-      wget -q "${KUBELOGIN_DOWNLOAD_URL}" -O "${OUTFILE}"; WGET_EXIT_CODE=${?};
-      if [[ -f "${OUTFILE}" ]] && [[ "${WGET_EXIT_CODE}" -eq 0 ]]; then
-        unzip -qq "${OUTFILE}" -d "$(dirname "${OUTFILE}";)/"
-        mv --no-clobber "$(dirname "${OUTFILE}";)/bin/linux_amd64/kubelogin" "${KUBELOGIN_BIN_PATH}";
-        break;
-      else
-        echo "Error while attempting to download file. Waiting to retry";
-        sleep 10;
-      fi;
-    done;
+    wget -q "${KUBELOGIN_DOWNLOAD_URL}" -O "${OUTFILE}"; WGET_EXIT_CODE=${?};
+    if [[ -f "${OUTFILE}" ]] && [[ "${WGET_EXIT_CODE}" -eq 0 ]]; then
+      unzip -qq "${OUTFILE}" -d "$(dirname "${OUTFILE}";)/"
+      mv --no-clobber "$(dirname "${OUTFILE}";)/bin/linux_amd64/kubelogin" "${KUBELOGIN_BIN_PATH}";
+      break;
+    else
+      echo "Error while attempting to download file";
+    fi;
     if [[ -f "${KUBELOGIN_BIN_PATH}" ]]; then
       echo "Downloaded kubelogin executable to path \"${KUBELOGIN_BIN_PATH}\"";
     else

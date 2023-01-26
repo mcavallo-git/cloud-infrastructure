@@ -55,11 +55,10 @@ else
       break;
     else
       echo "Error while attempting to download file";
+      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;
     if [[ -f "${KUBELOGIN_BIN_PATH}" ]]; then
       echo "Downloaded kubelogin executable to path \"${KUBELOGIN_BIN_PATH}\"";
-    else
-      EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;
     rm -rf "$(dirname "${OUTFILE}";)";
   fi;

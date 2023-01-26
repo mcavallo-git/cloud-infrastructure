@@ -44,6 +44,7 @@ else
   fi;
   # Install kubelogin
   if [[ -z "$(command -v kubelogin 2>'/dev/null';)" ]]; then
+    KUBELOGIN_DOWNLOAD_URL="https://github.com/Azure/kubelogin/releases/download/v0.0.25/kubelogin-linux-amd64.zip";
     OUTFILE="/install/kubelogin/$(basename "${KUBELOGIN_DOWNLOAD_URL}";)";
     KUBELOGIN_BIN_PATH="/usr/local/bin/kubelogin";
     mkdir -p "$(dirname "${OUTFILE}";)";

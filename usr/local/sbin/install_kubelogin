@@ -54,7 +54,7 @@ else
       mv --no-clobber "$(dirname "${OUTFILE}";)/bin/linux_amd64/kubelogin" "${KUBELOGIN_BIN_PATH}";
       break;
     else
-      echo "Error while attempting to download file";
+      echo "Error while attempting to download package archive";
       EXIT_CODE=$(( ${EXIT_CODE:-0} + 1 )); echo "EXIT_CODE = [ ${EXIT_CODE} ]";
     fi;
     if [[ -f "${KUBELOGIN_BIN_PATH}" ]]; then

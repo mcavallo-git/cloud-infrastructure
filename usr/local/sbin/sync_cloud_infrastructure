@@ -708,13 +708,15 @@ else
           # Sync local workstation's commands with the repo's commands
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\"; ]..."; fi;
           cd "${GIT_LOCAL_REPO_PATH}";
-          # If current branch is not the desired branch, switch to using the desired branch, instead
+          # Ensure that the checkout branch is the desired source branch
           CURRENT_BRANCH="$(if [ "$(git rev-parse --abbrev-ref HEAD;)" != "HEAD" ]; then git rev-parse --abbrev-ref HEAD; else git symbolic-ref --short HEAD; fi;)";
           if [[ -n "${CURRENT_BRANCH}" ]] && [[ "${CURRENT_BRANCH}" != "${GIT_SOURCE_BRANCH}" ]]; then
+            # Checkout the source branch
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Info:  Current branch \"${CURRENT_BRANCH}\" != desired branch \"${GIT_SOURCE_BRANCH}\""; fi;
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git checkout -b \"${GIT_SOURCE_BRANCH}\" \"origin/${GIT_SOURCE_BRANCH}\"; ]..."; fi;
-            git checkout --quiet -b "${GIT_SOURCE_BRANCH}" "origin/${GIT_SOURCE_BRANCH}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git fetch --quiet --all && git checkout -b \"${GIT_SOURCE_BRANCH}\" \"origin/${GIT_SOURCE_BRANCH}\"; ]..."; fi;
+            git fetch --quiet --all && git checkout --quiet -b "${GIT_SOURCE_BRANCH}" "origin/${GIT_SOURCE_BRANCH}";
           fi;
+          # Pull the source branch
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git fetch --quiet && git reset --quiet --hard \"origin/${GIT_SOURCE_BRANCH}\" && git pull --quiet; ]..."; fi;
           git fetch --quiet && git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && git pull --quiet;
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;

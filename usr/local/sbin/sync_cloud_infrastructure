@@ -117,7 +117,7 @@ else
       echo "  |--> Confirmed";
     else
       DO_SYNC_CONFIRMED=0;
-      echo "  |--> Denied";
+      echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;)";
     fi;
   fi;
 
@@ -1123,7 +1123,7 @@ else
                     #
                     # User declined the config update
                     #
-                    echo "  |--> Denied - Skipped SSH config update";
+                    echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - Skipped SSH config update";
                   else
                     #
                     # User accepted/confirmed the config update
@@ -1185,7 +1185,7 @@ else
                       #
                       # User declined the config update
                       #
-                      echo "  |--> Denied - Skipped SSH config update";
+                      echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - Skipped SSH config update";
                     else
                       #
                       # User accepted/confirmed the config update
@@ -1271,7 +1271,7 @@ else
                         echo "Debug:  UFW_ENABLED = [ ${UFW_ENABLED} ]";
                       fi;
                     else
-                      echo "  |--> Denied - UFW will remain disabled";
+                      echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - UFW will remain disabled";
                     fi;
                   fi;
                 fi;
@@ -1369,7 +1369,7 @@ else
                   if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                   if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
                 else
-                  echo "  |--> Denied - SSL/TLS certificate auto renewal disabled";
+                  echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - SSL/TLS certificate auto renewal disabled";
                 fi;
               fi;
             fi;
@@ -1409,7 +1409,7 @@ else
                 if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
-                echo "  |--> Denied - Logfile auto cleanup disabled";
+                echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - Logfile auto cleanup disabled";
               fi;
               if [[ -n "${REPLY}" ]] && [[ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]';)" == "y" ]]; then
                 CONF_FILEPATH="/etc/systemd/journald.conf";
@@ -1461,7 +1461,7 @@ else
                 if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
-                echo "  |--> Denied - DNS server sync disabled";
+                echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - DNS server sync disabled";
               fi;
             fi;
 
@@ -1500,7 +1500,7 @@ else
                 if [[ "${CHECKSUM_BEFORE}" != "${CHECKSUM_AFTER}" ]]; then RESTART_SERVICE_CRON=1; echo -e "\nInfo:  Update(s) applied to \"${DESTINATION_PATH}\""; fi;
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
               else
-                echo "  |--> Denied - System & package weekly updates disabled";
+                echo "  |--> Denied$(if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo " (REPLY=\"${REPLY}\")"; fi;) - System & package weekly updates disabled";
               fi;
             fi;
 

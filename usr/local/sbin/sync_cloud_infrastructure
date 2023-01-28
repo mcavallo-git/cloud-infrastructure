@@ -721,9 +721,9 @@ else
           git fetch --quiet --all && git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && git pull --quiet;
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           if [[ 1 -eq 1 ]]; then
-          # Update the local trunk (refs/remotes/origin/HEAD)
-          CURRENT_TRUNK_BRANCH="$(git symbolic-ref --short "refs/remotes/origin/HEAD" | sed -rne "s/^\s*origin\/(\S+)\s*$/\1/p";)";
-          if [[ -n "${CURRENT_TRUNK_BRANCH}" ]] && [[ "${CURRENT_TRUNK_BRANCH}" != "${GIT_SOURCE_BRANCH}" ]]; then
+          # Update the local trunk branch reference (refs/remotes/origin/HEAD)
+          CURRENT_TRUNK_BRANCH_REF="$(git symbolic-ref --short "refs/remotes/origin/HEAD" | sed -rne "s/^\s*origin\/(\S+)\s*$/\1/p";)";
+          if [[ -n "${CURRENT_TRUNK_BRANCH_REF}" ]] && [[ "${CURRENT_TRUNK_BRANCH_REF}" != "${GIT_SOURCE_BRANCH}" ]]; then
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git symbolic-ref --quiet \"refs/remotes/origin/HEAD\" \"refs/remotes/origin/${GIT_SOURCE_BRANCH}\"; ]..."; fi;
             git symbolic-ref --quiet "refs/remotes/origin/HEAD" "refs/remotes/origin/${GIT_SOURCE_BRANCH}";
           fi;

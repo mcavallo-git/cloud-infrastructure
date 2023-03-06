@@ -305,9 +305,9 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
           # Search Whitelist entries for 'domain|comment' formatted lines
           ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
           for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}";); do
-            EACH_TYPE="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\1/pi";)";
-            EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\2/pi";)";
-            EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
+            EACH_TYPE="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\1/pi";)";
+            EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\2/pi";)";
+            EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
             if [[ "${EACH_TYPE}" -ne 0 ]] && [[ "${EACH_TYPE}" -ne 2 ]]; then
                 echo " |--> (Error - Skipped)  Invalid type detected: [${EACH_TYPE}]  (must be 0 (exact whitelist) or 2 (regex whitelist))";
                 EACH_DOMAIN="";

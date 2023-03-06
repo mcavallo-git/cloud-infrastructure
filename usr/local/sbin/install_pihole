@@ -308,6 +308,10 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
             EACH_TYPE="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\1/pi";)";
             EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\2/pi";)";
             EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)\|([^\|]+)\|(.+)\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
+            if [[ "${EACH_TYPE}" -ne 0 ]] && [[ "${EACH_TYPE}" -ne 2 ]]; then
+                echo " |--> (Error - Skipped)  Invalid type detected: [${EACH_TYPE}]  (must be 0 (exact whitelist) or 2 (regex whitelist))";
+                EACH_DOMAIN="";
+            fi;
             if [ -n "${EACH_DOMAIN}" ]; then
               SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE type='${EACH_TYPE}' AND domain='${EACH_DOMAIN}';";
               SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";

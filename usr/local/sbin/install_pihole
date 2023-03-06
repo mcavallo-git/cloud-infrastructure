@@ -315,11 +315,11 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
               if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
                 # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
                 echo " |--> (Insert)  Adding/Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-                SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (type, domain, enabled, comment) VALUES ('${EACH_TYPE}','${EACH_DOMAIN}',1,'${EACH_COMMENT//\'/}');";
+                SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (type, domain, enabled, comment) VALUES (${EACH_TYPE},'${EACH_DOMAIN}',1,'${EACH_COMMENT//\'/}');";
               elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
                 # (Update) Record exists for this Whitelist entry, but it is disabled --> enable it
                 echo " |--> (Update)  Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-                SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1 WHERE type='${EACH_TYPE}' AND domain='${EACH_DOMAIN}';";
+                SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1 WHERE type=${EACH_TYPE} AND domain='${EACH_DOMAIN}';";
               else
                 # (Skipped) Record exists and is enabled, already
                 echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";

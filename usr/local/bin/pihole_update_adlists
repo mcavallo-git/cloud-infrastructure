@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/pihole_update_adlists" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
+# ------------------------------------------------------------
+if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/pihole_update_adlists?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+#
+# Log all shell output & error output to logfile
+#
+LOGDIR="${HOME}/pihole_update_adlists_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_adlists"; fi;
+mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
+LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%dT%H%M%SZ';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
+exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec 2>&1;
+#
+# ------------------------------------------------------------
+#
+# Update pihole's adlists (list of blacklisted domains which pihole's gravity pulls from)
+#  |
+#  |--> DB-Schema command:
+#  |      TABLE_NAME="adlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
+#  |
+#  |--> DB-Schema:
+#         CREATE TABLE adlist
+#         (
+#           id INTEGER PRIMARY KEY AUTOINCREMENT,
+#           address TEXT UNIQUE NOT NULL,
+#           enabled BOOLEAN NOT NULL DEFAULT 1,
+#           date_added INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
+#           date_modified INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
+#           comment TEXT,
+#           date_updated INTEGER,
+#           number INTEGER NOT NULL DEFAULT 0,
+#           invalid_domains INTEGER NOT NULL DEFAULT 0,
+#           status INTEGER NOT NULL DEFAULT 0
+#         );
+#
+
+FULLPATH_ADLISTS="/etc/pihole/adlists.list";
+FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
+if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
+  echo "";
+  echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
+  SQL_TABLE="adlist";
+  # Search Adlist entries for 'address|comment' formatted lines
+  ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
+  for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}";); do
+    EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
+    EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_ADLISTS}"; fi;)";
+    if [ -n "${EACH_ADDRESS}" ]; then
+      SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
+      SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+      SQLITE_QUERY_UPDATE="";
+      if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
+        # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
+        echo " |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+        SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (address, enabled, comment) VALUES ('${EACH_ADDRESS}',1,'${EACH_COMMENT}');";
+      elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
+        # (Update) Record exists for this Adlist entry, but it is disabled --> enable it
+        echo " |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+        SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1,comment='${EACH_COMMENT}' WHERE address='${EACH_ADDRESS}';";
+      else
+        # (Skipped) Record exists and is enabled, already
+        echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
+      fi;
+      if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
+        docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+      fi;
+    fi;
+  done;
+  IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
+  # ------------------------------
+  #
+  # Update pihole's gravity (which pulls from its enabled adlists)
+  #
+  echo "";
+  echo "Info:  Updating pihole's Gravity DB with latest Adlist entries...";
+  docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Citation(s)
+#
+#   hub.docker.com  |  "pihole/pihole - Docker Hub"  |  https://hub.docker.com/r/pihole/pihole
+#
+# ------------------------------------------------------------

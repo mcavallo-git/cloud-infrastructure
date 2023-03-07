@@ -45,7 +45,7 @@ FULLPATH_ADLISTS="/etc/pihole/adlists.list";
 FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
 if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
   echo "";
-  echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
+  echo "Info:  Syncing pihole adlist entries from \"${FULLPATH_ADLISTS}\"...";
   SQL_TABLE="adlist";
   # Search Adlist entries for 'address|comment' formatted lines
   ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter

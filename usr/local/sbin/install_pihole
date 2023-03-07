@@ -208,143 +208,6 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       sleep 15;
 
       # ------------------------------
-      #
-      # Update pihole's adlists (list of blacklisted domains which pihole's gravity pulls from)
-      #  |
-      #  |--> DB-Schema command:
-      #  |      TABLE_NAME="adlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
-      #  |
-      #  |--> DB-Schema:
-      #         CREATE TABLE adlist
-      #         (
-      #           id INTEGER PRIMARY KEY AUTOINCREMENT,
-      #           address TEXT UNIQUE NOT NULL,
-      #           enabled BOOLEAN NOT NULL DEFAULT 1,
-      #           date_added INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
-      #           date_modified INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
-      #           comment TEXT,
-      #           date_updated INTEGER,
-      #           number INTEGER NOT NULL DEFAULT 0,
-      #           invalid_domains INTEGER NOT NULL DEFAULT 0,
-      #           status INTEGER NOT NULL DEFAULT 0
-      #         );
-      #
-
-      if [[ 1 -eq 1 ]]; then
-        #
-        # Update pihole's adlist(s)
-        #
-        FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-        FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
-        if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
-          echo "";
-          echo "Info:  Syncing Adlist entries from \"${FULLPATH_ADLISTS}\"...";
-          SQL_TABLE="adlist";
-          # Search Adlist entries for 'address|comment' formatted lines
-          ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-          for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}";); do
-            EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
-            EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
-            if [ -n "${EACH_ADDRESS}" ]; then
-              SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
-              SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
-              SQLITE_QUERY_UPDATE="";
-              if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
-                # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
-                echo " |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
-                SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (address, enabled, comment) VALUES ('${EACH_ADDRESS}',1,'${EACH_COMMENT}');";
-              elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
-                # (Update) Record exists for this Adlist entry, but it is disabled --> enable it
-                echo " |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
-                SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1,comment='${EACH_COMMENT}' WHERE address='${EACH_ADDRESS}';";
-              else
-                # (Skipped) Record exists and is enabled, already
-                echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
-              fi;
-              if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-                docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
-              fi;
-            fi;
-          done;
-          IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
-          # ------------------------------
-          #
-          # Update pihole's gravity (which pulls from its enabled adlists)
-          #
-          echo "";
-          echo "Info:  Updating pihole's Gravity DB with latest Adlist entries...";
-          docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
-        fi;
-      fi;
-
-      # ------------------------------
-      #
-      # Update pihole's whitelisted domains  -  https://discourse.pi-hole.net/t/commonly-whitelisted-domains/212
-      #  |
-      #  |--> DB-Schema command:
-      #  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
-      #  |
-      #  |--> DB-Schema:
-      #         CREATE TABLE domainlist
-      #         (
-      #           id INTEGER PRIMARY KEY AUTOINCREMENT,
-      #           type INTEGER NOT NULL DEFAULT 0,
-      #           domain TEXT NOT NULL,
-      #           enabled BOOLEAN NOT NULL DEFAULT 1,
-      #           date_added INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
-      #           date_modified INTEGER NOT NULL DEFAULT (cast(strftime('%s', 'now') as int)),
-      #           comment TEXT,
-      #           UNIQUE(domain, type)
-      #         );
-      #
-
-      if [[ 1 -eq 1 ]]; then
-        #
-        # Update pihole's whitelisted domain(s)
-        #
-        FULLPATH_WHITELIST="/etc/pihole/whitelist.list";
-        FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | wc -l;)";
-        if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
-          echo "";
-          echo "Info:  Syncing Whitelist entries from \"${FULLPATH_WHITELIST}\"...";
-          SQL_TABLE="domainlist";
-          DEFAULT_COMMENT="Imported from ${FULLPATH_WHITELIST}";
-          # Search Whitelist entries for 'domain|comment' formatted lines
-          ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-          for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}";); do
-            EACH_TYPE="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\1/pi";)";
-            EACH_DOMAIN="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\2/pi";)";
-            EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^(.+)\|(.+)\|(.+)$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_WHITELIST}"; fi;)";
-            if [[ "${EACH_TYPE}" -ne 0 ]] && [[ "${EACH_TYPE}" -ne 2 ]]; then
-                echo " |--> (Error - Skipped)  Invalid type detected: [${EACH_TYPE}]  (must be 0 (exact whitelist) or 2 (regex whitelist))";
-                EACH_DOMAIN="";
-            fi;
-            if [ -n "${EACH_DOMAIN}" ]; then
-              SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE type='${EACH_TYPE}' AND domain='${EACH_DOMAIN}';";
-              SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
-              SQLITE_QUERY_UPDATE="";
-              if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
-                # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
-                echo " |--> (Insert)  Adding/Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-                SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (type, domain, enabled, comment) VALUES (${EACH_TYPE},'${EACH_DOMAIN}',1,'${EACH_COMMENT//\'/}');";
-              elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
-                # (Update) Record exists for this Whitelist entry, but it is disabled --> enable it
-                echo " |--> (Update)  Enabling Whitelist entry:  '${EACH_DOMAIN}' ...";
-                SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1 WHERE type=${EACH_TYPE} AND domain='${EACH_DOMAIN}';";
-              else
-                # (Skipped) Record exists and is enabled, already
-                echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
-              fi;
-              if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-                docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
-              fi;
-            fi;
-          done;
-          IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
-        fi;
-      fi;
-
-      # ------------------------------
 
       # Show the version of target pihole container
       echo "";
@@ -396,13 +259,9 @@ exit ${EXIT_CODE};
 #
 #   discourse.pi-hole.net  |  "[Solved] While executing: attempt to write a readonly database error - Help / Community Help - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/solved-while-executing-attempt-to-write-a-readonly-database-error/33003/4
 #
-#   discourse.pi-hole.net  |  "Commonly Whitelisted Domains - FAQs - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/commonly-whitelisted-domains/212
-#
 #   discourse.pi-hole.net  |  "Enabling HTTPS for your Pi-hole Web Interface - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/enabling-https-for-your-pi-hole-web-interface/5771
 #
 #   discourse.pi-hole.net  |  "How do I add list via cli - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/how-do-i-add-list-via-cli/43733/2
-#
-#   discourse.pi-hole.net  |  "V5.0 Docker, Whitelist domain, writing to readonly database - Help - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/v5-0-docker-whitelist-domain-writing-to-readonly-database/32153/20?u=cavalol
 #
 #   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
 #

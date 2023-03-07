@@ -161,8 +161,9 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     # Remove DNS server from /etc/resolv.conf (only if it was added earlier)
     if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then
       echo "";
-      echo "Info:  As pihole being offline may cause network name resolution failure, the stopgap DNS server \"${STOPGAP_DNS_SERVER}\" has been left in local DNS resolvers";
-      echo "        |--> If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove (comment-out) the local DNS server entry via:  [ sed -re 's/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/' -i \"/etc/resolv.conf\"; ]";
+      echo "Info:  The stopgap DNS server \"${STOPGAP_DNS_SERVER}\" was NOT removed from local DNS resolvers in an effort to avoid network name resolution (DNS) failures due to pihole being offline";
+      echo "       If your LAN's primary DNS is not pointing to this server's pihole docker, you may manually remove (comment-out) the local DNS server entry via:";
+      echo "          sed -re 's/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/' -i \"/etc/resolv.conf\";  # Remove local stopgap DNS server";
     fi;
 
     # Verify that the docker container was created as-intended

@@ -20,7 +20,7 @@ exec 2>&1;
 #
 # ------------------------------------------------------------
 #
-# Update pihole's adlists (list of blacklisted domains which pihole's gravity pulls from)
+# Update pihole's adlists (e.g. update the list(s) of blocked domains which pihole's "gravity" pulls from)
 #  |
 #  |--> DB-Schema command:
 #  |      TABLE_NAME="adlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";

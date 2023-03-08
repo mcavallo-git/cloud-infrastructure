@@ -12,14 +12,6 @@ fi;
 #
 # Log all shell output & error output to logfile
 #
-LOGDIR="${HOME}/pihole_update_whitelists_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_whitelists"; fi;
-mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
-exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
-exec 2>&1;
-# ------------------------------------------------------------
-#
-# Log all shell output & error output to logfile
-#
 
 LOGDIR="${HOME}/pihole_update_whitelists_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_whitelists"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";

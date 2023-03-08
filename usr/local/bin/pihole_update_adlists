@@ -12,12 +12,19 @@ fi;
 #
 # Log all shell output & error output to logfile
 #
+
 LOGDIR="${HOME}/pihole_update_adlists_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_adlists"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%dT%H%M%SZ';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
-exec > >(tee -a "${LOGFILE}" ); printf -- '-%.0s' {1..10}; printf " Script started at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+exec > >(tee -a "${LOGFILE}" );
 exec 2>&1;
-#
+
+START_SECONDS_NANOSECONDS=$(date +'%s.%N');
+START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
+START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
+echo "------------------------------";
+echo "-- Info:  Start of \"pihole_update_adlists\" runtime at [ ${START_DATETIME} ]";
+
 # ------------------------------------------------------------
 #
 # Update pihole's adlists (e.g. update the list(s) of blocked domains which pihole's "gravity" pulls from)
@@ -82,6 +89,21 @@ if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
   echo "Info:  Updating pihole's Gravity DB with latest Adlist entries...";
   docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole updateGravity;
 fi;
+
+
+# ------------------------------
+
+END_SECONDS_NANOSECONDS="$(date +'%s.%N';)";
+END_EPOCHSECONDS="$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1;)";
+END_NANOSECONDS=$(echo ${END_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 2 | cut --characters 1-9);
+END_MICROSECONDS=$(echo ${END_NANOSECONDS} | cut --characters 1-6);
+END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
+END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
+
+echo "";
+echo "== Info:  End of \"pihole_update_adlists\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
+
+exit ${EXIT_CODE:-0};
 
 
 # ------------------------------------------------------------

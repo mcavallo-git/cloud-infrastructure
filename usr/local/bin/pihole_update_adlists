@@ -42,7 +42,7 @@ exec 2>&1;
 #
 
 FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | wc -l;)";
+FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -l;)";
 if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
   echo "";
   echo "Info:  Syncing pihole adlist entries from \"${FULLPATH_ADLISTS}\"...";

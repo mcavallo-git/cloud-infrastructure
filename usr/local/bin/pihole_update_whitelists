@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# LOCAL_BIN="/usr/local/bin/pihole_update_whitelists" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+# LOCAL_BIN="/usr/local/bin/pihole_update_whitelist" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
 #
 # ------------------------------------------------------------
 if [[ 0 -eq 1 ]]; then  # RUN THIS SCRIPT REMOTELY
 
-curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/pihole_update_whitelists?t=$(date +'%s.%N')" | bash;
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/pihole_update_whitelist?t=$(date +'%s.%N')" | bash;
 
 fi;
 # ------------------------------------------------------------
@@ -13,7 +13,7 @@ fi;
 # Log all shell output & error output to logfile
 #
 
-LOGDIR="${HOME}/pihole_update_whitelists_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_whitelists"; fi;
+LOGDIR="${HOME}/pihole_update_whitelist_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/pihole_update_whitelist"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 LOGFILE="${LOGDIR}/$(basename ${LOGDIR})_$(date --utc +'%Y%m%dT%H%M%SZ';)"; touch "${LOGFILE}"; chmod 0660 "${LOGFILE}";
 exec > >(tee -a "${LOGFILE}" );
@@ -23,7 +23,7 @@ START_SECONDS_NANOSECONDS=$(date +'%s.%N');
 START_EPOCHSECONDS=$(echo ${START_SECONDS_NANOSECONDS} | cut --delimiter '.' --fields 1);
 START_DATETIME="$(date --date=@${START_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S')";
 echo "------------------------------";
-echo "-- Info:  Start of \"pihole_update_whitelists\" runtime at [ ${START_DATETIME} ]";
+echo "-- Info:  Start of \"pihole_update_whitelist\" runtime at [ ${START_DATETIME} ]";
 
 # ------------------------------------------------------------
 #
@@ -98,7 +98,7 @@ END_DATETIME="$(date --date=@${END_EPOCHSECONDS} +'%Y-%m-%d %H:%M:%S';)";
 END_BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${START_SECONDS_NANOSECONDS})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';);
 
 echo "";
-echo "== Info:  End of \"pihole_update_whitelists\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
+echo "== Info:  End of \"pihole_update_whitelist\" runtime at [ ${END_DATETIME}.${END_MICROSECONDS} ] after [ ${END_BENCHMARK_DELTA}s ] ";
 
 exit ${EXIT_CODE:-0};
 

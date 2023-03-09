@@ -209,9 +209,9 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
 
       # ------------------------------
 
-      if [[ -n "$(command -v pihole_update_whitelists 2>'/dev/null';)" ]]; then
+      if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
         # Update pihole's whitelisted domains (e.g. update the list of domains which are allowed past pihole's adlists/blocklists)
-        pihole_update_whitelists;
+        pihole_update_whitelist;
       fi;
 
       if [[ -n "$(command -v pihole_update_adlists 2>'/dev/null';)" ]]; then

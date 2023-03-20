@@ -49,14 +49,14 @@ echo "-- Info:  Start of \"pihole_update_adlists\" runtime at [ ${START_DATETIME
 #
 
 FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -l;)";
-if [[ "${FILE_CONTENT_LINES}" != "0" ]]; then
+FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d";)";
+if [[ "$(echo "${FILE_CONTENT_LINES}" | wc -l;)" != "0" ]]; then
   echo "";
   echo "Info:  Syncing pihole adlist entries from \"${FULLPATH_ADLISTS}\"...";
   SQL_TABLE="adlist";
   # Search Adlist entries for 'address|comment' formatted lines
   ROLLBACK_IFS="${IFS}"; IFS=$'\n'; # Set the global for-loop delimiter
-  for EACH_LINE in $(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_ADLISTS}";); do
+  for EACH_LINE in ${FILE_CONTENT_LINES}; do
     EACH_ADDRESS="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\1/pi";)";
     EACH_COMMENT="$(TEST_COMMENT="$(echo "${EACH_LINE}" | sed -rne "s/^([^\|]+)(\|(.+))?\s*$/\3/pi";)"; if [[ -n "${TEST_COMMENT}" ]]; then echo "${TEST_COMMENT}"; else echo "Imported from ${FULLPATH_ADLISTS}"; fi;)";
     if [ -n "${EACH_ADDRESS}" ]; then

@@ -1073,11 +1073,11 @@ else
               # Only update logrotate service configs which contain the [ postrotate ] directive
               if [[ "$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | grep -i "postrotate" 2>'/dev/null' | wc -l 2>'/dev/null';)" -gt 0 ]]; then
                 # Mirror the global logrotate user/group config (used for writing logs during log rotations) to each service's logrotate config
-                SU_SETTING_RSYSLOG="$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
-                if [[ -n "${SU_SETTING_RSYSLOG}" ]]; then
-                  if [[ "${SU_SETTING_RSYSLOG}" != "${SU_SETTING_GLOBAL}" ]]; then
+                EACH_SU_SETTING="$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
+                if [[ -n "${EACH_SU_SETTING}" ]]; then
+                  if [[ "${EACH_SU_SETTING}" != "${SU_SETTING_GLOBAL}" ]]; then
                     # Update the user/group at the top of the config file to match the global user/group
-                    sed -r -e "s/^(\s*)${SU_SETTING_RSYSLOG}(\s*)$/\1${SU_SETTING_GLOBAL}\2/g" -i "${EACH_LOGROTATE_CONF_D}";
+                    sed -r -e "s/^(\s*)${EACH_SU_SETTING}(\s*)$/\1${SU_SETTING_GLOBAL}\2/g" -i "${EACH_LOGROTATE_CONF_D}";
                     RESTART_SERVICE_RSYSLOG=1;
                   fi;
                 else

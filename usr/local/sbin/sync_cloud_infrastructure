@@ -1066,12 +1066,12 @@ else
           if [[ -f "${LOGROTATE_CONF_GLOBAL}" ]] && [[ -d "${LOGROTATE_CONF_D}" ]]; then
             # Determine user/group used to write logs to the global syslog file [ /var/log/syslog ]
             SU_SETTING_GLOBAL="$(cat "${LOGROTATE_CONF_GLOBAL}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
+            if [ -z "${SU_SETTING_GLOBAL}" ]; then
+              SU_SETTING_GLOBAL="su root syslog";
+            fi;
             for EACH_LOGROTATE_CONF_D in $(find "${LOGROTATE_CONF_D}" -type "f";); do
               # Only update logrotate service configs which contain the [ postrotate ] directive
               if [[ "$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | grep -i "postrotate" 2>'/dev/null' | wc -l 2>'/dev/null';)" -gt 0 ]]; then
-                if [ -z "${SU_SETTING_GLOBAL}" ]; then
-                  SU_SETTING_GLOBAL="su root syslog";
-                fi;
                 # Mirror the global logrotate user/group config (used for writing logs during log rotations) to each service's logrotate config
                 SU_SETTING_RSYSLOG="$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
                 if [[ -n "${SU_SETTING_RSYSLOG}" ]]; then

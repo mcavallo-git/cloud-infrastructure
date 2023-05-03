@@ -1067,7 +1067,7 @@ else
             if [[ -n "${SU_SETTING_RSYSLOG}" ]]; then
               if [[ "${SU_SETTING_RSYSLOG}" != "${SU_SETTING_GLOBAL}" ]]; then
                 # Update the user/group at the top of the config file to match the global user/group
-                sed -r -e "s/^(\s*)${SU_SETTING_RSYSLOG}(\s*)$/\1${SU_SETTING_GLOBAL}\2/g" "${LOGROTATE_CONF_RSYSLOG}";
+                sed -r -e "s/^(\s*)${SU_SETTING_RSYSLOG}(\s*)$/\1${SU_SETTING_GLOBAL}\2/g" -i "${LOGROTATE_CONF_RSYSLOG}";
               fi;
             else
               # Prepend the user/group to the top of the config file
@@ -1221,7 +1221,7 @@ else
                   BENCHMARK_START=$(date +'%s.%N');
                   cp -f "${SSHD_CONFIG_LIVE}" "${SSHD_CONFIG_SED}";
                   chmod 0644 "${SSHD_CONFIG_SED}";
-                  sed -r -i \
+                  sed -r \
                     -e "/^#?AuthorizedKeysFile/c\AuthorizedKeysFile /etc/ssh/authorized_keys/%u" \
                     -e "/^#?AuthenticationMethods/c\AuthenticationMethods publickey" \
                     -e "/^#?ChallengeResponseAuthentication/c\ChallengeResponseAuthentication no" \
@@ -1234,7 +1234,7 @@ else
                     -e "/^#?TCPKeepAlive/c\TCPKeepAlive no" \
                     -e "/^#?UseDNS/c\UseDNS no" \
                     -e "/^#?UsePAM/c\UsePAM yes" \
-                    "${SSHD_CONFIG_SED}";
+                    -i "${SSHD_CONFIG_SED}";
                   #
                   # Remove duplicated lines in target file (while keeping one copy of each line)
                   #
@@ -1768,9 +1768,9 @@ else
               # Web-server runtime user
               #
               if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then # Distros: Debian, Ubuntu, etc.
-                sed -i 's|user www-data;|user www-data;|g' "/etc/nginx/nginx.conf";
+                sed -e 's|user www-data;|user www-data;|g' -i "/etc/nginx/nginx.conf";
               elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-                sed -i 's|user www-data;|user nginx;|g' "/etc/nginx/nginx.conf";
+                sed -e 's|user www-data;|user nginx;|g' -i "/etc/nginx/nginx.conf";
               fi;
               #
               # /etc/nginx/sites-available   &&  /etc/nginx/sites-enabled

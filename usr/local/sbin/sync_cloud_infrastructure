@@ -1071,7 +1071,9 @@ else
             fi;
             for EACH_LOGROTATE_CONF_D in $(find "${LOGROTATE_CONF_D}" -type "f";); do
               # Only update logrotate service configs which contain the [ postrotate ] directive
-              if [[ "$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | grep -i "postrotate" 2>'/dev/null' | wc -l 2>'/dev/null';)" -gt 0 ]]; then
+              # POSTROTATE_LINES="$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | grep -i "postrotate" 2>'/dev/null' | wc -l 2>'/dev/null';)";
+              POSTROTATE_LINES=1;
+              if [[ "${POSTROTATE_LINES}" -gt 0 ]]; then
                 # Mirror the global logrotate user/group config (used for writing logs during log rotations) to each service's logrotate config
                 EACH_SU_SETTING="$(cat "${EACH_LOGROTATE_CONF_D}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
                 if [[ -n "${EACH_SU_SETTING}" ]]; then

@@ -164,6 +164,7 @@ else
     RESTART_SERVICE_CRON=0;
     RESTART_SERVICE_JENKINS=0;
     RESTART_SERVICE_NGINX=0;
+    RESTART_SERVICE_RSYSLOG=0;
     RESTART_SERVICE_SSH=0;
     RESTART_SERVICE_UFW=0;
 
@@ -1034,6 +1035,12 @@ else
           dos2unix --quiet "${DESTINATION_PATH}"/*; # Convert any CRLF files to force line-endings to be LF (only)
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # ------------------------------
+
+          if [[ ! -f "/var/log/cron.log" ]]; then
+            # Restart syslog after config updates if the cron logfile doesn't yet exist (denoting that cron logs are still going to the global syslog)
+            RESTART_SERVICE_RSYSLOG=1;
+          fi;
+
           #
           # /etc/rsyslog.d
           #
@@ -1052,10 +1059,11 @@ else
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
 
           #
-          # Syslog --> /etc/logrotate.d/*
+          # /etc/logrotate.d/*
           #
           LOGROTATE_CONF_GLOBAL="/etc/logrotate.conf";
           LOGROTATE_CONF_RSYSLOG="/etc/logrotate.d/rsyslog";
+          # Redirect cron logs to [ /var/log/cron.log ]
           if [[ -f "${LOGROTATE_CONF_GLOBAL}" ]] && [[ -f "${LOGROTATE_CONF_RSYSLOG}" ]]; then
             # Determine user/group used to write logs to the global syslog file [ /var/log/syslog ]
             SU_SETTING_GLOBAL="$(cat "${LOGROTATE_CONF_GLOBAL}" 2>'/dev/null' | sed -rne "s/^\s*(su\s*\S+\s*\S+)\s*$/\1/p" 2>'/dev/null';)";
@@ -1068,11 +1076,13 @@ else
               if [[ "${SU_SETTING_RSYSLOG}" != "${SU_SETTING_GLOBAL}" ]]; then
                 # Update the user/group at the top of the config file to match the global user/group
                 sed -r -e "s/^(\s*)${SU_SETTING_RSYSLOG}(\s*)$/\1${SU_SETTING_GLOBAL}\2/g" -i "${LOGROTATE_CONF_RSYSLOG}";
+                RESTART_SERVICE_RSYSLOG=1;
               fi;
             else
               # Prepend the user/group to the top of the config file
               CONTENTS_LOGROTATE_CONF_RSYSLOG="$(cat "${LOGROTATE_CONF_RSYSLOG}";)";
               echo -e "${SU_SETTING_GLOBAL}""\n\n""${CONTENTS_LOGROTATE_CONF_RSYSLOG}" > "${LOGROTATE_CONF_RSYSLOG}";
+              RESTART_SERVICE_RSYSLOG=1;
             fi;
           fi;
 
@@ -1997,6 +2007,26 @@ else
             fi;
           else
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ nginx ]"; fi;
+          fi;
+
+          # ------------------------------
+          #
+          # rsyslog  -->  Restart service (if needed)
+          #
+          if [[ "${RESTART_SERVICE_RSYSLOG}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
+            SERVICE_NAME="rsyslog";
+            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+              echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
+              /usr/sbin/service "${SERVICE_NAME}" restart;
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full;
+            else
+              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+            fi;
+          else
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ rsyslog ]"; fi;
           fi;
 
           # ------------------------------

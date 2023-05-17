@@ -196,7 +196,7 @@ else
 
               if [ -n "${EACH_NEW_FILENAME}" ]; then   # If new filename is not blank
 
-                if [ "${EACH_FILENAME}" != "${EACH_NEW_FILENAME}" ]; then   # If new filename is not equal to original filename
+                if [ "$(realpath "${EACH_FILENAME}";)" != "$(realpath "${EACH_NEW_FILENAME}";)" ]; then # If file paths are non-equal
                   # Rename the file
                   echo "  Renaming \"${EACH_FILENAME}\" to \"${EACH_NEW_FILENAME}\"";
                   mv "${EACH_FILENAME}" "${EACH_NEW_FILENAME}";

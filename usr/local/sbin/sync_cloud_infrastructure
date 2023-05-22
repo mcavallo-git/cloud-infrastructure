@@ -1955,9 +1955,9 @@ else
               CRON_SVC_NAMES="${SERVICE_NAME}";
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             fi;
             # crond  -->  Restart service
             SERVICE_NAME="crond";
@@ -1967,9 +1967,9 @@ else
               CRON_SVC_NAMES="${SERVICE_NAME}";
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             fi;
             if [[ "${CRON_SVC_FOUND}" -eq 0 ]]; then
               echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
@@ -1988,9 +1988,9 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
@@ -2025,9 +2025,9 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
@@ -2045,9 +2045,9 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;
@@ -2065,13 +2065,13 @@ else
             if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ": unrecognized service";
+              /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
               if [[ -n "$(command -v ${SERVICE_NAME} 2>'/dev/null';)" ]]; then
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ ufw reload; ]..."; fi;
                 ufw reload;
               fi;
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
-              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ": unrecognized service\$";
+              /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
               echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
             fi;

@@ -1697,7 +1697,7 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/cron.d/CRON_ddns_updater ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped Sync for [ /etc/cron.d/CRON_ddns_updater ]"; fi;
           fi;
 
           # ------------------------------
@@ -1843,7 +1843,7 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/nginx ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped sync for [ /etc/nginx ]"; fi;
           fi;
 
           # ------------------------------
@@ -1875,7 +1875,7 @@ else
               done;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Sync for [ /etc/cron.d/CRON_* ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped sync for [ /etc/cron.d/CRON_* ]"; fi;
           fi;
 
           # ------------------------------
@@ -1974,10 +1974,10 @@ else
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             fi;
             if [[ "${CRON_SVC_FOUND}" -eq 0 ]]; then
-              echo "Skipped restart of the \"${CRON_SVC_NAMES}\" service(s) (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${CRON_SVC_NAMES} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ cron crond ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ cron crond ]"; fi;
           fi;
 
           # ------------------------------
@@ -1995,10 +1995,10 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
-              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${SERVICE_NAME} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ jenkins ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ jenkins ]"; fi;
           fi;
 
           # ------------------------------
@@ -2013,10 +2013,10 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ eval \" /usr/local/sbin/reload_nginx\"; ]..."; fi;
               eval " /usr/local/sbin/reload_nginx";
             else
-              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${SERVICE_NAME} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ nginx ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ nginx ]"; fi;
           fi;
 
           # ------------------------------
@@ -2034,10 +2034,10 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
-              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${SERVICE_NAME} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ rsyslog ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ rsyslog ]"; fi;
           fi;
 
           # ------------------------------
@@ -2055,10 +2055,10 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
-              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${SERVICE_NAME} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ ssh ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ssh ]"; fi;
           fi;
 
           # ------------------------------
@@ -2080,10 +2080,10 @@ else
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" status --no-pager --full; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" status --no-pager --full 2>&1 | grep -v ': unrecognized service';
             else
-              echo "Skipped restart of the \"${SERVICE_NAME}\" service (not found as a local service)";
+              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ${SERVICE_NAME} ]  (not found as a local service)"; fi;
             fi;
           else
-            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping Service Restart for [ ufw ]"; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped service restart for [ ufw ]"; fi;
           fi;
 
         elif [[ "${UPDATE_SELF_REQUIRED}" -eq 1 ]]; then
@@ -2117,7 +2117,7 @@ else
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  No logfiles found outside of the retention policy"; fi;
           fi;
         else
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipping log file cleanup check"; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nDebug:  Skipped log file cleanup check"; fi;
         fi;
 
       fi;

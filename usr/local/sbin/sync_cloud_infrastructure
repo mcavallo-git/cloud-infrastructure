@@ -763,8 +763,20 @@ else
           WSL_CHECK_EXISTS="$(command -v wslvar 2>'/dev/null';)";
           if [[ -n "${WSL_CHECK_EXISTS}" ]]; then
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "\nInfo:  Checking for Windows Subsystem for Linux (WSL) Environment"; fi;
+            IS_WSL=1;
             WIN32_USERPROFILE="$(wslpath -u "$(wslvar --sys "USERPROFILE" 2>'/dev/null';)" 2>'/dev/null';)";
             WIN32_USER_ERRORS="${?}";
+            if [[ -z "${REPOS_DIR}" ]]; then
+              REPOS_DIR="$(wslpath -u "$(wslvar --sys "REPOS_DIR" 2>'/dev/null';)" 2>'/dev/null';)";
+            fi;
+            if [[ -n "${REPOS_DIR}" ]] && [[ -d "${REPOS_DIR}" ]]; then
+              DIR_REPO_USR="${REPOS_DIR}/${GIT_REPO_NAME}/usr";
+              DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+              if [[ -z "${DIR_REPO_BASE}" ]] || [[ ! -d "${DIR_REPO_BASE}" ]]; then
+                DIR_REPO_USR="";
+                DIR_REPO_BASE="";
+              fi;
+            fi;
           fi;
           if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]] && [[ "${WIN32_USER_ERRORS}" -eq 0 ]]; then
             # ------------------------------
@@ -779,11 +791,15 @@ else
               WIN32_USERPROFILE="";
               WIN32_USR_LOCAL="";
             else
-              DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
-              DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
-              if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Using repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
+              if [[ -z "${DIR_REPO_BASE}" ]]; then
+                DIR_REPO_USR="$(dirname ${WIN32_USR_LOCAL})";
+                DIR_REPO_BASE="$(dirname ${DIR_REPO_USR})";
+              fi;
             fi;
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
+          fi;
+          if [[ -n "${DIR_REPO_BASE}" ]]; then
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Using repository directory @ [ ${DIR_REPO_BASE} ]"; fi;
           fi;
         fi;
         # ------------------------------
@@ -799,7 +815,7 @@ else
         # WSL shell
         #  |--> Create symbolic links back to windows user directories
         #
-        if [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]]; then
+        if [[ "${IS_WSL}" -eq 1 ]] && [[ -n "${WIN32_USERPROFILE}" ]] && [[ -d "${WIN32_USERPROFILE}" ]]; then
           #
           # Create symbolic link to WSL user's manuals directory
           #
@@ -847,7 +863,7 @@ else
           fi;
         fi;
         # ------------------------------
-        if [[ -z "${WIN32_USERPROFILE}" ]]; then
+        if [[ "${IS_WSL}" -ne 1 ]]; then
           #
           # Non-WSL shell
           #  |--> Check for required Linux filepath(s)

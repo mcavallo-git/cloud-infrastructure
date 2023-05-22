@@ -1949,8 +1949,9 @@ else
             CRON_SVC_FOUND=0; CRON_SVC_NAMES="";
             # cron  -->  Restart service
             SERVICE_NAME="cron";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
@@ -1961,8 +1962,9 @@ else
             fi;
             # crond  -->  Restart service
             SERVICE_NAME="crond";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               CRON_SVC_FOUND=$((${CRON_SVC_FOUND}+1));
               CRON_SVC_NAMES="${SERVICE_NAME}";
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
@@ -1984,8 +1986,9 @@ else
           #
           if [[ "${RESTART_SERVICE_JENKINS}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="jenkins";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
@@ -2004,8 +2007,9 @@ else
           #
           if [[ "${RESTART_SERVICE_NGINX}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="nginx";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ eval \" /usr/local/sbin/reload_nginx\"; ]..."; fi;
               eval " /usr/local/sbin/reload_nginx";
             else
@@ -2021,8 +2025,9 @@ else
           #
           if [[ "${RESTART_SERVICE_RSYSLOG}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="rsyslog";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
@@ -2041,8 +2046,9 @@ else
           #
           if [[ "${RESTART_SERVICE_SSH}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="sshd";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';
@@ -2061,8 +2067,9 @@ else
           #
           if [[ "${RESTART_SERVICE_UFW}" -eq 1 ]] && [[ -x "/usr/sbin/service" ]]; then
             SERVICE_NAME="ufw";
-            SERVICE_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
-            if [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
+            SYSTEMCTL_RET_CODE=$(/bin/systemctl list-unit-files --no-legend --no-pager --full "${SERVICE_NAME}.service" | grep "^${SERVICE_NAME}.service" 1>'/dev/null' 2>&1; echo ${?};);
+            SERVICE_RET_CODE=$(/usr/sbin/service "${SERVICE_NAME}" status 1>'/dev/null' 2>&1; echo ${?};);
+            if [[ "${SYSTEMCTL_RET_CODE}" -eq 0 ]] && [[ "${SERVICE_RET_CODE}" -eq 0 ]]; then
               echo -e "\nInfo:  Restarting service \"${SERVICE_NAME}\"...";
               if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -e "  |--> Debug:  Calling [ /usr/sbin/service \"${SERVICE_NAME}\" restart; ]..."; fi;
               /usr/sbin/service "${SERVICE_NAME}" restart 2>&1 | grep -v ': unrecognized service';

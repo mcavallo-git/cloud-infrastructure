@@ -333,8 +333,8 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         # Set time zone for container
         docker exec -t "${CONTAINER_ID}" ln -snf "/usr/share/zoneinfo/${TZ}" '/etc/localtime';
         docker exec -t "${CONTAINER_ID}" sed -re "s/^.+$/${TZ_REGEX_ESCAPED}/g" -i '/etc/timezone';
-        if [[ -n "$(docker exec -t "${CONTAINER_ID}" which timedatectl 2>'/dev/null';)" ]]; then
-          docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}" 2>'/dev/null';
+        if [[ -n "$(docker exec -t "${CONTAINER_ID}" command -v timedatectl 2>'/dev/null';)" ]]; then
+          docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}";
         fi;
       fi;
 

@@ -164,7 +164,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     cd "${CONFIG_DIR}";
     EVAL_DOCKER_COMPOSE_UP="docker-compose up";
     EVAL_DOCKER_COMPOSE_UP+=" --detach";
-    EVAL_DOCKER_COMPOSE_UP+=" --file '${COMPOSE_FILE_LOCAL}'";
+    EVAL_DOCKER_COMPOSE_UP+=" -f '${COMPOSE_FILE_LOCAL}'";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
       EVAL_DOCKER_COMPOSE_UP+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;

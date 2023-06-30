@@ -4,11 +4,11 @@ DASHES="-------------------------------------------------";
 
 PS_FORMAT=""\
 "${DASHES}\n"\
-"\n     {{.Names}}   ({{.Status}})"\
-"\n          Container: {{.ID}}"\
-"\n          Size:      {{.Size}}"\
-"\n          Ports:     {{.Ports}}"\
-"\n          Created:   {{.RunningFor}} on {{.CreatedAt}}"\
+"\n  {{.Names}}   ({{.Status}})"\
+"\n     Container: {{.ID}}"\
+"\n     Size:      {{.Size}}"\
+"\n     Ports:     {{.Ports}}"\
+"\n     Created:   {{.RunningFor}} on {{.CreatedAt}}"\
 "";
 
 docker ps -a --format "${PS_FORMAT}" && printf "\n${DASHES}\n";

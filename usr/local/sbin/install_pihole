@@ -332,7 +332,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         TZ_REGEX_ESCAPED="$(echo "${TZ}" | sed 's/\//\\\//g';)";
         # Set time zone for container
         docker exec -t "${CONTAINER_ID}" ln -snf "/usr/share/zoneinfo/${TZ}" '/etc/localtime';
-        docker exec -t "${CONTAINER_ID}" sed -re "s/^/${TZ_REGEX_ESCAPED}/g" -i '/etc/timezone';
+        docker exec -t "${CONTAINER_ID}" sed -re "s/^.+$/${TZ_REGEX_ESCAPED}/g" -i '/etc/timezone';
         if [[ -n "$(docker exec -t "${CONTAINER_ID}" which timedatectl 2>'/dev/null';)" ]]; then
           docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}" 2>'/dev/null';
         fi;

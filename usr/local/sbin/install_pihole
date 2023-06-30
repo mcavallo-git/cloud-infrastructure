@@ -315,7 +315,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
-      if [[ 0 -eq 1 ]]; then
+      if [[ 1 -eq 1 ]]; then
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         #
         # Update pihole's symbolic link(s)
@@ -330,6 +330,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "";
         echo "Info:  Updating pihole's file/directory permissions";
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/';
+        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dns-servers.conf';
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dhcp.leases';
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/gravity.db';
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:root'   '/etc/pihole/pihole-FTL.conf';

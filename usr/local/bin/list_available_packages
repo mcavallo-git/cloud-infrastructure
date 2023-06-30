@@ -17,10 +17,10 @@ if [[ 1 -eq 1 ]]; then
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
     if [[ "${EXACT_MATCHING}" != "0" ]]; then
       # Exact search
-      PACKAGES_LIST="$(apt-cache search "${PACKAGE_QUERY}" | sort | grep -i "${PACKAGE_QUERY}";)";
+      PACKAGES_LIST="$(apt-cache search "" | sort | grep -i "${PACKAGE_QUERY}";)";
     else
       # Non-exact search
-      PACKAGES_LIST="$(apt-cache search "" | sort | grep -i "${PACKAGE_QUERY}";)";
+      PACKAGES_LIST="$(apt-cache search "${PACKAGE_QUERY}" | sort;)";
     fi;
     echo "${PACKAGES_LIST}";
     echo "";

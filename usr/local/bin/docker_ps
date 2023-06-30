@@ -29,6 +29,16 @@ exit 0;
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
 # ------------------------------------------------------------
 
+# Filter by [ container name (nickname) ]
+docker ps --all --filter "name=pihole";
+
+# Filter by [ container image ]
+docker ps --all --filter "ancestor=pihole/pihole:latest";  # repo/name:tag
+docker ps --all --filter "ancestor=pihole/pihole";         # repo/name (no tag)
+
+
+# ------------------------------------------------------------
+
 # Show disk sizes for all containers
 docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Size}}\t{{.Status}}";
 

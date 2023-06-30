@@ -234,7 +234,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         NETWORK_FILEPATHS+=(["/etc/resolv.conf"]="${CONFIG_DIR}/etc/resolv.conf");
         for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
           EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
-          if [[ -e "${EACH_SOURCE}" ]]; then
+          if [[ ! -e "${EACH_SOURCE}" ]]; then
+            echo " |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
+          else
             # Copy each config file/directory into target container
             echo " |--> Updating '${EACH_DEST}'...";
             EACH_TEMP="${EACH_DEST}.$(date +'%s.%N').tmp";
@@ -262,7 +264,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         CONFIG_FILEPATHS+=(["/etc/dnsmasq.d/"]="${CONFIG_DIR}/etc/dnsmasq.d/");
         for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
           EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
-          if [[ -e "${EACH_SOURCE}" ]]; then
+          if [[ ! -e "${EACH_SOURCE}" ]]; then
+            echo " |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
+          else
             # Copy each config file/directory into target container
             echo " |--> Updating '${EACH_DEST}'...";
             EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DEST}';";

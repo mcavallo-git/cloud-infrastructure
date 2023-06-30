@@ -162,7 +162,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
-    EVAL_DOCKER_COMPOSE_UP="docker-compose up";
+    EVAL_DOCKER_COMPOSE_UP="docker run";
 
     EVAL_DOCKER_COMPOSE_UP+=" --dry-run"; ### ⚠️⚠️⚠️ DRY RUN ⚠️⚠️⚠️ ###
 

@@ -315,7 +315,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           else
             # Copy each config file/directory into target container
             echo "  |-->  Updating '${EACH_DEST}'";
-            if [[ -d "${EACH_DEST}" ]]; then
+            if [[ -d "${EACH_SOURCE}" ]]; then
               EACH_CP_DEST="$(dirname "${EACH_DEST}";)/";
             else
               EACH_CP_DEST="${EACH_DEST}";

@@ -20,7 +20,7 @@ if [[ 1 -eq 1 ]]; then
       PACKAGES_LIST="$(apt-cache search "" | sort | grep -i "${PACKAGE_QUERY}";)";
     else
       # Non-exact search
-      PACKAGES_LIST="$(apt-cache search "${PACKAGE_QUERY}" | sort;)";
+      PACKAGES_LIST="$(apt-cache search "${PACKAGE_QUERY}" | sort;)";  # Searches details not shown in the defalt 'apt-cache search' output
     fi;
     echo "${PACKAGES_LIST}";
     echo "";

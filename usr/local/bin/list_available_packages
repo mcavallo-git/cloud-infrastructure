@@ -4,37 +4,48 @@
 #
 # ------------------------------------------------------------
 
-PACKAGE_NAME="${1}";
+if [[ 1 -eq 1 ]]; then
 
-echo "";
-if [ -n "${PACKAGE_NAME}" ]; then
+  echo "";
 
-  # Use first argument passed to script as a string to match the available packages against
+  # Package name (or other string) match against available package names & descriptions
+  PACKAGE_QUERY="${PACKAGE_QUERY:-${1}}";
+
+  # Exact search (enable/disable)
+  EXACT_MATCHING=${EXACT_MATCHING:-0};
+
   if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-    apt-cache search "${PACKAGE_NAME}" | sort | grep -i "${PACKAGE_NAME}";
-    echo ""; echo -n "Total Packages Found:  "; apt-cache search '' | sort | grep --color=auto -i "${PACKAGE_NAME}" | wc -l;
+    if [[ "${EXACT_MATCHING}" != "0" ]]; then
+      # Exact search
+      PACKAGES_LIST="$(apt-cache search "${PACKAGE_QUERY}" | sort | grep -i "${PACKAGE_QUERY}";)";
+    else
+      # Non-exact search
+      PACKAGES_LIST="$(apt-cache search "" | sort | grep -i "${PACKAGE_QUERY}";)";
+    fi;
+    echo "${PACKAGES_LIST}";
+    echo "";
+    echo "Total Packages Found:  $(echo "${PACKAGES_LIST}" | wc -l;)";
+
   elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-    yum list available "*${PACKAGE_NAME}*" | sort | grep -i "${PACKAGE_NAME}";
-    echo ""; echo -n "Total Packages Found:  "; yum list available | sort | grep --color=auto -i "${PACKAGE_NAME}" | wc -l;
+    if [[ "${EXACT_MATCHING}" != "0" ]]; then
+      # Exact search
+      PACKAGES_LIST="$(yum list available "*${PACKAGE_QUERY}*" | sort | grep -i "${PACKAGE_QUERY}";)";
+    else
+      # Non-exact search
+      PACKAGES_LIST="$(yum list available | sort | grep -i "${PACKAGE_QUERY}";)";
+    fi;
+    echo "${PACKAGES_LIST}";
+    echo "";
+    echo "Total Packages Found:  $(echo "${PACKAGES_LIST}" | wc -l;)";
+
   else
     echo "Error:  Incompatible environment - exiting...";
+
   fi;
 
-else
-
-  # No argument(s) passed - Show all available packages
-  if [[ -n "$(command -v apt 2>'/dev/null';)" ]]; then  # Distros: Debian, Ubuntu, etc.
-    apt-cache search '' | sort;
-    echo ""; echo "Total Packages Found:  $(apt-cache search "${PACKAGE_NAME}" | sort | wc -l;)";
-  elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-    yum list available | sort;
-    echo ""; echo "Total Packages Found:  $(yum list available | sort | wc -l;)";
-  else
-    echo "Error:  Incompatible environment - exiting...";
-  fi;
+  echo "";
 
 fi;
-echo "";
 
 
 # ------------------------------------------------------------

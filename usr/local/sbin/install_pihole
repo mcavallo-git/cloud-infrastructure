@@ -363,7 +363,8 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       # ------------------------------
 
       # Update pihole's file/directory permissions
-      if [[ 1 -eq 1 ]]; then
+      #  |--> This is covered by the "--cap-add=CHOWN" docker run command
+      if [[ 0 -eq 1 ]]; then
         echo "";
         echo "Info:  Updating pihole's file/directory permissions";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";

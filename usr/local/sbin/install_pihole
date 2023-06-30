@@ -77,8 +77,14 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
   if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
     # ------------------------------
-    # Ensure any volume-map directories exist
+
+    # Set runtime variable(s)
     CONFIG_DIR="/root/docker-configs/pihole";
+    CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
+
+    # ------------------------------
+
+    # Ensure any volume-map directories exist
     echo "";
     echo "Info:  Creating volume-map directories which don't already exist...";
     mkdir --parents "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
@@ -156,7 +162,12 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
-    docker-compose up --detach;
+    EVAL_DOCKER_COMPOSE_UP="docker-compose up --detach";
+    if [[ -f "${CONFIG_ENV_FILE}" ]]; then
+      EVAL_DOCKER_COMPOSE_UP+=" --env-file ${CONFIG_ENV_FILE}";
+    fi;
+    # echo " |-->  Calling [ ${EVAL_DOCKER_COMPOSE_UP} ]...";
+    eval " ${EVAL_DOCKER_COMPOSE_UP}";
 
     # Remove DNS server from /etc/resolv.conf (only if it was added earlier)
     if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then

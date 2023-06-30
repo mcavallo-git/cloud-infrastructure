@@ -163,11 +163,23 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
     EVAL_DOCKER_COMPOSE_UP="docker-compose up";
+
+    EVAL_DOCKER_COMPOSE_UP+=" --dry-run"; ### ⚠️⚠️⚠️ DRY RUN ⚠️⚠️⚠️ ###
+
     EVAL_DOCKER_COMPOSE_UP+=" --detach";
-    EVAL_DOCKER_COMPOSE_UP+=" -f '${COMPOSE_FILE_LOCAL}'";
+    EVAL_DOCKER_COMPOSE_UP+=" --name 'pihole'";
+    EVAL_DOCKER_COMPOSE_UP+=" --hostname 'pihole'";
+    EVAL_DOCKER_COMPOSE_UP+=" --restart 'always'";
+    EVAL_DOCKER_COMPOSE_UP+=" --publish '53:53/tcp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_COMPOSE_UP+=" --publish '53:53/udp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_COMPOSE_UP+=" --publish '67:67/udp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_COMPOSE_UP+=" --publish '80:80/tcp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_COMPOSE_UP+=" --publish '443:443/tcp'"; # --publish <host_port>:<container_port>/<protocol>
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
       EVAL_DOCKER_COMPOSE_UP+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;
+    # EVAL_DOCKER_COMPOSE_UP+=" --file '${COMPOSE_FILE_LOCAL}'";
+    EVAL_DOCKER_COMPOSE_UP+=" 'docker.io/pihole/pihole:latest'";
     EVAL_DOCKER_COMPOSE_UP+=";";
     echo " |-->  Calling [ ${EVAL_DOCKER_COMPOSE_UP} ]...";
     eval " ${EVAL_DOCKER_COMPOSE_UP}";
@@ -362,6 +374,8 @@ exit ${EXIT_CODE};
 #   github.com  |  "GitHub - pi-hole/docker-pi-hole: Pi-hole in a docker container"  |  https://github.com/pi-hole/docker-pi-hole/
 #
 #   hub.docker.com  |  "pihole/pihole - Docker Hub"  |  https://hub.docker.com/r/pihole/pihole
+#
+#   stackoverflow.com  |  "How do I publish a UDP Port on Docker? - Stack Overflow"  |  https://stackoverflow.com/a/27596415
 #
 #   www.linuxuprising.com  |  "Ubuntu: How To Free Up Port 53, Used By systemd-resolved - Linux Uprising Blog"  |  https://www.linuxuprising.com/2020/07/ubuntu-how-to-free-up-port-53-used-by.html
 #

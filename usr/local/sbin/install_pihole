@@ -280,9 +280,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
             #  |--> Instead, pull an Indiana Jones by copying the file into the container as a temporary file via 'docker cp', then replace the target file with the temporary file via the 'cp' native Linux command using the '--force' argument
             EACH_TEMP="${EACH_DEST}.$(date +'%s.%N').tmp";
             # Copy each filepath into target container
-            docker cp "${EACH_SOURCE}" "${CONTAINER_ID}:${EACH_TEMP}";
-            docker exec -t "${CONTAINER_ID}" cp --force "${EACH_TEMP}" "${EACH_DEST}";
-            docker exec -t "${CONTAINER_ID}" chmod ${EACH_CHMOD_PERMS} "${EACH_DEST}";
+            EACH_EVAL_TEMP_SWAP_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_TEMP}'; docker exec -t '${CONTAINER_ID}' cp --force '${EACH_TEMP}' '${EACH_DEST}'; docker exec -t '${CONTAINER_ID}' chmod ${EACH_CHMOD_PERMS} '${EACH_DEST}';";
+            echo "    |--> Calling [ ${EACH_EVAL_TEMP_SWAP_CP} ]...";
+            eval " ${EACH_EVAL_TEMP_SWAP_CP}";
           fi;
         done;
       fi;
@@ -306,16 +306,17 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
             echo "  |--> Updating '${EACH_DEST}'";
             if [[ -d "${EACH_SOURCE}" ]]; then
               # Directories - Make sure to copy files from folder to folder instead of copying the whole folder another level deep in the container
-              EACH_DEST="$(dirname "${EACH_DEST}";)/";
+              EACH_DOCKER_CP_DEST="$(dirname "${EACH_DEST}";)/";
               EACH_CHMOD_PERMS="0755";
             else
               # Files
+              EACH_DOCKER_CP_DEST="${EACH_DEST}";
               EACH_CHMOD_PERMS="0644";
             fi;
             # Copy each filepath into target container
-            docker cp "${EACH_SOURCE}" "${CONTAINER_ID}:${EACH_DEST}";
-            docker exec -t "${CONTAINER_ID}" chmod ${EACH_CHMOD_PERMS} "${EACH_DEST}";
-            docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' "${EACH_DEST}";
+            EACH_EVAL_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DOCKER_CP_DEST}'; docker exec -t '${CONTAINER_ID}' chmod '${EACH_CHMOD_PERMS}' '${EACH_DEST}'; docker exec -t '${CONTAINER_ID}' chown 'pihole:pihole' '${EACH_DEST}';";
+            echo "    |--> Calling [ ${EACH_EVAL_CP} ]...";
+            eval " ${EACH_EVAL_CP}";
           fi;
         done;
       fi;
@@ -334,8 +335,8 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "";
         echo "Info:  Updating pihole's file/directory permissions";
         # Directories
-        # docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/';
-        # docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/dnsmasq.d/';
+        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/';
+        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/dnsmasq.d/';
         # Files
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dns-servers.conf';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dhcp.leases';

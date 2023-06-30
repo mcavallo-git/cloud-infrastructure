@@ -306,7 +306,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           PHP_OVERRIDES_INI="${CONFIG_DIR}/etc/php/conf.d/zz-php-overrides.ini";
           # Determine where additional PHP config files are stored on the container's file system
           DOCKER_PHP_ALL_INI="$(docker exec -t "${CONTAINER_ID}" php --ini;)";
-          DOCKER_PHP_CONF_D="$(echo "${DOCKER_PHP_ALL_INI}" | sed -rne "s/^Scan for additional .ini files in:\s*(.+)\s*$/\1/p";)";
+          DOCKER_PHP_CONF_D="$(echo "${DOCKER_PHP_ALL_INI}" | sed -rne "s/^Scan for additional .ini files in:\s*(.+)\s*$/\1/p" | dos2unix;)";
           if [[ -n "${DOCKER_PHP_CONF_D}" ]]; then
             # Successfully located php's conf.d directory in the container
             DOCKER_PHP_OVERRIDES_INI="${DOCKER_PHP_CONF_D}/$(basename "${PHP_OVERRIDES_INI}";)";

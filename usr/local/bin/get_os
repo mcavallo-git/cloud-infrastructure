@@ -116,6 +116,7 @@ if [ -n "$(command -v vmware 2>'/dev/null';)" ]; then
   fi;
 
 elif [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
+  # General Linux distros
   DISTRO_IF_ELIF_BLOCK="lsb_release";
   DISTRO_ID="$(lsb_release --short --id;)";
   DISTRO_RELEASE="$(lsb_release --short --release;)";
@@ -128,12 +129,12 @@ elif [ -e "/etc/os-release" ] && [ -n "$(command -v sed 2>'/dev/null';)" ]; then
   DISTRO_ID=$(sed -rne 's/^ID="?(.+)"?$/\1/p' "/etc/os-release";);
   DISTRO_RELEASE=$(sed -rne 's/^VERSION_ID="?([^"]+)"?$/\1/p' "/etc/os-release";);  # Debian (10)
   if [ -z "${DISTRO_RELEASE}" ]; then
-    DISTRO_RELEASE=$(sed -rne 's/^VERSION="?([^"]+) ?\([^"]+\)"?$/\1/p' "/etc/os-release";);  # Debian (10) - fallback
+    DISTRO_RELEASE=$(sed -rne 's/^VERSION="?([^"]+) ?\(([^"]+)\)"?$/\1/p' "/etc/os-release";);  # Debian (10) - fallback
     if [ -z "${DISTRO_RELEASE}" ]; then
       DISTRO_RELEASE=$(cat /etc/*release | grep -i release | head -n 1 | sed -rne 's/^[a-zA-Z\_\-\(\)\=\ ]*([0-9\.]+)[a-zA-Z\_\-\(\)\=\ ]*$/\1/p';);
     fi;
   fi;
-  DISTRO_CODENAME=$(sed -rne 's/^VERSION="?.+\(([^"]+\)"?$/\1/p' "/etc/os-release";);
+  DISTRO_CODENAME=$(sed -rne 's/^VERSION="?([^"]+) ?\(([^"]+)\)"?$/\2/p' "/etc/os-release";);
   DISTRO_DESCRIPTION=$(sed -rne 's/^PRETTY_NAME="?([^"]+)"?$/\1/p' "/etc/os-release";);
 
 elif [ -n "$(find /etc/*release 2>'/dev/null';)" ] && [ -n "$(command -v grep 2>'/dev/null';)" ]; then
@@ -151,6 +152,35 @@ elif [ -n "$(command -v mintty 2>'/dev/null';)" ]; then
   DISTRO_CODENAME="";
   DISTRO_DESCRIPTION="Mintty - Cygwin Terminal Emulator";
 
+fi;
+
+#
+# Fallback approach for getting release
+#
+FALLBACK_LSB_RELEASE_USED="0";
+if [ -z "${DISTRO_RELEASE}" ]; then
+  FALLBACK_LSB_RELEASE_USED="1";
+  if [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
+    if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
+      DISTRO_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
+    fi;
+  fi;
+fi;
+
+
+# ------------------------------------------------------------
+#
+# Try to glean the distro's patch version (third semver value) from the description
+#
+DESCRIPTION_RELEASE="";
+if [ -n "$(echo "${DISTRO_DESCRIPTION}" | grep -i "${DISTRO_RELEASE}";)" ]; then
+  for EACH_SUBSTRING in $(echo "${DISTRO_DESCRIPTION}" | tr " " "\n"); do
+    if [ -n "$(echo "${EACH_SUBSTRING}" | grep -i "${DISTRO_RELEASE}";)" ]; then
+      if [ "${EACH_SUBSTRING,,}" != "${DISTRO_RELEASE,,}" ]; then
+        DESCRIPTION_RELEASE="${EACH_SUBSTRING}";
+      fi;
+    fi;
+  done;
 fi;
 
 
@@ -229,10 +259,8 @@ elif [[ ${IS_LINUX} -gt 0 ]] || [[ ${IS_WSL} -gt 0 ]]; then
 fi;
 
 THIS_RELEASE="Unknown";
-if [ -n "$(command -v lsb_release 2>'/dev/null';)" ]; then
-  if [ -n "$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)" ]; then
-    THIS_RELEASE="$(lsb_release --short --release | tr '[:lower:]' '[:upper:]';)";
-  fi;
+if [ -n "${DESCRIPTION_RELEASE}" ]; then
+  THIS_RELEASE="${DESCRIPTION_RELEASE}";
 elif [ -n "${DISTRO_RELEASE}" ]; then
   THIS_RELEASE="${DISTRO_RELEASE}";
 fi;
@@ -256,24 +284,28 @@ if [ ${VERBOSE} -eq 1 ]; then
   echo "THIS_RELEASE=${THIS_RELEASE}";
   echo "";
   echo "IS_WINDOWS=${IS_WINDOWS}";
-  echo "IS_LINUX=${IS_LINUX}"; \
-  echo "IS_MAC=${IS_MAC}"; \
-  echo "IS_WSL=${IS_WSL}"; \
+  echo "IS_LINUX=${IS_LINUX}";
+  echo "IS_MAC=${IS_MAC}";
+  echo "IS_WSL=${IS_WSL}";
   echo "";
-  echo "IS_ALPINE=${IS_ALPINE}"; \
-  echo "IS_CYGWIN=${IS_CYGWIN}"; \
-  echo "IS_CENTOS=${IS_CENTOS}"; \
-  echo "IS_DEBIAN=${IS_DEBIAN}"; \
+  echo "IS_ALPINE=${IS_ALPINE}";
+  echo "IS_CYGWIN=${IS_CYGWIN}";
+  echo "IS_CENTOS=${IS_CENTOS}";
+  echo "IS_DEBIAN=${IS_DEBIAN}";
   echo "IS_MINGW=${IS_MINGW}";
-  echo "IS_RASPBIAN=${IS_RASPBIAN}"; \
-  echo "IS_RED_HAT=${IS_RED_HAT}"; \
-  echo "IS_UBUNTU=${IS_UBUNTU}"; \
-  echo ""; \
-  echo "DISTRO_IF_ELIF_BLOCK=${DISTRO_IF_ELIF_BLOCK}"; \
-  echo "DISTRO_ID=${DISTRO_ID}"; \
-  echo "DISTRO_RELEASE=${DISTRO_RELEASE}"; \
-  echo "DISTRO_CODENAME=${DISTRO_CODENAME}"; \
-  echo "DISTRO_DESCRIPTION=${DISTRO_DESCRIPTION}"; \
+  echo "IS_RASPBIAN=${IS_RASPBIAN}";
+  echo "IS_RED_HAT=${IS_RED_HAT}";
+  echo "IS_UBUNTU=${IS_UBUNTU}";
+  echo "";
+  echo "DISTRO_IF_ELIF_BLOCK=${DISTRO_IF_ELIF_BLOCK}";
+  echo "DISTRO_ID=${DISTRO_ID}";
+  echo "DISTRO_RELEASE=${DISTRO_RELEASE}";
+  echo "DISTRO_CODENAME=${DISTRO_CODENAME}";
+  echo "DISTRO_DESCRIPTION=${DISTRO_DESCRIPTION}";
+  echo "";
+  echo "DESCRIPTION_RELEASE=${DESCRIPTION_RELEASE}";
+  echo "";
+  echo "FALLBACK_LSB_RELEASE_USED=${FALLBACK_LSB_RELEASE_USED}";
   echo "";
 fi;
 

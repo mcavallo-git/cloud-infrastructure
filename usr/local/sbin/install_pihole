@@ -162,13 +162,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --hostname 'pihole'";
     EVAL_DOCKER_RUN+=" --restart 'always'";
     EVAL_DOCKER_RUN+=" --sysctl 'net.ipv6.conf.all.disable_ipv6=1'";  # disable IPv6
-    EVAL_DOCKER_RUN+=" --publish '53:53/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '53:53/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '67:67/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '80:80/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '443:443/tcp'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --dns-option='ndots:0'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # Adds [ nameserver <ip_address> ] to [ /etc/resolv.conf ] in container
+    EVAL_DOCKER_RUN+=" --publish '53:53/tcp'";    # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '53:53/udp'";    # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '67:67/udp'";    # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '80:80/tcp'";    # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '443:443/tcp'";  # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --dns-option='ndots:0'";
+    EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # DNS server [ nameserver <ip_address> ] to [ /etc/resolv.conf ] in container
     EVAL_DOCKER_RUN+=" --dns='8.8.8.8'";  # Backup DNS server (in case DNSMasq has problems starting)
     
     # https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
@@ -177,7 +177,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --cap-add=NET_BIND_SERVICE";  # Allow FTLDNS to be able to change ownership of log files and databases in case FTL is started as a different user than pihole
     EVAL_DOCKER_RUN+=" --cap-add=SYS_NICE";  # Allow FTLDNS to set itself as an important process to get some more processing time if the latter is running low
 
-    CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
+    CONFIG_ENV_FILE="${CONFIG_DIR}/etc/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
       DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}";);
       if [[ -n "${DNS_SEARCH_DOMAIN}" ]]; then

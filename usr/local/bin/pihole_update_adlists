@@ -65,15 +65,15 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
       SQLITE_QUERY_UPDATE="";
       if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
         # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
-        echo " |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+        echo "  |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
         SQLITE_QUERY_UPDATE="INSERT INTO ${SQL_TABLE} (address, enabled, comment) VALUES ('${EACH_ADDRESS}',1,'${EACH_COMMENT}');";
       elif [[ "${SQLITE_RESULT_SELECT}" -eq 0 ]]; then
         # (Update) Record exists for this Adlist entry, but it is disabled --> enable it
-        echo " |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
+        echo "  |--> (Update)  Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
         SQLITE_QUERY_UPDATE="UPDATE ${SQL_TABLE} SET enabled=1,comment='${EACH_COMMENT}' WHERE address='${EACH_ADDRESS}';";
       else
         # (Skipped) Record exists and is enabled, already
-        echo " |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
+        echo "  |--> (Skipped) Adlist entry already enabled:  '${EACH_ADDRESS}' ...";
       fi;
       if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
         docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";

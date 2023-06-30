@@ -209,16 +209,42 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
+      # Update pihole's whitelisted domains - These domains are allowed past pihole's "gravity" and excluded from any adlists/blocklists
       if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
-        # Update pihole's whitelisted domains (e.g. update the list of domains which are allowed past pihole's adlists/blocklists)
         pihole_update_whitelist;
       fi;
 
+      # -----------------------------
+
+      # Update pihole's adlists - These are the list(s) of blocked domains which pihole's "gravity" pulls from
       if [[ -n "$(command -v pihole_update_adlists 2>'/dev/null';)" ]]; then
-        # Update pihole's adlists (e.g. update the list(s) of blocked domains which pihole's "gravity" pulls from)
         pihole_update_adlists;
       fi;
 
+      # ------------------------------
+
+      # Update pihole's symbolic links
+      CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+      docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
+
+      # ------------------------------
+
+      # Update pihole's file/directory permissions
+      CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:pihole' '/etc/pihole/';
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:pihole' '/etc/pihole/dhcp.leases';
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:pihole' '/etc/pihole/gravity.db';
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
+      docker exec -t "${CONTAINER_ID}" chown -L -R 'pihole:pihole' '/etc/pihole/macvendor.db';
+
+      # ------------------------------
+      #
+      # MANUALLY PERFORMED:
+      #
+      #     Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and Adlist updating via [ pihole -g ]
+      #      |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
+      #
       # ------------------------------
 
       # Show the version of target pihole container
@@ -233,30 +259,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
   fi;
 
 fi;
-
-
-#  !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)
-if [[ 0 -eq 1 ]]; then
-
-  CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
-
-  #
-  # Set pihole file permissions as-intended
-  #
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/';
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/dhcp.leases';
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/gravity.db';
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/macvendor.db';
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
-  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
-
-  #
-  # Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and Adlist updating via [ pihole -g ]
-  #  |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
-  #
-
-fi;
-
 
 echo "";
 echo "Finished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z';) ]";

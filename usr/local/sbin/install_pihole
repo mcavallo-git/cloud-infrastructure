@@ -151,23 +151,31 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     cd "${CONFIG_DIR}";
 
     # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
-    REMOTE_DOCKER_COMPOSE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
-    COMPOSE_FILE="${CONFIG_DIR}/docker-compose.yml";
+    COMPOSE_FILE_REMOTE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
+    COMPOSE_FILE_LOCAL="${CONFIG_DIR}/$(basename "${COMPOSE_FILE_REMOTE}";)";
     echo "";
     echo "Info:  Downloading pihole docker-compose script...";
-    curl -sL "${REMOTE_DOCKER_COMPOSE}" -o "${COMPOSE_FILE}";
-    chmod 0600 "${COMPOSE_FILE}";
+    curl -sL "${COMPOSE_FILE_REMOTE}" -o "${COMPOSE_FILE_LOCAL}";
+    chmod 0600 "${COMPOSE_FILE_LOCAL}";
 
     # Spin up the pihole docker container
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
-    EVAL_DOCKER_COMPOSE_UP="docker-compose up --detach";
+    EVAL_DOCKER_COMPOSE_UP="docker-compose up";
+    EVAL_DOCKER_COMPOSE_UP+=" --detach";
+    EVAL_DOCKER_COMPOSE_UP+=" --file '${COMPOSE_FILE_LOCAL}'";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
-      EVAL_DOCKER_COMPOSE_UP+=" --env-file ${CONFIG_ENV_FILE}";
+      EVAL_DOCKER_COMPOSE_UP+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;
-    # echo " |-->  Calling [ ${EVAL_DOCKER_COMPOSE_UP} ]...";
+    EVAL_DOCKER_COMPOSE_UP+=";";
+    echo " |-->  Calling [ ${EVAL_DOCKER_COMPOSE_UP} ]...";
     eval " ${EVAL_DOCKER_COMPOSE_UP}";
+
+    # Cleanup the downloaded file
+    EVAL_CLEANUP_COMPOSE+="rm -fv '${COMPOSE_FILE_LOCAL}';";
+    echo " |-->  Calling [ ${EVAL_CLEANUP_COMPOSE} ]...";
+    eval " ${EVAL_CLEANUP_COMPOSE}";
 
     # Remove DNS server from /etc/resolv.conf (only if it was added earlier)
     if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then

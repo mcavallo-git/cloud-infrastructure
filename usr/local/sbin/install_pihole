@@ -184,7 +184,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}";);
       if [[ -n "${DNS_SEARCH_DOMAIN}" ]]; then
         EVAL_DOCKER_RUN+=" --dns-search '${DNS_SEARCH_DOMAIN}'";  # Adds [ search <domain> ] to [ /etc/resolv.conf ] in container
-
       fi;
       EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;

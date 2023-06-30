@@ -302,10 +302,16 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         # FTL config
         CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/pihole/"]="/etc/pihole/");  # (["__SOURCE__"]="__DESTINATION__");
         # PHP config
+        #   Note: pihole containers don't seem to have the 'command' command available to them
         if [[ -n "$(docker exec -t "${CONTAINER_ID}" which php 2>'/dev/null';)" ]]; then
           PHP_OVERRIDES_INI="${CONFIG_DIR}/etc/php/conf.d/zz-php-overrides.ini";
           # Determine where additional PHP config files are stored on the container's file system
           DOCKER_PHP_ALL_INI="$(docker exec -t "${CONTAINER_ID}" php --ini;)";
+          # Note: dos2unix is required for stripping the unicode characters which php outputs
+          if [[ -z "$(command -v dos2unix 2>'/dev/null';)" ]]; then
+            echo "Info:  Installing prerequisite application:dos2unix"; 
+            apt-get update -y; apt-get install -y dos2unix;
+          fi;
           DOCKER_PHP_CONF_D="$(echo "${DOCKER_PHP_ALL_INI}" | sed -rne "s/^Scan for additional .ini files in:\s*(.+)\s*$/\1/p" | dos2unix;)";
           if [[ -n "${DOCKER_PHP_CONF_D}" ]]; then
             # Successfully located php's conf.d directory in the container
@@ -348,6 +354,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         # Set time zone for container
         docker exec -t "${CONTAINER_ID}" ln -snf "/usr/share/zoneinfo/${TZ}" '/etc/localtime';
         docker exec -t "${CONTAINER_ID}" sed -re "s/^.+$/${TZ_REGEX_ESCAPED}/g" -i '/etc/timezone';
+        #   Note: pihole containers don't seem to have the 'command' command available to them
         if [[ -n "$(docker exec -t "${CONTAINER_ID}" which timedatectl 2>'/dev/null';)" ]]; then
           docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}";
         fi;

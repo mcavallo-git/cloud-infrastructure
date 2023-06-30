@@ -177,10 +177,15 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:80:80/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:443:443/tcp'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --dns-option='ndots:0'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    # EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # Sets [ nameserver <ip_address> ] in "/etc/resolv.conf" config file (container network resolution) -  Enables the usage of [ pihole -g ] for internal queryies & adlist updates
+    EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # Adds [ nameserver <ip_address> ] to [ /etc/resolv.conf ] in container
 
     CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
+      DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}";);
+      if [[ -n "${DNS_SEARCH_DOMAIN}" ]]; then
+        EVAL_DOCKER_RUN+=" --dns-search '${DNS_SEARCH_DOMAIN}'";  # Adds [ search <domain> ] to [ /etc/resolv.conf ] in container
+
+      fi;
       EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;
 

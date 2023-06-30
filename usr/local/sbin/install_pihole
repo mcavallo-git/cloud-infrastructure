@@ -232,8 +232,8 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
         NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");
         NETWORK_FILEPATHS+=(["/etc/resolv.conf"]="${CONFIG_DIR}/etc/resolv.conf");
-        for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
-          EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
+        for EACH_DEST in "${!NETWORK_FILEPATHS[@]}"; do
+          EACH_SOURCE="${NETWORK_FILEPATHS[${EACH_DEST}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo " |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else

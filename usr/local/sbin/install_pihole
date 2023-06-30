@@ -269,15 +269,20 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           else
             # Copy each config file/directory into target container
             echo "  |--> Updating '${EACH_DEST}'";
-            EACH_TEMP="${EACH_DEST}.$(date +'%s.%N').tmp";
+            if [[ -d "${EACH_SOURCE}" ]]; then
+              # Directories
+              EACH_CHMOD_PERMS="0755";
+            else
+              # File(s)
+              EACH_CHMOD_PERMS="0444";
+            fi;
             # Workaround note: Cannot use 'docker cp' to copy over files which are in-use by the container (no '--force' argument)
             #  |--> Instead, pull an Indiana Jones by copying the file into the container as a temporary file via 'docker cp', then replace the target file with the temporary file via the 'cp' native Linux command using the '--force' argument
-            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_TEMP}';";
-            eval " ${EACH_EVAL_DOCKER_CP}";
-            EACH_EVAL_DOCKER_EXEC_CP="docker exec -t '${CONTAINER_ID}' cp --force '${EACH_TEMP}' '${EACH_DEST}';";
-            eval " ${EACH_EVAL_DOCKER_EXEC_CP}";
-            EACH_EVAL_DOCKER_EXEC_CHMOD="docker exec -t '${CONTAINER_ID}' chmod 0444 '${EACH_DEST}';";
-            eval " ${EACH_EVAL_DOCKER_EXEC_CHMOD}";
+            EACH_TEMP="${EACH_DEST}.$(date +'%s.%N').tmp";
+            # Copy each filepath into target container
+            docker cp "${EACH_SOURCE}" "${CONTAINER_ID}:${EACH_TEMP}";
+            docker exec -t "${CONTAINER_ID}" cp --force "${EACH_TEMP}" "${EACH_DEST}";
+            docker exec -t "${CONTAINER_ID}" chmod ${EACH_CHMOD_PERMS} "${EACH_DEST}";
           fi;
         done;
       fi;
@@ -298,18 +303,19 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo "  |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
-            if [[ -d "${EACH_SOURCE}" ]]; then
-              # Directory - Make sure to copy files from folder to folder instead of copying the whole folder another level deep in the container
-              EACH_CP_DEST="$(dirname "${EACH_DEST}";)/";
-            else
-              # File(s) - Copy as-is
-              EACH_CP_DEST="${EACH_DEST}";
-            fi;
-            # Copy each config file/directory into target container
             echo "  |--> Updating '${EACH_DEST}'";
-            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_CP_DEST}';";
-            echo "    |--> Calling [ ${EACH_EVAL_DOCKER_CP} ]...";
-            eval " ${EACH_EVAL_DOCKER_CP}";
+            if [[ -d "${EACH_SOURCE}" ]]; then
+              # Directories - Make sure to copy files from folder to folder instead of copying the whole folder another level deep in the container
+              EACH_DEST="$(dirname "${EACH_DEST}";)/";
+              EACH_CHMOD_PERMS="0755";
+            else
+              # Files
+              EACH_CHMOD_PERMS="0644";
+            fi;
+            # Copy each filepath into target container
+            docker cp "${EACH_SOURCE}" "${CONTAINER_ID}:${EACH_DEST}";
+            docker exec -t "${CONTAINER_ID}" chmod ${EACH_CHMOD_PERMS} "${EACH_DEST}";
+            docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' "${EACH_DEST}";
           fi;
         done;
       fi;
@@ -324,13 +330,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "";
         echo "Info:  Updating pihole's symbolic link(s)";
         docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
-        #
         # Update pihole's file/directory permissions
-        #  |--> ??? Should be covered by the "--cap-add=CHOWN" docker run command
-        #
         echo "";
         echo "Info:  Updating pihole's file/directory permissions";
-        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/';
+        # Directories
+        # docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/';
+        # docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/dnsmasq.d/';
+        # Files
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dns-servers.conf';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dhcp.leases';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/gravity.db';
@@ -338,6 +344,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/setupVars.conf';
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
+        docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/macvendor.db';
       fi;
 
       # ------------------------------

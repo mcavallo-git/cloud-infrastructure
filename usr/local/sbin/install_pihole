@@ -324,6 +324,21 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
+      # Update pihole's time zone
+      if [[ 1 -eq 1 ]]; then
+        CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+        # Get time zone for host device - Strip whitespace & blank lines
+        TZ="$(cat '/etc/timezone' | sed -e "s/^[[:space:]]*//" -e "s/[[:space:]]*$//" -e "/^\s*$/d";)";
+        # Set time zone for container
+        docker exec -t "${CONTAINER_ID}" ln -snf "/usr/share/zoneinfo/${TZ}" '/etc/localtime';
+        docker exec -t "${CONTAINER_ID}" echo -n "${TZ}" > '/etc/timezone';
+        if [[ -n "$(docker exec -t "${CONTAINER_ID}" which timedatectl 2>'/dev/null';)" ]]; then
+          docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}" 2>'/dev/null';
+        fi;
+      fi;
+
+      # ------------------------------
+
       # Update pihole symlinks, file ownership & permissions
       if [[ 1 -eq 1 ]]; then
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";

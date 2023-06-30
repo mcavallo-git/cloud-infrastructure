@@ -53,7 +53,7 @@ echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
 # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
 FIRST_REINSTALL_CONFIRMATION="";
 SECOND_REINSTALL_CONFIRMATION="";
-if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
+if [[ -n "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]]; then
   # Require a first round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   echo -e "";
   echo -e " ! !        ! !";
@@ -64,7 +64,7 @@ if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; 
   echo -e "";
 fi;
 
-if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]] || [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
   # Require a second round of user confirmations ('Y' or 'y' keypress) before reinstalling pihole over an already-running instance of pihole
   if [[ "${FIRST_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
@@ -74,7 +74,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     echo "";
   fi;
 
-  if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
+  if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]] || [[ "${SECOND_REINSTALL_CONFIRMATION}" =~ ^[Yy]$ ]]; then
 
     # ------------------------------
     # Ensure any volume-map directories exist
@@ -90,7 +90,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     RESOLV_CONF_REMOVE_STOPGAP=0;
 
     PIHOLE_ALREADY_EXISTS=0;
-    if [[ -n "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
+    if [[ -n "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]]; then
       PIHOLE_ALREADY_EXISTS=1;
     fi;
 
@@ -107,7 +107,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       # Show the version of target pihole container
       echo "";
       echo "Info:  Getting version from pihole container...";
-      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
+      docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
     fi;
 
     # Add DNS server to /etc/resolv.conf
@@ -167,7 +167,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
     fi;
 
     # Verify that the docker container was created as-intended
-    if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]]; then
+    if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]]; then
       # Pi-hole container does NOT exist
       EXIT_CODE=1;
 
@@ -224,7 +224,7 @@ if [[ -z "$(docker ps --all --quiet --filter "name=pihole" 2>'/dev/null';)" ]] |
       # Show the version of target pihole container
       echo "";
       echo "Info:  Getting version from pihole container...";
-      docker exec "$(docker ps --all --quiet --filter "name=pihole";)" pihole version;
+      docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
 
       # ------------------------------
 
@@ -238,18 +238,17 @@ fi;
 #  !!!  PERFORM THE FOLLOWING STEPS MANUALLY (for the time being)
 if [[ 0 -eq 1 ]]; then
 
-  # Bash into the docker
-  docker_bash_X;  # Download from [ https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/docker_bash_X ]
+  CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
 
   #
   # Set pihole file permissions as-intended
   #
-  chown -R "pihole:pihole" "/etc/pihole/";
-  chown -R "pihole:pihole" "/etc/pihole/dhcp.leases";
-  chown -R "pihole:pihole" "/etc/pihole/gravity.db";
-  chown -R "pihole:pihole" "/etc/pihole/macvendor.db";
-  chown -R "pihole:root"   "/etc/pihole/pihole-FTL.conf";
-  chown -R "pihole:pihole" "/etc/pihole/pihole-FTL.db";
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/';
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/dhcp.leases';
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/gravity.db';
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/macvendor.db';
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
+  docker exec -t "${CONTAINER_ID}" chown -R 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
 
   #
   # Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and Adlist updating via [ pihole -g ]

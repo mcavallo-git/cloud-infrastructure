@@ -367,15 +367,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
-      # Update pihole's PHP config (used exclusively by the FTL server)
-      if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
-        # /etc/php/7.4/cli/conf.d/
-        # CodingPrivate/configs/raspi-4b/root/docker-configs/pihole/etc/php/7.4/cli/conf.d/php-overrides.ini
-        # CodingPrivate/configs/raspi-4b/root/docker-configs/pihole/etc/php/conf.d/php-overrides.ini
-      fi;
-
-      # ------------------------------
-
       # Update pihole's whitelisted domains - These domains are allowed past pihole's "gravity" and excluded from any adlists/blocklists
       if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
         pihole_update_whitelist;

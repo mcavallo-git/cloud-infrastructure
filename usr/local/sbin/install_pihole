@@ -45,8 +45,6 @@ EXIT_CODE=0;
 # Spin-up the pihole docker (after port 53 is freed up)
 #
 
-echo "";
-
 # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
 FIRST_REINSTALL_CONFIRMATION="";
 SECOND_REINSTALL_CONFIRMATION="";
@@ -86,13 +84,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     RESOLV_CONF_REMOVE_STOPGAP=0;
 
     STOPGAP_DNS_SERVER="8.8.8.8";
-
-    # ------------------------------
-
-    # Ensure any volume-map directories exist
-    echo "";
-    echo "Info:  Creating volume-map directories which don't already exist...";
-    mkdir --parents "${CONFIG_DIR}/etc/pihole/" "${CONFIG_DIR}/etc/dnsmasq.d/";  # Directories used for docker container volume maps
 
     # ------------------------------
 

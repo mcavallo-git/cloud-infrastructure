@@ -179,8 +179,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
     CONFIG_ENV_FILE="${CONFIG_DIR}/etc/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
-      DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}";);
+      DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}" | sort -u | head -n 1;);
       if [[ -n "${DNS_SEARCH_DOMAIN}" ]]; then
+        DNS_SEARCH_DOMAIN=$(echo "${DNS_SEARCH_DOMAIN}" | head -n 1;);
         EVAL_DOCKER_RUN+=" --dns-search '${DNS_SEARCH_DOMAIN}'";  # Adds [ search <domain> ] to [ /etc/resolv.conf ] in container
       fi;
       EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";

@@ -274,6 +274,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's network settings";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
+        # NETWORK_FILEPATHS+=(["__DESTINATION__"]="__SOURCE__");
         NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");
         NETWORK_FILEPATHS+=(["/etc/resolv.conf"]="${CONFIG_DIR}/etc/resolv.conf");
         for EACH_DEST in "${!NETWORK_FILEPATHS[@]}"; do
@@ -304,8 +305,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's config files";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset CONFIG_FILEPATHS; declare -A CONFIG_FILEPATHS; # [Re-]Instantiate bash array
-        CONFIG_FILEPATHS+=(["/etc/pihole/"]="${CONFIG_DIR}/etc/pihole/");
-        CONFIG_FILEPATHS+=(["/etc/dnsmasq.d/"]="${CONFIG_DIR}/etc/dnsmasq.d/");
+        # CONFIG_FILEPATHS+=(["__DESTINATION__"]="__SOURCE__");
+        CONFIG_FILEPATHS+=(["/etc/pihole/"]="${CONFIG_DIR}/etc/");
+        CONFIG_FILEPATHS+=(["/etc/dnsmasq.d/"]="${CONFIG_DIR}/etc/");
         for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
           EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then

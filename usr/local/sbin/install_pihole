@@ -40,14 +40,12 @@ exec 2>&1;
 
 EXIT_CODE=0;
 
-THIS_SCRIPT="install_pihole";
-
-echo "";
-
 # ------------------------------------------------------------
 #
 # Spin-up the pihole docker (after port 53 is freed up)
 #
+
+echo "";
 
 # Check to see if any pihole dockers are currently running (before updating/removing/replacing them with a newer version)
 FIRST_REINSTALL_CONFIRMATION="";

@@ -313,13 +313,15 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo "  |-->  Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
-            # Copy each config file/directory into target container
-            echo "  |-->  Updating '${EACH_DEST}'";
             if [[ -d "${EACH_SOURCE}" ]]; then
+              # Directory - Make sure to copy files from folder to folder instead of copying the whole folder another level deep in the container
               EACH_CP_DEST="$(dirname "${EACH_DEST}";)/";
             else
+              # File(s) - Copy as-is
               EACH_CP_DEST="${EACH_DEST}";
             fi;
+            # Copy each config file/directory into target container
+            echo "  |-->  Updating '${EACH_DEST}'";
             EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_CP_DEST}';";
             echo "    |-->  Calling [ ${EACH_EVAL_DOCKER_CP} ]...";
             eval " ${EACH_EVAL_DOCKER_CP}";

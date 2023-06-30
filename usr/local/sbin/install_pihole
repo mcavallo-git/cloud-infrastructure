@@ -172,10 +172,10 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --dns='8.8.8.8'";  # Backup DNS server (in case DNSMasq has problems starting)
     
     # https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    EVAL_DOCKER_RUN+=" --cap-add=CHOWN";  # Allow FTLDNS to bind to TCP/UDP sockets below 1024 (specifically DNS service on port 53)
-    EVAL_DOCKER_RUN+=" --cap-add=NET_ADMIN";  # Allow DNSMasq/FTLDNS to modify routing tables and other network-related operations (in particular inserting an entry in the neighbor table to answer DHCP requests using unicast packets)
-    EVAL_DOCKER_RUN+=" --cap-add=NET_BIND_SERVICE";  # Allow FTLDNS to be able to change ownership of log files and databases in case FTL is started as a different user than pihole
-    EVAL_DOCKER_RUN+=" --cap-add=SYS_NICE";  # Allow FTLDNS to set itself as an important process to get some more processing time if the latter is running low
+    # EVAL_DOCKER_RUN+=" --cap-add=CHOWN";  # Allow FTLDNS to bind to TCP/UDP sockets below 1024 (specifically DNS service on port 53)
+    # EVAL_DOCKER_RUN+=" --cap-add=NET_ADMIN";  # Allow DNSMasq/FTLDNS to modify routing tables and other network-related operations (in particular inserting an entry in the neighbor table to answer DHCP requests using unicast packets)
+    # EVAL_DOCKER_RUN+=" --cap-add=NET_BIND_SERVICE";  # Allow FTLDNS to be able to change ownership of log files and databases in case FTL is started as a different user than pihole
+    # EVAL_DOCKER_RUN+=" --cap-add=SYS_NICE";  # Allow FTLDNS to set itself as an important process to get some more processing time if the latter is running low
 
     CONFIG_ENV_FILE="${CONFIG_DIR}/etc/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then

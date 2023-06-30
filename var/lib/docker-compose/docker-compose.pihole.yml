@@ -14,14 +14,14 @@ services:
     container_name: pihole
     image: docker.io/pihole/pihole:latest
     restart: always
-    # env_file:
-    #   - ${CONFIG_DIR:-.}/.env
     ports:  # [Host]:[Docker] Port maps
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
       - "80:80/tcp"
       - "443:443/tcp"
+    # env_file:
+    #   - ${CONFIG_DIR:-.}/.env
     # volumes:  # [Host]:[Docker] Filepath maps
     #   - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
     #   - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'

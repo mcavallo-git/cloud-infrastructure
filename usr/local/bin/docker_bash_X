@@ -82,6 +82,7 @@ if [ -n "$0" ]; then
             # Running on Mintty (Git Bash) in Windows
             echo "";
             echo "Calling [ powershell -Command \"docker exec -e \\\"LINES=${LINES}\\\" -e \\\"COLUMNS=${COLUMNS}\\\" -it \\\"${CONTAINER_ID}\\\" '/bin/bash'; if (-not \\${?}) { docker exec -e \\\"LINES=${LINES}\\\" -e \\\"COLUMNS=${COLUMNS}\\\" -it \\\"${CONTAINER_ID}\\\" '/bin/sh'; };\"; ]...";
+            echo "";
             powershell -Command "docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash'; if (-not \${?}) { docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; };";
 
           else
@@ -89,6 +90,7 @@ if [ -n "$0" ]; then
             # Running on a non-Windows device and/or on a distro other than Mintty (e.g. on a distro other than Git Bash)
             echo "";
             echo "Calling [ docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/bash' 2>'/dev/null' || docker exec -e \"LINES=${LINES}\" -e \"COLUMNS=${COLUMNS}\" -it \"${CONTAINER_ID}\" '/bin/sh'; ]...";
+            echo "";
             docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/bash' 2>'/dev/null' \
               || docker exec -e "LINES=${LINES}" -e "COLUMNS=${COLUMNS}" -it "${CONTAINER_ID}" '/bin/sh';
 

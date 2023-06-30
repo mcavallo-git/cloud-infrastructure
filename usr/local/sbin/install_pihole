@@ -305,17 +305,18 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's config files";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset CONFIG_FILEPATHS; declare -A CONFIG_FILEPATHS; # [Re-]Instantiate bash array
-        # CONFIG_FILEPATHS+=(["__DESTINATION__"]="__SOURCE__");
-        CONFIG_FILEPATHS+=(["/etc/pihole/"]="${CONFIG_DIR}/etc/");
-        CONFIG_FILEPATHS+=(["/etc/dnsmasq.d/"]="${CONFIG_DIR}/etc/");
-        for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
-          EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
+        # CONFIG_FILEPATHS+=(["__SOURCE__"]="__DESTINATION__");
+        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/pihole/"]="/etc/pihole/");
+        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/dnsmasq.d/"]="/etc/dnsmasq.d/");
+        for EACH_SOURCE in "${!CONFIG_FILEPATHS[@]}"; do
+          EACH_DEST="${CONFIG_FILEPATHS[${EACH_SOURCE}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo "  |-->  Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
             # Copy each config file/directory into target container
             echo "  |-->  Updating '${EACH_DEST}'";
-            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DEST}';";
+            EACH_DEST_CP_TARGET="$(dirname "${EACH_DEST}";)/";
+            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DEST_CP_TARGET}';";
             echo "    |-->  Calling [ ${EACH_EVAL_DOCKER_CP} ]...";
             eval " ${EACH_EVAL_DOCKER_CP}";
           fi;

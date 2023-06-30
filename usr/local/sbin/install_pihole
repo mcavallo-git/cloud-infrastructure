@@ -250,20 +250,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       sleep 15;
 
       # ------------------------------
-
-      # Update pihole's whitelisted domains - These domains are allowed past pihole's "gravity" and excluded from any adlists/blocklists
-      if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
-        pihole_update_whitelist;
-      fi;
-
-      # -----------------------------
-
-      # Update pihole's adlists - These are the list(s) of blocked domains which pihole's "gravity" pulls from
-      if [[ -n "$(command -v pihole_update_adlists 2>'/dev/null';)" ]]; then
-        pihole_update_adlists;
-      fi;
-
-      # ------------------------------
       #
       # Update pihole's network settings
       #
@@ -330,11 +316,25 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       # ------------------------------
 
       # Update pihole's symbolic link(s)
-      if [[ 1 -eq 1 ]]; then
-        echo "";
-        echo "Info:  Updating pihole's symbolic link(s)";
-        CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
-        docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
+      # if [[ 0 -eq 1 ]]; then
+      #   echo "";
+      #   echo "Info:  Updating pihole's symbolic link(s)";
+      #   CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+      #   docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
+      # fi;
+
+      # ------------------------------
+
+      # Update pihole's whitelisted domains - These domains are allowed past pihole's "gravity" and excluded from any adlists/blocklists
+      if [[ -n "$(command -v pihole_update_whitelist 2>'/dev/null';)" ]]; then
+        pihole_update_whitelist;
+      fi;
+
+      # -----------------------------
+
+      # Update pihole's adlists - These are the list(s) of blocked domains which pihole's "gravity" pulls from
+      if [[ -n "$(command -v pihole_update_adlists 2>'/dev/null';)" ]]; then
+        pihole_update_adlists;
       fi;
 
       # ------------------------------
@@ -346,26 +346,26 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
-      # Show the version of target pihole container
-      echo "";
-      echo "Info:  Getting version from pihole container...";
-      docker exec -t "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
+      # Update pihole's file/directory permissions
+      #  |--> This is covered by the "--cap-add=CHOWN" docker run command
+      # if [[ 0 -eq 1 ]]; then
+      #   echo "";
+      #   echo "Info:  Updating pihole's file/directory permissions";
+      #   CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dhcp.leases';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/gravity.db';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
+      # fi;
 
       # ------------------------------
 
-      # Update pihole's file/directory permissions
-      #  |--> This is covered by the "--cap-add=CHOWN" docker run command
-      if [[ 0 -eq 1 ]]; then
-        echo "";
-        echo "Info:  Updating pihole's file/directory permissions";
-        CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dhcp.leases';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/gravity.db';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
-      fi;
+      # Show the final container version
+      echo "";
+      echo "Info:  Getting version from pihole container...";
+      docker exec -t "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
 
       # ------------------------------
 

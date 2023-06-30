@@ -82,13 +82,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
     CONFIG_DIR="/root/docker-configs/pihole";
 
-    CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
+    IMAGE_URL="docker.io/pihole/pihole:latest";
 
-    STOPGAP_DNS_SERVER="8.8.8.8";
+    PIHOLE_ALREADY_EXISTS=0;
 
     RESOLV_CONF_REMOVE_STOPGAP=0;
 
-    PIHOLE_ALREADY_EXISTS=0;
+    STOPGAP_DNS_SERVER="8.8.8.8";
 
     # ------------------------------
 
@@ -167,7 +167,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     # Spin up the pihole docker container
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
-    cd "${CONFIG_DIR}";
+    # cd "${CONFIG_DIR}";
     EVAL_DOCKER_RUN="docker run";
     EVAL_DOCKER_RUN+=" --detach";
     EVAL_DOCKER_RUN+=" --name 'pihole'";
@@ -178,10 +178,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --publish '67:67/udp'";   # --publish <host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '80:80/tcp'";   # --publish <host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '443:443/tcp'"; # --publish <host_port>:<container_port>/<protocol>
+
+    CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
       EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;
-    EVAL_DOCKER_RUN+=" 'docker.io/pihole/pihole:latest'";
+
+    EVAL_DOCKER_RUN+=" '${IMAGE_URL}'";
     EVAL_DOCKER_RUN+=";";
     echo " |-->  Calling [ ${EVAL_DOCKER_RUN} ]...";
     eval " ${EVAL_DOCKER_RUN}";

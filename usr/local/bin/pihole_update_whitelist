@@ -30,7 +30,7 @@ echo "-- Info:  Start of \"pihole_update_whitelist\" runtime at [ ${START_DATETI
 # Update pihole's whitelisted domains (e.g. update the list of domains which are allowed past pihole's adlists/blocklists)  -  https://discourse.pi-hole.net/t/commonly-whitelisted-domains/212
 #  |
 #  |--> DB-Schema command:
-#  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
+#  |      TABLE_NAME="domainlist"; FULLPATH_DATABASE="/etc/pihole/gravity.db"; docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" sqlite3 "${FULLPATH_DATABASE}" ".schema ${TABLE_NAME}";
 #  |
 #  |--> DB-Schema:
 #         CREATE TABLE domainlist
@@ -47,7 +47,7 @@ echo "-- Info:  Start of \"pihole_update_whitelist\" runtime at [ ${START_DATETI
 #
 
 FULLPATH_WHITELIST="/etc/pihole/whitelist.list";
-FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d";)";
+FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" cat "${FULLPATH_WHITELIST}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d";)";
 if [[ "$(echo -n "${FILE_CONTENT_LINES}" | wc -l;)" != "0" ]]; then
   echo "";
   echo "Info:  Syncing pihole whitelist entries from \"${FULLPATH_WHITELIST}\"...";
@@ -65,7 +65,7 @@ if [[ "$(echo -n "${FILE_CONTENT_LINES}" | wc -l;)" != "0" ]]; then
     fi;
     if [ -n "${EACH_DOMAIN}" ]; then
       SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE type='${EACH_TYPE}' AND domain='${EACH_DOMAIN}';";
-      SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
+      SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
       SQLITE_QUERY_UPDATE="";
       if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
         # (Insert) Record doesn't (yet) exist for this Whitelist entry --> create it
@@ -80,7 +80,7 @@ if [[ "$(echo -n "${FILE_CONTENT_LINES}" | wc -l;)" != "0" ]]; then
         echo " |--> (Skipped) Whitelist entry already enabled:  '${EACH_DOMAIN}' ...";
       fi;
       if [[ -n "${SQLITE_QUERY_UPDATE}" ]]; then
-        docker exec "$(docker ps --all --quiet --filter "name=pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
+        docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_UPDATE}";
       fi;
     fi;
   done;

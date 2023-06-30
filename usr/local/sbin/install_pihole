@@ -170,13 +170,14 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --name 'pihole'";
     EVAL_DOCKER_RUN+=" --hostname 'pihole'";
     EVAL_DOCKER_RUN+=" --restart 'always'";
-    EVAL_DOCKER_RUN+=" --dns-opt='options single-request'";  # disable IPv6
     EVAL_DOCKER_RUN+=" --sysctl 'net.ipv6.conf.all.disable_ipv6=1'";  # disable IPv6
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:53:53/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:53:53/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:67:67/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:80:80/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --publish '0.0.0.0:443:443/tcp'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --dns-option='ndots:0'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    # EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # Sets [ nameserver <ip_address> ] in "/etc/resolv.conf" config file (container network resolution) -  Enables the usage of [ pihole -g ] for internal queryies & adlist updates
 
     CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
@@ -340,13 +341,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       fi;
 
       # ------------------------------
-      #
-      # MANUALLY PERFORMED:
-      #
-      #     Make sure pihole's "/etc/resolv.conf" contains line [ nameserver 127.0.0.1 ], to allow internal query-ing and Adlist updating via [ pihole -g ]
-      #      |--> via Docker Volume-Map to [ /etc/resolv.conf ] with read-only attribute ":ro" (to avoid it being updated/reverted)
-      #
-      # ------------------------------
 
       # Show the version of target pihole container
       echo "";
@@ -384,7 +378,11 @@ exit ${EXIT_CODE};
 #
 #   github.com  |  "GitHub - pi-hole/docker-pi-hole: Pi-hole in a docker container"  |  https://github.com/pi-hole/docker-pi-hole/
 #
+#   github.com  |  "Using `--dns-option=ndots:0` w/ user-defined networking results in duplicate ndots:0 options · Issue #37349 · moby/moby · GitHub"  |  https://github.com/moby/moby/issues/37349
+#
 #   hub.docker.com  |  "pihole/pihole - Docker Hub"  |  https://hub.docker.com/r/pihole/pihole
+#
+#   serverfault.com  |  "domain name system - How to configure custom DNS server with Docker? - Server Fault"  |  https://serverfault.com/a/612131
 #
 #   stackoverflow.com  |  "How do I publish a UDP Port on Docker? - Stack Overflow"  |  https://stackoverflow.com/a/27596415
 #

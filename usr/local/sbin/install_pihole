@@ -163,9 +163,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
     EVAL_DOCKER_COMPOSE_UP="docker run";
-
-    EVAL_DOCKER_COMPOSE_UP+=" --dry-run"; ### ⚠️⚠️⚠️ DRY RUN ⚠️⚠️⚠️ ###
-
     EVAL_DOCKER_COMPOSE_UP+=" --detach";
     EVAL_DOCKER_COMPOSE_UP+=" --name 'pihole'";
     EVAL_DOCKER_COMPOSE_UP+=" --hostname 'pihole'";

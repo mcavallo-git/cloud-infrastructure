@@ -49,8 +49,8 @@ echo "-- Info:  Start of \"pihole_update_adlists\" runtime at [ ${START_DATETIME
 #
 
 FULLPATH_ADLISTS="/etc/pihole/adlists.list";
-FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d";)";
-if [[ "$(echo -n "${FILE_CONTENT_LINES}" | wc -l;)" != "0" ]]; then
+FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null';)";
+if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -l;)" != "0" ]]; then
   echo "";
   echo "Info:  Syncing pihole adlist entries from \"${FULLPATH_ADLISTS}\"...";
   SQL_TABLE="adlist";

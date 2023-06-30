@@ -42,8 +42,7 @@ EXIT_CODE=0;
 
 THIS_SCRIPT="install_pihole";
 
-echo "------------------------------";
-echo "Starting ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z')] ";
+echo "";
 
 # ------------------------------------------------------------
 #
@@ -363,8 +362,11 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 fi;
 
 echo "";
-echo "Finished ${THIS_SCRIPT} at [ $(date +'%Y-%m-%dT%H:%M:%S%z';) ]";
+
+printf -- '-%.0s' {1..10}; printf " Script ended at [ $(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) ]\n";
+
 echo "------------------------------";
+
 exit ${EXIT_CODE};
 
 

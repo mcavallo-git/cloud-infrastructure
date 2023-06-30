@@ -260,15 +260,16 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's network settings";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
-        # NETWORK_FILEPATHS+=(["__SOURCE__"]="__DESTINATION__");
-        NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");
-        NETWORK_FILEPATHS+=(["${CONFIG_DIR}/etc/resolv.conf"]="/etc/resolv.conf");
+        # Hostsfile declarations
+        NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");  # (["__SOURCE__"]="__DESTINATION__");
+        # Network resolution config
+        NETWORK_FILEPATHS+=(["${CONFIG_DIR}/etc/resolv.conf"]="/etc/resolv.conf");  # (["__SOURCE__"]="__DESTINATION__");
+        # Copy each file/directory into target container
         for EACH_SOURCE in "${!NETWORK_FILEPATHS[@]}"; do
           EACH_DEST="${NETWORK_FILEPATHS[${EACH_SOURCE}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo "  |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
-            # Copy each config file/directory into target container
             echo "  |--> Updating '${EACH_DEST}'";
             if [[ -d "${EACH_SOURCE}" ]]; then
               # Directories
@@ -296,9 +297,23 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's config files";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset CONFIG_FILEPATHS; declare -A CONFIG_FILEPATHS; # [Re-]Instantiate bash array
-        # CONFIG_FILEPATHS+=(["__SOURCE__"]="__DESTINATION__");
-        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/pihole/"]="/etc/pihole/");
-        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/dnsmasq.d/"]="/etc/dnsmasq.d/");
+        # DNSMasq config
+        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/dnsmasq.d/"]="/etc/dnsmasq.d/");  # (["__SOURCE__"]="__DESTINATION__");
+        # FTL config
+        CONFIG_FILEPATHS+=(["${CONFIG_DIR}/etc/pihole/"]="/etc/pihole/");  # (["__SOURCE__"]="__DESTINATION__");
+        # PHP config
+        if [[ -n "$(docker exec -t "${CONTAINER_ID}" which php 2>'/dev/null';)" ]]; then
+          PHP_OVERRIDES_INI="${CONFIG_DIR}/etc/php/conf.d/zz-php-overrides.ini";
+          # Determine where additional PHP config files are stored on the container's file system
+          DOCKER_PHP_ALL_INI="$(docker exec -t "${CONTAINER_ID}" php --ini;)";
+          DOCKER_PHP_CONF_D="$(echo "${DOCKER_PHP_ALL_INI}" | sed -rne "s/^Scan for additional .ini files in:\s*(.+)\s*$/\1/p";)";
+          if [[ -n "${DOCKER_PHP_CONF_D}" ]]; then
+            # Successfully located php's conf.d directory in the container
+            DOCKER_PHP_OVERRIDES_INI="${DOCKER_PHP_CONF_D}/$(basename "${PHP_OVERRIDES_INI}";)";
+            CONFIG_FILEPATHS+=(["${PHP_OVERRIDES_INI}"]="${DOCKER_PHP_OVERRIDES_INI}");  # (["__SOURCE__"]="__DESTINATION__");
+          fi;
+        fi;
+        # Copy each file/directory into target container
         for EACH_SOURCE in "${!CONFIG_FILEPATHS[@]}"; do
           EACH_DEST="${CONFIG_FILEPATHS[${EACH_SOURCE}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
@@ -333,7 +348,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         # Set time zone for container
         docker exec -t "${CONTAINER_ID}" ln -snf "/usr/share/zoneinfo/${TZ}" '/etc/localtime';
         docker exec -t "${CONTAINER_ID}" sed -re "s/^.+$/${TZ_REGEX_ESCAPED}/g" -i '/etc/timezone';
-        if [[ -n "$(docker exec -t "${CONTAINER_ID}" command -v timedatectl 2>'/dev/null';)" ]]; then
+        if [[ -n "$(docker exec -t "${CONTAINER_ID}" which timedatectl 2>'/dev/null';)" ]]; then
           docker exec -t "${CONTAINER_ID}" timedatectl set-timezone "${TZ}";
         fi;
       fi;

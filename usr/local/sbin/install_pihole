@@ -162,11 +162,11 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" --hostname 'pihole'";
     EVAL_DOCKER_RUN+=" --restart 'always'";
     EVAL_DOCKER_RUN+=" --sysctl 'net.ipv6.conf.all.disable_ipv6=1'";  # disable IPv6
-    EVAL_DOCKER_RUN+=" --publish '0.0.0.0:53:53/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '0.0.0.0:53:53/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '0.0.0.0:67:67/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '0.0.0.0:80:80/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_RUN+=" --publish '0.0.0.0:443:443/tcp'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '53:53/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '53:53/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '67:67/udp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '80:80/tcp'";    # --publish <container_ip>:<host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '443:443/tcp'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --dns-option='ndots:0'";  # --publish <container_ip>:<host_port>:<container_port>/<protocol>
     EVAL_DOCKER_RUN+=" --dns='127.0.0.1'";  # Adds [ nameserver <ip_address> ] to [ /etc/resolv.conf ] in container
     EVAL_DOCKER_RUN+=" --dns='8.8.8.8'";  # Backup DNS server (in case DNSMasq has problems starting)

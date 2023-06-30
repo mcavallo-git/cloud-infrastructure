@@ -315,28 +315,29 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
-      if [[ 1 -eq 1 ]]; then
-        CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
-        #
-        # Update pihole's symbolic link(s)
-        #
-        echo "";
-        echo "Info:  Updating pihole's symbolic link(s)";
-        docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
-        #
-        # Update pihole's file/directory permissions
-        #  |--> ??? Should be covered by the "--cap-add=CHOWN" docker run command
-        #
-        echo "";
-        echo "Info:  Updating pihole's file/directory permissions";
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dns-servers.conf';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/dhcp.leases';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/gravity.db';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
-        docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
-      fi;
+      # if [[ 0 -eq 1 ]]; then
+      #   CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
+      #   #
+      #   # Update pihole's symbolic link(s)
+      #   #
+      #   echo "";
+      #   echo "Info:  Updating pihole's symbolic link(s)";
+      #   docker exec -t "${CONTAINER_ID}" ln -sf '/macvendor.db' '/etc/pihole/macvendor.db';
+      #   #
+      #   # Update pihole's file/directory permissions
+      #   #  |--> ??? Should be covered by the "--cap-add=CHOWN" docker run command
+      #   #
+      #   echo "";
+      #   echo "Info:  Updating pihole's file/directory permissions";
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dns-servers.conf';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dhcp.leases';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/gravity.db';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
+      #   docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/macvendor.db';
+      #   docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
+      # fi;
 
       # ------------------------------
 

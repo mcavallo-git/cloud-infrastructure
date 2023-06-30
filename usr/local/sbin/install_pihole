@@ -366,7 +366,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       # Show the version of target pihole container
       echo "";
       echo "Info:  Getting version from pihole container...";
-      docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
+      docker exec -t "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole version;
 
       # ------------------------------
 

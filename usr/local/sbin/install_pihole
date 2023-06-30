@@ -356,6 +356,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
+      # Pull in updates from pihole-FTL.conf
+      echo "";
+      echo "Info:  Restarting pihole-FTL (to pull in config updates)";
+      docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole restartdns;
+
+      # ------------------------------
+
       # Show the version of target pihole container
       echo "";
       echo "Info:  Getting version from pihole container...";
@@ -401,6 +408,8 @@ exit ${EXIT_CODE};
 #   stackoverflow.com  |  "How do I publish a UDP Port on Docker? - Stack Overflow"  |  https://stackoverflow.com/a/27596415
 #
 #   www.linuxuprising.com  |  "Ubuntu: How To Free Up Port 53, Used By systemd-resolved - Linux Uprising Blog"  |  https://www.linuxuprising.com/2020/07/ubuntu-how-to-free-up-port-53-used-by.html
+#
+#   www.reddit.com  |  "How do I make the config file pihole-FTL.conf writable? : r/pihole"  |  https://www.reddit.com/r/pihole/comments/uuqqbk/how_do_i_make_the_config_file_piholeftlconf/
 #
 #   www.sqlitetutorial.net  |  "SQLite Describe Table"  |  https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-describe-table/
 #

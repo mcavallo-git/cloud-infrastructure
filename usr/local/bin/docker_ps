@@ -29,12 +29,13 @@ exit 0;
 # EVERYTHING BELOW THIS LINE IS DOCUMENTATION ON HOW TO USE [ docker ps ]
 # ------------------------------------------------------------
 
-# Filter by [ container name (nickname) ]
+# Filter by [ container container_name/nickname (name=...) ]
 docker ps --all --filter "name=pihole";
 
-# Filter by [ container image ]
+# Filter by [ container image (ancestor=...) ]
+docker ps --all --filter "ancestor=docker.io/pihole/pihole:latest";  # source_url/repo/name:tag
 docker ps --all --filter "ancestor=pihole/pihole:latest";  # repo/name:tag
-docker ps --all --filter "ancestor=pihole/pihole";         # repo/name (no tag)
+docker ps --all --filter "ancestor=pihole/pihole";  # repo/name
 
 
 # ------------------------------------------------------------

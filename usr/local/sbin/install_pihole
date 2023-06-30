@@ -334,9 +334,9 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dns-servers.conf';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/dhcp.leases';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/gravity.db';
-        docker exec -t "${CONTAINER_ID}" chown 'pihole:root'   '/etc/pihole/pihole-FTL.conf';
+        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/pihole-FTL.conf';
         docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/pihole-FTL.db';
-        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/macvendor.db';
+        docker exec -t "${CONTAINER_ID}" chown 'pihole:pihole' '/etc/pihole/setupVars.conf';
         docker exec -t "${CONTAINER_ID}" chown -L 'pihole:pihole' '/etc/pihole/macvendor.db';
       fi;
 

@@ -33,7 +33,7 @@ else
     #
     # Disabled for Fedora distros (RHEL/CentOS)
     #
-    echo "System-Update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
+    echo "System update disabled for Fedora-based distros (RHEL, CentOS, etc.)";
     EXIT_CODE=1;
   else
     #
@@ -92,22 +92,27 @@ else
       #
       # yum
       #
-      if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
-        echo "";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Command \"yum\" resolved to $(command -v yum 2>'/dev/null';)";
-        echo "";
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo yum list --upgradable; ]...";
-        sudo yum check-update; RET_CODE_YUM_CHECK_UPDATE=$?;
-        if [ ${RET_CODE_YUM_CHECK_UPDATE} -eq 100 ]; then
-          # Command [ yum check-update ] returns exit value of 100 if there are packages available for an update
+      if [[ 0 -eq 1 ]]; then
+        #
+        # System update disabled for Fedora-based distros (RHEL, CentOS, etc.)
+        #
+        if [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
           echo "";
-          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo yum -y update; ]...";
-          sudo yum -y update;
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Command \"yum\" resolved to $(command -v yum 2>'/dev/null';)";
+          echo "";
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo yum list --upgradable; ]...";
+          sudo yum check-update; RET_CODE_YUM_CHECK_UPDATE=$?;
+          if [ ${RET_CODE_YUM_CHECK_UPDATE} -eq 100 ]; then
+            # Command [ yum check-update ] returns exit value of 100 if there are packages available for an update
+            echo "";
+            echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Calling [ sudo yum -y update; ]...";
+            sudo yum -y update;
+          fi;
+        else
+          echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Command \"yum\" not found";
         fi;
-      else
-        echo "$(date --utc +'%Y-%m-%dT%H:%M:%S.%NZ';) Command \"yum\" not found";
+        echo "------------------------------------------------------------";
       fi;
-      echo "------------------------------------------------------------";
       #
       # updatedb
       #

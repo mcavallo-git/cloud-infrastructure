@@ -15,18 +15,19 @@ services:
     image: docker.io/pihole/pihole:latest
     restart: always
     env_file:
-      - ./.env
+      - ${CONFIG_DIR:-.}/.env
+      # - ./.env
     ports:  # [Host]:[Docker] Port maps
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
       - "80:80/tcp"
       - "443:443/tcp"
-    volumes:  # [Host]:[Docker] Filepath maps
-      - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
-      - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
-      - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
-      - '/etc/hosts:/etc/hosts:ro'
+    # volumes:  # [Host]:[Docker] Filepath maps
+    #   - '${CONFIG_DIR:-.}/etc/pihole/:/etc/pihole/'
+    #   - '${CONFIG_DIR:-.}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
+    #   - '${CONFIG_DIR:-.}/etc/resolv.conf:/etc/resolv.conf:ro'
+    #   - '/etc/hosts:/etc/hosts:ro'
     # cap_add:
     #   - NET_ADMIN
     #   ### Only add the 'NET_ADMIN' docker capability if [ DHCP ] or [ IPv6 Router Advertisements ] pihole feature(s) are enabled  -  https://github.com/pi-hole/docker-pi-hole#note-on-capabilities

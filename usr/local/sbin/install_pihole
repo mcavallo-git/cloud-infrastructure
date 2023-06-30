@@ -145,46 +145,48 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
     # ------------------------------
 
-    # Set the working directory
-    echo "";
-    echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
-    cd "${CONFIG_DIR}";
-
-    # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
-    COMPOSE_FILE_REMOTE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
-    COMPOSE_FILE_LOCAL="${CONFIG_DIR}/$(basename "${COMPOSE_FILE_REMOTE}";)";
-    echo "";
-    echo "Info:  Downloading pihole docker-compose script...";
-    curl -sL "${COMPOSE_FILE_REMOTE}" -o "${COMPOSE_FILE_LOCAL}";
-    chmod 0600 "${COMPOSE_FILE_LOCAL}";
+    # if [[ 0 -eq 1 ]]; then
+    #   # Set the working directory
+    #   echo "";
+    #   echo "Info:  Setting the working directory to \"${CONFIG_DIR}\"...";
+    #   cd "${CONFIG_DIR}";
+    #   # Download a base docker-compose YAML script (intended to be used for spinning up customized pihole containers)
+    #   COMPOSE_FILE_REMOTE="https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/var/lib/docker-compose/docker-compose.pihole.yml";
+    #   COMPOSE_FILE_LOCAL="${CONFIG_DIR}/$(basename "${COMPOSE_FILE_REMOTE}";)";
+    #   echo "";
+    #   echo "Info:  Downloading pihole docker-compose script...";
+    #   curl -sL "${COMPOSE_FILE_REMOTE}" -o "${COMPOSE_FILE_LOCAL}";
+    #   chmod 0600 "${COMPOSE_FILE_LOCAL}";
+    # fi;
 
     # Spin up the pihole docker container
     echo "";
     echo "Info:  Spinning up the \"pihole\" docker container...";
     cd "${CONFIG_DIR}";
-    EVAL_DOCKER_COMPOSE_UP="docker run";
-    EVAL_DOCKER_COMPOSE_UP+=" --detach";
-    EVAL_DOCKER_COMPOSE_UP+=" --name 'pihole'";
-    EVAL_DOCKER_COMPOSE_UP+=" --hostname 'pihole'";
-    EVAL_DOCKER_COMPOSE_UP+=" --restart 'always'";
-    EVAL_DOCKER_COMPOSE_UP+=" --publish '53:53/tcp'";   # --publish <host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_COMPOSE_UP+=" --publish '53:53/udp'";   # --publish <host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_COMPOSE_UP+=" --publish '67:67/udp'";   # --publish <host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_COMPOSE_UP+=" --publish '80:80/tcp'";   # --publish <host_port>:<container_port>/<protocol>
-    EVAL_DOCKER_COMPOSE_UP+=" --publish '443:443/tcp'"; # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN="docker run";
+    EVAL_DOCKER_RUN+=" --detach";
+    EVAL_DOCKER_RUN+=" --name 'pihole'";
+    EVAL_DOCKER_RUN+=" --hostname 'pihole'";
+    EVAL_DOCKER_RUN+=" --restart 'always'";
+    EVAL_DOCKER_RUN+=" --publish '53:53/tcp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '53:53/udp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '67:67/udp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '80:80/tcp'";   # --publish <host_port>:<container_port>/<protocol>
+    EVAL_DOCKER_RUN+=" --publish '443:443/tcp'"; # --publish <host_port>:<container_port>/<protocol>
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
-      EVAL_DOCKER_COMPOSE_UP+=" --env-file '${CONFIG_ENV_FILE}'";
+      EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";
     fi;
-    # EVAL_DOCKER_COMPOSE_UP+=" --file '${COMPOSE_FILE_LOCAL}'";
-    EVAL_DOCKER_COMPOSE_UP+=" 'docker.io/pihole/pihole:latest'";
-    EVAL_DOCKER_COMPOSE_UP+=";";
-    echo " |-->  Calling [ ${EVAL_DOCKER_COMPOSE_UP} ]...";
-    eval " ${EVAL_DOCKER_COMPOSE_UP}";
+    EVAL_DOCKER_RUN+=" 'docker.io/pihole/pihole:latest'";
+    EVAL_DOCKER_RUN+=";";
+    echo " |-->  Calling [ ${EVAL_DOCKER_RUN} ]...";
+    eval " ${EVAL_DOCKER_RUN}";
 
-    # Cleanup the downloaded file
-    EVAL_CLEANUP_COMPOSE+="rm -fv '${COMPOSE_FILE_LOCAL}';";
-    echo " |-->  Calling [ ${EVAL_CLEANUP_COMPOSE} ]...";
-    eval " ${EVAL_CLEANUP_COMPOSE}";
+    # if [[ 0 -eq 1 ]]; then
+    #   # Cleanup the downloaded file
+    #   EVAL_CLEANUP_COMPOSE+="rm -fv '${COMPOSE_FILE_LOCAL}';";
+    #   echo " |-->  Calling [ ${EVAL_CLEANUP_COMPOSE} ]...";
+    #   eval " ${EVAL_CLEANUP_COMPOSE}";
+    # fi;
 
     # Remove DNS server from /etc/resolv.conf (only if it was added earlier)
     if [[ ${RESOLV_CONF_REMOVE_STOPGAP} -eq 1 ]]; then

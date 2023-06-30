@@ -274,11 +274,11 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         echo "Info:  Updating pihole's network settings";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
-        # NETWORK_FILEPATHS+=(["__DESTINATION__"]="__SOURCE__");
+        # NETWORK_FILEPATHS+=(["__SOURCE__"]="__DESTINATION__");
         NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");
-        NETWORK_FILEPATHS+=(["/etc/resolv.conf"]="${CONFIG_DIR}/etc/resolv.conf");
-        for EACH_DEST in "${!NETWORK_FILEPATHS[@]}"; do
-          EACH_SOURCE="${NETWORK_FILEPATHS[${EACH_DEST}]}";
+        NETWORK_FILEPATHS+=(["${CONFIG_DIR}/etc/resolv.conf"]="/etc/resolv.conf");
+        for EACH_SOURCE in "${!NETWORK_FILEPATHS[@]}"; do
+          EACH_DEST="${NETWORK_FILEPATHS[${EACH_SOURCE}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
             echo "  |-->  Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
@@ -315,8 +315,12 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
           else
             # Copy each config file/directory into target container
             echo "  |-->  Updating '${EACH_DEST}'";
-            EACH_DEST_CP_TARGET="$(dirname "${EACH_DEST}";)/";
-            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DEST_CP_TARGET}';";
+            if [[ -d "${EACH_DEST}" ]]; then
+              EACH_CP_DEST="$(dirname "${EACH_DEST}";)/";
+            else
+              EACH_CP_DEST="${EACH_DEST}";
+            fi;
+            EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_CP_DEST}';";
             echo "    |-->  Calling [ ${EACH_EVAL_DOCKER_CP} ]...";
             eval " ${EACH_EVAL_DOCKER_CP}";
           fi;

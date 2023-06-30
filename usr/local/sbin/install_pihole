@@ -78,9 +78,17 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
     # ------------------------------
 
-    # Set runtime variable(s)
+    # Set baseline variable(s)
+
     CONFIG_DIR="/root/docker-configs/pihole";
+
     CONFIG_ENV_FILE="${CONFIG_DIR}/.env";
+
+    STOPGAP_DNS_SERVER="8.8.8.8";
+
+    RESOLV_CONF_REMOVE_STOPGAP=0;
+
+    PIHOLE_ALREADY_EXISTS=0;
 
     # ------------------------------
 
@@ -91,11 +99,8 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
     # ------------------------------
 
-    STOPGAP_DNS_SERVER="8.8.8.8";
+    # Set dynamic variable(s)
 
-    RESOLV_CONF_REMOVE_STOPGAP=0;
-
-    PIHOLE_ALREADY_EXISTS=0;
     if [[ -n "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/null';)" ]]; then
       PIHOLE_ALREADY_EXISTS=1;
     fi;

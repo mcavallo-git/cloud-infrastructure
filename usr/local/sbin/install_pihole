@@ -184,16 +184,16 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       echo "";
       echo "Info:  Freeing up port 53 (DNS) so that the pihole service may create a listening thread on it";
 
-      echo " |--> Stopping docker \"pihole\"...";
+      echo " |-->  Stopping docker \"pihole\"...";
       docker stop "pihole" 1>'/dev/null';
 
-      echo " |--> Stopping service 'systemd-resolved'...";
+      echo " |-->  Stopping service 'systemd-resolved'...";
       systemctl stop "systemd-resolved.service";
 
-      echo " |--> Disabling service 'systemd-resolved'...";
+      echo " |-->  Disabling service 'systemd-resolved'...";
       systemctl disable "systemd-resolved.service";
 
-      echo " |--> Starting docker \"pihole\"...";
+      echo " |-->  Starting docker \"pihole\"...";
       docker start "pihole" 1>'/dev/null';
 
       # If we added a temporary DNS resolver's IP address (above) to /etc/resolv.conf, then now is the location in the script where it should be removed/cleaned-up (as it is only a workaround to download pihole's docker image while pihole itself doesn't exist to resolve DNS queries to find it)
@@ -235,10 +235,10 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         for EACH_DEST in "${!NETWORK_FILEPATHS[@]}"; do
           EACH_SOURCE="${NETWORK_FILEPATHS[${EACH_DEST}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
-            echo " |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
+            echo " |-->  Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
             # Copy each config file/directory into target container
-            echo " |--> Updating '${EACH_DEST}'...";
+            echo " |-->  Updating '${EACH_DEST}'...";
             EACH_TEMP="${EACH_DEST}.$(date +'%s.%N').tmp";
             # Workaround note: Cannot use 'docker cp' to copy over files which are in-use by the container (no '--force' argument)
             #  |--> Instead, pull an Indiana Jones by copying the file into the container as a temporary file via 'docker cp', then replace the target file with the temporary file via the 'cp' native Linux command using the '--force' argument
@@ -265,10 +265,10 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         for EACH_DEST in "${!CONFIG_FILEPATHS[@]}"; do
           EACH_SOURCE="${CONFIG_FILEPATHS[${EACH_DEST}]}";
           if [[ ! -e "${EACH_SOURCE}" ]]; then
-            echo " |--> Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
+            echo " |-->  Skipped '${EACH_DEST}' (source '${EACH_SOURCE}' not found)";
           else
             # Copy each config file/directory into target container
-            echo " |--> Updating '${EACH_DEST}'...";
+            echo " |-->  Updating '${EACH_DEST}'...";
             EACH_EVAL_DOCKER_CP="docker cp '${EACH_SOURCE}' '${CONTAINER_ID}:${EACH_DEST}';";
             eval " ${EACH_EVAL_DOCKER_CP}";
           fi;

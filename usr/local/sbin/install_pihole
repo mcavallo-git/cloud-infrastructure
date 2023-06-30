@@ -186,12 +186,14 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     EVAL_DOCKER_RUN+=" '${IMAGE_URL}'";
     EVAL_DOCKER_RUN+=";";
     echo " |-->  Calling [ ${EVAL_DOCKER_RUN} ]...";
+    echo "";
     eval " ${EVAL_DOCKER_RUN}";
 
     # if [[ 0 -eq 1 ]]; then
     #   # Cleanup the downloaded file
     #   EVAL_CLEANUP_COMPOSE+="rm -fv '${COMPOSE_FILE_LOCAL}';";
     #   echo " |-->  Calling [ ${EVAL_CLEANUP_COMPOSE} ]...";
+    #   echo "";
     #   eval " ${EVAL_CLEANUP_COMPOSE}";
     # fi;
 

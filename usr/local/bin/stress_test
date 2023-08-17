@@ -17,12 +17,14 @@ STRESS_TESTER="stress";
 
 # Ensure "stress" (Linux package) is installed - Install if missing
 if [[ -z "$(command -v stress 2>'/dev/null';)" ]]; then
+  echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress; ]...";
   apt-get -y update; apt-get -y install stress;
 fi;
 
 # Ensure "stress-ng" (Linux package) is installed - Install if missing
 if [[ -z "$(command -v stress-ng 2>'/dev/null';)" ]]; then
+  echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install stress-ng; ]...";
   apt-get -y update; apt-get -y install stress-ng;
 fi;
@@ -56,6 +58,7 @@ if [[ "${STRESS_TESTER}" == "stress" ]]; then
   EVAL_COMMAND+=";";
 
   # Run the stress test
+  echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
   eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
 
@@ -72,6 +75,7 @@ elif [[ "${STRESS_TESTER}" == "stress-ng" ]]; then
   EVAL_COMMAND+=";";
 
   # Run the stress test
+  echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ ${EVAL_COMMAND} ]...";
   eval "${EVAL_COMMAND}"; EXIT_CODE=${?};
 
@@ -81,6 +85,7 @@ elif [[ "${STRESS_TESTER}" == "stress-ng" ]]; then
 else
 
   # Invalid stress test application selected
+  echo "";
   echo "$(date +'%Y-%m-%d %H:%M:%S') | Error: Invalid value set in environment variable \${STRESS_TESTER}: \"${STRESS_TESTER}\" (must be either \"stress\" or \"stress-ng\")";
   EXIT_CODE=1;
 

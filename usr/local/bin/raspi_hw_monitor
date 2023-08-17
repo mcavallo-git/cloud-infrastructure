@@ -1,6 +1,15 @@
 #!/bin/bash
+#
+# LOCAL_BIN="/usr/local/bin/raspi_hw_monitor" && echo "" > "${LOCAL_BIN}" && vi "${LOCAL_BIN}" && chmod 0755 "${LOCAL_BIN}";
+#
 # ------------------------------------------------------------
-# WATCH TEMPS USING THIS SCRIPT:
+if [[ 0 -eq 1 ]]; then # Run this script on-the-fly:
+
+curl -H 'Cache-Control: no-cache' -s "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/raspi_hw_monitor?t=$(date +'%s.%N')" | bash;
+
+fi;
+# ------------------------------------------------------------
+# Watch temps using this script:
 # 
 #   while [[ 1 ]]; do TEMPS="$(raspi_hw_monitor)"; clear; echo "${TEMPS}"; sleep 1; done;
 #

@@ -8,6 +8,11 @@ if [[ 0 -eq 1 ]]; then # RUN THIS SCRIPT REMOTELY:
 curl -H "Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" -sL "https://raw.githubusercontent.com/mcavallo-git/cloud-infrastructure/main/usr/local/bin/stress_test?t=$(date +'%s.%N')" | bash;
 
 fi;
+# ------------------------------------------------------------
+# Example call w/ overrides:
+# 
+#   STRESS_CPU_THREADS=3 STRESS_IO_THREADS=1 stress_test
+#
 # ------------------------------
 
 # STRESS_TESTER="stress-ng";

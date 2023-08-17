@@ -24,7 +24,7 @@ if [[ 1 -eq 1 ]]; then
     fi;
     echo "${PACKAGES_LIST}";
     echo "";
-    echo "Total Packages Found:  $(echo "${PACKAGES_LIST}" | wc -l;)";
+    echo "Total Packages Found:  $(echo -n "${PACKAGES_LIST}" | wc -l;)";
 
   elif [[ -n "$(command -v yum 2>'/dev/null';)" ]]; then  # Distros: Fedora, Oracle Linux, Red Hat Enterprise Linux, CentOS, etc.
     if [[ "${EXACT_MATCHING}" != "0" ]]; then
@@ -36,7 +36,7 @@ if [[ 1 -eq 1 ]]; then
     fi;
     echo "${PACKAGES_LIST}";
     echo "";
-    echo "Total Packages Found:  $(echo "${PACKAGES_LIST}" | wc -l;)";
+    echo "Total Packages Found:  $(echo -n "${PACKAGES_LIST}" | wc -l;)";
 
   else
     echo "Error:  Incompatible environment - exiting...";

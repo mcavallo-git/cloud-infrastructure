@@ -296,7 +296,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
 
     list_temperature="";
-    list_temperature="${list_temperature}SoC Temp, current\t=  ${CurrentTemp_Celsuis}°C";
+    list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
     list_temperature="${list_temperature}\n";
     list_temperature="${list_temperature}\n";
     list_temperature="${list_temperature}SoC Temp, avg\t=  ${AvgTemp_Celsuis}°C   (count=${AvgCount_Updated})";

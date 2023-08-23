@@ -85,7 +85,7 @@ else
 
   # ------------------------------
   # Determine if the current shell is a tty shell (available to user input)
-  IS_TTY_TERMINAL=$(if [ -t 1 ]; then echo 1; else echo 0; fi;);
+  if [ -t 1 ]; then IS_TTY_TERMINAL=1; else IS_TTY_TERMINAL=0; fi;
   # ------------------------------
   READ_TIMEOUT=$((IS_TTY_TERMINAL*60));
   DO_SYNC_CONFIRMED=0;

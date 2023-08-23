@@ -333,6 +333,9 @@ else
     SYNC_CI_REMOTE="https://raw.githubusercontent.com/${GIT_REPO_OWNER}/${GIT_REPO_NAME}/${GIT_SOURCE_BRANCH}${SYNC_CI_LOCAL}?t=${START_SECONDS_NANOSECONDS}";
 
     # ------------------------------
+    echo "";
+    echo "Debug:  IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
+    echo "";
     if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then
       echo "";
       echo "Debug:  ARGS = [ ${ARGS[*]} ]";

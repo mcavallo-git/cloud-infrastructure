@@ -85,7 +85,8 @@ else
 
   # ------------------------------
   # Determine if the current shell is a tty shell (available to user input)
-  if [[ "${-}" == *"i"* ]] || [ -t 1 ]; then
+  CURRENT_OPTION_FLAGS="${-}";
+  if [[ "${CURRENT_OPTION_FLAGS}" == *"i"* ]] || [ -t 1 ]; then
     IS_TTY_TERMINAL=1;
   else
     IS_TTY_TERMINAL=0;
@@ -345,6 +346,7 @@ else
       echo "Debug:  GIT_SOURCE_REPO_URL = [ ${GIT_SOURCE_REPO_URL} ]";
       echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
       echo "";
+      echo "Debug:  CURRENT_OPTION_FLAGS = [ ${CURRENT_OPTION_FLAGS} ]";
       echo "Debug:  IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
       echo "Debug:  READ_TIMEOUT = [ ${READ_TIMEOUT} ]";
       echo "";

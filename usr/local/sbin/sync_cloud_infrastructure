@@ -721,7 +721,7 @@ else
             cd "${GIT_LOCAL_PARENT_PATH}" && \
             git clone --quiet "${GIT_SOURCE_REPO_URL}";
           fi;
-          # Sync local workstation's commands with the repo's commands
+          # Sync local device's commands with the repo's commands
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\"; ]..."; fi;
           cd "${GIT_LOCAL_REPO_PATH}";
           # Ensure that the checkout branch is the desired source branch
@@ -1187,7 +1187,7 @@ else
                 # Need another user other than root to SSH into this machine --> No user directories found in /home/.
                 #
                 echo -e "\nInfo:  Skipped SSH config update for file \"${SSHD_CONFIG_LIVE}\"";
-                echo "  |--> There must be at least one user (other than root) who can access this workstation via SSH, and has a home directory within [ /home/ ]";
+                echo "  |--> There must be at least one user (other than root) who can access this device via SSH, and has a home directory within [ /home/ ]";
                 echo "  |--> The updated SSH config will deny the root user from accessing this device via SSH (to prevent Brute-force/Dictionary SSH Attacks on this device)";
                 if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Debug:  Citation:  https://www.cmu.edu/iso/aware/be-aware/brute-force_ssh_attack.html"; fi;
               elif [[ ! -d "/etc/ssh/authorized_keys/" ]] || [[ $(find '/etc/ssh/authorized_keys/' -mindepth 1 -maxdepth 1 | wc -l 2>'/dev/null') -eq 0 ]]; then

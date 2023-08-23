@@ -710,7 +710,6 @@ else
           echo -e "\nInfo:  Pulling the latest revision of source repository \"${GIT_REPO_NAME}\", branch \"${GIT_SOURCE_BRANCH}\"";
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Source (Repo URL):   ${GIT_SOURCE_REPO_URL}"; fi;
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Destination (Path):  ${GIT_LOCAL_REPO_PATH}"; fi;
-          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
           if [[ ! -d "${GIT_LOCAL_PARENT_PATH}" ]]; then
             # Ensure that the directory designated to contain git repos exists (locally)
             mkdir -p "${GIT_LOCAL_PARENT_PATH}";
@@ -718,8 +717,9 @@ else
           # Clone the repo if it hasn't been synced, yet
           if [[ ! -d "${GIT_LOCAL_REPO_PATH}" ]]; then
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_PARENT_PATH}\" && git clone --quiet \"${GIT_SOURCE_REPO_URL}\"; ]..."; fi;
-            cd "${GIT_LOCAL_PARENT_PATH}" && \
-            git clone --quiet "${GIT_SOURCE_REPO_URL}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
+            cd "${GIT_LOCAL_PARENT_PATH}" && git clone --quiet "${GIT_SOURCE_REPO_URL}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
           # Sync local device's commands with the repo's commands
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ cd \"${GIT_LOCAL_REPO_PATH}\"; ]..."; fi;
@@ -730,26 +730,35 @@ else
             # Checkout the source branch
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Info:  Current branch \"${CURRENT_BRANCH}\" != desired branch \"${GIT_SOURCE_BRANCH}\""; fi;
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git fetch --quiet --all && git checkout --quiet -b \"${GIT_SOURCE_BRANCH}\" \"origin/${GIT_SOURCE_BRANCH}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
             git fetch --quiet --all && git checkout --quiet -b "${GIT_SOURCE_BRANCH}" "origin/${GIT_SOURCE_BRANCH}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
           # Pull the source branch
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git fetch --quiet --all && git reset --quiet --hard \"origin/${GIT_SOURCE_BRANCH}\" && git pull --quiet; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
           git fetch --quiet --all && git reset --quiet --hard "origin/${GIT_SOURCE_BRANCH}" && git pull --quiet;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Update the local trunk branch reference (refs/remotes/origin/HEAD)
           CURRENT_TRUNK_BRANCH_REF="$(git symbolic-ref --short "refs/remotes/origin/HEAD" | sed -rne "s/^\s*origin\/(\S+)\s*$/\1/p";)";
           if [[ -z "${CURRENT_TRUNK_BRANCH_REF}" ]] || [[ "${CURRENT_TRUNK_BRANCH_REF}" != "${GIT_SOURCE_BRANCH}" ]]; then
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Debug:  CURRENT_TRUNK_BRANCH_REF = [ ${CURRENT_TRUNK_BRANCH_REF} ]"; fi;
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git symbolic-ref --quiet \"refs/remotes/origin/HEAD\" \"refs/remotes/origin/${GIT_SOURCE_BRANCH}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
             git symbolic-ref --quiet "refs/remotes/origin/HEAD" "refs/remotes/origin/${GIT_SOURCE_BRANCH}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
           # Check for branch(es) to delete
           DEPRECATED_BRANCH="master";
           if [[ "$(git rev-parse --verify "${DEPRECATED_BRANCH}" 2>'/dev/null' | wc -l;)" -gt 0 ]]; then
             if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git branch --quiet --delete --force \"${DEPRECATED_BRANCH}\"; ]..."; fi;
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
             git branch --quiet --delete --force "${DEPRECATED_BRANCH}";
+            if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           fi;
           # Prune - Remove nonexistent remote trackers
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Calling [ git fetch --quiet --all --prune; ]..."; fi;
+          if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_START=$(date +'%s.%N'); fi;
           git fetch --quiet --all --prune;
           if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then BENCHMARK_DELTA=$(echo "scale=4; ($(date +'%s.%N') - ${BENCHMARK_START})/1" | bc -l | sed 's/\([^0-9]\|^\)\(\.[0-9]*\)/\10\2/g';); echo "  |--> Finished after ${BENCHMARK_DELTA}s"; fi;
           # Set ownership for git-repo files as-intended

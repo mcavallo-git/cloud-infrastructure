@@ -85,17 +85,32 @@ else
 
   # ------------------------------
   # Determine if the current shell is a tty shell (available to user input)
-  CURRENT_OPTION_FLAGS="${-}";
-  if [[ "${CURRENT_OPTION_FLAGS}" == *"i"* ]] || [ -t 1 ]; then
+  IS_TTY_TERMINAL=0;
+  if [ -t 1 ]; then
+    IS_TTY_TERMINAL=1;
+  elif [[ "${-}" == *"i"* ]]; then
     IS_TTY_TERMINAL=1;
   else
-    if [[ -f "/usr/local/bin/is_tty_terminal" ]]; then
-      IS_TTY_TERMINAL="$(/usr/local/bin/is_tty_terminal)";
-    else
-      IS_TTY_TERMINAL=0;
+    TTY_VAR_MATCHES_REQUIRED=5;
+    TTY_VARS_MATCHED=0;
+    TTY_VARS_COMMA_DELIMITED="EDITOR,GCC_COLORS,LESSCLOSE,LESSOPEN,LS_COLORS,OLDPWD,PROMPT_COMMAND,TERM,USER,VISUAL,XDG_DATA_DIRS";
+    for EACH_TTY_VAR_NAME in $(echo "${TTY_VARS_COMMA_DELIMITED}" | tr "," "\n"); do
+      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -n "Debug:  EACH_TTY_VAR_NAME = [ $(printf "%-20s" "${EACH_TTY_VAR_NAME}";) ]     "; fi;
+      EACH_TTY_VAR_VALUE="";
+      declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
+      if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
+        TTY_VARS_MATCHED=$((TTY_VARS_MATCHED+1));
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "EACH_TTY_VAR_VALUE = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
+      else
+        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "EACH_TTY_VAR_VALUE = ~ empty/unset ~"; fi;
+      fi;
+    done;
+    if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
+      IS_TTY_TERMINAL=1;
     fi;
   fi;
-  
+
+
   # ------------------------------
   READ_TIMEOUT=$((IS_TTY_TERMINAL*60));
   DO_SYNC_CONFIRMED=0;
@@ -351,7 +366,6 @@ else
       echo "Debug:  GIT_SOURCE_REPO_URL = [ ${GIT_SOURCE_REPO_URL} ]";
       echo "Debug:  DEFAULT_GIT_SOURCE_REPO_URL = [ ${DEFAULT_GIT_SOURCE_REPO_URL} ]";
       echo "";
-      echo "Debug:  CURRENT_OPTION_FLAGS = [ ${CURRENT_OPTION_FLAGS} ]";
       echo "Debug:  IS_TTY_TERMINAL = [ ${IS_TTY_TERMINAL} ]";
       echo "Debug:  READ_TIMEOUT = [ ${READ_TIMEOUT} ]";
       echo "";

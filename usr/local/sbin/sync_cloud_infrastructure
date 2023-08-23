@@ -109,8 +109,6 @@ else
       IS_TTY_TERMINAL=1;
     fi;
   fi;
-
-
   # ------------------------------
   READ_TIMEOUT=$((IS_TTY_TERMINAL*60));
   DO_SYNC_CONFIRMED=0;
@@ -174,7 +172,6 @@ else
       OVERRIDE_GIT_SOURCE_REPO_URL="$(cat "${OVERRIDE_FULLPATH_GIT_SOURCE_REPO_URL}";)"; # Override the git source repo URL
     fi;
     GIT_SOURCE_REPO_URL="${OVERRIDE_GIT_SOURCE_REPO_URL:-${DEFAULT_GIT_SOURCE_REPO_URL}}";
-
 
     # ------------------------------
     #
@@ -2154,7 +2151,6 @@ else
 
 fi;
 
-
 # ------------------------------
 #
 # Log the ending timestamp for the current runtime
@@ -2215,6 +2211,5 @@ if [[ -n "${RECURSIVE_CALLBACK_COMMAND}" ]]; then
     eval " ${RECURSIVE_CALLBACK_COMMAND}" &
   fi;
 fi;
-
 
 # ------------------------------

@@ -97,16 +97,14 @@ else
     TTY_VARS_MATCHED=0;
     TTY_VARS_COMMA_DELIMITED="EDITOR,GCC_COLORS,LESSCLOSE,LESSOPEN,LS_COLORS,OLDPWD,PROMPT_COMMAND,TERM,USER,VISUAL,XDG_DATA_DIRS";
     for EACH_TTY_VAR_NAME in $(echo "${TTY_VARS_COMMA_DELIMITED}" | tr "," "\n"); do
-      if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo -n "Debug:  EACH_TTY_VAR_NAME = [ $(printf "%-20s" "${EACH_TTY_VAR_NAME}";) ]     "; fi;
       EACH_TTY_VAR_VALUE="";
       declare -n EACH_TTY_VAR_VALUE="${EACH_TTY_VAR_NAME}" 2>'/dev/null';
       if [ -n "${EACH_TTY_VAR_VALUE}" ]; then
         TTY_VARS_MATCHED=$((TTY_VARS_MATCHED+1));
-        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "EACH_TTY_VAR_VALUE = [ ${EACH_TTY_VAR_VALUE} ]"; fi;
-      else
-        if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "EACH_TTY_VAR_VALUE = ~ empty/unset ~"; fi;
       fi;
     done;
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Debug:  TTY_VARS_MATCHED = [ ${TTY_VARS_MATCHED} ]"; fi;
+    if [[ "${ARGS_DEBUG_MODE}" -eq 1 ]]; then echo "  |--> Debug:  TTY_VAR_MATCHES_REQUIRED = [ ${TTY_VAR_MATCHES_REQUIRED} ]"; fi;
     if [[ ${TTY_VARS_MATCHED} -ge ${TTY_VAR_MATCHES_REQUIRED} ]]; then
       IS_TTY_TERMINAL=1;
     fi;

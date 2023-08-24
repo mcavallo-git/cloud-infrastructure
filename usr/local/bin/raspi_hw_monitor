@@ -118,14 +118,20 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     # list_issues="Throttle Val\t=  ${Throttle_Val}";
 
     #
-    # Dec |  Binary |  Hex   | Result
-    # ----|---------|--------|----------------------------
-    # 0   |  00000  |  0x00  | under-voltage
-    # 1   |  00001  |  0x01  | arm frequency capped
-    # 2   |  00010  |  0x02  | currently throttled (turbo disabled due to low voltage / over-temperature)
-    # 16  |  10000  |  0x10  | under-voltage has occurred
-    # 17  |  10001  |  0x11  | arm frequency capped has occurred
-    # 18  |  10010  |  0x12  | throttling has occurred
+    # get_throttled
+    #  |--> Docs:  https://www.raspberrypi.com/documentation/computers/os.html#get_throttled
+    #  |--> Returns the throttled state of the system. This is a bit-pattern - a bit being set indicates the following meanings:
+    #         |-----|-----------|--------------------------------------------------------------------------|
+    #         | Bit | Hex value | Meaning (System Status)                                                  |
+    #         |-----|-----------|--------------------------------------------------------------------------|
+    #         |   0 |   0x00001 | Under-voltage                                                            |
+    #         |   1 |   0x00002 | Arm frequency capped                                                     |
+    #         |   2 |   0x00004 | Currently throttled (turbo disabled due to low voltage/over-temperature) |
+    #         |   2 |   0x00008 | Soft temperature limit active                                            |
+    #         |  16 |   0x10000 | Under-voltage has occurred                                               |
+    #         |  17 |   0x20000 | Arm frequency capped has occurred                                        |
+    #         |  18 |   0x40000 | Throttling has occurred                                                  |
+    #         |  18 |   0x80000 | Soft temperature limit has occurred                                      |
     #
     #
     # ex) vcgencmd get_throttled returns "0x50005" hex value
@@ -144,7 +150,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     #       |     |
     #       |     |--> binary OR with 10010  - FALSE
     #       |
-    #       |--> Result:  System reports [ arm frequency capped ]
+    #       |--> Meaning:  System is reporting a status of [ arm frequency capped ]
     #
     #
     # ex) vcgencmd get_throttled returns "0x50000" hex value
@@ -163,7 +169,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     #       |     |
     #       |     |--> binary OR with 10010  - FALSE
     #       |
-    #       |--> Result:  System reports [ under-voltage ]
+    #       |--> Meaning:  System is reporting a status of [ under-voltage ]
     #
     #
     # ------------------------------

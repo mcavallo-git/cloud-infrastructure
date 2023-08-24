@@ -20,13 +20,12 @@ fi;
 LOGDIR="${HOME}/raspi_hw_monitor_logs"; if [[ -w "/var/log/" ]]; then LOGDIR="/var/log/raspi_hw_monitor"; fi;
 mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${LOGDIR}"; chmod 0770 "${LOGDIR}";
 
-
 # ------------------------------
 #
 # Current Temp
 #
 
-if [[ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]]; then
+if [[ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]] && [[ "$(id -un)" != "root" ]]; then
   CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
 else
   CurrentTemp_Celsuis=$(echo "scale=3 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);

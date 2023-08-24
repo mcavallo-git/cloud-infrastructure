@@ -26,7 +26,7 @@ mkdir -p "${LOGDIR}"; chown "$(stat -c '%u:%g' "$(dirname "${LOGDIR}";)";)" "${L
 # Current Temp
 #
 
-if [[ -z "$(cat /etc/*release | grep 'Ubuntu';)" ]] && [[ "$(id -un)" != "root" ]]; then
+if [[ -n "$(command -v vcgencmd 2>'/dev/null';)" ]] && [[ "$(id -un)" == "root" ]]; then
   CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
 else
   CurrentTemp_Celsuis=$(echo "scale=3 ; $(cat /sys/class/thermal/thermal_zone0/temp) / 1000" | bc -l;);
@@ -91,6 +91,47 @@ AvgCount_Updated=$(echo "( ${AvgCount_LogVal:-0} + 1 )" | bc;);
 echo "${AvgTemp_Celsuis}" > "${AvgTemp_LogFile}";
 echo "${AvgCount_Updated}" > "${AvgCount_LogFile}";
 
+# ------------------------------
+
+list_temperature="";
+list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
+list_temperature="${list_temperature}\n\n";
+list_temperature="${list_temperature}SoC Temp, avg\t=  ${AvgTemp_Celsuis}°C   ( count = ${AvgCount_Updated} )";
+list_temperature="${list_temperature}\n";
+list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
+list_temperature="${list_temperature}\n";
+list_temperature="${list_temperature}SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
+
+
+# ------------------------------
+
+list_logfile_info="";
+list_logfile_info="${list_logfile_info}logfile (min)   =  ${MinTemp_LogFile}";
+list_logfile_info="${list_logfile_info}\n";
+list_logfile_info="${list_logfile_info}logfile (max)   =  ${MaxTemp_LogFile}";
+list_logfile_info="${list_logfile_info}\n";
+list_logfile_info="${list_logfile_info}logfile (avg)   =  ${AvgTemp_LogFile}";
+
+
+# ------------------------------
+
+declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
+list_clock_freq="";
+list_clock_freq="${list_clock_freq}Freq, cpu, now\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000)) MHz";
+list_clock_freq="${list_clock_freq}\n";
+list_clock_freq="${list_clock_freq}Freq, cpu, min\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq)/1000)) MHz";
+list_clock_freq="${list_clock_freq}\n";
+list_clock_freq="${list_clock_freq}Freq, cpu, max\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000)) MHz";
+list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
+for EachComponent in "${Components_ClockFreq[@]}"; do
+  Each_ClockFreq_Hz=$(vcgencmd measure_clock ${EachComponent} | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p' | head -n 1;);
+  if [[ "$(echo "${Each_ClockFreq_Hz} > 0" | bc -l;)" -eq 1 ]]; then
+    list_clock_freq="${list_clock_freq}\n";
+    list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l;) MHz";
+  fi;
+done;
+# list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
+
 
 # ------------------------------
 #
@@ -102,13 +143,13 @@ RaspberryPi_Check=$(grep 'Hardware' '/proc/cpuinfo' | sed --regexp-extended --qu
 if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
 
   # Ensure "vcgencmd" (Raspberry Pi utility package) is installed - Install if missing
-  if [[ -z "$(command -v vcgencmd 2>'/dev/null';)" ]]; then
+  if [[ -z "$(command -v vcgencmd 2>'/dev/null';)" ]] && [[ "$(id -un)" == "root" ]]; then
     echo "$(date +'%Y-%m-%d %H:%M:%S') | Info:  Calling [ apt-get -y update; apt-get -y install libraspberrypi-bin; ]...";
     apt-get -y update; apt-get -y install libraspberrypi-bin;
   fi;
 
   # ------------------------------
-  if [[ -n "$(command -v vcgencmd 2>'/dev/null';)" ]]; then
+  if [[ -n "$(command -v vcgencmd 2>'/dev/null';)" ]] && [[ "$(id -un)" == "root" ]]; then
     #
     # Get current/past system issues (over-/under-voltage, frequency being capped, thermal throttling, etc.)
     #
@@ -250,25 +291,6 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
 
     # ------------------------------
 
-    declare -a Components_ClockFreq=("arm" "core" "dpi" "emmc" "h264" "hdmi" "isp" "pixel" "pwm" "uart" "v3d" "vec");
-    list_clock_freq="";
-    list_clock_freq="${list_clock_freq}Freq, cpu, now\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000)) MHz";
-    list_clock_freq="${list_clock_freq}\n";
-    list_clock_freq="${list_clock_freq}Freq, cpu, min\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq)/1000)) MHz";
-    list_clock_freq="${list_clock_freq}\n";
-    list_clock_freq="${list_clock_freq}Freq, cpu, max\t=  $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)/1000)) MHz";
-    list_clock_freq="${list_clock_freq}\n\n------------------------------------------------------------\n";
-    for EachComponent in "${Components_ClockFreq[@]}"; do
-      Each_ClockFreq_Hz=$(vcgencmd measure_clock ${EachComponent} | sed --regexp-extended --quiet --expression='s/^frequency\([0-9]+\)=([0-9]+)$/\1/p' | head -n 1;);
-      if [[ "$(echo "${Each_ClockFreq_Hz} > 0" | bc -l;)" -eq 1 ]]; then
-        list_clock_freq="${list_clock_freq}\n";
-        list_clock_freq="${list_clock_freq}Freq, ${EachComponent}\t=  $(echo "scale=0 ; ${Each_ClockFreq_Hz} / 1000000" | bc -l;) MHz";
-      fi;
-    done;
-    # list_clock_freq="${list_clock_freq}\n$(cat /proc/cpuinfo)";
-
-    # ------------------------------
-
     declare -a Components_Voltage=("core   " "sdram_c" "sdram_i" "sdram_p");
     list_voltages="";
     for EachComponent in "${Components_Voltage[@]}"; do
@@ -291,28 +313,6 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
       list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
     done;
     # list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
-
-    # ------------------------------
-
-    list_logfile_info="";
-    list_logfile_info="${list_logfile_info}logfile (min)   =  ${MinTemp_LogFile}";
-    list_logfile_info="${list_logfile_info}\n";
-    list_logfile_info="${list_logfile_info}logfile (max)   =  ${MaxTemp_LogFile}";
-    list_logfile_info="${list_logfile_info}\n";
-    list_logfile_info="${list_logfile_info}logfile (avg)   =  ${AvgTemp_LogFile}";
-
-    # ------------------------------
-
-    CurrentTemp_Celsuis=$(vcgencmd measure_temp | sed --regexp-extended --quiet --expression="s/^temp=([0-9]+\.[0-9]+)'C\$/\1/p";);
-
-    list_temperature="";
-    list_temperature="${list_temperature}SoC Temp, now\t=  ${CurrentTemp_Celsuis}°C";
-    list_temperature="${list_temperature}\n\n";
-    list_temperature="${list_temperature}SoC Temp, avg\t=  ${AvgTemp_Celsuis}°C   ( count = ${AvgCount_Updated} )";
-    list_temperature="${list_temperature}\n";
-    list_temperature="${list_temperature}SoC Temp, max\t=  ${MaxTemp_Celsuis}°C";
-    list_temperature="${list_temperature}\n";
-    list_temperature="${list_temperature}SoC Temp, min\t=  ${MinTemp_Celsuis}°C";
 
     # ------------------------------
 
@@ -345,7 +345,14 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
 
   else
 
-    echo "${CurrentTemp_Celsuis}";
+    list_all="";
+    list_all="${list_all}$(date +'%c')\n";
+    list_all="${list_all}------------------------------------------------------------\n\n";
+    list_all="${list_all}${list_temperature}\n\n------------------------------------------------------------\n\n";
+    list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
+    list_all="${list_all}${list_logfile_info}\n\n------------------------------------------------------------";
+
+    echo -e "${list_all}";
 
   fi;
 fi;

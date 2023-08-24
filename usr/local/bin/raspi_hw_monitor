@@ -107,8 +107,11 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     apt-get -y update; apt-get -y install libraspberrypi-bin;
   fi;
 
+  # ------------------------------
   if [[ -n "$(command -v vcgencmd 2>'/dev/null';)" ]]; then
-    # ------------------------------
+    #
+    # Get current/past system issues (over-/under-voltage, frequency being capped, thermal throttling, etc.)
+    #
 
     Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
     Throttle_Val="0x${Throttle_Val_After_X}";
@@ -282,6 +285,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
       list_memory_info="${list_memory_info}RAM,  ${EachComponent}\t=  ${Each_RAM_Alloc} MB";
     done;
     # list_memory_info="${list_memory_info}\n$(cat /proc/meminfo)";
+
     # ------------------------------
 
     list_logfile_info="";

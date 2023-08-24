@@ -115,7 +115,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
 
     Throttle_Val_After_X=$(vcgencmd get_throttled | sed --regexp-extended --quiet --expression='s/^throttled=0x([0-9]+)$/\1/p';);
     Throttle_Val="0x${Throttle_Val_After_X}";
-    # list_throttled="Throttle Val\t=  ${Throttle_Val}";
+    # list_issues="Throttle Val\t=  ${Throttle_Val}";
 
     #
     # Dec |  Binary |  Hex   | Result
@@ -168,7 +168,7 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     #
     # ------------------------------
 
-    list_throttled="";
+    list_issues="";
 
     if [[ 1 -eq 1 ]]; then
 
@@ -208,33 +208,33 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
       THROTTLED_CODE_HEX="$(echo "$(printf "%05d" "$(vcgencmd get_throttled | sed -rne "s/^\s*throttled=0x([0-9]+)\s*$/\1/pi";)";)";)";
 
       # Display current issues
-      list_throttled+="Current issues:";
+      list_issues+="Current issues:";
       CURRENT_HEX=${THROTTLED_CODE_HEX:4:1};
       CURRENT_BIN=${HEX_BIN_MAP[$CURRENT_HEX]};
       if [ "$CURRENT_HEX" == "0" ]; then
-        list_throttled+="\n  No throttling issues detected.";
+        list_issues+="\n  No throttling issues detected.";
       else
         bit_n=0;
         for (( i=${#CURRENT_BIN}-1; i>=0; i--)); do
           if [ "${CURRENT_BIN:$i:1}" = "1" ]; then
-            list_throttled+="\n  ~ ${ISSUES_MAP[$bit_n]}";
+            list_issues+="\n  ~ ${ISSUES_MAP[$bit_n]}";
             bit_n=$((bit_n+1));
           fi;
         done;
       fi;
 
       # Display past issues
-      list_throttled+="\n";
-      list_throttled+="\nPreviously detected issues:";
+      list_issues+="\n";
+      list_issues+="\nPreviously detected issues:";
       PAST_HEX=${THROTTLED_CODE_HEX:0:1};
       PAST_BIN=${HEX_BIN_MAP[$PAST_HEX]};
       if [ $PAST_HEX = "0" ]; then
-        list_throttled+="\n  No throttling issues detected.";
+        list_issues+="\n  No throttling issues detected.";
       else
         bit_n=16;
         for (( i=${#PAST_BIN}-1; i>=0; i--)); do
           if [ "${PAST_BIN:$i:1}" = "1" ]; then
-            list_throttled+="\n  ~ ${ISSUES_MAP[$bit_n]}";
+            list_issues+="\n  ~ ${ISSUES_MAP[$bit_n]}";
             bit_n=$((bit_n+1));
           fi;
         done;
@@ -313,8 +313,8 @@ if [[ "${RaspberryPi_Check}" == "BCM2835" ]]; then
     list_all="";
     list_all="${list_all}$(date +'%c')\n";
     list_all="${list_all}------------------------------------------------------------\n\n";
+    list_all="${list_all}${list_issues}\n\n------------------------------------------------------------\n\n";
     list_all="${list_all}${list_temperature}\n\n------------------------------------------------------------\n\n";
-    list_all="${list_all}${list_throttled}\n\n------------------------------------------------------------\n\n";
     list_all="${list_all}${list_voltages}\n\n------------------------------------------------------------\n\n";
     list_all="${list_all}${list_clock_freq}\n\n------------------------------------------------------------\n\n";
     list_all="${list_all}${list_memory_info}\n\n------------------------------------------------------------\n\n";

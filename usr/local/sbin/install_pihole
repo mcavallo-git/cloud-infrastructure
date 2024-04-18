@@ -179,6 +179,7 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
     # EVAL_DOCKER_RUN+=" --cap-add=NET_BIND_SERVICE";  # Allow FTLDNS to be able to change ownership of log files and databases in case FTL is started as a different user than pihole
     # EVAL_DOCKER_RUN+=" --cap-add=SYS_NICE";  # Allow FTLDNS to set itself as an important process to get some more processing time if the latter is running low
 
+    # Check config file for local domain name and add it as a runtime argument
     if [[ -f "${CONFIG_ENV_FILE}" ]]; then
       DNS_SEARCH_DOMAIN=$(sed -rne 's/^REV_SERVER_DOMAIN="?(.+)"?$/\1/p' "${CONFIG_ENV_FILE}" | sort -u | head -n 1;);
       if [[ -n "${DNS_SEARCH_DOMAIN}" ]]; then
@@ -186,6 +187,21 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         EVAL_DOCKER_RUN+=" --dns-search '${DNS_SEARCH_DOMAIN}'";  # Adds [ search <domain> ] to [ /etc/resolv.conf ] in container
       fi;
       EVAL_DOCKER_RUN+=" --env-file '${CONFIG_ENV_FILE}'";
+    fi;
+
+    # Volume map (bind mount) static network file(s) into the docker container in read-only mode
+    if [[ 1 -eq 1 ]]; then
+      unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
+      # Hosts file declarations
+      NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");  # (["__SOURCE__"]="__DESTINATION__");
+      # Network resolution config
+      NETWORK_FILEPATHS+=(["${CONFIG_DIR}/etc/resolv.conf"]="/etc/resolv.conf");  # (["__SOURCE__"]="__DESTINATION__");
+      for EACH_SOURCE in "${!NETWORK_FILEPATHS[@]}"; do
+        EACH_DEST="${NETWORK_FILEPATHS[${EACH_SOURCE}]}";
+        if [[ -e "${EACH_SOURCE}" ]]; then
+          EVAL_DOCKER_RUN+=" --mount 'type=bind,source=${EACH_SOURCE},destination=${EACH_DEST},readonly'";
+        fi;
+      done;
     fi;
 
     EVAL_DOCKER_RUN+=" '${IMAGE_URL}'";
@@ -254,13 +270,13 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
       # ------------------------------
       #
       # Update pihole's network settings
-      #
-      if [[ 1 -eq 1 ]]; then
+      #   |--> WARNING - Docker network files reset upon container restart, so this approach is flawed and has been migrated to using the docker run '--mount' argument, instead
+      if [[ 0 -eq 1 ]]; then
         echo "";
         echo "Info:  Updating pihole's network settings";
         CONTAINER_ID="$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)";
         unset NETWORK_FILEPATHS; declare -A NETWORK_FILEPATHS; # [Re-]Instantiate bash array
-        # Hostsfile declarations
+        # Hosts file declarations
         NETWORK_FILEPATHS+=(["/etc/hosts"]="/etc/hosts");  # (["__SOURCE__"]="__DESTINATION__");
         # Network resolution config
         NETWORK_FILEPATHS+=(["${CONFIG_DIR}/etc/resolv.conf"]="/etc/resolv.conf");  # (["__SOURCE__"]="__DESTINATION__");
@@ -441,6 +457,8 @@ exit ${EXIT_CODE};
 #   discourse.pi-hole.net  |  "Enabling HTTPS for your Pi-hole Web Interface - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/enabling-https-for-your-pi-hole-web-interface/5771
 #
 #   discourse.pi-hole.net  |  "How do I add list via cli - FAQs / Community How-to's - Pi-hole Userspace"  |  https://discourse.pi-hole.net/t/how-do-i-add-list-via-cli/43733/2
+#
+#   docs.docker.com  |  "Volumes | Docker Docs"  |  https://docs.docker.com/storage/volumes/#choose-the--v-or---mount-flag
 #
 #   docs.pi-hole.net  |  "Overview of Pi-hole - Pi-hole documentation"  |  https://docs.pi-hole.net/
 #

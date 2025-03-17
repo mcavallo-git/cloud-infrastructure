@@ -263,9 +263,10 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
         sed -re "s/^(nameserver ${STOPGAP_DNS_SERVER})$/# \1/" -i "/etc/resolv.conf";
       fi;
 
+      WAIT_SECONDS_PIHOLE_BOOTUP=30;
       echo "";
-      echo "Info:  Sleeping for 15 seconds (to allow pihole container to boot up)...";
-      sleep 15;
+      echo "Info:  Sleeping for ${WAIT_SECONDS_PIHOLE_BOOTUP} seconds (to allow pihole container to boot up)...";
+      sleep ${WAIT_SECONDS_PIHOLE_BOOTUP};
 
       # ------------------------------
       #

@@ -419,13 +419,6 @@ if [[ -z "$(docker ps --all --quiet --filter "ancestor=pihole/pihole" 2>'/dev/nu
 
       # ------------------------------
 
-      # Pull in updates from pihole-FTL.conf
-      echo "";
-      echo "Info:  Restarting pihole-FTL (to pull in config updates)";
-      docker exec -t "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole restartdns;
-
-      # ------------------------------
-
       # Show the final container version
       echo "";
       echo "Info:  Getting version from pihole container...";

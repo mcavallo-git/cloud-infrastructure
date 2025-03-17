@@ -48,6 +48,10 @@ echo "-- Info:  Start of \"pihole_update_adlists\" runtime at [ ${START_DATETIME
 #         );
 #
 
+# Start off by removing all adlists
+SQLITE_QUERY_DOMAINS_TO_KEEP="";
+
+# Then, add adlists to the table
 FULLPATH_ADLISTS="/etc/pihole/adlists.list";
 FILE_CONTENT_LINES="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" cat "${FULLPATH_ADLISTS}" 2>'/dev/null' | sed -re "/((^\s*$)|(^\s*#.*$))/d";)";
 if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -l;)" != "0" ]]; then
@@ -63,6 +67,11 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
       SQLITE_QUERY_SELECT="SELECT enabled FROM ${SQL_TABLE} WHERE address='${EACH_ADDRESS}';";
       SQLITE_RESULT_SELECT="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole-FTL sqlite3 /etc/pihole/gravity.db "${SQLITE_QUERY_SELECT}";)";
       SQLITE_QUERY_UPDATE="";
+      if [ -z "${SQLITE_QUERY_DOMAINS_TO_KEEP}" ]; then
+        SQLITE_QUERY_DOMAINS_TO_KEEP="address<>'${EACH_ADDRESS}'";
+      else
+        SQLITE_QUERY_DOMAINS_TO_KEEP="${SQLITE_QUERY_DOMAINS_TO_KEEP} AND address<>'${EACH_ADDRESS}'";
+      fi;
       if [[ -z "${SQLITE_RESULT_SELECT}" ]]; then
         # (Insert) Record doesn't (yet) exist for this Adlist entry --> create it
         echo "  |--> (Insert)  Adding/Enabling Adlist entry:  '${EACH_ADDRESS}' ...";
@@ -82,6 +91,16 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
   done;
   IFS="${ROLLBACK_IFS}"; # Restore the global for-loop delimiter
   # ------------------------------
+  # Remove any adlists which weren't just imported (unless none were imported)
+  if [ -n "${SQLITE_QUERY_DOMAINS_TO_KEEP}" ]; then
+    echo "  |--> (Delete)  Removing Adlists not in the recently imported lists ...";
+    echo "";
+    echo "DEBUG: SQL_QUERY_DELETE=[${SQL_QUERY_DELETE}]";
+    echo "";
+    SQL_QUERY_DELETE="DELETE FROM adlist WHERE ${SQLITE_QUERY_DOMAINS_TO_KEEP};";
+    docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole-FTL sqlite3 /etc/pihole/gravity.db "${SQL_QUERY_DELETE}";
+  fi;
+  # ------------------------------
   #
   # Update pihole's gravity (which pulls from its enabled adlists)
   #
@@ -89,7 +108,6 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
   echo "Info:  Updating pihole's Gravity DB with latest Adlist entries...";
   docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole updateGravity;
 fi;
-
 
 # ------------------------------
 

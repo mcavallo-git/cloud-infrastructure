@@ -91,7 +91,7 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
   # ------------------------------
   # Remove any adlists which weren't just imported (unless none were imported)
   if [ -n "${WHERE_CLAUSE_DOMAINS_TO_KEEP}" ]; then
-    echo "  |--> (Delete)  Removing Adlists not in the recently imported lists ...";
+    echo "Info:  Removing domains/adlists not found in Pi-Hole's adlists file ...";
     # echo "DEBUG: WHERE_CLAUSE_DOMAINS_TO_KEEP=[${WHERE_CLAUSE_DOMAINS_TO_KEEP}]";
     SQL_QUERY_SELECT_DOMAINS_TO_DELETE="SELECT GROUP_CONCAT(id,',') FROM adlist WHERE ${WHERE_CLAUSE_DOMAINS_TO_KEEP};";
     # echo "DEBUG: SQL_QUERY_SELECT_DOMAINS_TO_DELETE=[${SQL_QUERY_SELECT_DOMAINS_TO_DELETE}]";

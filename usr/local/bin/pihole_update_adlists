@@ -92,31 +92,19 @@ if [[ "$(echo "${FILE_CONTENT_LINES}" | sed -re "/((^\s*$)|(^\s*#.*$))/d" | wc -
   # Remove any adlists which weren't just imported (unless none were imported)
   if [ -n "${WHERE_CLAUSE_DOMAINS_TO_KEEP}" ]; then
     echo "  |--> (Delete)  Removing Adlists not in the recently imported lists ...";
-    echo "";
-    echo "DEBUG: WHERE_CLAUSE_DOMAINS_TO_KEEP=[${WHERE_CLAUSE_DOMAINS_TO_KEEP}]";
-
+    # echo "DEBUG: WHERE_CLAUSE_DOMAINS_TO_KEEP=[${WHERE_CLAUSE_DOMAINS_TO_KEEP}]";
     SQL_QUERY_SELECT_DOMAINS_TO_DELETE="SELECT GROUP_CONCAT(id,',') FROM adlist WHERE ${WHERE_CLAUSE_DOMAINS_TO_KEEP};";
-    echo "";
-    echo "DEBUG: SQL_QUERY_SELECT_DOMAINS_TO_DELETE=[${SQL_QUERY_SELECT_DOMAINS_TO_DELETE}]";
-
+    # echo "DEBUG: SQL_QUERY_SELECT_DOMAINS_TO_DELETE=[${SQL_QUERY_SELECT_DOMAINS_TO_DELETE}]";
     IDS_TO_DELETE="$(docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole-FTL sqlite3 /etc/pihole/gravity.db "${SQL_QUERY_SELECT_DOMAINS_TO_DELETE}";)";
-    echo "";
-    echo "DEBUG: IDS_TO_DELETE=[${IDS_TO_DELETE}]";
-    
+    # echo "DEBUG: IDS_TO_DELETE=[${IDS_TO_DELETE}]";
     if [ -n "${IDS_TO_DELETE}" ]; then
-
       SQL_QUERY_DELETE_GRAVITY="DELETE FROM gravity WHERE adlist_id IN (${IDS_TO_DELETE});";
-      echo "";
-      echo "DEBUG: SQL_QUERY_DELETE_GRAVITY=[${SQL_QUERY_DELETE_GRAVITY}]";
+      # echo "DEBUG: SQL_QUERY_DELETE_GRAVITY=[${SQL_QUERY_DELETE_GRAVITY}]";
       docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole-FTL sqlite3 /etc/pihole/gravity.db "${SQL_QUERY_DELETE_GRAVITY}";
-
       SQL_QUERY_DELETE_ADLIST="DELETE FROM ${SQL_TABLE} WHERE ${WHERE_CLAUSE_DOMAINS_TO_KEEP};";
-      echo "";
-      echo "DEBUG: SQL_QUERY_DELETE_ADLIST=[${SQL_QUERY_DELETE_ADLIST}]";
+      # echo "DEBUG: SQL_QUERY_DELETE_ADLIST=[${SQL_QUERY_DELETE_ADLIST}]";
       docker exec "$(docker ps --all --quiet --filter "ancestor=pihole/pihole";)" pihole-FTL sqlite3 /etc/pihole/gravity.db "${SQL_QUERY_DELETE_ADLIST}";
-
     fi;
-
   fi;
   # ------------------------------
   #

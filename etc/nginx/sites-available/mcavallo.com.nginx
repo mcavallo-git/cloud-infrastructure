@@ -46,7 +46,8 @@ server {
     return 302 "https://www.paypal.me/cavalol"; # Note: Use [ https://paypal.me/cavalol/X ] to request $X
   }
   if ($map_subdomain_uri ~* "^(pc|pcpartpicker){1,2}$") {
-    return 302 "https://pcpartpicker.com/b/bH7TwP";
+    return 302 "https://pcpartpicker.com/b/PJyKHx"; # Ryzen MAG X870E
+    # return 302 "https://pcpartpicker.com/b/bH7TwP"; # Ryzen X570 Pro
   }
   if ($map_subdomain_uri ~* "^(ps|sync-ps){1,2}$") {
     return 302 "https://raw.githubusercontent.com/mcavallo-git/Coding/main/sync.ps1?t=$msec";

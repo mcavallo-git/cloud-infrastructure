@@ -69,7 +69,7 @@ else
     apt-get -y update; apt-get -y install gcc libpam-dev libssl-dev make zlib1g-dev;
 
     # Setup runtime variables
-    DUO_UNIX_LATEST_REMOTE="https://dl.duosecurity.com/duo_unix-latest.tar.gz"; # duo_unix source - https://duo.com/docs/duounix
+    DUO_UNIX_LATEST_REMOTE="https://dl.duosecurity.com/duo_unix-latest.tar.gz"; # Convenience script to install duo_unix - https://duo.com/docs/duounix
     WORKING_DIR="${HOME}/pam_duo_install"; # Working directory
     DUO_UNIX_LATEST_LOCAL="${WORKING_DIR}/$(basename "${DUO_UNIX_LATEST_REMOTE}";)";  # Filepath to download duo_unix to
 

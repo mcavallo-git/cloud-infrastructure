@@ -36,8 +36,26 @@ else
   # Start of [ install_duo_unix ] code block
   #
 
+  # Determine if duo is installed already or not
+  DUO_ALREADY_INSTALLED=0;
   if [[ -z "$(command -v login_duo 2>'/dev/null';)" ]]; then
-    # Duo is not installed --> Install it
+    DUO_ALREADY_INSTALLED=1;
+  fi;
+
+  # If Duo IS already installed, determine if we want to update its version or not
+  DUO_FORCE_UPDATE=0;
+  if [[ "${DUO_ALREADY_INSTALLED}" -eq 1 ]]; then
+    read -p "Warning: login_duo is already installed - Update now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; EXIT_CODE=${?};
+    if [[ "${REPLY}" =~ ^[Yy]$ ]]; then
+      echo "Confirmed - Installing latest version of login_duo...";
+      DUO_FORCE_UPDATE=1;
+    else
+      echo "Denied";
+    fi;
+  fi;
+
+  if [[ "${DUO_ALREADY_INSTALLED}" -eq 0 ]] || [[ "${DUO_FORCE_UPDATE}" -eq 1 ]]; then
+    # Install the latest version of Duo
 
     echo -e "\n------------------------------------------------------------\n";
 
@@ -59,7 +77,7 @@ else
     cd "${WORKING_DIR}"; tar zxf "${DUO_UNIX_LATEST_LOCAL}";
 
     # Set the directory which was just unpacked (from the latest duo_unix tarball) as the current working directory
-    UNPACKED_DIR="$(find "${WORKING_DIR}/" -maxdepth "1" -mindepth "1" -type "d" -iname "duo_unix-*" -not -path "${DUO_UNIX_LATEST_LOCAL}" | head -n 1;)";
+    UNPACKED_DIR="$(find "${WORKING_DIR}/" -maxdepth "1" -mindepth "1" -type "d" -iname "duo_unix-*" -not -path "${DUO_UNIX_LATEST_LOCAL}" | tail -n 1;)";
 
     if [[ -d "${UNPACKED_DIR}" ]] && [[ "${UNPACKED_DIR}" != "${WORKING_DIR}" ]]; then
 

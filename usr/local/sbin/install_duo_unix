@@ -39,13 +39,16 @@ else
   # Determine if duo is installed already or not
   DUO_ALREADY_INSTALLED=0;
   if [[ -z "$(command -v login_duo 2>'/dev/null';)" ]]; then
+    echo "Info: Package login_duo not yet installed.";
+  else
     DUO_ALREADY_INSTALLED=1;
+    echo "Warning: Package login_duo is already installed.";
   fi;
 
   # If Duo IS already installed, determine if we want to update its version or not
   DUO_FORCE_UPDATE=0;
   if [[ "${DUO_ALREADY_INSTALLED}" -eq 1 ]]; then
-    read -p "Warning: login_duo is already installed - Update now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; EXIT_CODE=${?};
+    read -p "Update package login_duo now?  (press 'y' to confirm)  " -n 1 -t 60 <'/dev/tty'; EXIT_CODE=${?};
     if [[ "${REPLY}" =~ ^[Yy]$ ]]; then
       echo "Confirmed - Installing latest version of login_duo...";
       DUO_FORCE_UPDATE=1;

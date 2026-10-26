@@ -36,12 +36,12 @@ else
   DASH_NL="------------------------------------------------------------\n";
 
   # Install Linux packages node (Node.JS) & npm (Node Package Manager)
-  if [ -z "$(command -v apk;)" ]; then
+  if [ -n "$(command -v apk;)" ]; then
     # Alpine Linux Distros
     if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
       apk add --update nodejs npm;
     fi;
-  elif [ -z "$(command -v apt;)" ]; then
+  elif [ -n "$(command -v apt;)" ]; then
     # Debian Linux Distros
     if [ -z "$(command -v node 2>'/dev/null';)" ] || [ -z "$(command -v npm 2>'/dev/null';)" ]; then
       echo -e "${DASH_NL}Running Node.JS convenience script (to obtain package repository details & add it to the keyring)...";
